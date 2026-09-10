@@ -14,7 +14,7 @@ func init() {
 		Condition(gs.OnProperty("pg.redis.enabled").HavingValue("true").MatchIfMissing()).
 		Destroy(destroyClient).
 		Name("__default__")
-	gs.Group("${pg.redis.instances}", newClient, nil)
+	//gs.Group("${pg.redis.instances}", newClient, nil)
 }
 
 func newClient(c pg.Redis) (*g.Client, error) {

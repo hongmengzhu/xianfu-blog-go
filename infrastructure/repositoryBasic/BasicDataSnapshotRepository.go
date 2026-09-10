@@ -7,6 +7,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/support"
 	"github.com/pangu-2/go-tools/tools/jsonPg"
+	"go-spring.org/log"
 	"go-spring.org/spring/gs"
 )
 
@@ -35,7 +36,7 @@ func (c *BasicDataSnapshotRepository) FindByNameAndIdNot(ctx context.Context, na
 func (c *BasicDataSnapshotRepository) SnapshotVersion(ctx context.Context, obj interface{}, module, tenantNo, value, version, extend string) {
 	toJson, err := jsonPg.ObjToJson(obj)
 	if nil != err {
-		c.Log().Errorf("snapshot version error: %+v", err)
+		log.Errorf(ctx, log.TagAppDef, "snapshot version error: %+v", err)
 	} else {
 		mark := value + "|" + value
 		c.Create(ctx, &entityBasic.BasicDataSnapshotEntity{
@@ -54,7 +55,7 @@ func (c *BasicDataSnapshotRepository) SnapshotVersion(ctx context.Context, obj i
 func (c *BasicDataSnapshotRepository) SnapshotVersionAll(ctx context.Context, obj interface{}, module, tenantNo, value, version, name, extend string) {
 	toJson, err := jsonPg.ObjToJson(obj)
 	if nil != err {
-		c.Log().Errorf("snapshot version error: %+v", err)
+		log.Errorf(ctx, log.TagAppDef, "snapshot version error: %+v", err)
 	} else {
 		mark := value + "|" + value
 		c.Create(ctx, &entityBasic.BasicDataSnapshotEntity{
