@@ -40,7 +40,7 @@ func (c *PublicController) RegisterRoutes(e *gin.Engine) {
 //	@receiver c
 //	@param ctx
 func (c *PublicController) Public(ctx *gin.Context) {
-	ctx.JSON(200, c.sv.Public(holderPg.GetContextAccount(ctx)))
+	ctx.JSON(200, c.sv.Public(ctx, holderPg.GetContextAccount(ctx)))
 }
 
 // UpdatePassword 修改密码

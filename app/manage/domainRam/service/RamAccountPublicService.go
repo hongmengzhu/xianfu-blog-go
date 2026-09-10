@@ -34,7 +34,7 @@ func NewRamAccountPublicService() *RamAccountPublicService {
 }
 
 // Public 登陆用户信息
-func (c *RamAccountPublicService) Public(holder holderPg2.HolderPg) (rt rg.Rs[modPublic.InfoPublicVo]) {
+func (c *RamAccountPublicService) Public(ctx *gin.Context, holder holderPg2.HolderPg) (rt rg.Rs[modPublic.InfoPublicVo]) {
 	log.Infof(ctx, log.TagAppDef, "holder=%+v", holder)
 	//log.Infof(ctx, log.TagAppDef,"HolderData=%+v", holder.HolderData)
 	if nil == holder.HolderData {
@@ -58,7 +58,7 @@ func (c *RamAccountPublicService) Public(holder holderPg2.HolderPg) (rt rg.Rs[mo
 }
 
 // InfoPublic 登陆用户信息
-func (c *RamAccountPublicService) InfoPublic(holder holderPg2.HolderPg) (rt rg.Rs[modRamAccount.AccountPub]) {
+func (c *RamAccountPublicService) InfoPublic(ctx *gin.Context, holder holderPg2.HolderPg) (rt rg.Rs[modRamAccount.AccountPub]) {
 	log.Infof(ctx, log.TagAppDef, "holder=%+v", holder)
 	//log.Infof(ctx, log.TagAppDef,"HolderData=%+v", holder.HolderData)
 	if nil == holder.HolderData {
