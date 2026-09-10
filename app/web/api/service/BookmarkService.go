@@ -6,9 +6,9 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/web/api/model/modelBlogBookmarkCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg/holderApiPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/blog/bookmarkTypeOwnerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/holderPg/holderApiPg"
 	"github.com/jinzhu/copier"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 )

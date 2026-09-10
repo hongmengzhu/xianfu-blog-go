@@ -6,8 +6,8 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamAccount"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
+	holderPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/passwordTypePg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/holderPg"
 	"github.com/pangu-2/go-tools/tools/numberPg"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
@@ -34,7 +34,7 @@ func NewRamAccountPublicService() *RamAccountPublicService {
 }
 
 // Public 登陆用户信息
-func (c *RamAccountPublicService) Public(holder holderPg.HolderPg) (rt rg.Rs[modPublic.InfoPublicVo]) {
+func (c *RamAccountPublicService) Public(holder holderPg2.HolderPg) (rt rg.Rs[modPublic.InfoPublicVo]) {
 	log.Infof(ctx, log.TagAppDef, "holder=%+v", holder)
 	//log.Infof(ctx, log.TagAppDef,"HolderData=%+v", holder.HolderData)
 	if nil == holder.HolderData {
@@ -58,7 +58,7 @@ func (c *RamAccountPublicService) Public(holder holderPg.HolderPg) (rt rg.Rs[mod
 }
 
 // InfoPublic 登陆用户信息
-func (c *RamAccountPublicService) InfoPublic(holder holderPg.HolderPg) (rt rg.Rs[modRamAccount.AccountPub]) {
+func (c *RamAccountPublicService) InfoPublic(holder holderPg2.HolderPg) (rt rg.Rs[modRamAccount.AccountPub]) {
 	log.Infof(ctx, log.TagAppDef, "holder=%+v", holder)
 	//log.Infof(ctx, log.TagAppDef,"HolderData=%+v", holder.HolderData)
 	if nil == holder.HolderData {
@@ -90,7 +90,7 @@ func (c *RamAccountPublicService) UpdatePassword(ctx *gin.Context, ct modPublic.
 	if "" == ct.PasswordNew {
 		return rt.ErrorMessage("密码不能为空")
 	}
-	holder := holderPg.GetContextAccount(ctx)
+	holder := holderPg2.GetContextAccount(ctx)
 	account := holder.GetAccount()
 	r := c.sv
 	info, b := r.FindById(ctx, account.ID)

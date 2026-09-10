@@ -7,11 +7,11 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/manage/domainRam/utilsRam"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/modTcAccount"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/authorizationTypePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/identityPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/sexPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/enumCommonPg/appModulePg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/holderPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
 	"go-spring.org/log"
 

@@ -11,7 +11,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/web/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/templatePg"
+	templatePg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
@@ -52,11 +52,11 @@ func (c *IndexController) Index(ctx *gin.Context) {
 
 	//fmt.Printf("Data: %+v\n", tree)
 	// 模版
-	templatePg.HTML(ctx, "blog/index",
-		templatePg.WithDataByResult(rt.SuccessIs(), rt.Data),
-		templatePg.WithHtmlObjSet("categorys", tree),
-		templatePg.WithHtmlObjSet("pageUrl", "page"),
-		templatePg.WithSitePage(templatePg.SitePage{
+	templatePg2.HTML(ctx, "blog/index",
+		templatePg2.WithDataByResult(rt.SuccessIs(), rt.Data),
+		templatePg2.WithHtmlObjSet("categorys", tree),
+		templatePg2.WithHtmlObjSet("pageUrl", "page"),
+		templatePg2.WithSitePage(templatePg2.SitePage{
 			Title:       "博客",
 			Description: "博客",
 			Keywords:    "博客",
@@ -75,10 +75,10 @@ func (c *IndexController) Page(ctx *gin.Context) {
 	//
 	rt := c.sv.Query(ctx, ct)
 	// 模版
-	templatePg.HTML(ctx, "blog/article_list",
-		templatePg.WithDataByResult(rt.SuccessIs(), rt.Data),
-		templatePg.WithHtmlObjSet("pageUrl", "page"),
-		templatePg.WithSitePage(templatePg.SitePage{
+	templatePg2.HTML(ctx, "blog/article_list",
+		templatePg2.WithDataByResult(rt.SuccessIs(), rt.Data),
+		templatePg2.WithHtmlObjSet("pageUrl", "page"),
+		templatePg2.WithSitePage(templatePg2.SitePage{
 			Title:       "博客",
 			Description: "博客",
 			Keywords:    "博客",

@@ -1,6 +1,8 @@
 package multiTenantPg
 
-import "github.com/hongmengzhu/xianfu-blog-go/pkg/interfaces"
+import (
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/interfaces"
+)
 
 // 解析关键字
 const RuleParamTenant = "Tenant;"

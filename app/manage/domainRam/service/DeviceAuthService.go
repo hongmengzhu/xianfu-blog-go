@@ -7,12 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 	modRamDeviceAuth2 "github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamDeviceAuth"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg/multiTenantPg"
+	deviceauth2 "github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/deviceauth"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/typeDomainPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/deviceauth"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/clientPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/holderPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/holderPg/multiTenantPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/log"
@@ -27,12 +27,12 @@ func init() {
 type DeviceAuthService struct {
 	dao     *repositoryRam.RamAccountRepository `autowire:"?"`
 	loginSv *AccountLoginService                `autowire:"?"`
-	store   deviceauth.Store
+	store   deviceauth2.Store
 }
 
 func NewDeviceAuthService() *DeviceAuthService {
 	return &DeviceAuthService{
-		store: deviceauth.NewMemoryStore(),
+		store: deviceauth2.NewMemoryStore(),
 	}
 }
 
@@ -76,27 +76,27 @@ func (c *DeviceAuthService) StartDeviceAuth(ctx *gin.Context, ct modRamDeviceAut
 	}
 
 	cancelToken := generateCancelToken()
-	expiresIn := deviceauth.DefaultExpiresIn
+	expiresIn := deviceauth2.DefaultExpiresIn
 	now := time.Now()
 
 	// 按 deviceCode 存储
-	deviceCache := deviceauth.DeviceAuthCache{
+	deviceCache := deviceauth2.DeviceAuthCache{
 		DeviceCode: deviceCode,
 		UserCode:   userCode,
 		ClientId:   ct.ClientId,
 		Scope:      ct.Scope,
 		RequestAt:  now,
-		Status:     deviceauth.StatusPending,
+		Status:     deviceauth2.StatusPending,
 		ExpiresIn:  expiresIn,
 	}
 	// 按 userCode 存储（含 cancelToken）
-	userCache := deviceauth.DeviceAuthCache{
+	userCache := deviceauth2.DeviceAuthCache{
 		DeviceCode:  deviceCode,
 		UserCode:    userCode,
 		ClientId:    ct.ClientId,
 		Scope:       ct.Scope,
 		RequestAt:   now,
-		Status:      deviceauth.StatusPending,
+		Status:      deviceauth2.StatusPending,
 		CancelToken: cancelToken,
 		ExpiresIn:   expiresIn,
 	}
@@ -109,7 +109,7 @@ func (c *DeviceAuthService) StartDeviceAuth(ctx *gin.Context, ct modRamDeviceAut
 		UserCode:        userCode,
 		VerificationUri: "/device/verify",
 		ExpiresIn:       expiresIn,
-		Interval:        deviceauth.DefaultInterval,
+		Interval:        deviceauth2.DefaultInterval,
 		CancelToken:     cancelToken,
 	}
 	return rt.OkData(vo)
@@ -127,15 +127,15 @@ func (c *DeviceAuthService) PollDeviceStatus(ctx *gin.Context, ct modRamDeviceAu
 	}
 
 	switch cache.Status {
-	case deviceauth.StatusPending:
+	case deviceauth2.StatusPending:
 		return rt.OkData(modRamDeviceAuth2.DeviceStatusVo{Status: "pending"})
-	case deviceauth.StatusDenied:
+	case deviceauth2.StatusDenied:
 		c.store.Delete(ct.DeviceCode)
 		return rt.OkData(modRamDeviceAuth2.DeviceStatusVo{Status: "denied"})
-	case deviceauth.StatusApproved:
+	case deviceauth2.StatusApproved:
 		// 签发 Token
 		return c.issueTokenForDevice(ctx, cache)
-	case deviceauth.StatusTokenIssued:
+	case deviceauth2.StatusTokenIssued:
 		// 已签发，直接返回 token
 		return c.issueTokenForDevice(ctx, cache)
 	default:
@@ -144,7 +144,7 @@ func (c *DeviceAuthService) PollDeviceStatus(ctx *gin.Context, ct modRamDeviceAu
 }
 
 // issueTokenForDevice 为已授权的设备签发 Token
-func (c *DeviceAuthService) issueTokenForDevice(ctx *gin.Context, cache deviceauth.DeviceAuthCache) (rt rg.Rs[modRamDeviceAuth2.DeviceStatusVo]) {
+func (c *DeviceAuthService) issueTokenForDevice(ctx *gin.Context, cache deviceauth2.DeviceAuthCache) (rt rg.Rs[modRamDeviceAuth2.DeviceStatusVo]) {
 	if cache.UserNo == "" {
 		return rt.OkData(modRamDeviceAuth2.DeviceStatusVo{Status: "pending"})
 	}
@@ -167,7 +167,7 @@ func (c *DeviceAuthService) issueTokenForDevice(ctx *gin.Context, cache deviceau
 	data := tokenResult.Data
 
 	// 更新状态为 token_issued
-	cache.Status = deviceauth.StatusTokenIssued
+	cache.Status = deviceauth2.StatusTokenIssued
 	c.store.Update(cache)
 
 	return rt.OkData(modRamDeviceAuth2.DeviceStatusVo{
@@ -187,7 +187,7 @@ func (c *DeviceAuthService) ApproveDeviceAuth(ctx *gin.Context, ct modRamDeviceA
 		c.store.Delete(cache.DeviceCode)
 		return rt.ErrorMessage("设备授权已过期")
 	}
-	if cache.Status != deviceauth.StatusPending {
+	if cache.Status != deviceauth2.StatusPending {
 		return rt.ErrorMessage("该设备授权已处理")
 	}
 
@@ -198,7 +198,7 @@ func (c *DeviceAuthService) ApproveDeviceAuth(ctx *gin.Context, ct modRamDeviceA
 	}
 	accountHolder := holder.GetAccount()
 
-	cache.Status = deviceauth.StatusApproved
+	cache.Status = deviceauth2.StatusApproved
 	cache.UserName = accountHolder.Account
 	cache.UserNo = accountHolder.No
 	cache.TenantNo = accountHolder.TenantNo
@@ -233,7 +233,7 @@ func (c *DeviceAuthService) CompleteDeviceAuth(ctx *gin.Context, ct modRamDevice
 		c.store.Delete(ct.DeviceCode)
 		return rt.ErrorMessage("设备授权已过期")
 	}
-	if cache.Status != deviceauth.StatusTokenIssued {
+	if cache.Status != deviceauth2.StatusTokenIssued {
 		return rt.ErrorMessage("设备授权尚未完成 Token 签发")
 	}
 

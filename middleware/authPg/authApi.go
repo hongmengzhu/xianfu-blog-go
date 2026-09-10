@@ -6,10 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/cacheTc"
 	"github.com/hongmengzhu/xianfu-blog-go/middleware/components/cachePg/cacheDiplPg"
+	holderApiPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg/holderApiPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constContextPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constHeaderPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/holderPg/holderApiPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
@@ -58,8 +58,8 @@ func GroupApiMiddleware(m *GroupApiMiddlewareSp) gin.HandlerFunc {
 				//验证
 				if b2 && cacheDiplPg.HashShaVerify(get.Key, get.Secret, split[1]) {
 					val = get.TenantNo
-					pg := holderApiPg.HolderPg{}
-					pg.HolderData = holderApiPg.DiplHolder{
+					pg := holderApiPg2.HolderPg{}
+					pg.HolderData = holderApiPg2.DiplHolder{
 						Name:     get.Name,
 						No:       get.No,
 						TenantNo: get.TenantNo,

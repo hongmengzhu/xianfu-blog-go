@@ -1,8 +1,8 @@
 package holderPg
 
 import (
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/holderPg/jwtHolder"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/interfaces"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg/jwtHolder"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/interfaces"
 	"github.com/pangu-2/go-tools/tools/strPg"
 )
 

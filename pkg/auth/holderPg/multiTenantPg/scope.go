@@ -3,11 +3,11 @@ package multiTenantPg
 import (
 	"github.com/duke-git/lancet/v2/slice"
 	"github.com/gin-gonic/gin"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/interfaces"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg/pg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constContextPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/typeDomainPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/holderPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/interfaces"
 	"go-spring.org/log"
 	"gorm.io/gorm"
 )

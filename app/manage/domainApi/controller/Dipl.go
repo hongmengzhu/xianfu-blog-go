@@ -7,7 +7,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/manage/domainApi/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/api/modApiDipl"
 	"github.com/hongmengzhu/xianfu-blog-go/middleware/authPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/common/controllerPg"
+	"github.com/hongmengzhu/xianfu-blog-go/middleware/authPg/controllerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"

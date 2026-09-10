@@ -5,9 +5,9 @@ import (
 	modRamJobFunction2 "github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamJobFunction"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/automatedPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/sdk-common-cache/cacheRamJobFunctionPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
@@ -30,7 +30,7 @@ func init() {
 // @Description:
 type RamJobFunctionService struct {
 	sv *repositoryRam.RamJobFunctionRepository `autowire:"?"`
-	
+
 	chd *cacheRamJobFunctionPg.Cache `autowire:"?"`
 }
 

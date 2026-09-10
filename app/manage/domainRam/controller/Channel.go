@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/manage/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamChannel"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/common/controllerPg"
+	"github.com/hongmengzhu/xianfu-blog-go/middleware/authPg/controllerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"

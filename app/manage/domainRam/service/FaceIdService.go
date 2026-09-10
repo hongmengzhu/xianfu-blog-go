@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/faceid"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/faceid"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
 )

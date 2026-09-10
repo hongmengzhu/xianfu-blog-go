@@ -5,10 +5,10 @@ import (
 
 	"github.com/duke-git/lancet/v2/convertor"
 	"github.com/gin-gonic/gin"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg/multiTenantPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constContextPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/holderPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/holderPg/multiTenantPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPgI"
 	"github.com/pangu-2/go-tools/tools/dbPg/genericPg"

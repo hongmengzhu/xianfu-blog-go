@@ -3,9 +3,9 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
+	holderPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
+	multiTenantPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg/multiTenantPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/typeDomainPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/holderPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/holderPg/multiTenantPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
@@ -35,7 +35,7 @@ func NewRamAccountMiddlewareService() *RamAccountMiddlewareService {
 //	@receiver c
 //	@param jwt
 //	@return rt
-func (c *RamAccountMiddlewareService) FindByLoginNo(ctx *gin.Context, no, tenantNo string) (rt rg.Rs[holderPg.HolderPg]) {
+func (c *RamAccountMiddlewareService) FindByLoginNo(ctx *gin.Context, no, tenantNo string) (rt rg.Rs[holderPg2.HolderPg]) {
 	log.Debugf(ctx, log.TagAppDef, "jwt=%+v", no)
 	if strPg.IsBlank(no) {
 		return rt.ErrorMessage("账号登陆失败")
@@ -48,7 +48,7 @@ func (c *RamAccountMiddlewareService) FindByLoginNo(ctx *gin.Context, no, tenant
 		return rt.ErrorMessage("账号不存在")
 	}
 	pg := rt.Data
-	rule := multiTenantPg.NewMultiRuleDefaultBySystem()
+	rule := multiTenantPg2.NewMultiRuleDefaultBySystem()
 	//
 	rule.Tenant = true
 	rule.Merchant = false
@@ -56,10 +56,10 @@ func (c *RamAccountMiddlewareService) FindByLoginNo(ctx *gin.Context, no, tenant
 	rule.Owner = false
 	rule.MultiOwner = false
 	//
-	var accountHolder2 holderPg.AccountHolder
+	var accountHolder2 holderPg2.AccountHolder
 	copier.Copy(&accountHolder2, &info)
 	//
-	accountHolder2.Os = holderPg.NewAccountHolderOs()
+	accountHolder2.Os = holderPg2.NewAccountHolderOs()
 	accountHolder2.Os.Departments = info.Os.Data().Departments
 	accountHolder2.Os.Roles = info.Os.Data().Roles
 	accountHolder2.Os.Orgs = info.Os.Data().Orgs
@@ -68,7 +68,7 @@ func (c *RamAccountMiddlewareService) FindByLoginNo(ctx *gin.Context, no, tenant
 	accountHolder2.Os.Shops = info.Os.Data().Shops
 	accountHolder2.Os.Stores = info.Os.Data().Stores
 	//
-	pg.MultiTenant = multiTenantPg.MultiTenantPg{
+	pg.MultiTenant = multiTenantPg2.MultiTenantPg{
 		TenantNo: accountHolder2.Os.Tenants,
 	}
 	pg.HolderData = accountHolder2

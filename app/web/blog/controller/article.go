@@ -10,7 +10,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/web/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/templatePg"
+	templatePg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
 )
@@ -51,11 +51,11 @@ func (c *ArticleController) Detail(ctx *gin.Context) {
 	tree, _ := c.catCache.FormatTree(ctx, tenantNo)
 	//fmt.Printf("Data: %+v\n", data)
 	// 模版
-	templatePg.HTML(ctx, "blog/detail",
-		templatePg.WithDataByResult(dataIs, data),
-		templatePg.WithHtmlObjSet("categorys", tree),
-		templatePg.WithHtmlObjSet("pageUrl", "article"),
-		templatePg.WithSitePage(templatePg.SitePage{
+	templatePg2.HTML(ctx, "blog/detail",
+		templatePg2.WithDataByResult(dataIs, data),
+		templatePg2.WithHtmlObjSet("categorys", tree),
+		templatePg2.WithHtmlObjSet("pageUrl", "article"),
+		templatePg2.WithSitePage(templatePg2.SitePage{
 			Title:       "详情",
 			Description: "博客",
 			Keywords:    "博客",
@@ -75,11 +75,11 @@ func (c *ArticleController) List(ctx *gin.Context) {
 
 	//fmt.Printf("Data: %+v\n", tree)
 	// 模版
-	templatePg.HTML(ctx, "blog/article_list",
-		templatePg.WithDataByResult(rt.SuccessIs(), rt.Data),
-		templatePg.WithHtmlObjSet("categorys", tree),
-		templatePg.WithHtmlObjSet("pageUrl", "/article/search"),
-		templatePg.WithSitePage(templatePg.SitePage{
+	templatePg2.HTML(ctx, "blog/article_list",
+		templatePg2.WithDataByResult(rt.SuccessIs(), rt.Data),
+		templatePg2.WithHtmlObjSet("categorys", tree),
+		templatePg2.WithHtmlObjSet("pageUrl", "/article/search"),
+		templatePg2.WithSitePage(templatePg2.SitePage{
 			Title:       "博客",
 			Description: "博客",
 			Keywords:    "博客",

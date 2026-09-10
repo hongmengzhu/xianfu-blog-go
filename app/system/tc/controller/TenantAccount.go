@@ -5,7 +5,7 @@ import (
 	modRamAccount "github.com/hongmengzhu/xianfu-blog-go/app/models/tc/modTcAccount"
 	"github.com/hongmengzhu/xianfu-blog-go/app/system/tc/service"
 	"github.com/hongmengzhu/xianfu-blog-go/middleware/authPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/common/controllerPg"
+	"github.com/hongmengzhu/xianfu-blog-go/middleware/authPg/controllerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/enumCommonPg/appModulePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"

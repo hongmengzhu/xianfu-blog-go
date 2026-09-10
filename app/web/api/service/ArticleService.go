@@ -6,7 +6,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/web/api/model/modBlogArticle"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/holderPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"

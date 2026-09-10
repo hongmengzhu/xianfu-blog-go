@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/interfaces"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/interfaces"
 )
 
 // BaseIds 基础 详情

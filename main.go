@@ -14,7 +14,7 @@ import (
 	_ "github.com/hongmengzhu/xianfu-blog-go/middleware"
 	"github.com/hongmengzhu/xianfu-blog-go/middleware/serverPg/StarterGin"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/templatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
 	"github.com/pangu-2/go-tools/tools/datetimePg"
 	"github.com/pangu-2/go-tools/tools/ioPg"
 	"go-spring.org/spring/gs"

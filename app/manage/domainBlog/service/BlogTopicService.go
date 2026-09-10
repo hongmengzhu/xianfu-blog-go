@@ -14,10 +14,10 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryTc"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/rdsPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constTags"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
@@ -42,7 +42,7 @@ type BlogTopicService struct {
 	tagsRelat    *repositoryBasic.BasicTagsRelationRepository  `autowire:"?"`
 	ten          *repositoryTc.TcTenantRepository              `autowire:"?"`
 	sp           *blogTopic.Sp                                 `autowire:"?"`
-	
+
 	rdu *rdsPg.BatchString `autowire:"?"`
 }
 

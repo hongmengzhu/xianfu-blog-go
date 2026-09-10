@@ -6,8 +6,8 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/system/ram/service"
 	"github.com/hongmengzhu/xianfu-blog-go/cmd"
 	"github.com/hongmengzhu/xianfu-blog-go/middleware/authPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/common/controllerPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/holderPg"
+	"github.com/hongmengzhu/xianfu-blog-go/middleware/authPg/controllerPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"go-spring.org/spring/gs"
 )

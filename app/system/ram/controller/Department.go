@@ -7,7 +7,7 @@ import (
 	modRamDepartment2 "github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamDepartment"
 	"github.com/hongmengzhu/xianfu-blog-go/app/system/ram/service"
 	"github.com/hongmengzhu/xianfu-blog-go/middleware/authPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/common/controllerPg"
+	"github.com/hongmengzhu/xianfu-blog-go/middleware/authPg/controllerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/pangu-2/go-tools/tools/strPg"

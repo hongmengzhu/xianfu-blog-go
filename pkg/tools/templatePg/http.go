@@ -1,8 +1,9 @@
 package templatePg
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/url"
+
+	"github.com/gin-gonic/gin"
 )
 
 type HttpPg struct {

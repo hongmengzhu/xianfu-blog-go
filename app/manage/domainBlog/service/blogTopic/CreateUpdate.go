@@ -11,6 +11,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/automatedPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constEventBusPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constTags"
@@ -21,7 +22,6 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/content/enumEditorPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/yesNoPg/yesNoIntPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/yesNoPg/yesNoString"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/versionPg"
 	"github.com/jinzhu/copier"
@@ -61,7 +61,7 @@ func New(sp *Sp, holder holderPg.HolderPg, ct modBlogTopic.CreateUpdateCt, isUpd
 
 type CreateUpdate struct {
 	sp *Sp `autowire:"?"`
-	
+
 	isUpdate bool //是否更新
 	ct       modBlogTopic.CreateUpdateCt
 	holder   holderPg.HolderPg

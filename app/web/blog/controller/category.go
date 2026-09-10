@@ -11,7 +11,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/web/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/templatePg"
+	templatePg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/spring/gs"
 )
@@ -59,11 +59,11 @@ func (c *CategoryController) List(ctx *gin.Context) {
 	tenantNo := webPg.GetTenantNo(ctx)
 	tree, _ := c.catCache.FormatTree(ctx, tenantNo)
 	// 模版
-	templatePg.HTML(ctx, "blog/article_list",
-		templatePg.WithDataByResult(dataIs, data),
-		templatePg.WithHtmlObjSet("categorys", tree),
-		templatePg.WithHtmlObjSet("pageUrl", "category"),
-		templatePg.WithSitePage(templatePg.SitePage{
+	templatePg2.HTML(ctx, "blog/article_list",
+		templatePg2.WithDataByResult(dataIs, data),
+		templatePg2.WithHtmlObjSet("categorys", tree),
+		templatePg2.WithHtmlObjSet("pageUrl", "category"),
+		templatePg2.WithSitePage(templatePg2.SitePage{
 			Title:       "标签",
 			Description: "博客",
 			Keywords:    "博客",

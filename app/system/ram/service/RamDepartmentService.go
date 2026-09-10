@@ -5,11 +5,11 @@ import (
 	modRamDepartment2 "github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamDepartment"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/automatedPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constNodePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/enumCommonPg/typeSysPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/sdk-common-cache/cacheRamDepartmentPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
@@ -34,7 +34,7 @@ func init() {
 // @Description:
 type RamDepartmentService struct {
 	sv *repositoryRam.RamDepartmentRepository `autowire:"?"`
-	
+
 	chd *cacheRamDepartmentPg.Cache `autowire:"?"`
 }
 

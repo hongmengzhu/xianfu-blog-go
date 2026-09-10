@@ -12,7 +12,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/web/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/templatePg"
+	templatePg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/typePg"
 	"github.com/pangu-2/go-tools/tools/datetimePg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -68,11 +68,11 @@ func (c *ArchivesController) List(ctx *gin.Context) {
 	tenantNo := webPg.GetTenantNo(ctx)
 	tree, _ := c.catCache.FormatTree(ctx, tenantNo)
 	// 模版
-	templatePg.HTML(ctx, "blog/archive",
-		templatePg.WithDataByResult(dataIs, data),
-		templatePg.WithHtmlObjSet("categorys", tree),
-		templatePg.WithHtmlObjSet("subTitle", param),
-		templatePg.WithSitePage(templatePg.SitePage{
+	templatePg2.HTML(ctx, "blog/archive",
+		templatePg2.WithDataByResult(dataIs, data),
+		templatePg2.WithHtmlObjSet("categorys", tree),
+		templatePg2.WithHtmlObjSet("subTitle", param),
+		templatePg2.WithSitePage(templatePg2.SitePage{
 			Title:       "归档",
 			Description: "博客",
 			Keywords:    "博客",

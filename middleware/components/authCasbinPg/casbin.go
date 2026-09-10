@@ -2,11 +2,12 @@ package authCasbinPg
 
 import (
 	"errors"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/manage/domainRam/service"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/holderPg"
-	"strings"
 )
 
 func CasbinHandler(ctx *gin.Context, hpg holderPg.HolderPg, pg configPg.Pg, casbin *service.RamResourceCasbinService) error {

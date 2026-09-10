@@ -8,12 +8,13 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/system/ram/service"
 	"github.com/hongmengzhu/xianfu-blog-go/middleware/components/authTokenPg"
 	"github.com/hongmengzhu/xianfu-blog-go/middleware/components/cachePg/cacheAuthPubPrivPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg/multiTenantPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constContextPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constHeaderPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/holderPg/multiTenantPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
+	"go-spring.org/log"
 	"go-spring.org/spring/gs"
 )
 
@@ -70,8 +71,8 @@ func GroupSystemMiddleware(m *GroupSystemMiddlewareSp) gin.HandlerFunc {
 				c.Abort()
 				return
 			}
-			m.log.Debugf("rt= %+v", rt)
-			m.log.Debugf("rt.Rule= %+v", rt.Data.Rule)
+			log.Debugf(context.Background(), log.TagAppDef, "rt= %+v", rt)
+			log.Debugf(context.Background(), log.TagAppDef, "rt.Rule= %+v", rt.Data.Rule)
 			//
 			var data = rt.Data
 			//如果配置了systemUrlPaths，则必须携带ownerCode
@@ -80,7 +81,7 @@ func GroupSystemMiddleware(m *GroupSystemMiddlewareSp) gin.HandlerFunc {
 				for _, item := range systemUrlPaths {
 					//必须登录 验证，url 包含的路径，那么提示错误
 					if "" != item && strings.Index(path, item) != -1 {
-						m.log.Tracef("pass %+v", c.Request.URL.Path)
+						log.Tracef(context.Background(), log.TagAppDef, "pass %+v", c.Request.URL.Path)
 						c.JSON(200, rg.Error[string]("所有者错误"))
 						c.Abort()
 						return

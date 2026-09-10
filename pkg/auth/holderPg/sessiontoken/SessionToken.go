@@ -1,8 +1,9 @@
 package sessiontoken
 
 import (
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/interfaces"
 	"time"
+
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/interfaces"
 )
 
 type ISessionTokenPg interface {
