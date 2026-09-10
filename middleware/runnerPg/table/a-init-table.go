@@ -2,6 +2,7 @@ package table
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityApi"
@@ -11,6 +12,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityTc"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbMakePg"
+	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"
 	_ "go-spring.org/spring/gs"
 	"gorm.io/gorm"
@@ -126,46 +128,64 @@ func (b *AInitTable) Run(ctx context.Context) error {
 //	@Description: 序号修改 初始值
 //	@receiver b
 func (b *AInitTable) seqEdit() {
-	// 判断是否已初始化过：以 api_dipl_id_seq 为标志序列，当前值已达初始值则跳过，避免重启重复执行
-	var currentVal int64
-	if err := b.db.Raw("SELECT last_value FROM api_dipl_id_seq").Scan(&currentVal).Error; err == nil && currentVal >= 100000 {
-		log.Infof(context.Background(), log.TagAppDef, "[init].[主键序号保留].已初始化,跳过执行")
+	dialect := b.db.Dialector.Name()
+	if dialect == "sqlite" {
+		log.Infof(context.Background(), log.TagAppDef, "[init][autoinc] sqlite skip auto increment init")
 		return
 	}
+	// 判断是否已初始化过：以 api_dipl_id_seq 为标志序列，当前值已达初始值则跳过，避免重启重复执行
+	ret, _ := IsAutoInited(b.db, "api_dipl", 100000)
+	if ret {
+		return
+	}
+
 	sql := make([]string, 0)
-	sql = append(sql, dbMakePg.MakeSequenceSql("api_dipl", 100000))
-	sql = append(sql, dbMakePg.MakeSequenceSql("basic_account_apply_deny_list", 100000))
-	sql = append(sql, dbMakePg.MakeSequenceSql("basic_area", 100000))
-	sql = append(sql, dbMakePg.MakeSequenceSql("basic_country", 100000))
-	sql = append(sql, dbMakePg.MakeSequenceSql("basic_config_list", 100000))
-	sql = append(sql, dbMakePg.MakeSequenceSql("basic_data_dictionary", 100000))
-	sql = append(sql, dbMakePg.MakeSequenceSql("basic_tags", 100000))
-	sql = append(sql, dbMakePg.MakeSequenceSql("basic_tags_category", 100000))
+	sql = append(sql, dbMakePg.MakeDataBaseAutoInc(dialect, "api_dipl", 100000))
+	sql = append(sql, dbMakePg.MakeDataBaseAutoInc(dialect, "basic_account_apply_deny_list", 100000))
+	sql = append(sql, dbMakePg.MakeDataBaseAutoInc(dialect, "basic_area", 100000))
+	sql = append(sql, dbMakePg.MakeDataBaseAutoInc(dialect, "basic_country", 100000))
+	sql = append(sql, dbMakePg.MakeDataBaseAutoInc(dialect, "basic_config_list", 100000))
+	sql = append(sql, dbMakePg.MakeDataBaseAutoInc(dialect, "basic_data_dictionary", 100000))
+	sql = append(sql, dbMakePg.MakeDataBaseAutoInc(dialect, "basic_tags", 100000))
+	sql = append(sql, dbMakePg.MakeDataBaseAutoInc(dialect, "basic_tags_category", 100000))
 	//
-	sql = append(sql, dbMakePg.MakeSequenceSql("ram_account", 100000))
-	sql = append(sql, dbMakePg.MakeSequenceSql("ram_account_authorization", 100000))
-	sql = append(sql, dbMakePg.MakeSequenceSql("ram_app", 100000))
-	sql = append(sql, dbMakePg.MakeSequenceSql("ram_department", 100000))
-	sql = append(sql, dbMakePg.MakeSequenceSql("ram_group", 100000))
-	sql = append(sql, dbMakePg.MakeSequenceSql("ram_level", 100000))
-	sql = append(sql, dbMakePg.MakeSequenceSql("ram_position", 100000))
-	sql = append(sql, dbMakePg.MakeSequenceSql("ram_post", 100000))
-	sql = append(sql, dbMakePg.MakeSequenceSql("ram_team", 100000))
+	sql = append(sql, dbMakePg.MakeDataBaseAutoInc(dialect, "ram_account", 100000))
+	sql = append(sql, dbMakePg.MakeDataBaseAutoInc(dialect, "ram_account_authorization", 100000))
+	sql = append(sql, dbMakePg.MakeDataBaseAutoInc(dialect, "ram_app", 100000))
+	sql = append(sql, dbMakePg.MakeDataBaseAutoInc(dialect, "ram_department", 100000))
+	sql = append(sql, dbMakePg.MakeDataBaseAutoInc(dialect, "ram_group", 100000))
+	sql = append(sql, dbMakePg.MakeDataBaseAutoInc(dialect, "ram_level", 100000))
+	sql = append(sql, dbMakePg.MakeDataBaseAutoInc(dialect, "ram_position", 100000))
+	sql = append(sql, dbMakePg.MakeDataBaseAutoInc(dialect, "ram_post", 100000))
+	sql = append(sql, dbMakePg.MakeDataBaseAutoInc(dialect, "ram_team", 100000))
 	//
-	sql = append(sql, dbMakePg.MakeSequenceSql("tc_tenant", 100000))
-	sql = append(sql, dbMakePg.MakeSequenceSql("tc_tenant_domain", 100000))
+	sql = append(sql, dbMakePg.MakeDataBaseAutoInc(dialect, "tc_tenant", 100000))
+	sql = append(sql, dbMakePg.MakeDataBaseAutoInc(dialect, "tc_tenant_domain", 100000))
 	//
-	err := b.db.Transaction(func(tx *gorm.DB) error {
-		for _, raw := range sql {
-			rs := tx.Exec(raw)
-			if rs.Error != nil {
-				log.Errorf(context.Background(), log.TagAppDef, "初始化序号异常:%+v", rs.Error)
-			}
-			log.Debugf(context.Background(), log.TagAppDef, "执行结果: %+v 行受影响", rs.RowsAffected)
-			time.Sleep(time.Microsecond * 10)
+	// 事务批量执行
+	tx := b.db.Begin()
+	if tx.Error != nil {
+		return
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			_ = tx.Rollback()
 		}
-		return nil
-	})
+	}()
+	for _, raw := range sql {
+		if strPg.IsBlank(raw) {
+			continue
+		}
+		rs := tx.Exec(raw)
+		if rs.Error != nil {
+			log.Errorf(context.Background(), log.TagAppDef, "初始化序号异常:%+v", rs.Error)
+			_ = tx.Rollback()
+			return
+		}
+		log.Debugf(context.Background(), log.TagAppDef, "执行结果: %+v 行受影响", rs.RowsAffected)
+		time.Sleep(time.Microsecond * 10)
+	}
+	err := tx.Commit().Error
 	if err != nil {
 		log.Errorf(context.Background(), log.TagAppDef, "创建表异常:%+v", err)
 	}
@@ -218,5 +238,33 @@ func (b *AInitTable) sqlBasicDictionary() {
 	})
 	if err != nil {
 		log.Errorf(context.Background(), log.TagAppDef, "创建数据字典数据异常:%+v", err)
+	}
+}
+
+// IsAutoInited 判断是否已经初始化自增起始号（方言适配）
+// startThreshold: 阈值 100000
+func IsAutoInited(db *gorm.DB, table string, startThreshold int64) (bool, error) {
+	dialect := db.Dialector.Name()
+	switch dialect {
+	case "postgres":
+		var currentVal int64
+		err := db.Raw(fmt.Sprintf("SELECT last_value FROM %s_id_seq", table)).Scan(&currentVal).Error
+		if err != nil {
+			return false, err
+		}
+		return currentVal >= startThreshold, nil
+	case "mysql":
+		var autoInc int64
+		err := db.Raw(`SELECT AUTO_INCREMENT FROM information_schema.TABLES 
+			WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?`, table).Scan(&autoInc).Error
+		if err != nil {
+			return false, err
+		}
+		return autoInc >= startThreshold, nil
+	case "sqlite":
+		// SQLite无法可靠判断，直接返回true，跳过初始化
+		return true, nil
+	default:
+		return false, fmt.Errorf("unsupported dialect: %s", dialect)
 	}
 }

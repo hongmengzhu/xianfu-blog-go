@@ -97,3 +97,18 @@ func MakeSequenceSql(table string, seq int64) string {
 		table, table, seq,
 	)
 }
+
+// MakeMysqlAutoIncSql MySQL生成修改自增起始SQL
+func MakeMysqlAutoIncSql(table string, start int64) string {
+	return fmt.Sprintf("ALTER TABLE %s AUTO_INCREMENT = %d;", table, start)
+}
+
+func MakeDataBaseAutoInc(dialect, table string, start int64) (sql string) {
+	switch dialect {
+	case "postgres":
+		sql = MakeSequenceSql(table, start)
+	case "mysql":
+		sql = MakeMysqlAutoIncSql(table, start)
+	}
+	return
+}
