@@ -20,7 +20,6 @@ import (
 type AInitTable struct {
 	ser      configPg.Server   `value:"${server}"`
 	database configPg.Database `value:"${database}"`
-	log      *log2.Logger      `autowire:"?"`
 	db       *gorm.DB          `autowire:"?"`
 }
 
@@ -105,7 +104,6 @@ func (b *AInitTable) Run(ctx context.Context) error {
 	//初始化创建表
 	sv := &dbMakePg.CreateTable{
 		Database: b.database,
-		Log:      b.log,
 	}
 	rt := sv.DbOpen()
 	if rt.SuccessIs() {

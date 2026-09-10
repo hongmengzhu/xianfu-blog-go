@@ -7,12 +7,12 @@ import (
 )
 
 type BasicConfigModelFieldsEntity struct {
-	ID         int64      `gorm:"column:id;type:bigserial;primaryKey;comment:" json:"id" comment:"" `
-	CreateAt   *time.Time `gorm:"column:create_at;type:timestamptz;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `
-	UpdateAt   *time.Time `gorm:"column:update_at;type:timestamptz;autoUpdateTime;comment:更新时间;comment:更新时间" json:"update_at" comment:"更新时间" `
+	ID         int64      `gorm:"column:id;primaryKey;autoIncrement:true;comment:" json:"id" comment:"" `
+	CreateAt   *time.Time `gorm:"column:create_at;type:datetime;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `
+	UpdateAt   *time.Time `gorm:"column:update_at;type:datetime;autoUpdateTime;comment:更新时间;comment:更新时间" json:"update_at" comment:"更新时间" `
 	CreateBy   string     `gorm:"column:create_by;type:varchar(80);index;default:;comment:创建人" json:"create_by" comment:"创建人" `
 	UpdateBy   string     `gorm:"column:update_by;type:varchar(80);default:;comment:更新人" json:"update_by" comment:"更新人" `
-	State      int8       `gorm:"column:state;type:int2;not null;index;default:1;comment:1有效2停用" json:"state" comment:"1有效2停用" `
+	State      int8       `gorm:"column:state;not null;index;default:1;comment:1有效2停用" json:"state" comment:"1有效2停用" `
 	Sort       int64      `gorm:"column:sort;type:bigint;not null;index;default:0;;comment:排序" json:"sort" comment:"排序" `
 	TenantNo   string     `gorm:"column:tenant_no;type:varchar(80);index;default:;comment:租户编号" json:"tenant_no" comment:"租户编号" `
 	OrgNo      string     `gorm:"column:org_no;type:varchar(80);index;default:;comment:组织编号" json:"org_no" comment:"组织编号" `
@@ -31,9 +31,9 @@ type BasicConfigModelFieldsEntity struct {
 	Field            string                       `gorm:"column:field;type:varchar(80);comment:字段名称" json:"field" comment:"字段名称" `
 	FieldPath        string                       `gorm:"column:field_path;type:varchar(80);comment:路径字段名称" json:"field_path" comment:"路径字段名称" `
 	Description      string                       `gorm:"column:description;type:varchar(255);comment:描述" json:"description" comment:"描述" `
-	Show             int8                         `gorm:"column:show;type:int2;not null;index;default:1;comment:1显示2隐藏" json:"show" comment:"1显示2隐藏" `
-	Independent      int8                         `gorm:"column:independent;type:int2;not null;index;default:2;comment:独立1是2否" json:"independent" comment:"独立1是2否" `
-	Binary           int8                         `gorm:"column:binary;type:int2;not null;index;default:2;comment:值二进制1是2否" json:"binary" comment:"值二进制1是2否" `
+	Show             int8                         `gorm:"column:show;type:int8;not null;index;default:1;comment:1显示2隐藏" json:"show" comment:"1显示2隐藏" `
+	Independent      int8                         `gorm:"column:independent;type:int8;not null;index;default:2;comment:独立1是2否" json:"independent" comment:"独立1是2否" `
+	Binary           int8                         `gorm:"column:binary;type:int8;not null;index;default:2;comment:值二进制1是2否" json:"binary" comment:"值二进制1是2否" `
 	ExtraData        datatypes.JSON               `gorm:"column:extra_data;type:json;comment:额外数据" json:"extraData" label:"额外数据" `
 	Value            string                       `gorm:"column:value;type:text;comment:值" json:"value" comment:"值" `
 	ValueBinary      string                       `gorm:"column:value_binary;type:text;comment:值二进制" json:"value_binary" comment:"值二进制" `

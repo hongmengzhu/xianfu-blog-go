@@ -16,6 +16,7 @@ import (
 	"github.com/pangu-2/go-tools/tools/cryptPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
 	"github.com/pangu-2/go-tools/tools/numberPg"
+	"go-spring.org/log"
 	_ "go-spring.org/spring/gs"
 	"gorm.io/datatypes"
 )
@@ -23,7 +24,6 @@ import (
 // IBasicData
 // @Description: 初始化基础数据
 type IBasicData struct {
-	log         *log2.Logger                                      `autowire:"?"`
 	country     *repositoryBasic.BasicCountryRepository           `autowire:"?"`
 	tagsCat     *repositoryBasic.BasicTagsCategoryRepository      `autowire:"?"`
 	conList     *repositoryBasic.BasicConfigListRepository        `autowire:"?"`

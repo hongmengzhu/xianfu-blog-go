@@ -1,7 +1,7 @@
 package modBlogArticleCategory
 
 type Cache struct {
-	ID          int64  `gorm:"column:id;type:bigserial;primaryKey;autoIncrement:true" json:"id" comment:"" `
+	ID          int64  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id" comment:"" `
 	No          string `gorm:"column:no;type:varchar(80);default:;comment:编号代号" json:"no" comment:"编号代号" `
 	Code        string `gorm:"column:code;type:varchar(80);comment:标志" json:"code" comment:"标志" `
 	Name        string `gorm:"column:name;type:varchar(255);comment:名称" json:"name" comment:"名称" `

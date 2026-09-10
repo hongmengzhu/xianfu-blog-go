@@ -7,6 +7,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/cacheTc"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constHeaderPg"
+	"go-spring.org/log"
 	"go-spring.org/spring/gs"
 )
 
@@ -16,7 +17,6 @@ func init() {
 
 // 中间件 服务
 type GroupWebMiddlewareSp struct {
-	log    *log2.Logger               `autowire:"?"`
 	domain *cacheTc.TenantDomainCache `autowire:"?"`
 	pg     configPg.Pg                `value:"${pg}"`
 	server configPg.Server            `value:"${server}"`

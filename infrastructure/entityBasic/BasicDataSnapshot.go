@@ -6,8 +6,8 @@ import (
 
 // BasicDataSnapshotEntity 数据快照
 type BasicDataSnapshotEntity struct {
-	ID       int64      `gorm:"column:id;type:bigserial;primaryKey;autoIncrement:true" json:"id" comment:"" `
-	CreateAt *time.Time `gorm:"column:create_at;type:timestamptz;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `
+	ID       int64      `gorm:"column:id;primaryKey;autoIncrement:true" json:"id" comment:"" `
+	CreateAt *time.Time `gorm:"column:create_at;type:datetime;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `
 	CreateBy string     `gorm:"column:create_by;type:varchar(80);index;default:;comment:创建人" json:"create_by" comment:"创建人" `
 	Name     string     `gorm:"column:name;type:varchar(255);comment:名称" json:"name" comment:"名称" `
 	TenantNo string     `gorm:"column:tenant_no;type:varchar(80);index;default:;comment:租户编号" json:"tenant_no" comment:"租户编号" `

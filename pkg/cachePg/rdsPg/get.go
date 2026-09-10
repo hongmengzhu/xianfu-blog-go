@@ -20,12 +20,11 @@ func init() {
 // Get
 // @Description: 获取缓存
 type Get struct {
-	log *log2.Logger  `autowire:"?"`
 	rdb *redis.Client `autowire:""`
 }
 
-func NewGet(log *log2.Logger, rdb *redis.Client) *Get {
-	return &Get{log: log, rdb: rdb}
+func NewGet(rdb *redis.Client) *Get {
+	return &Get{rdb: rdb}
 }
 
 // GetJson

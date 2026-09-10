@@ -18,15 +18,12 @@ func init() {
 
 type BatchString struct {
 	rdb *redis.Client `autowire:"?"`
-	log *log2.Logger  `autowire:"?"`
 }
 
 func NewBatchString(
-	log *log2.Logger,
 	rdb *redis.Client,
 ) *BatchString {
 	return &BatchString{
-		log: log,
 		rdb: rdb,
 	}
 }
@@ -114,7 +111,7 @@ func (t *BatchString) HSetPipeline(ctx context.Context, hashKey string, keysValu
 		log.Errorf(context.Background(), log.TagAppDef, "批量操作失败:", err)
 		return
 	}
-	t.log.Infof("批量操作命令数:%+v", len(cmders))
+	log.Debugf(ctx, log.TagAppDef, "批量操作命令数:%+v", len(cmders))
 }
 
 // HSetPipelineMapAll 批量设置哈希表字段和值
@@ -136,7 +133,7 @@ func (t *BatchString) HSetPipelineMapAll(ctx context.Context, keysValues map[str
 		log.Errorf(context.Background(), log.TagAppDef, "批量操作失败:", err)
 		return
 	}
-	t.log.Infof("批量操作命令数:%+v", len(cmders))
+	log.Debugf(ctx, log.TagAppDef, "批量操作命令数:%+v", len(cmders))
 }
 
 // HGetAll 获取哈希表所有字段和值
@@ -177,7 +174,7 @@ func (t *BatchString) HGetAllPipeline(ctx context.Context, hashKeys []string) (m
 		log.Errorf(context.Background(), log.TagAppDef, "批量操作失败:", err)
 		return nil, false
 	}
-	t.log.Infof("批量操作命令数:%+v", len(cmds))
+	log.Debugf(ctx, log.TagAppDef, "批量操作命令数:%+v", len(cmds))
 	// 6. 遍历获取结果
 	result := make(map[string]map[string]string, len(hashKeys))
 	for i, cmd := range cmds {

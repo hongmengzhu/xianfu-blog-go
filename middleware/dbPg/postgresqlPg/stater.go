@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
+	"go-spring.org/log"
 	"go-spring.org/spring/gs"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -16,7 +17,6 @@ import (
 // 数据库工厂 Postgresql
 type Factory struct {
 	database configPg.Database `value:"${database}"`
-	log      *log2.Logger      `autowire:"?"`
 }
 
 func (factory *Factory) CreateDB() (*gorm.DB, error) {
@@ -37,7 +37,7 @@ func (factory *Factory) CreateDB() (*gorm.DB, error) {
 	}
 	sqlDB, err := db.DB()
 	if err != nil {
-		factory.log.Error("failed to get database connection")
+		log.Errorf(context.Background(), log.TagAppDef, "failed to get database connection")
 	}
 	// 设置最大空闲连接数
 	sqlDB.SetMaxIdleConns(10)

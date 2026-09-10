@@ -11,7 +11,6 @@ import (
 // InitTenantDomain
 // @Description: 初始化租户域名
 type InitTenantDomain struct {
-	log    *log2.Logger                        `autowire:"?"`
 	domain *service.TcTenantDomainCacheService `autowire:"?"`
 }
 

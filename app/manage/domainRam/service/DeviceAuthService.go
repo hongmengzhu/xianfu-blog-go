@@ -27,7 +27,6 @@ func init() {
 type DeviceAuthService struct {
 	dao     *repositoryRam.RamAccountRepository `autowire:"?"`
 	loginSv *AccountLoginService                `autowire:"?"`
-	log     *log2.Logger                        `autowire:"?"`
 	store   deviceauth.Store
 }
 

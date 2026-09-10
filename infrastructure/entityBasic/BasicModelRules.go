@@ -7,12 +7,12 @@ import (
 )
 
 type BasicModelRulesEntity struct {
-	ID         int64      `gorm:"column:id;type:bigserial;primaryKey;comment:" json:"id" comment:"" `
-	CreateAt   *time.Time `gorm:"column:create_at;type:timestamptz;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `
-	UpdateAt   *time.Time `gorm:"column:update_at;type:timestamptz;autoUpdateTime;comment:更新时间;comment:更新时间" json:"update_at" comment:"更新时间" `
+	ID         int64      `gorm:"column:id;primaryKey;autoIncrement:true;comment:" json:"id" comment:"" `
+	CreateAt   *time.Time `gorm:"column:create_at;type:datetime;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `
+	UpdateAt   *time.Time `gorm:"column:update_at;type:datetime;autoUpdateTime;comment:更新时间;comment:更新时间" json:"update_at" comment:"更新时间" `
 	CreateBy   string     `gorm:"column:create_by;type:varchar(80);index;default:;comment:创建人" json:"create_by" comment:"创建人" `
 	UpdateBy   string     `gorm:"column:update_by;type:varchar(80);default:;comment:更新人" json:"update_by" comment:"更新人" `
-	State      int8       `gorm:"column:state;type:int2;not null;index;default:1;comment:1有效2停用" json:"state" comment:"1有效2停用" `
+	State      int8       `gorm:"column:state;not null;index;default:1;comment:1有效2停用" json:"state" comment:"1有效2停用" `
 	Sort       int64      `gorm:"column:sort;type:bigint;not null;index;default:0;;comment:排序" json:"sort" comment:"排序" `
 	TenantNo   string     `gorm:"column:tenant_no;type:varchar(80);index;default:;comment:租户编号" json:"tenant_no" comment:"租户编号" `
 	OrgNo      string     `gorm:"column:org_no;type:varchar(80);index;default:;comment:组织编号" json:"org_no" comment:"组织编号" `
@@ -23,7 +23,7 @@ type BasicModelRulesEntity struct {
 	//
 	Description  string                       `gorm:"column:description;type:varchar(255);comment:描述" json:"description" comment:"描述" `
 	ValueType    string                       `gorm:"column:value_type;type:varchar(80);comment:字段值类型" json:"value_type" comment:"字段值类型" `
-	Show         int8                         `gorm:"column:show;type:int2;index;default:1;comment:1显示2隐藏" json:"show" comment:"1显示2隐藏" `
+	Show         int8                         `gorm:"column:show;type:int8;index;default:1;comment:1显示2隐藏" json:"show" comment:"1显示2隐藏" `
 	ExtraData    datatypes.JSON               `gorm:"column:extra_data;type:json;comment:额外数据" json:"extraData" label:"额外数据" `
 	RuleMode     string                       `gorm:"column:rule_mode;type:varchar(80);index;comment:验证模式类型" json:"rule_mode" comment:"验证模式类型" `
 	Coding       string                       `gorm:"column:coding;type:text;comment:代码" json:"coding" comment:"代码" `

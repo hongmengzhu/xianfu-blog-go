@@ -43,7 +43,6 @@ func (b *RepositoryBase) setDb(db *gorm.DB) {
 
 //type IRepositoryBase interface {
 //	SetCtx(*gin.Context, ...interface{})
-//	SetCtxDbLog(*gin.Context, *gorm.DB, *log2.Logger) *gorm.DB
 //}
 
 type IRepository[T any, ID genericPg.ID] interface {

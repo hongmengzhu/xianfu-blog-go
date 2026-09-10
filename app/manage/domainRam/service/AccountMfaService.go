@@ -17,6 +17,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/holderPg/multiTenantPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/mfa"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/log"
@@ -32,7 +33,6 @@ type AccountMfaService struct {
 	daoMfa       *repositoryRam.RamAccountAuthMfaRepository `autowire:"?"`
 	daoAccount   *repositoryRam.RamAccountRepository        `autowire:"?"`
 	loginService *AccountLoginService                       `autowire:"?"`
-	log          *log2.Logger                               `autowire:"?"`
 }
 
 // Setup 初始化 MFA 设置（生成 secret、恢复码）

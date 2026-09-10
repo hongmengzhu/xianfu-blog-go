@@ -17,7 +17,6 @@ import (
 	_ "github.com/hongmengzhu/xianfu-blog-go/middleware/components/attachmentPg/types"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constEventBusPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/log2"
 	"github.com/pangu-2/go-tools/tools/cryptPg"
 	"github.com/pangu-2/go-tools/tools/datetimePg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -31,7 +30,6 @@ var _ types.FileProvider = (*Local)(nil)
 type Local struct {
 	pg     configPg.Pg     `value:"${pg}"`
 	server configPg.Server `value:"${server}"`
-	log    *log2.Logger    `autowire:"?"`
 }
 
 func (s *Local) PutObject(r io.Reader, put modAttachment.PutFileDto, ext modAttachment.Ext) (modAttachment.Attachment, error) {

@@ -6,10 +6,10 @@ import (
 
 // RamFavoritesEntity 收藏
 type RamFavoritesEntity struct {
-	ID       int64      `gorm:"column:id;type:bigserial;primaryKey;autoIncrement:true" json:"id" comment:"" `
+	ID       int64      `gorm:"column:id;primaryKey;autoIncrement:true" json:"id" comment:"" `
 	Type     string     `gorm:"column:type;type:varchar(80);index;comment:类型" json:"type" comment:"类型" `
 	Module   string     `gorm:"column:module;type:varchar(180);index;comment:模块" json:"module" comment:"模块" `
-	CreateAt *time.Time `gorm:"column:create_at;type:timestamptz;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" ` // 创建时间
+	CreateAt *time.Time `gorm:"column:create_at;type:datetime;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" ` // 创建时间
 	Value    string     `gorm:"column:value;type:varchar(80);comment:值id" json:"value" comment:"值id" `
 	TenantNo string     `gorm:"column:tenant_no;type:varchar(80);index;default:;comment:租户编号" json:"tenant_no" comment:"租户编号" ` // 租户
 	OrgNo    string     `gorm:"column:org_no;type:varchar(80);index;default:;comment:组织编号" json:"org_no" comment:"组织编号" `

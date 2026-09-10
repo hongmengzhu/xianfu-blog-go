@@ -10,8 +10,8 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constContextPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constHeaderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/holderPg/holderApiPg"
+	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
-	"go-spring.org/log"
 	"go-spring.org/spring/gs"
 )
 
@@ -21,7 +21,6 @@ func init() {
 
 // 中间件 服务
 type GroupApiMiddlewareSp struct {
-	log    *log2.Logger               `autowire:"?"`
 	domain *cacheTc.TenantDomainCache `autowire:"?"`
 	pg     configPg.Pg                `value:"${pg}"`
 	server configPg.Server            `value:"${server}"`

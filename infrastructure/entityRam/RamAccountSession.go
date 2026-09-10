@@ -8,9 +8,9 @@ import (
 
 // RamAccountSessionEntity 会话信息
 type RamAccountSessionEntity struct {
-	ID          int64                                `gorm:"column:id;type:bigserial;primaryKey" json:"id" comment:"" `
-	CreateAt    *time.Time                           `gorm:"column:create_at;type:timestamptz;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `
-	UpdateAt    *time.Time                           `gorm:"column:update_at;type:timestamptz;autoUpdateTime;comment:更新时间" json:"update_at" comment:"更新时间" `
+	ID          int64                                `gorm:"column:id;primaryKey;autoIncrement:true" json:"id" comment:"" `
+	CreateAt    *time.Time                           `gorm:"column:create_at;type:datetime;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `
+	UpdateAt    *time.Time                           `gorm:"column:update_at;type:datetime;autoUpdateTime;comment:更新时间" json:"update_at" comment:"更新时间" `
 	Ano         string                               `gorm:"column:ano;type:varchar(80);index;default:;comment:账号" json:"ano" comment:"账号"`
 	TenantNo    string                               `gorm:"column:tenant_no;type:varchar(80);index;default:;comment:租户编号" json:"tenant_no" comment:"租户编号" `
 	OrgNo       string                               `gorm:"column:org_no;type:varchar(80);index;default:;comment:组织编号" json:"org_no" comment:"组织编号" `

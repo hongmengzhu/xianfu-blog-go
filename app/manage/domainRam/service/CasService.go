@@ -12,7 +12,6 @@ import (
 	pkgcas "github.com/hongmengzhu/xianfu-blog-go/pkg/cas"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
-	"go-spring.org/log"
 	"go-spring.org/spring/gs"
 )
 
@@ -24,7 +23,6 @@ func init() {
 type CasService struct {
 	daoAccount *repositoryRam.RamAccountRepository        `autowire:"?"`
 	daoSource  *repositoryRam.RamIdentitySourceRepository `autowire:"?"`
-	log        *log2.Logger                               `autowire:"?"`
 }
 
 // Login CAS 登录（生成 Service Ticket）

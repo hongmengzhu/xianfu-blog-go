@@ -6,12 +6,12 @@ import (
 
 // RamAccountSessionLogEntity SSO登录日志
 type RamAccountSessionLogEntity struct {
-	ID         int64      `gorm:"column:id;type:bigserial;primaryKey" json:"id" comment:"" `
+	ID         int64      `gorm:"column:id;primaryKey;autoIncrement:true" json:"id" comment:"" `
 	No         string     `gorm:"column:no;type:varchar(80);index;default:;comment:编号代号" json:"no" comment:"编号代号" `
 	TenantNo   string     `gorm:"column:tenant_no;type:varchar(80);index;default:;comment:租户编号" json:"tenant_no" comment:"租户编号" `
 	OrgNo      string     `gorm:"column:org_no;type:varchar(80);index;default:;comment:组织编号" json:"org_no" comment:"组织编号" `
 	StoreNo    string     `gorm:"column:store_no;type:varchar(80);index;default:;comment:店编号" json:"store_no" comment:"店编号" `
-	CreateAt   *time.Time `gorm:"column:create_at;type:timestamptz;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `
+	CreateAt   *time.Time `gorm:"column:create_at;type:datetime;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `
 	TypeDomain string     `gorm:"column:type_domain;type:varchar(80);index;default:'general';comment:域类型" json:"type_domain" comment:"域类型系统-商户" `
 	// 关联认证源/IdP
 	Idp      string `gorm:"column:idp;type:varchar(80);index;default:;comment:身份 提供商" json:"idp" comment:"身份 提供商" `
@@ -27,7 +27,7 @@ type RamAccountSessionLogEntity struct {
 	// 事件类型与结果
 	EventCategory string `gorm:"column:event_category;type:varchar(80);index;default:;comment:事件分类 login/logout/slo/mfa_sync" json:"event_category" comment:"事件分类：登录/登出/单点登出/MFA同步"`
 	EventType     string `gorm:"column:event_type;type:varchar(80);index;default:;comment:事件细分 login_success/login_fail/logout_init/slo_callback" json:"event_type" comment:"事件细分类型"`
-	EventResult   int8   `gorm:"column:event_result;type:int2;not null;index;default:0;comment:结果0未知 1成功 2失败" json:"event_result" comment:"执行结果：0未知,1成功,2失败"`
+	EventResult   int8   `gorm:"column:event_result;type:int8;not null;index;default:0;comment:结果0未知 1成功 2失败" json:"event_result" comment:"执行结果：0未知,1成功,2失败"`
 	FailReason    string `gorm:"column:fail_reason;type:varchar(512);comment:失败原因描述" json:"fail_reason" comment:"失败原因"`
 
 	// 客户端信息
@@ -35,10 +35,10 @@ type RamAccountSessionLogEntity struct {
 	UserAgent string `gorm:"column:user_agent;type:text;comment:UA" json:"user_agent" comment:"浏览器/客户端UA"`
 
 	// 时间维度
-	OperateAt *time.Time `gorm:"column:operate_at;type:timestamptz;index;comment:事件发生时间" json:"operate_at" comment:"事件发生时间"`
-	LoginAt   *time.Time `gorm:"column:login_at;type:timestamptz;index;comment:登录时间" json:"login_at" comment:"登录时间"`
-	LogoutAt  *time.Time `gorm:"column:logout_at;type:timestamptz;index;comment:登出时间" json:"logout_at" comment:"登出时间"`
-	ExpireAt  *time.Time `gorm:"column:expire_at;type:timestamptz;index;comment:会话过期时间" json:"expire_at" comment:"会话过期时间"`
+	OperateAt *time.Time `gorm:"column:operate_at;type:datetime;index;comment:事件发生时间" json:"operate_at" comment:"事件发生时间"`
+	LoginAt   *time.Time `gorm:"column:login_at;type:datetime;index;comment:登录时间" json:"login_at" comment:"登录时间"`
+	LogoutAt  *time.Time `gorm:"column:logout_at;type:datetime;index;comment:登出时间" json:"logout_at" comment:"登出时间"`
+	ExpireAt  *time.Time `gorm:"column:expire_at;type:datetime;index;comment:会话过期时间" json:"expire_at" comment:"会话过期时间"`
 
 	// 扩展原始报文（调试审计）
 	RawRequest string `gorm:"column:raw_request;type:text;comment:原始请求参数JSON" json:"-"`
