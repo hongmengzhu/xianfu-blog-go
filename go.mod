@@ -181,10 +181,10 @@ require (
 )
 
 replace (
-	github.com/bytedance/mockey => /Users/mac/project-ajs/package/hardware/go-spring-mockey-lucky-qu
-	go-spring.org/cloud => /Users/mac/project-ajs/package/hardware/go-spring/cloud
-	go-spring.org/log => /Users/mac/project-ajs/package/hardware/go-spring/log
-	go-spring.org/spring => /Users/mac/project-ajs/package/hardware/go-spring/spring
-	go-spring.org/starter-gin => /Users/mac/project-ajs/package/hardware/go-spring/starter/starter-gin
-	go-spring.org/stdlib => /Users/mac/project-ajs/package/hardware/go-spring/stdlib
+	github.com/bytedance/mockey => ../go-spring-mockey-lucky-qu
+	go-spring.org/cloud => ../go-spring/cloud
+	go-spring.org/log => ../go-spring/log
+	go-spring.org/spring => ../go-spring/spring
+	go-spring.org/starter-gin => ../go-spring/starter/starter-gin
+	go-spring.org/stdlib => ../go-spring/stdlib
 )
