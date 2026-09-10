@@ -15,8 +15,8 @@ func init() {
 
 type CollectController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupApiMiddlewareSp `autowire:""`
-	sv *service.CollectService      `autowire:""`
+	Sp *authPg.GroupApiMiddlewareSp `autowire:"?"`
+	sv *service.CollectService      `autowire:"?"`
 }
 
 // RegisterRoutes

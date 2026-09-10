@@ -21,7 +21,7 @@ func init() {
 // @Description:
 type TenantController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupSystemMiddlewareSp `autowire:""`
+	Sp *authPg.GroupSystemMiddlewareSp `autowire:"?"`
 	sv *service.TcTenantService        `autowire:"?"`
 }
 

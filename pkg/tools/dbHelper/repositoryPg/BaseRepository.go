@@ -18,14 +18,13 @@ import (
 )
 
 type RepositoryBase struct {
-
 	//从内部
 	db *gorm.DB `autowire:"?"`
 	//
 	ctx *gin.Context
 }
 
-func (b *RepositoryBase) SetCtx(ctx *gin.Context, arg ...interface{}) {
+func (b *RepositoryBase) SetCtx(ctx *gin.Context, arg ...any) {
 	b.setDb(b.db.WithContext(holderPg.SetContextValue(ctx)))
 	if nil != arg {
 		for _, item := range arg {
@@ -40,10 +39,6 @@ func (b *RepositoryBase) SetCtx(ctx *gin.Context, arg ...interface{}) {
 func (b *RepositoryBase) setDb(db *gorm.DB) {
 	b.db = db
 }
-
-//type IRepositoryBase interface {
-//	SetCtx(*gin.Context, ...interface{})
-//}
 
 type IRepository[T any, ID genericPg.ID] interface {
 	repositoryPgI.IRepositoryBase
@@ -100,7 +95,10 @@ func (b *BaseRepository[T, ID]) SetOptionScopes(db *gorm.DB, opts ...optionsPg.O
 		//log.Errorf(ctx, log.TagAppDef,"exists=xxxxxxx=%+v", exists)
 		if exists {
 			//解析表名称
-			arg.Db.Statement.Parse(b.Entity)
+			err := arg.Db.Statement.Parse(b.Entity)
+			if err != nil {
+				log.Errorf(arg.Ctx, log.TagAppDef, "failed to parse table name.err=%+v", err)
+			}
 			return arg.Db.Scopes(multiTenantPg.ScopeRulePgWhere(arg.Ctx, arg.Db.Statement.Schema.Table))
 		}
 	}
@@ -122,7 +120,10 @@ func (b *BaseRepository[T, ID]) SetOptionPgScopes(db *gorm.DB, opts ...optionsPg
 		//log.Errorf(ctx, log.TagAppDef,"exists=xxxxxxx=%+v", exists)
 		if exists {
 			//解析表名称
-			arg.Db.Statement.Parse(b.Entity)
+			err := arg.Db.Statement.Parse(b.Entity)
+			if err != nil {
+				log.Errorf(arg.Ctx, log.TagAppDef, "failed to parse table name.err=%+v", err)
+			}
 			return arg.Db.Scopes(multiTenantPg.ScopeRulePgWhere(arg.Ctx, arg.Db.Statement.Schema.Table)), arg
 		}
 	}
@@ -141,6 +142,12 @@ func (b *BaseRepository[T, ID]) Create(ctx context.Context, v *T) (error, int64)
 
 // CreateBatch 创建
 func (b *BaseRepository[T, ID]) CreateBatch(ctx context.Context, v []T) (error, int64) {
+	tx := b.Db().WithContext(ctx).Create(&v)
+	return tx.Error, tx.RowsAffected
+}
+
+// CreateBatchPointer 创建
+func (b *BaseRepository[T, ID]) CreateBatchPointer(ctx context.Context, v []*T) (error, int64) {
 	tx := b.Db().WithContext(ctx).Create(&v)
 	return tx.Error, tx.RowsAffected
 }
@@ -194,7 +201,7 @@ func (b *BaseRepository[T, ID]) UpdatePointerObject(ctx context.Context, info an
 }
 
 // UpdateMap 更新, map里所有属性都会更新
-func (b *BaseRepository[T, ID]) UpdateMap(ctx context.Context, info map[string]interface{}, id ID, opts ...optionsPg.Option) error {
+func (b *BaseRepository[T, ID]) UpdateMap(ctx context.Context, info map[string]any, id ID, opts ...optionsPg.Option) error {
 	result := b.SetOptionScopes(b.DbModel().WithContext(ctx), opts...).Where("id=?", id).Updates(info)
 	if result.Error != nil {
 		//log.Fatal("failed to connect database")
@@ -217,7 +224,7 @@ func (b *BaseRepository[T, ID]) UpdateStructMap(ctx context.Context, info any, i
 	return nil
 }
 
-// Update 更新
+// UpdateAll 更新
 func (b *BaseRepository[T, ID]) UpdateAll(ctx context.Context, ts []*T, opts ...optionsPg.Option) error {
 	if ts != nil && len(ts) > 0 {
 		for _, info := range ts {
@@ -333,7 +340,7 @@ func (b *BaseRepository[T, ID]) FindByIdString(ctx context.Context, id string, o
 }
 
 // FindAll 查询所有
-func (b *BaseRepository[T, ID]) FindAll(ctx context.Context, t T, arg ...interface{}) (infos []*T) {
+func (b *BaseRepository[T, ID]) FindAll(ctx context.Context, t T, arg ...any) (infos []*T) {
 	where := b.Db().WithContext(ctx).Where(t)
 	if nil != arg {
 		for _, item := range arg {
@@ -353,7 +360,7 @@ func (b *BaseRepository[T, ID]) FindAll(ctx context.Context, t T, arg ...interfa
 }
 
 // FindAllOption 查询所有
-func (b *BaseRepository[T, ID]) FindAllOption(ctx context.Context, arg ...interface{}) (infos []*T) {
+func (b *BaseRepository[T, ID]) FindAllOption(ctx context.Context, arg ...any) (infos []*T) {
 	where := b.Db().WithContext(ctx)
 	if nil != arg {
 		for _, item := range arg {
@@ -372,8 +379,8 @@ func (b *BaseRepository[T, ID]) FindAllOption(ctx context.Context, arg ...interf
 	return
 }
 
-// 查询所有-但是限制条数
-func (b *BaseRepository[T, ID]) FindAllLimit(ctx context.Context, t T, limit int, arg ...interface{}) (infos []*T, result bool) {
+// FindAllLimit 查询所有-但是限制条数
+func (b *BaseRepository[T, ID]) FindAllLimit(ctx context.Context, t T, limit int, arg ...any) (infos []*T, result bool) {
 	where := b.Db().WithContext(ctx).Where(t).Limit(limit)
 	if nil != arg {
 		for _, item := range arg {
@@ -395,8 +402,8 @@ func (b *BaseRepository[T, ID]) FindAllLimit(ctx context.Context, t T, limit int
 	return infos, true
 }
 
-// 查询所有
-func (b *BaseRepository[T, ID]) FindAllData(ctx context.Context, arg ...interface{}) (infos []*T, result bool) {
+// FindAllData 查询所有
+func (b *BaseRepository[T, ID]) FindAllData(ctx context.Context, arg ...any) (infos []*T, result bool) {
 	where := b.Db().WithContext(ctx)
 	if nil != arg {
 		for _, item := range arg {
@@ -497,7 +504,7 @@ func (b *BaseRepository[T, ID]) FindAllByIdStringIn(ctx context.Context, ids []s
 //	@param arg
 //	@return total
 //	@return result
-func (b *BaseRepository[T, ID]) Count(ctx context.Context, arg ...interface{}) (total int64, result bool) {
+func (b *BaseRepository[T, ID]) Count(ctx context.Context, arg ...any) (total int64, result bool) {
 	where := b.Db().WithContext(ctx)
 	if nil != arg {
 		for _, item := range arg {
@@ -528,7 +535,7 @@ func (b *BaseRepository[T, ID]) Count(ctx context.Context, arg ...interface{}) (
 //	@return info
 //	@return result 是否查询到值
 //	@return err
-func (b *BaseRepository[T, ID]) FindByNo(ctx context.Context, no string, arg ...interface{}) (info *T, result bool) {
+func (b *BaseRepository[T, ID]) FindByNo(ctx context.Context, no string, arg ...any) (info *T, result bool) {
 	where := b.Db().WithContext(ctx)
 	if nil != arg {
 		for _, item := range arg {
@@ -729,4 +736,25 @@ func (b *BaseRepository[T, ID]) FindByCodeAndNoNot(ctx context.Context, name str
 		return nil, false
 	}
 	return info, true
+}
+
+// Exist 是否存在
+func (b *BaseRepository[T, ID]) Exist(ctx context.Context, t T, arg ...any) bool {
+	var cnt int64
+	where := b.DbModel().WithContext(ctx).Where(t)
+	if nil != arg {
+		for _, item := range arg {
+			switch result := item.(type) {
+			case optionsPg.Condition:
+				where = result(where)
+			case optionsPg.Option:
+				where = b.SetOptionScopes(where, item.(optionsPg.Option))
+			}
+		}
+	}
+	tx := where.Count(&cnt)
+	if tx.Error != nil {
+		return false
+	}
+	return cnt > 0
 }

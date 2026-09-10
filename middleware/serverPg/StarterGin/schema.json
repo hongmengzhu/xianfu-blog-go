@@ -1,0 +1,227 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "spring.gin.server",
+  "type": "object",
+  "properties": {
+    "addr": {
+      "type": "string"
+    },
+    "readTimeout": {
+      "type": "string",
+      "description": "Duration string, e.g. '5s', '1m', '1h'",
+      "default": "5s"
+    },
+    "writeTimeout": {
+      "type": "string",
+      "description": "Duration string, e.g. '5s', '1m', '1h'",
+      "default": "5s"
+    },
+    "idleTimeout": {
+      "type": "string",
+      "description": "Duration string, e.g. '5s', '1m', '1h'",
+      "default": "60s"
+    },
+    "tls": {
+      "type": "object"
+    },
+    "health": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "path": {
+          "type": "string",
+          "default": "/healthz"
+        }
+      }
+    },
+    "middleware": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Master switch for the built-in middleware set. When false, the starter installs no built-in middleware and the application's RouterRegister owns the whole chain (including Recovery)."
+        },
+        "requestId": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "header": {
+              "type": "string",
+              "default": "X-Request-Id"
+            }
+          }
+        },
+        "accessLog": {
+          "type": "object",
+          "properties": {
+            "skipPaths": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": ""
+            },
+            "payload": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "limit": {
+                  "type": "integer",
+                  "default": 524288,
+                  "description": "Max bytes captured per request body and per response body (each, independently). Defaults to 512 KiB."
+                }
+              }
+            },
+            "metrics": {
+              "type": "object",
+              "properties": {
+                "sseDistributions": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Toggle the per-event http.server.sse.event.size and http.server.sse.event.interval histograms. Core metrics (request.duration, sse.events) are always on."
+                },
+                "activeRequests": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Toggle the http.server.active_requests in-flight gauge. Off by default (low value for short requests; derivable from QPS+latency). Turn on for long-lived connections (SSE), where in-flight count is a capacity essential."
+                }
+              }
+            }
+          }
+        },
+        "cors": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "allowAllOrigins": {
+              "type": "boolean",
+              "default": false
+            },
+            "allowedOrigins": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": ""
+            },
+            "allowedMethods": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": ""
+            },
+            "allowedHeaders": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": ""
+            },
+            "exposeHeaders": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": ""
+            },
+            "allowCredentials": {
+              "type": "boolean",
+              "default": false
+            },
+            "maxAge": {
+              "type": "string",
+              "description": "Duration string, e.g. '5s', '1m', '1h'",
+              "default": "0s"
+            }
+          }
+        },
+        "gzip": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "level": {
+              "type": "integer",
+              "default": 5
+            },
+            "minLength": {
+              "type": "integer",
+              "default": 0
+            }
+          }
+        },
+        "secureHeaders": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "frameOptions": {
+              "type": "string",
+              "default": "DENY",
+              "description": "X-Frame-Options value: DENY, SAMEORIGIN, or empty to omit the header."
+            },
+            "referrerPolicy": {
+              "type": "string",
+              "default": "no-referrer",
+              "description": "Referrer-Policy value (e.g. no-referrer, same-origin, strict-origin-when-cross-origin); empty to omit."
+            },
+            "hsts": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "maxAge": {
+                  "type": "string",
+                  "description": "Duration string, e.g. '5s', '1m', '1h'",
+                  "default": "0s"
+                },
+                "includeSubDomains": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "preload": {
+                  "type": "boolean",
+                  "default": false
+                }
+              }
+            }
+          }
+        },
+        "loadtest": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "header": {
+              "type": "string",
+              "default": "X-LoadTest",
+              "description": "Header marking load-test traffic"
+            }
+          }
+        }
+      }
+    }
+  }
+}

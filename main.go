@@ -12,12 +12,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/cmd"
 	_ "github.com/hongmengzhu/xianfu-blog-go/middleware"
-	"github.com/hongmengzhu/xianfu-blog-go/middleware/serverPg/StarterGin"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
 	"github.com/pangu-2/go-tools/tools/datetimePg"
 	"github.com/pangu-2/go-tools/tools/ioPg"
 	"go-spring.org/spring/gs"
+	"go-spring.org/starter-gin"
 )
 
 func init() {
@@ -55,14 +55,17 @@ func main() {
 		return
 	}
 
-	// 指定配置文件目录, 如果不设置，默认 conf 目录
-	_ = os.Setenv("GS_SPRING_APP_CONFIG_DIR", "./data/config")
-
 	// 提供 RouterRegister Bean，官方 starter-gin 自动发现并创建 SimpleGinServer (gs.Server)
 	gs.Provide(NewRouterRegister, gs.TagArg("?"))
 	//事件监听
 	fsE.Initialize[eventBus.Module]("panGu")
-	gs.Run()
+	gs.Configure(func(app gs.App) {
+		// 指定配置文件目录, 如果不设置，默认 conf 目录
+		app.Property("spring.app.config.dir", "./data/config")
+		//
+		app.Property("env", "dev")
+		app.Property("spring.http.server.enabled", "false")
+	}).Run()
 }
 
 // NewRouterRegister 收集所有 RouteRegistrar，返回官方 starter-gin 要求的
@@ -84,7 +87,10 @@ func NewRouterRegister(registrars []routerPg.RouteRegistrar) StarterGin.RouterRe
 		})
 
 		// 加载模板文件，需在路由注册之前
-		e.LoadHTMLGlob("data/templates/**/**/*")
+		// 加载模板文件，需在路由注册之前（目录不存在时跳过）
+		if _, err := os.Stat("data/templates"); err == nil {
+			e.LoadHTMLGlob("data/templates/**/**/*")
+		}
 
 		// 注册所有路由
 		for _, r := range registrars {

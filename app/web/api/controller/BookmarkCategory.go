@@ -14,8 +14,8 @@ func init() {
 
 type BookmarkCategoryApiController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupApiMiddlewareSp     `autowire:""`
-	sv *service.BookmarkCategoryService `autowire:""`
+	Sp *authPg.GroupApiMiddlewareSp     `autowire:"?"`
+	sv *service.BookmarkCategoryService `autowire:"?"`
 }
 
 // RegisterRoutes

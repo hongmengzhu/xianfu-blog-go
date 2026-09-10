@@ -9,8 +9,8 @@ import (
 )
 
 type ArticleCategoryController struct {
-	Sp *authPg.GroupApiMiddlewareSp    `autowire:""`
-	sv *service.ArticleCategoryService `autowire:""`
+	Sp *authPg.GroupApiMiddlewareSp    `autowire:"?"`
+	sv *service.ArticleCategoryService `autowire:"?"`
 }
 
 func (c *ArticleCategoryController) SelectNodeAllPublic(ctx *gin.Context) {

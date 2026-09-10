@@ -23,7 +23,7 @@ func init() {
 // @Description:
 type TenantDomainController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupSystemMiddlewareSp `autowire:""`
+	Sp *authPg.GroupSystemMiddlewareSp `autowire:"?"`
 	sv *service.TcTenantDomainService  `autowire:"?"`
 }
 

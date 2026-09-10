@@ -21,7 +21,7 @@ func init() {
 // @Description:
 type LevelController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupSystemMiddlewareSp `autowire:""`
+	Sp *authPg.GroupSystemMiddlewareSp `autowire:"?"`
 	sv *service.TcLevelService         `autowire:"?"`
 }
 

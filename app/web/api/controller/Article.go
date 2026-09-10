@@ -9,8 +9,8 @@ import (
 )
 
 type ArticleController struct {
-	Sp *authPg.GroupApiMiddlewareSp `autowire:""`
-	sv *service.ArticleService      `autowire:""`
+	Sp *authPg.GroupApiMiddlewareSp `autowire:"?"`
+	sv *service.ArticleService      `autowire:"?"`
 }
 
 // Push 推送
