@@ -48,7 +48,7 @@ endif
 .DEFAULT_GOAL := run
 
 # ================== 目标定义 ==================
-.PHONY: all generate run build build-all clean index-coding
+.PHONY: all generate run build build-all clean index-coding upgrade
 
 # 完整流程（生成 + 运行），不设为默认
 all: generate run
@@ -125,3 +125,7 @@ index-coding:
     # 针对当前Git变更做影响分析
     #code-review-graph analyze diff
 	@echo "===== 索引初始化完成 ====="
+
+upgrade:
+	@echo "===== 升级依赖 ====="
+	go get -u ./...

@@ -3,7 +3,7 @@ package holderPg
 import (
 	"time"
 
-	_ "github.com/hongmengzhu/xianfu-blog-go/pkg/interfaces"
+	_ "github.com/hongmengzhu/xianfu-blog-go/pkg/auth/interfaces"
 )
 
 type AccountHolder struct {

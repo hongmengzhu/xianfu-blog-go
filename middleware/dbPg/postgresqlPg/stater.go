@@ -81,7 +81,7 @@ func init() {
 			gs.OnMissingBean[*gorm.DB]("GormDB"),
 		).
 		Name("__default__")
-	gs.Group("${database.instances}", newClient, nil)
+	//gs.Group("${database.instances}", newClient, nil)
 }
 
 func newClient(c configPg.Database) (*gorm.DB, error) {

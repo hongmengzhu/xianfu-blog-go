@@ -1,6 +1,6 @@
 package holderPg
 
-import _ "github.com/hongmengzhu/xianfu-blog-go/pkg/interfaces"
+import _ "github.com/hongmengzhu/xianfu-blog-go/pkg/auth/interfaces"
 
 // AccountHolderOs 组织架构
 // @Description:

@@ -13,6 +13,16 @@ domain = "http://localhost:9981"
 enabled = true
 # postgres
 url = "host=localhost user=postgres password=postgres dbname=blog_go port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+# 数据库
+[spring.gorm.postgres.primary]
+host = "localhost"
+port = 5432
+user = "postgres"
+password = "postgres"
+db = "blog_go"
+sslmode = "disable"
+timezone = "Asia/Shanghai"
+connectTimeout = 60
 
 # 域模块
 [pg.domain]
