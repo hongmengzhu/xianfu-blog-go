@@ -11,9 +11,9 @@ description: 当用户需要添加新的后端 API 接口时触发。提供完�
 
 | 层 | 路径 | 职责 | 中间件 |
 |---|------|------|--------|
-| `app/system/` | 系统内部API | 系统级管理接口 | `authPg.GroupSystemMiddleware` |
-| `app/manage/` | 管理后台API | 运营管理接口 | `authPg.GroupManageMiddleware` |
-| `app/web/` | 前台Web API | 面向公众/前端页面 | `authPg.GroupWebMiddleware` 或无 |
+| `../../app/domain/system/` | 系统内部API | 系统级管理接口 | `authPg.GroupSystemMiddleware` |
+| `../../app/domain/manage/` | 管理后台API | 运营管理接口 | `authPg.GroupManageMiddleware` |
+| `../../app/domain/web/` | 前台Web API | 面向公众/前端页面 | `authPg.GroupWebMiddleware` 或无 |
 
 每层内部按模块组织子目录（如 `basic/`、`ram/`、`blog/`、`tc/`、`api/`），每个模块统一包含三个子目录：
 

@@ -5,7 +5,7 @@ import (
 
 	"github.com/farseer-go/eventBus"
 	"github.com/farseer-go/fs/core"
-	"github.com/hongmengzhu/xianfu-blog-go/app/manage/domainBasic/service/attachment"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/manage/domainBasic/service/attachment"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constEventBusPg"

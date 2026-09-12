@@ -2,7 +2,7 @@ package routerPg
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/middleware/validatorPg"
+	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/validatorPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 )
 

@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/hongmengzhu/xianfu-blog-go/app/manage/domainRam/utilsRam"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/manage/domainRam/utilsRam"
+	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/dataFilePg"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityTc"
-	"github.com/hongmengzhu/xianfu-blog-go/middleware/components/dataFilePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/authorizationTypePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/typeDomainPg"

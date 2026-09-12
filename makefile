@@ -3,7 +3,7 @@ SCAN_DIR       ?= ./infrastructure,./pkg/sdk,./app
 OUTPUT_FILE    ?= auto_import.go
 MODULE_NAME    ?=
 CONCURRENCY    ?= 8
-IGNORE_PATTERNS ?= **/vendor/**,**/.git/**,**/*_test.go,**/testdata/**,**/node_modules/**
+IGNORE_PATTERNS ?= **/vendor/**,**/.git/**,**/*_test.go,**/testdata/**,**/node_modules/**,**/middleware/**
 
 # 构建相关
 version        ?= v0.0.1
