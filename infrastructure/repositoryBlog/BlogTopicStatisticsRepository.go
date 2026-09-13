@@ -2,12 +2,14 @@ package repositoryBlog
 
 import (
 	"context"
+	"errors"
 
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/support"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
+	"gorm.io/gorm"
 )
 
 func init() {
@@ -23,8 +25,11 @@ type BlogTopicStatisticsRepository struct {
 func (c *BlogTopicStatisticsRepository) FindByTopicNo(ctx context.Context, no string) (info *entityBlog.BlogTopicStatisticsEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("topic_no=?", no).First(&info)
 	if tx.Error != nil {
-		log.Errorf(ctx, log.TagAppDef, "", tx.Error)
-		return nil, false
+		// record not found 跳过日志
+		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+		}
+		return
 	}
 	if 0 == tx.RowsAffected {
 		return nil, false
@@ -35,8 +40,11 @@ func (c *BlogTopicStatisticsRepository) FindByTopicNo(ctx context.Context, no st
 func (c *BlogTopicStatisticsRepository) FindAllByTopicNoIn(ctx context.Context, no []string) (info []*entityBlog.BlogTopicStatisticsEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("topic_no in ?", no).Find(&info)
 	if tx.Error != nil {
-		log.Errorf(ctx, log.TagAppDef, "", tx.Error)
-		return nil, false
+		// record not found 跳过日志
+		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+		}
+		return
 	}
 	if 0 == tx.RowsAffected {
 		return nil, false

@@ -9,7 +9,7 @@ import (
 
 func init() {
 	// 发布者 监听
-	gs.Provide(event.New())
+	gs.Provide(event.New()).Export(gs.As[event.Bus]())
 	gs.Provide(new(Publisher)).Export(gs.As[gs.Runner]())
 	//初始化 表
 	gs.Provide(new(table.AInitTable)).Export(gs.As[gs.Runner]())

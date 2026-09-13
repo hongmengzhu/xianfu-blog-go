@@ -15,6 +15,7 @@ import (
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"
 	_ "go-spring.org/spring/gs"
+	gormcore "go-spring.org/starter-gorm"
 	"gorm.io/gorm"
 )
 
@@ -22,6 +23,7 @@ import (
 type AInitTable struct {
 	ser      configPg.Server   `value:"${server}"`
 	database configPg.Database `value:"${database}"`
+	DB       *gormcore.DB      `autowire:"sqlite.primary"`
 	db       *gorm.DB          `autowire:"?"`
 }
 
@@ -106,9 +108,10 @@ func (b *AInitTable) Run(ctx context.Context) error {
 	//初始化创建表
 	sv := &dbMakePg.CreateTable{
 		Database: b.database,
+		DB:       b.Db(),
 	}
-	rt := sv.DbOpen()
-	if rt.SuccessIs() {
+	//rt := sv.DbOpen()
+	if true {
 		sv.TableCreateAllByTransaction(entityData)
 		//插入 基础数据
 		b.sqlBasicDictionary()
@@ -116,11 +119,12 @@ func (b *AInitTable) Run(ctx context.Context) error {
 		log.Infof(context.Background(), log.TagAppDef, "[init].[主键序号保留].")
 		b.seqEdit()
 		log.Infof(context.Background(), log.TagAppDef, "初始化表 successfully")
-	} else {
-		log.Errorf(context.Background(), log.TagAppDef, "初始化表异常", rt.Error())
 	}
 	sv = nil
 	return nil
+}
+func (b *AInitTable) Db() *gorm.DB {
+	return b.DB.DB
 }
 
 // seqEdit
@@ -128,13 +132,13 @@ func (b *AInitTable) Run(ctx context.Context) error {
 //	@Description: 序号修改 初始值
 //	@receiver b
 func (b *AInitTable) seqEdit() {
-	dialect := b.db.Dialector.Name()
+	dialect := b.Db().Dialector.Name()
 	if dialect == "sqlite" {
 		log.Infof(context.Background(), log.TagAppDef, "[init][autoinc] sqlite skip auto increment init")
 		return
 	}
 	// 判断是否已初始化过：以 api_dipl_id_seq 为标志序列，当前值已达初始值则跳过，避免重启重复执行
-	ret, _ := IsAutoInited(b.db, "api_dipl", 100000)
+	ret, _ := IsAutoInited(b.Db(), "api_dipl", 100000)
 	if ret {
 		return
 	}
@@ -163,7 +167,7 @@ func (b *AInitTable) seqEdit() {
 	sql = append(sql, dbMakePg.MakeDataBaseAutoInc(dialect, "tc_tenant_domain", 100000))
 	//
 	// 事务批量执行
-	tx := b.db.Begin()
+	tx := b.Db().Begin()
 	if tx.Error != nil {
 		return
 	}
@@ -214,7 +218,7 @@ func (b *AInitTable) sqlBasicDictionary() {
 		{ID: 36, No: "36", Name: "系统", Code: "system", State: 1, TypeUniqueMd5: "54b53072540eeeb8f8e9343e71f28176", Value: "system", TypeCode: "terminalCode"},
 		{ID: 37, No: "37", Name: "管理", Code: "manage", State: 1, TypeUniqueMd5: "70682896e24287b0476eff2a14c148f0", Value: "manage", TypeCode: "terminalCode"},
 	}
-	err := b.db.Transaction(func(tx *gorm.DB) error {
+	err := b.Db().Transaction(func(tx *gorm.DB) error {
 		for i := range data {
 			item := data[i]
 			// 判断该主键数据是否已存在，存在则跳过，继续下一条

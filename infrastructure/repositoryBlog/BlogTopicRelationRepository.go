@@ -2,12 +2,14 @@ package repositoryBlog
 
 import (
 	"context"
+	"errors"
 
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/support"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
+	"gorm.io/gorm"
 )
 
 func init() {
@@ -23,8 +25,11 @@ type BlogTopicRelationRepository struct {
 func (c *BlogTopicRelationRepository) FindAllByTopicNo(ctx context.Context, no string) (info []*entityBlog.BlogTopicRelationEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("topic_no=?", no).Find(&info)
 	if tx.Error != nil {
-		log.Errorf(ctx, log.TagAppDef, "", tx.Error)
-		return nil, false
+		// record not found 跳过日志
+		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+		}
+		return
 	}
 	if 0 == tx.RowsAffected {
 		return nil, false
@@ -35,8 +40,11 @@ func (c *BlogTopicRelationRepository) FindAllByTopicNo(ctx context.Context, no s
 func (c *BlogTopicRelationRepository) FindByTopicNoAndArticleNo(ctx context.Context, topicNo, no string) (info *entityBlog.BlogTopicRelationEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("topic_no=?", topicNo).Where("article_no=?", no).First(&info)
 	if tx.Error != nil {
-		log.Errorf(ctx, log.TagAppDef, "", tx.Error)
-		return nil, false
+		// record not found 跳过日志
+		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+		}
+		return
 	}
 	if 0 == tx.RowsAffected {
 		return nil, false
@@ -46,8 +54,11 @@ func (c *BlogTopicRelationRepository) FindByTopicNoAndArticleNo(ctx context.Cont
 func (c *BlogTopicRelationRepository) FindAllByArticleNo(ctx context.Context, no string) (info []*entityBlog.BlogTopicRelationEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("article_no=?", no).Find(&info)
 	if tx.Error != nil {
-		log.Errorf(ctx, log.TagAppDef, "", tx.Error)
-		return nil, false
+		// record not found 跳过日志
+		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+		}
+		return
 	}
 	if 0 == tx.RowsAffected {
 		return nil, false

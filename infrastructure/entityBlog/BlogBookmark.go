@@ -16,8 +16,8 @@ type BlogBookmarkEntity struct {
 	NameFull         string                       `gorm:"column:name_full;type:varchar(255);comment:全称" json:"name_full" comment:"全称" `                                                                      // 全称
 	State            int8                         `gorm:"column:state;not null;index;default:1;comment:1有效2停用11取消(对应有效)12弃置(对应停用)13批量删除(无状态)" json:"state" comment:"1有效2停用11取消(对应有效)12弃置(对应停用)13批量删除(无状态)" ` // 1有效2停用11取消(对应有效)12弃置(对应停用)13批量删除(无状态)
 	Description      string                       `gorm:"column:description;type:text;comment:描述" json:"description" comment:"描述" `                                                                          // 描述
-	CreateAt         *time.Time                   `gorm:"column:create_at;type:datetime;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `                       // 创建时间
-	UpdateAt         *time.Time                   `gorm:"column:update_at;type:datetime;autoUpdateTime;comment:更新时间" json:"update_at" comment:"更新时间" `                                                       // 更新时间
+	CreateAt         *time.Time                   `gorm:"column:create_at;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `                                     // 创建时间
+	UpdateAt         *time.Time                   `gorm:"column:update_at;autoUpdateTime;comment:更新时间" json:"update_at" comment:"更新时间" `                                                                     // 更新时间
 	CreateBy         string                       `gorm:"column:create_by;type:varchar(80);index;default:'';comment:创建人" json:"createBy" comment:"创建人" `
 	UpdateBy         string                       `gorm:"column:update_by;type:varchar(80);default:'';comment:更新人" json:"updateBy" comment:"更新人" `
 	Sort             int64                        `gorm:"column:sort;type:bigint;not null;default:0;;comment:排序" json:"sort" comment:"排序" ` // 排序
@@ -43,8 +43,8 @@ type BlogBookmarkEntity struct {
 	Jump             int8                         `gorm:"column:jump;type:int8;not null;default:2;comment:跳转" json:"jump" comment:"跳转"`
 	Source           string                       `gorm:"column:source;type:varchar(255);comment:来源" json:"source" comment:"来源"`
 	TypeComment      string                       `gorm:"column:type_comment;type:varchar(80);index;default:no;comment:评论类型|允许评论|不允许评论;" json:"type_comment" comment:"评论类型|允许评论|不允许评论" `
-	OperationTime    *time.Time                   `gorm:"column:operation_time;type:datetime;comment:操作时间" json:"operation_time" comment:"操作时间" `
-	PublishTime      *time.Time                   `gorm:"column:publish_time;type:datetime;index;comment:发布时间|源文章发布时间" json:"publish_time" comment:"发布时间|源文章发布时间" `
+	OperationTime    *time.Time                   `gorm:"column:operation_time;comment:操作时间" json:"operation_time" comment:"操作时间" `
+	PublishTime      *time.Time                   `gorm:"column:publish_time;index;comment:发布时间|源文章发布时间" json:"publish_time" comment:"发布时间|源文章发布时间" `
 	TypeReading      string                       `gorm:"column:type_reading;type:varchar(80);index;default:no;comment:阅读类型|未看|在看|已看;" json:"type_reading" comment:"阅读类型||未看|在看|已看" `
 	TypeDomain       string                       `gorm:"column:type_domain;type:varchar(80);index;default:no;comment:领域|;" json:"type_domain" comment:"领域" `
 	Remark           string                       `gorm:"column:remark;type:varchar(955);comment:备注" json:"remark" comment:"备注"`

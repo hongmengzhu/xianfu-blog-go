@@ -14,7 +14,7 @@ enabled = true
 # postgres
 url = "host=localhost user=postgres password=postgres dbname=blog_go port=5432 sslmode=disable TimeZone=Asia/Shanghai"
 # 数据库
-[spring.gorm.postgres.primary]
+[spring.gorm.postgres.instances.primary]
 host = "localhost"
 port = 5432
 user = "postgres"
@@ -22,7 +22,16 @@ password = "postgres"
 db = "blog_go"
 sslmode = "disable"
 timezone = "Asia/Shanghai"
-connectTimeout = 60
+# connectTimeout = 60
+[spring.gorm.sqlite.instances.primary]
+# file = :memory:
+file = "./data/blog.db"
+
+journal-mode = "wal"
+busy-timeou = 5000
+foreign-keys =  true
+max-open-conns = 8
+
 
 # 域模块
 [pg.domain]

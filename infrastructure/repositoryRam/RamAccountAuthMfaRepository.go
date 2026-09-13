@@ -2,6 +2,7 @@ package repositoryRam
 
 import (
 	"context"
+	"errors"
 
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg"
@@ -9,6 +10,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/support"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
+	"gorm.io/gorm"
 )
 
 func init() {
@@ -25,8 +27,11 @@ type RamAccountAuthMfaRepository struct {
 func (c *RamAccountAuthMfaRepository) FindByAno(ctx context.Context, ano string, opts ...optionsPg.Option) (infos []*entityRam.RamAccountAuthMfaEntity, found bool) {
 	tx := c.SetOptionScopes(c.DbModel().WithContext(ctx), opts...).Where("ano = ? AND state = 1", ano).Find(&infos)
 	if tx.Error != nil {
-		log.Errorf(ctx, log.TagAppDef, "", tx.Error)
-		return nil, false
+		// record not found 跳过日志
+		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+		}
+		return
 	}
 	if tx.RowsAffected == 0 {
 		return nil, false

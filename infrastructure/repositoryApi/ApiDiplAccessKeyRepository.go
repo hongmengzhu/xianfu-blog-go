@@ -2,12 +2,14 @@ package repositoryApi
 
 import (
 	"context"
+	"errors"
 
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityApi"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/support"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
+	"gorm.io/gorm"
 )
 
 func init() {
@@ -23,8 +25,11 @@ type ApiDiplAccessKeyRepository struct {
 func (c *ApiDiplAccessKeyRepository) FindByTenantNoAndDiplNo(ctx context.Context, no, DiplNo string) (info *entityApi.ApiDiplAccessKeyEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("tenant_no=?", no).Where("dipl_no=?", DiplNo).First(&info)
 	if tx.Error != nil {
-		log.Errorf(ctx, log.TagAppDef, "", tx.Error)
-		return nil, false
+		// record not found 跳过日志
+		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+		}
+		return
 	}
 	if 0 == tx.RowsAffected {
 		return nil, false
@@ -35,7 +40,10 @@ func (c *ApiDiplAccessKeyRepository) FindByTenantNoAndDiplNo(ctx context.Context
 func (c *ApiDiplAccessKeyRepository) UpdateAllByDiplNoAndNoSetState(ctx context.Context, DiplNo, id string, state int8) (sum int64, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("dipl_no=?", DiplNo).Where("id=?", id).Updates(entityApi.ApiDiplAccessKeyEntity{State: state})
 	if tx.Error != nil {
-		log.Errorf(ctx, log.TagAppDef, "", tx.Error)
+		// record not found 跳过日志
+		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+		}
 		return 0, false
 	}
 	if 0 == tx.RowsAffected {

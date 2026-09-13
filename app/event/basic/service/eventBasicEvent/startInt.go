@@ -22,6 +22,9 @@ func NewStartInit(bus event.Bus) *StartInit {
 func (c *StartInit) Processor(ctx context.Context) error {
 	//保存到数据库
 	{
+		if c.Bus == nil {
+			log.Errorf(ctx, log.TagAppDef, "c.Bus 不存在～～～～～～～～～～～～")
+		}
 		err := c.Bus.Publish(context.Background(), modEventBasicEvent.EventDto{
 			IsAll: true,
 		})

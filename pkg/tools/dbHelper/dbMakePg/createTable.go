@@ -18,7 +18,7 @@ import (
 
 type CreateTable struct {
 	Database  configPg.Database `value:"database"`
-	db        *gorm.DB
+	DB        *gorm.DB
 	tableList []string
 }
 
@@ -40,7 +40,7 @@ func (c *CreateTable) DbOpen() (rt rg.Rs[string]) {
 		sqlDB.SetMaxOpenConns(200)
 		sqlDB.SetConnMaxLifetime(0)
 	}
-	c.db = db
+	c.DB = db
 	if err != nil {
 		log.Errorf(context.Background(), log.TagAppDef, "open gorm postgresql %s error: %v", c.Database.URL, err)
 		return rt.ErrorMessage(err.Error())
@@ -48,21 +48,16 @@ func (c *CreateTable) DbOpen() (rt rg.Rs[string]) {
 	return rt.Ok()
 }
 
-// SetDb
-//
-//	@Description: 打开数据库
-//	@receiver c
-//	@return rt
-func (c *CreateTable) SetDb(db *gorm.DB) {
-	c.db = db
+func (c *CreateTable) Db() *gorm.DB {
+	return c.DB
 }
 
 func (c *CreateTable) TableCreateOne(entity interface{}) (rt rg.Rs[string]) {
-	isExists := c.db.Migrator().HasTable(entity)
+	isExists := c.Db().Migrator().HasTable(entity)
 	if isExists {
 		log.Infof(context.Background(), log.TagAppDef, "表存在")
 	} else {
-		err2 := c.db.AutoMigrate(entity)
+		err2 := c.Db().AutoMigrate(entity)
 		if err2 != nil {
 			log.Errorf(context.Background(), log.TagAppDef, "创建表异常", err2)
 			return
@@ -77,7 +72,7 @@ func (c *CreateTable) dbRun(tmp interface{}, tableName, tableComment string) {
 	// 判断表是否已创建
 	if !slice.Contain(c.tableList, tableName) {
 		log.Infof(context.Background(), log.TagAppDef, "创建表 %s", tableName)
-		MakeTable(c.db, tmp, tableName, tableComment)
+		MakeTable(c.Db(), tmp, tableName, tableComment)
 
 		log.Infof(context.Background(), log.TagAppDef, "创建表 %s [完成]", tableName)
 	} else {
@@ -105,7 +100,7 @@ func (c *CreateTable) dbRunByDb(db *gorm.DB, tmp interface{}, tableName, tableCo
 //	@param dst
 //	@return rt
 func (c *CreateTable) TableCreateAll(dst []interface{}) (rt rg.Rs[string]) {
-	c.tableList = GetTablesByTime3Minute(c.db)
+	c.tableList = GetTablesByTime3Minute(c.Db())
 	log.Debugf(context.Background(), log.TagAppDef, "已存在的表: %+v", c.tableList)
 	i := 0
 	for _, item := range dst {
@@ -131,10 +126,10 @@ func (c *CreateTable) TableCreateAll(dst []interface{}) (rt rg.Rs[string]) {
 //	@param dst
 //	@return rt
 func (c *CreateTable) TableCreateAllByTransaction(dst []interface{}) (rt rg.Rs[string]) {
-	c.tableList = GetTablesByTime3Minute(c.db)
+	c.tableList = GetTablesByTime3Minute(c.Db())
 	log.Debugf(context.Background(), log.TagAppDef, "已存在的表: %+v", c.tableList)
 	//
-	err := c.db.Transaction(func(tx *gorm.DB) error {
+	err := c.Db().Transaction(func(tx *gorm.DB) error {
 		i := 0
 		for _, item := range dst {
 			name := tablePg.GetTableName(item)
