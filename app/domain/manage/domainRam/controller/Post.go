@@ -23,7 +23,7 @@ func init() {
 // @Description:
 type PostController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupManageMiddlewareSp `autowire:""`
+	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
 	sv *service.RamPostService         `autowire:"?"`
 }
 

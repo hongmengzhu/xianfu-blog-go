@@ -21,7 +21,7 @@ func init() {
 // @Description:
 type TopicCategoryController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupManageMiddlewareSp   `autowire:""`
+	Sp *authPg.GroupManageMiddlewareSp   `autowire:"?"`
 	sv *service.BlogTopicCategoryService `autowire:"?"`
 }
 

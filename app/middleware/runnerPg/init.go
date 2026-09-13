@@ -3,14 +3,16 @@ package runnerPg
 import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/runnerPg/data"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/runnerPg/table"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
+	// 发布者 监听
+	gs.Provide(event.New())
+	gs.Provide(new(Publisher)).Export(gs.As[gs.Runner]())
 	//初始化 表
 	gs.Provide(new(table.AInitTable)).Export(gs.As[gs.Runner]())
-	// 发布者 监听
-	gs.Provide(new(Publisher)).Export(gs.As[gs.Runner]())
 
 	//初始化租户域名
 	gs.Provide(new(data.InitTenantDomain)).Export(gs.As[gs.Runner]())

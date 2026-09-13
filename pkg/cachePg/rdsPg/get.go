@@ -20,7 +20,7 @@ func init() {
 // Get
 // @Description: 获取缓存
 type Get struct {
-	rdb *redis.Client `autowire:""`
+	rdb *redis.Client `autowire:"?"`
 }
 
 func NewGet(rdb *redis.Client) *Get {

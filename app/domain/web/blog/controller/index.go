@@ -23,7 +23,7 @@ func init() {
 
 type IndexController struct {
 	routerPg.RouteRegistrar
-	Sp       *authPg.GroupWebMiddlewareSp     `autowire:""`
+	Sp       *authPg.GroupWebMiddlewareSp     `autowire:"?"`
 	ca       *cacheTc.TenantDomainCache       `autowire:"?"`
 	sv       *service.ArticleService          `autowire:"?"`
 	catCache *serviceCore.CoreArticleCategory `autowire:"?"`

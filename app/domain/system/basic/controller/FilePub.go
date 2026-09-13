@@ -15,8 +15,8 @@ func init() {
 
 type FilePubController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupSystemMiddlewareSp `autowire:""`
-	sv *service.BasicAttachmentService `autowire:""`
+	Sp *authPg.GroupSystemMiddlewareSp `autowire:"?"`
+	sv *service.BasicAttachmentService `autowire:"?"`
 }
 
 func (c *FilePubController) RegisterRoutes(e *gin.Engine) {

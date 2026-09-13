@@ -22,7 +22,7 @@ func init() {
 // @Description:
 type ConfigEventController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupManageMiddlewareSp  `autowire:""`
+	Sp *authPg.GroupManageMiddlewareSp  `autowire:"?"`
 	sv *service.BasicConfigEventService `autowire:"?"`
 }
 

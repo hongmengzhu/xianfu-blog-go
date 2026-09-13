@@ -21,7 +21,7 @@ func init() {
 
 type TagsController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupSystemMiddlewareSp `autowire:""`
+	Sp *authPg.GroupSystemMiddlewareSp `autowire:"?"`
 	sv *service.BasicTagsService       `autowire:"?"`
 }
 

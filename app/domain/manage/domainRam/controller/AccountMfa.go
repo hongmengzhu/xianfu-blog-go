@@ -16,7 +16,7 @@ func init() {
 // AccountMfaController MFA 管理
 type AccountMfaController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupManageMiddlewareSp `autowire:""`
+	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
 	sv *service.AccountMfaService      `autowire:"?"`
 }
 

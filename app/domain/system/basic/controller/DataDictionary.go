@@ -19,7 +19,7 @@ func init() {
 
 type DataDictionaryController struct {
 	routerPg.RouteRegistrar
-	Sp         *authPg.GroupSystemMiddlewareSp         `autowire:""`
+	Sp         *authPg.GroupSystemMiddlewareSp         `autowire:"?"`
 	sv         *service2.BasicDataDictionaryService    `autowire:"?"`
 	dictSubRep *service2.BasicDataDictionarySubService `autowire:"?"`
 }

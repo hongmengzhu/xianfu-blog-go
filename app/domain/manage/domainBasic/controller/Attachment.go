@@ -17,8 +17,8 @@ func init() {
 // @Description:
 type AttachmentController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupManageMiddlewareSp `autowire:""`
-	sv *service.BasicAttachmentService `autowire:""`
+	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
+	sv *service.BasicAttachmentService `autowire:"?"`
 }
 
 // RegisterRoutes 注册路由

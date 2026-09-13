@@ -18,7 +18,7 @@ func init() {
 // @Description:
 type AccountDeviceController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupManageMiddlewareSp  `autowire:""`
+	Sp *authPg.GroupManageMiddlewareSp  `autowire:"?"`
 	sv *service.RamAccountDeviceService `autowire:"?"`
 }
 

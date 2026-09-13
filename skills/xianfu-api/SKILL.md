@@ -429,8 +429,8 @@ func init() {
 
 type XxxController struct {
     routerPg.RouteRegistrar
-    Sp *authPg.GroupSystemMiddlewareSp `autowire:""`   // system层
-    // Sp *authPg.GroupManageMiddlewareSp `autowire:""` // manage层
+    Sp *authPg.GroupSystemMiddlewareSp `autowire:"?"`   // system层
+    // Sp *authPg.GroupManageMiddlewareSp `autowire:"?"` // manage层
     sv *service.XxxService             `autowire:"?"`
 }
 
@@ -595,7 +595,7 @@ func init() {
 | Tag | 说明 |
 |-----|------|
 | `autowire:"?"` | 可选注入，找不到时为 nil（常用） |
-| `autowire:""` | 必须注入，找不到时报错（用于中间件等） |
+| `autowire:"?"` | 必须注入，找不到时报错（用于中间件等） |
 | `value:"${xxx}"` | 从配置文件读取值 |
 
 **Controller 注册为路由：**

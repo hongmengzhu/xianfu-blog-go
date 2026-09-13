@@ -21,7 +21,7 @@ func init() {
 // @Description:
 type TagsRelationController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupManageMiddlewareSp   `autowire:""`
+	Sp *authPg.GroupManageMiddlewareSp   `autowire:"?"`
 	sv *service.BasicTagsRelationService `autowire:"?"`
 }
 

@@ -21,7 +21,7 @@ func init() {
 // @Description:
 type AppCategoryController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupManageMiddlewareSp `autowire:""`
+	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
 	sv *service.RamAppCategoryService  `autowire:"?"`
 }
 

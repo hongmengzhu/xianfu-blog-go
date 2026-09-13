@@ -24,7 +24,7 @@ func init() {
 // @Description:
 type ModelRulesController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupManageMiddlewareSp `autowire:""`
+	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
 	sv *service.BasicModelRulesService `autowire:"?"`
 }
 

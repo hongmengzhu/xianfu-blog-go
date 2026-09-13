@@ -23,7 +23,7 @@ func init() {
 // @Description:
 type CountryController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupManageMiddlewareSp `autowire:""`
+	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
 	sv *service.BasicCountryService    `autowire:"?"`
 }
 

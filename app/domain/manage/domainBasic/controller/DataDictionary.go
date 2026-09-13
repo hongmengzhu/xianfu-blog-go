@@ -21,7 +21,7 @@ func init() {
 // @Description:
 type DataDictionaryController struct {
 	routerPg.RouteRegistrar
-	Sp         *authPg.GroupManageMiddlewareSp         `autowire:""`
+	Sp         *authPg.GroupManageMiddlewareSp         `autowire:"?"`
 	sv         *service2.BasicDataDictionaryService    `autowire:"?"`
 	dictSubRep *service2.BasicDataDictionarySubService `autowire:"?"`
 }

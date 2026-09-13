@@ -9,7 +9,7 @@ import (
 // Publisher 配置变更发布者。
 // 实现 gs.Runner 接口，注入事件总线和所有订阅者，启动后发布事件。
 type Publisher struct {
-	Bus       event.Bus        `autowire:""`  // 按类型注入事件总线
+	Bus       event.Bus        `autowire:"?"` // 按类型注入事件总线
 	Listeners []event.Listener `autowire:"?"` // 收集所有 Listener Bean
 }
 

@@ -16,7 +16,7 @@ func init() {
 // @Description:
 type ResourceGroupRelationController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupManageMiddlewareSp          `autowire:""`
+	Sp *authPg.GroupManageMiddlewareSp          `autowire:"?"`
 	sv *service.RamResourceGroupRelationService `autowire:"?"`
 }
 

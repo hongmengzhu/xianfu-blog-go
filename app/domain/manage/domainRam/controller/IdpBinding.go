@@ -23,7 +23,7 @@ func init() {
 // @Description:
 type IdpBindingController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupManageMiddlewareSp `autowire:""`
+	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
 	sv *service.RamIdpBindingService   `autowire:"?"`
 }
 

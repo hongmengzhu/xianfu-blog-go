@@ -21,7 +21,7 @@ func init() {
 // @Description:
 type ModuleController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupManageMiddlewareSp `autowire:""`
+	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
 	sv *service.BasicModuleService     `autowire:"?"`
 }
 

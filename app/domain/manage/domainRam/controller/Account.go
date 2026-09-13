@@ -20,7 +20,7 @@ func init() {
 // @Description:
 type AccountController struct {
 	routerPg.RouteRegistrar
-	Sp        *authPg.GroupManageMiddlewareSp     `autowire:""`
+	Sp        *authPg.GroupManageMiddlewareSp     `autowire:"?"`
 	sv        *service2.RamAccountService         `autowire:"?"`
 	ap        *service2.RamAccountPasswordService `autowire:"?"`
 	appModule appModulePg.AppModule

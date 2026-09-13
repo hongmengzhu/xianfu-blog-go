@@ -5,5 +5,5 @@ import (
 )
 
 type SpManageAuth struct {
-	Sp *authPg.GroupManageMiddlewareSp `autowire:""`
+	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
 }

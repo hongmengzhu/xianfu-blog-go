@@ -19,7 +19,7 @@ func init() {
 
 type BasicModuleController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupSystemMiddlewareSp `autowire:""`
+	Sp *authPg.GroupSystemMiddlewareSp `autowire:"?"`
 	sv *service.BasicModuleService     `autowire:"?"`
 }
 

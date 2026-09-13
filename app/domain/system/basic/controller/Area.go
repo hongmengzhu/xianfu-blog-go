@@ -21,7 +21,7 @@ func init() {
 
 type AreaController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupSystemMiddlewareSp `autowire:""`
+	Sp *authPg.GroupSystemMiddlewareSp `autowire:"?"`
 	sv *service.BasicAreaService       `autowire:"?"`
 }
 

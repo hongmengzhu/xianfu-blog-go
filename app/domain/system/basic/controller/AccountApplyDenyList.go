@@ -21,7 +21,7 @@ func init() {
 
 type AccountApplyDenyListController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupSystemMiddlewareSp           `autowire:""`
+	Sp *authPg.GroupSystemMiddlewareSp           `autowire:"?"`
 	sv *service.BasicAccountApplyDenyListService `autowire:"?"`
 }
 

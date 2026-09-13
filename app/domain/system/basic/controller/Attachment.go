@@ -15,8 +15,8 @@ func init() {
 
 type AttachmentController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupSystemMiddlewareSp `autowire:""`
-	sv *service.BasicAttachmentService `autowire:""`
+	Sp *authPg.GroupSystemMiddlewareSp `autowire:"?"`
+	sv *service.BasicAttachmentService `autowire:"?"`
 }
 
 func (c *AttachmentController) RegisterRoutes(e *gin.Engine) {

@@ -17,7 +17,7 @@ import (
 
 type Minio struct {
 	// 自动注入 minio-client
-	Client *minio.Client `autowire:""`
+	Client *minio.Client `autowire:"?"`
 	// 存储桶
 	Bucket string `value:"${minio.bucket}"`
 	// 存储路径
