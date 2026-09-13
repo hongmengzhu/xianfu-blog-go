@@ -17,7 +17,6 @@ import (
 	"go-spring.org/spring/gs"
 	"go-spring.org/starter-gin"
 	_ "go-spring.org/starter-gorm-postgres"
-	_ "go-spring.org/starter-gorm-sqlite"
 )
 
 func init() {

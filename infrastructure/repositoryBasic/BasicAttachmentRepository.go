@@ -175,7 +175,9 @@ func (c *BasicAttachmentRepository) UpdateByIdAndFileOwnerSetState13(ctx context
 func (c *BasicAttachmentRepository) UpdateByIdSetFileOwner(ctx context.Context, no []string, fileOwner string) (result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("id in ?", no).Update("file_owner", fileOwner)
 	if tx.Error != nil {
-		log.Errorf(ctx, log.TagAppDef, "", tx.Error)
+		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+		}
 		return false
 	}
 	if 0 == tx.RowsAffected {

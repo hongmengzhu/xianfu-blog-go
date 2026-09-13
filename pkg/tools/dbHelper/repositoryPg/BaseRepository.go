@@ -59,7 +59,7 @@ type IRepository[T any, ID genericPg.ID] interface {
 type BaseRepository[T any, ID genericPg.ID] struct {
 	Entity *T
 	//从内部
-	DB *gormcore.DB `autowire:"sqlite.primary"`
+	DB *gormcore.DB `autowire:"postgres.primary"`
 	db *gorm.DB     `autowire:"?"`
 	Pg configPg.Pg  `value:"${pg}"`
 }

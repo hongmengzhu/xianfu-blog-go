@@ -23,7 +23,7 @@ import (
 type AInitTable struct {
 	ser      configPg.Server   `value:"${server}"`
 	database configPg.Database `value:"${database}"`
-	DB       *gormcore.DB      `autowire:"sqlite.primary"`
+	DB       *gormcore.DB      `autowire:"postgres.primary"`
 	db       *gorm.DB          `autowire:"?"`
 }
 
