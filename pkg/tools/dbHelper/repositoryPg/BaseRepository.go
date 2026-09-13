@@ -10,12 +10,12 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg/multiTenantPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constContextPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbManagerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPgI"
 	"github.com/pangu-2/go-tools/tools/dbPg/genericPg"
 	"github.com/pangu-2/go-tools/tools/dbPg/pagePg"
 	"go-spring.org/log"
-	gormcore "go-spring.org/starter-gorm"
 	"gorm.io/gorm"
 )
 
@@ -59,13 +59,12 @@ type IRepository[T any, ID genericPg.ID] interface {
 type BaseRepository[T any, ID genericPg.ID] struct {
 	Entity *T
 	//从内部
-	DB *gormcore.DB `autowire:"postgres.primary"`
-	db *gorm.DB     `autowire:"?"`
-	Pg configPg.Pg  `value:"${pg}"`
+	DbManger *dbManagerPg.Manager `autowire:"?"`
+	Pg       configPg.Pg          `value:"${pg}"`
 }
 
 func (b *BaseRepository[T, ID]) DbScopes() *gorm.DB {
-	return b.DB.DB
+	return b.DbManger.Db()
 }
 
 func (b *BaseRepository[T, ID]) Db() *gorm.DB {
@@ -73,7 +72,7 @@ func (b *BaseRepository[T, ID]) Db() *gorm.DB {
 }
 
 func (b *BaseRepository[T, ID]) DbSource() *gorm.DB {
-	return b.DB.DB
+	return b.DbManger.Db()
 }
 func (b *BaseRepository[T, ID]) DbModel() *gorm.DB {
 	return b.DbScopes().Model(b.Entity)

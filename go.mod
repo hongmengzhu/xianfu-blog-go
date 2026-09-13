@@ -155,6 +155,7 @@ require (
 	github.com/zeebo/xxh3 v1.1.0 // indirect
 	go-spring.org/gs-mock v0.0.9 // indirect
 	go-spring.org/starter-gorm v0.0.0 // indirect
+	go-spring.org/starter-gorm-mysql v0.0.0-00010101000000-000000000000 // indirect
 	go-spring.org/starter-gorm-sqlite v0.0.0-00010101000000-000000000000 // indirect
 	go.mongodb.org/mongo-driver/v2 v2.9.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
@@ -186,6 +187,7 @@ replace (
 	go-spring.org/spring => ../go-spring/spring
 	go-spring.org/starter-gin => ../go-spring/starter/starter-gin
 	go-spring.org/starter-gorm => ../go-spring/starter/starter-gorm
+	go-spring.org/starter-gorm-mysql => ../go-spring/starter/starter-gorm-mysql
 	go-spring.org/starter-gorm-postgres => ../go-spring/starter/starter-gorm-postgres
 	go-spring.org/starter-gorm-sqlite => ../go-spring/starter/starter-gorm-sqlite
 	go-spring.org/stdlib => ../go-spring/stdlib

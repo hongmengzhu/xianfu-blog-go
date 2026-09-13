@@ -12,19 +12,18 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityTc"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbMakePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbManagerPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"
 	_ "go-spring.org/spring/gs"
-	gormcore "go-spring.org/starter-gorm"
 	"gorm.io/gorm"
 )
 
 // AInitTable 初始化创建表
 type AInitTable struct {
-	ser      configPg.Server   `value:"${server}"`
-	database configPg.Database `value:"${database}"`
-	DB       *gormcore.DB      `autowire:"postgres.primary"`
-	db       *gorm.DB          `autowire:"?"`
+	DbManger *dbManagerPg.Manager `autowire:"?"`
+	ser      configPg.Server      `value:"${server}"`
+	database configPg.Database    `value:"${database}"`
 }
 
 func (b *AInitTable) Run(ctx context.Context) error {
@@ -124,7 +123,8 @@ func (b *AInitTable) Run(ctx context.Context) error {
 	return nil
 }
 func (b *AInitTable) Db() *gorm.DB {
-	return b.DB.DB
+	//return b.DB.DB
+	return b.DbManger.Db()
 }
 
 // seqEdit

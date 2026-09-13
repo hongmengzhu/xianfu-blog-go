@@ -11,12 +11,15 @@ import (
 	_ "github.com/hongmengzhu/xianfu-blog-go/app/middleware"
 	"github.com/hongmengzhu/xianfu-blog-go/cmd"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbManagerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
 	"github.com/pangu-2/go-tools/tools/datetimePg"
 	"github.com/pangu-2/go-tools/tools/ioPg"
 	"go-spring.org/spring/gs"
 	"go-spring.org/starter-gin"
+	_ "go-spring.org/starter-gorm-mysql"
 	_ "go-spring.org/starter-gorm-postgres"
+	_ "go-spring.org/starter-gorm-sqlite"
 )
 
 func init() {
@@ -53,7 +56,7 @@ func main() {
 			runtime.Version(), cmd.BuildVersion, cmd.BuildGitCommit, cmd.BuildTime)
 		return
 	}
-
+	gs.Provide(new(dbManagerPg.Manager))
 	// 提供 RouterRegister Bean，官方 starter-gin 自动发现并创建 SimpleGinServer (gs.Server)
 	gs.Provide(NewRouterRegister, gs.TagArg("?"))
 	//

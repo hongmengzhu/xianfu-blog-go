@@ -13,8 +13,11 @@ domain = "http://localhost:9981"
 enabled = true
 # postgres
 url = "host=localhost user=postgres password=postgres dbname=blog_go port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+
+driver = "sqlite"
+
 # 数据库
-[spring.gorm.postgres.instances.primary]
+[spring2.gorm.postgres.instances.primary]
 host = "localhost"
 port = 5432
 user = "postgres"
@@ -146,3 +149,27 @@ suffix = ".html"
 [pg.auth.loginEncrypt]
 # 默认加密
 default = true
+
+# 根日志配置
+[logger.root]
+type = "Logger"
+level = "debug"
+
+[logger.root.appenderRef]
+ref = "console"
+
+# 定义文件输出器
+[appender.file]
+type = "FileAppender"
+dir = "./data/logs"
+file = "app.log"
+
+[appender.file.layout]
+type = "JSONLayout"
+
+# 定义控制台输出器
+[appender.console]
+type = "ConsoleAppender"
+
+[appender.console.layout]
+type = "TextLayout"

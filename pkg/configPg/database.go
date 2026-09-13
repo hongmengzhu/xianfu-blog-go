@@ -4,4 +4,5 @@ package configPg
 type Database struct {
 	URL     string `value:"${url:=}"`
 	Enabled bool   `value:"${enabled:=false}"`
+	Driver  string `value:"${driver:='postgres'}"`
 }
