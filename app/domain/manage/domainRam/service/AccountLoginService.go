@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/farseer-go/eventBus"
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/core/cache/cacheRam"
 	authTokenPg2 "github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/authTokenPg"
@@ -18,11 +17,11 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg/multiTenantPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg/pg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constEventBusPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constHeaderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/typeDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/clientPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/ram/model/modRamAccount"
 	"github.com/jinzhu/copier"
 	"github.com/pangu-2/go-tools/tools/cryptPg"
@@ -44,6 +43,7 @@ type AccountLoginService struct {
 	daoAuth              *repositoryRam.RamAccountAuthorizationRepository    `autowire:"?"`
 	sessionAk            *repositoryRam.RamAccountSessionAccessKeyRepository `autowire:"?"`
 	cacheSessionPubPrive *cacheRam.CacheSessionPubPrive                      `autowire:"?" `
+	Bus                  event.Bus                                           `autowire:"?"`
 	pg                   configPg.Pg                                         `value:"${pg}"`
 
 	authLogin pg.Auth `value:"${pg.auth}"`
@@ -152,7 +152,10 @@ func (c *AccountLoginService) loginLogSave(ctx *gin.Context, account *entityRam.
 	ua := ctx.GetHeader(constHeaderPg.HeaderUserAgent)
 	obj.ExtraData[constHeaderPg.HeaderUserAgent] = ua
 	//保存到数据库
-	eventBus.PublishEventAsync(constEventBusPg.RamAccountLoginLog, obj)
+	err := c.Bus.Publish(context.Background(), obj)
+	if err != nil {
+		log.Errorf(ctx, log.TagAppDef, "error:%+v", err)
+	}
 }
 
 // MakeToken 生成 token

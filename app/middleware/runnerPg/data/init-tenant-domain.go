@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/manage/domainTc/service"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
 	"go-spring.org/log"
 	_ "go-spring.org/spring/gs"
 )
@@ -11,6 +12,7 @@ import (
 // InitTenantDomain
 // @Description: 初始化租户域名
 type InitTenantDomain struct {
+	Bus    event.Bus                           `autowire:"?"`
 	domain *service.TcTenantDomainCacheService `autowire:"?"`
 }
 

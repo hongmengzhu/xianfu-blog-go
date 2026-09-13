@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/attachmentPg/modAttachment"
-	_ "github.com/hongmengzhu/xianfu-blog-go/middleware/components/attachmentPg/types"
+	_ "github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/attachmentPg/types"
 	"github.com/minio/minio-go/v7"
 	"github.com/pangu-2/go-tools/tools/cryptPg"
 	"github.com/pangu-2/go-tools/tools/datetimePg"

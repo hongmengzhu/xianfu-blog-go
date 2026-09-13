@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/hongmengzhu/xianfu-blog-go/app/event/basic/service/tagsBasicEvent"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
 	"go-spring.org/log"
 	_ "go-spring.org/spring/gs"
 )
@@ -11,7 +12,8 @@ import (
 // ZInitTagsCache
 // @Description: 启动后初始化一些数据
 type ZInitTagsCache struct {
-	sp *tagsBasicEvent.Sp `autowire:"?"`
+	Bus event.Bus          `autowire:"?"`
+	sp  *tagsBasicEvent.Sp `autowire:"?"`
 }
 
 func (c *ZInitTagsCache) Run(ctx context.Context) error {

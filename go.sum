@@ -89,12 +89,6 @@ github.com/envoyproxy/go-control-plane v0.9.4/go.mod h1:6rpuAdCZL397s3pYoYcLgu1m
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
 github.com/expr-lang/expr v1.17.8 h1:W1loDTT+0PQf5YteHSTpju2qfUfNoBt4yw9+wOEU9VM=
 github.com/expr-lang/expr v1.17.8/go.mod h1:8/vRC7+7HBzESEqt5kKpYXxrxkr31SaO8r40VO/1IT4=
-github.com/farseer-go/collections v0.17.3 h1:u/thvojjjRsq+GsRhsjW/2rZ8CCNlpYe6bwAb81bnyA=
-github.com/farseer-go/collections v0.17.3/go.mod h1:MRTznQQqg0MCtOqQfzIVQdNxYvj9XbvuxTlFgAByAgE=
-github.com/farseer-go/eventBus v0.17.3 h1:3IQakRnygsYEpfUOOEisMzYSGCreGdje5G8OC2uGzZ4=
-github.com/farseer-go/eventBus v0.17.3/go.mod h1:1EH6Asz+FHglAvl1kT1ebiyC81uSkAOzWuQox/sWjbw=
-github.com/farseer-go/fs v0.17.3 h1:2wBaHQNMkA3r5y5SKDqnck2s8tCK/rXvBrYsmaGwJRo=
-github.com/farseer-go/fs v0.17.3/go.mod h1:rqzugv+zkZzoViM1EEG1tso5OB3Q3EUrWmac5WXg9Nk=
 github.com/frankban/quicktest v1.14.6 h1:7Xjx+VpznH+oBnejlPUj8oUpdxnVs4f8XU8WnHkI4W8=
 github.com/frankban/quicktest v1.14.6/go.mod h1:4ptaffx2x8+WTWXmUCuVU6aPUX1/Mz7zb5vbUoiM6w0=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
@@ -373,8 +367,6 @@ github.com/thedevsaddam/gojsonq/v2 v2.5.2 h1:CoMVaYyKFsVj6TjU6APqAhAvC07hTI6IQen
 github.com/thedevsaddam/gojsonq/v2 v2.5.2/go.mod h1:bv6Xa7kWy82uT0LnXPE2SzGqTj33TAEeR560MdJkiXs=
 github.com/tiendc/go-deepcopy v1.7.2 h1:Ut2yYR7W9tWjTQitganoIue4UGxZwCcJy3orjrrIj44=
 github.com/tiendc/go-deepcopy v1.7.2/go.mod h1:4bKjNC2r7boYOkD2IOuZpYjmlDdzjbpTRyCx+goBCJQ=
-github.com/timandy/routine v1.1.6 h1:cueNRVPutK8O6387LL7dmYPLNyS6aKlPCPi5qWCLdc8=
-github.com/timandy/routine v1.1.6/go.mod h1:kXslgIosdY8LW0byTyPnenDgn4/azt2euufAq9rK51w=
 github.com/tinylib/msgp v1.6.4 h1:mOwYbyYDLPj35mkA2BjjYejgJk9BuHxDdvRnb6v2ZcQ=
 github.com/tinylib/msgp v1.6.4/go.mod h1:RSp0LW9oSxFut3KzESt5Voq4GVWyS+PSulT77roAqEA=
 github.com/tjfoc/gmsm v1.4.1 h1:aMe1GlZb+0bLjn+cKTPEvvn9oUEBlJitaZiiBwsbgho=

@@ -7,8 +7,6 @@ require (
 	github.com/casbin/casbin/v3 v3.11.0
 	github.com/casbin/gorm-adapter/v3 v3.41.0
 	github.com/duke-git/lancet/v2 v2.3.9
-	github.com/farseer-go/eventBus v0.17.3
-	github.com/farseer-go/fs v0.17.3
 	github.com/gin-contrib/cors v1.7.8
 	github.com/gin-contrib/gzip v1.2.7
 	github.com/gin-gonic/gin v1.12.0
@@ -81,7 +79,6 @@ require (
 	github.com/dlclark/regexp2/v2 v2.8.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/expr-lang/expr v1.17.8 // indirect
-	github.com/farseer-go/collections v0.17.3 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.15 // indirect
 	github.com/gin-contrib/sse v1.1.2 // indirect
 	github.com/glebarez/go-sqlite v1.23.0 // indirect
@@ -148,7 +145,6 @@ require (
 	github.com/spf13/cast v1.10.0 // indirect
 	github.com/thedevsaddam/gojsonq/v2 v2.5.2 // indirect
 	github.com/tiendc/go-deepcopy v1.7.2 // indirect
-	github.com/timandy/routine v1.1.6 // indirect
 	github.com/tinylib/msgp v1.6.4 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.3.2 // indirect

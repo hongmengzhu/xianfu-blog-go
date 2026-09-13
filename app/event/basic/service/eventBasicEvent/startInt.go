@@ -3,24 +3,26 @@ package eventBasicEvent
 import (
 	"context"
 
-	"github.com/farseer-go/eventBus"
 	"github.com/hongmengzhu/xianfu-blog-go/app/event/basic/model/modEventBasicEvent"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constEventBusPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
 	"go-spring.org/log"
 )
 
 // StartInit 启动后初始化 所有租户 分类缓存
 type StartInit struct {
+	Bus event.Bus `autowire:"?"`
 }
 
-func NewStartInit() *StartInit {
-	return &StartInit{}
+func NewStartInit(bus event.Bus) *StartInit {
+	return &StartInit{
+		Bus: bus,
+	}
 }
 
 func (c *StartInit) Processor(ctx context.Context) error {
 	//保存到数据库
 	{
-		err := eventBus.PublishEventAsync(constEventBusPg.BasicConfigEventCache, modEventBasicEvent.EventDto{
+		err := c.Bus.Publish(context.Background(), modEventBasicEvent.EventDto{
 			IsAll: true,
 		})
 		if err != nil {
@@ -29,7 +31,7 @@ func (c *StartInit) Processor(ctx context.Context) error {
 		}
 	}
 	{
-		err := eventBus.PublishEventAsync(constEventBusPg.BasicConfigEventFieldCache, modEventBasicEvent.FieldDto{
+		err := c.Bus.Publish(context.Background(), modEventBasicEvent.FieldDto{
 			IsAll: true,
 		})
 		if err != nil {

@@ -7,8 +7,6 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/farseer-go/eventBus"
-	fsE "github.com/farseer-go/fs"
 	"github.com/gin-gonic/gin"
 	_ "github.com/hongmengzhu/xianfu-blog-go/app/middleware"
 	"github.com/hongmengzhu/xianfu-blog-go/cmd"
@@ -57,8 +55,7 @@ func main() {
 
 	// 提供 RouterRegister Bean，官方 starter-gin 自动发现并创建 SimpleGinServer (gs.Server)
 	gs.Provide(NewRouterRegister, gs.TagArg("?"))
-	//事件监听
-	fsE.Initialize[eventBus.Module]("panGu")
+	//
 	gs.Configure(func(app gs.App) {
 		// 指定配置文件目录, 如果不设置，默认 conf 目录
 		app.Property("spring.app.config.dir", "./data/config")

@@ -13,6 +13,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/enumCommonPg/typeSysPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/yesNoPg/yesNoIntPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
 	"github.com/pangu-2/go-tools/tools/cryptPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
 	"github.com/pangu-2/go-tools/tools/numberPg"
@@ -24,6 +25,7 @@ import (
 // IBasicData
 // @Description: 初始化基础数据
 type IBasicData struct {
+	Bus         event.Bus                                         `autowire:"?"`
 	country     *repositoryBasic.BasicCountryRepository           `autowire:"?"`
 	tagsCat     *repositoryBasic.BasicTagsCategoryRepository      `autowire:"?"`
 	conList     *repositoryBasic.BasicConfigListRepository        `autowire:"?"`

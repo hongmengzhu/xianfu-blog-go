@@ -1,10 +1,10 @@
 package blogArticle
 
 import (
+	"context"
 	"encoding/json"
 	"strings"
 
-	"github.com/farseer-go/eventBus"
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/event/basic/model/modEventBasicTags"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticle"
@@ -13,7 +13,6 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/automatedPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constEventBusPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constTags"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/blog/typeContentPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/blog/typeDataSourcePg"
@@ -22,6 +21,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/content/enumEditorPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/yesNoPg/yesNoIntPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/yesNoPg/yesNoString"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/versionPg"
 	"github.com/jinzhu/copier"
@@ -43,6 +43,7 @@ type Sp struct {
 	catDb         *repositoryBlog.BlogArticleCategoryRepository   `autowire:"?"`
 	topicRel      *repositoryBlog.BlogTopicRelationRepository     `autowire:"?"`
 	AttachmentDao *repositoryBasic.BasicAttachmentRepository      `autowire:"?"`
+	Bus           event.Bus                                       `autowire:"?"`
 }
 
 func New(sp *Sp, holder holderPg.HolderPg, ct modBlogArticle.CreateUpdateCt, isUpdate bool) *CreateUpdate {
@@ -362,9 +363,12 @@ func (c *CreateUpdate) tagsListener(ctx *gin.Context) {
 		return
 	}
 	//保存到数据库
-	eventBus.PublishEventAsync(constEventBusPg.BlogArticle, modEventBasicTags.TagsRelation{
+	err := c.sp.Bus.Publish(context.Background(), modEventBasicTags.TagsRelation{
 		Category: constTags.ArticleInfo.Index(),
 		Tags:     c.tags,
 		Holder:   c.holder,
 	})
+	if err != nil {
+		log.Errorf(ctx, log.TagAppDef, "error:%+v", err)
+	}
 }

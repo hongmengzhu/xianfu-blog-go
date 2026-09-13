@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/hongmengzhu/xianfu-blog-go/app/event/ram/service/accountDomainInit"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
 	"go-spring.org/log"
 	_ "go-spring.org/spring/gs"
 )
@@ -11,7 +12,8 @@ import (
 // ZInitAccountAdmin
 // @Description: 超管账号初始化
 type ZInitAccountAdmin struct {
-	sp *accountDomainInit.Sp `autowire:"?"`
+	Bus event.Bus             `autowire:"?"`
+	sp  *accountDomainInit.Sp `autowire:"?"`
 }
 
 func (b *ZInitAccountAdmin) Run(ctx context.Context) error {

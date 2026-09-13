@@ -9,14 +9,13 @@ import (
 	"path"
 	"strings"
 
-	"github.com/farseer-go/eventBus"
 	"github.com/h2non/filetype"
-	modAttachment2 "github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/attachmentPg/modAttachment"
+	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/attachmentPg/modAttachment"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/attachmentPg/types"
+	_ "github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/attachmentPg/types"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBasic"
-	_ "github.com/hongmengzhu/xianfu-blog-go/middleware/components/attachmentPg/types"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constEventBusPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
 	"github.com/pangu-2/go-tools/tools/cryptPg"
 	"github.com/pangu-2/go-tools/tools/datetimePg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -30,9 +29,10 @@ var _ types.FileProvider = (*Local)(nil)
 type Local struct {
 	pg     configPg.Pg     `value:"${pg}"`
 	server configPg.Server `value:"${server}"`
+	Bus    event.Bus       `autowire:"?"`
 }
 
-func (s *Local) PutObject(r io.Reader, put modAttachment2.PutFileDto, ext modAttachment2.Ext) (modAttachment2.Attachment, error) {
+func (s *Local) PutObject(r io.Reader, put modAttachment.PutFileDto, ext modAttachment.Ext) (modAttachment.Attachment, error) {
 	//获取文件名带后缀
 	filenameWithSuffix := path.Base(put.Name)
 	//获取文件后缀
@@ -54,7 +54,7 @@ func (s *Local) PutObject(r io.Reader, put modAttachment2.PutFileDto, ext modAtt
 	filenameOnly := strings.TrimSuffix(filenameWithSuffix, fileSuffix)
 	//md5
 	fileNewName := datetimePg.NowNotFormat() + "-" + cryptPg.Md5(filenameOnly) + fileSuffix
-	attachment := modAttachment2.Attachment{
+	attachment := modAttachment.Attachment{
 		OriginalName: put.Name,
 		Name:         fileNewName,
 		Size:         put.Size,
@@ -114,7 +114,7 @@ func (s *Local) PutObject(r io.Reader, put modAttachment2.PutFileDto, ext modAtt
 	}
 
 	//保存到数据库
-	eventBus.PublishEventAsync(constEventBusPg.BasicAttachmentCreate, entityBasic.BasicAttachmentEntity{
+	err = s.Bus.Publish(context.Background(), entityBasic.BasicAttachmentEntity{
 		Name:         attachment.Name,
 		OriginalName: attachment.OriginalName,
 		Description:  attachment.Description,
@@ -134,6 +134,9 @@ func (s *Local) PutObject(r io.Reader, put modAttachment2.PutFileDto, ext modAtt
 		Client:        attachment.Client,
 		ProtocolSpace: attachment.ProtocolSpace,
 	})
+	if err != nil {
+		log.Errorf(context.Background(), log.TagAppDef, "err=%+v\n", err)
+	}
 	return attachment, nil
 }
 

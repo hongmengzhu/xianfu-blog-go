@@ -7,6 +7,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityApi"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryApi"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/pangu-2/go-tools/tools/datetimePg"
 	"go-spring.org/log"
@@ -17,7 +18,8 @@ import (
 // ZInitDiplCache
 // @Description: 初始化 dipl 缓存
 type ZInitDiplCache struct {
-	sv *repositoryApi.ApiDiplAccessKeyRepository `autowire:"?"`
+	Bus event.Bus                                 `autowire:"?"`
+	sv  *repositoryApi.ApiDiplAccessKeyRepository `autowire:"?"`
 }
 
 func (b *ZInitDiplCache) Run(ctx context.Context) error {

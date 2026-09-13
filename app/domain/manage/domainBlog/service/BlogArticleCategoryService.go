@@ -1,7 +1,8 @@
 package service
 
 import (
-	"github.com/farseer-go/eventBus"
+	"context"
+
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/event/blog/model/modEventBlogArticleCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticleCategory"
@@ -9,10 +10,10 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/automatedPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constEventBusPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constNodePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/enumCommonPg/typeSysPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/sdk-common-cache/cacheBlogArticleCategoryPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
@@ -36,6 +37,7 @@ func init() {
 type BlogArticleCategoryService struct {
 	sv  *repositoryBlog.BlogArticleCategoryRepository `autowire:"?"`
 	chd *cacheBlogArticleCategoryPg.Cache             `autowire:"?"`
+	Bus event.Bus                                     `autowire:"?"`
 }
 
 // Create 新增
@@ -111,7 +113,7 @@ func (c *BlogArticleCategoryService) Create(ctx *gin.Context, ct modBlogArticleC
 		Nos: make([]string, 0),
 	}
 	dto.Nos = append(dto.Nos, info.No)
-	err2 := eventBus.PublishEventAsync(constEventBusPg.BlogArticleCategoryCache, dto)
+	err2 := c.Bus.Publish(context.Background(), dto)
 	if err2 != nil {
 		log.Errorf(ctx, log.TagAppDef, "copier.Copy error: %+v", err2)
 	}
@@ -235,7 +237,7 @@ func (c *BlogArticleCategoryService) Update(ctx *gin.Context, ct modBlogArticleC
 		Nos: make([]string, 0),
 	}
 	dto.Nos = append(dto.Nos, info.No)
-	err2 := eventBus.PublishEventAsync(constEventBusPg.BlogArticleCategoryCache, dto)
+	err2 := c.Bus.Publish(context.Background(), dto)
 	if err2 != nil {
 		log.Errorf(ctx, log.TagAppDef, "copier.Copy error: %+v", err2)
 	}
@@ -296,9 +298,9 @@ func (c *BlogArticleCategoryService) CacheOverride(ctx *gin.Context) {
 //
 //	@Description:
 //	@receiver c
-func (c *BlogCategoryService) CacheAll(ctx *gin.Context) {
+func (c *BlogArticleCategoryService) CacheAll(ctx *gin.Context) {
 	//保存到数据库
-	err := eventBus.PublishEventAsync(constEventBusPg.BlogArticleCategoryCache, modEventBlogArticleCategory.CacheDto{
+	err := c.Bus.Publish(context.Background(), modEventBlogArticleCategory.CacheDto{
 		IsThisTenantAll: true,
 	})
 	if err != nil {

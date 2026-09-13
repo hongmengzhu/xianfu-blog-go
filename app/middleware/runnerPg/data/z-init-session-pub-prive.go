@@ -7,12 +7,14 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/event/ram/service/accountSessionRamEvent"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryTc"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
 	"go-spring.org/log"
 	_ "go-spring.org/spring/gs"
 )
 
 // 加载 密钥缓存
 type InitSessionPubPrive struct {
+	Bus                  event.Bus                                           `autowire:"?"`
 	sessionAk            *repositoryRam.RamAccountSessionAccessKeyRepository `autowire:"?"`
 	cacheSessionPubPrive *cacheRam.CacheSessionPubPrive                      `autowire:"?"`
 	tenant               *repositoryTc.TcTenantRepository                    `autowire:"?"`
