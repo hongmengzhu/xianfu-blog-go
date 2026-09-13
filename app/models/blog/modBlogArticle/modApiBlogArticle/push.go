@@ -1,4 +1,4 @@
-package modBlogArticle
+package modApiBlogArticle
 
 type PushCt struct {
 	CategoryNo  string `json:"categoryNo"`

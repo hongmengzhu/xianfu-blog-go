@@ -7,7 +7,7 @@ import (
 	"github.com/duke-git/lancet/v2/strutil"
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/manage/domainBlog/service/blogCollect"
-	modBlogCollect2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/web/api/model/modBlogCollect"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogCollect/modApiBlogCollect"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg/holderApiPg"
@@ -39,7 +39,7 @@ type CollectService struct {
 //
 //	@Description: 推送文章连接
 //	@receiver c
-func (c *CollectService) Push(ctx *gin.Context, ct modBlogCollect2.PushCt) (rt rg.Rs[string]) {
+func (c *CollectService) Push(ctx *gin.Context, ct modApiBlogCollect.PushCt) (rt rg.Rs[string]) {
 	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
 
 	if strPg.IsBlank(ct.Title) {
@@ -133,7 +133,7 @@ func (c *CollectService) Push(ctx *gin.Context, ct modBlogCollect2.PushCt) (rt r
 //
 //	@Description: 推送文章连接
 //	@receiver c
-func (c *CollectService) PushAll(ctx *gin.Context, ct modBlogCollect2.PushAll) (rt rg.Rs[string]) {
+func (c *CollectService) PushAll(ctx *gin.Context, ct modApiBlogCollect.PushAll) (rt rg.Rs[string]) {
 	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
 	if nil == ct.Data || len(ct.Data) <= 0 {
 		return rt.ErrorMessage("数据不能为空")

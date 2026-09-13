@@ -1,4 +1,4 @@
-package modelBlogBookmarkCategory
+package modApiBlogBookmarkCategory
 
 import "github.com/hongmengzhu/xianfu-blog-go/pkg/tools/typePg"
 

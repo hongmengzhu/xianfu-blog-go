@@ -2,9 +2,9 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	modBlogCollect2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/web/api/model/modBlogCollect"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/api/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogCollect/modApiBlogCollect"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"go-spring.org/spring/gs"
 )
@@ -36,7 +36,7 @@ func (c *CollectController) RegisterRoutes(e *gin.Engine) {
 //	@receiver c
 //	@param ctx
 func (c *CollectController) Push(ctx *gin.Context) {
-	var ct modBlogCollect2.PushCt
+	var ct modApiBlogCollect.PushCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -49,7 +49,7 @@ func (c *CollectController) Push(ctx *gin.Context) {
 //	@receiver c
 //	@param ctx
 func (c *CollectController) PushAll(ctx *gin.Context) {
-	var ct modBlogCollect2.PushAll
+	var ct modApiBlogCollect.PushAll
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}

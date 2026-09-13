@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	modBlogArticleCategory2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/web/api/model/modBlogArticleCategory"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticleCategory/modApiBlogArticleCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
@@ -24,7 +24,7 @@ type ArticleCategoryService struct {
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *ArticleCategoryService) SelectNodeAllPublic(ctx *gin.Context, ct modBlogArticleCategory2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *ArticleCategoryService) SelectNodeAllPublic(ctx *gin.Context, ct modApiBlogArticleCategory.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	var query entityBlog.BlogArticleCategoryEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
@@ -32,7 +32,7 @@ func (c *ArticleCategoryService) SelectNodeAllPublic(ctx *gin.Context, ct modBlo
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
 		for _, item := range infos {
-			var vo modBlogArticleCategory2.Vo
+			var vo modApiBlogArticleCategory.Vo
 			copier.Copy(&vo, &item)
 			code := model.BaseNodeNo{
 				Value:    item.No,

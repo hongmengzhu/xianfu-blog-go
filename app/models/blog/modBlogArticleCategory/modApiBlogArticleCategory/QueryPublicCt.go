@@ -1,4 +1,4 @@
-package modBlogArticleCategory
+package modApiBlogArticleCategory
 
 import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"

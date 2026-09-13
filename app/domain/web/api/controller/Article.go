@@ -2,9 +2,9 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/api/model/modBlogArticle"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/api/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticle/modApiBlogArticle"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 )
 
@@ -19,7 +19,7 @@ type ArticleController struct {
 //	@receiver c
 //	@param ctx
 func (c *ArticleController) Push(ctx *gin.Context) {
-	var ct modBlogArticle.PushCt
+	var ct modApiBlogArticle.PushCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}

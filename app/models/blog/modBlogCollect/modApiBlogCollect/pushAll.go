@@ -1,4 +1,4 @@
-package modBlogCollect
+package modApiBlogCollect
 
 type PushAll struct {
 	Data []PushCt `json:"data"`

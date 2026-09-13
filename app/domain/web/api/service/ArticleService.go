@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/manage/domainBlog/service/blogArticle"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/api/model/modBlogArticle"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticle/modApiBlogArticle"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
@@ -29,7 +29,7 @@ type ArticleService struct {
 //
 //	@Description: 推送文章连接
 //	@receiver c
-func (c *ArticleService) Push(ctx *gin.Context, ct modBlogArticle.PushCt) (rt rg.Rs[string]) {
+func (c *ArticleService) Push(ctx *gin.Context, ct modApiBlogArticle.PushCt) (rt rg.Rs[string]) {
 	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
 	if strPg.IsBlank(ct.CategoryNo) {
 		return rt.ErrorMessage("请选择分类")

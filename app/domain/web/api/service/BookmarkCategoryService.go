@@ -2,8 +2,8 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/api/model/modelBlogBookmark"
-	modelBlogBookmarkCategory2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/web/api/model/modelBlogBookmarkCategory"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogBookmark/modApiBlogBookmark"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogBookmarkCategory/modApiBlogBookmarkCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
@@ -33,13 +33,13 @@ type BookmarkCategoryService struct {
 }
 
 // GetAll 获取所有
-func (c *BookmarkCategoryService) GetAll(ctx *gin.Context) (rt rg.Rs[modelBlogBookmarkCategory2.VoAll]) {
+func (c *BookmarkCategoryService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBlogBookmarkCategory.VoAll]) {
 	//
 	holder := holderApiPg.GetContextAccount(ctx)
 	//
-	vo := modelBlogBookmarkCategory2.VoAll{}
-	vo.My = make([]modelBlogBookmarkCategory2.Vo, 0)
-	vo.Team = make([]modelBlogBookmarkCategory2.Vo, 0)
+	vo := modApiBlogBookmarkCategory.VoAll{}
+	vo.My = make([]modApiBlogBookmarkCategory.Vo, 0)
+	vo.Team = make([]modApiBlogBookmarkCategory.Vo, 0)
 	//
 	{
 		q := entityBlog.BlogBookmarkCategoryEntity{}
@@ -50,7 +50,7 @@ func (c *BookmarkCategoryService) GetAll(ctx *gin.Context) (rt rg.Rs[modelBlogBo
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, info := range infos {
-				vo.My = append(vo.My, modelBlogBookmarkCategory2.Vo{
+				vo.My = append(vo.My, modApiBlogBookmarkCategory.Vo{
 					ID:       typePg.Int64String(info.ID),
 					Name:     info.Name,
 					NameFl:   info.NameFl,
@@ -71,7 +71,7 @@ func (c *BookmarkCategoryService) GetAll(ctx *gin.Context) (rt rg.Rs[modelBlogBo
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, info := range infos {
-				vo.Team = append(vo.Team, modelBlogBookmarkCategory2.Vo{
+				vo.Team = append(vo.Team, modApiBlogBookmarkCategory.Vo{
 					ID:       typePg.Int64String(info.ID),
 					Name:     info.Name,
 					NameFl:   info.NameFl,
@@ -88,11 +88,11 @@ func (c *BookmarkCategoryService) GetAll(ctx *gin.Context) (rt rg.Rs[modelBlogBo
 }
 
 // GetMy 获取所有
-func (c *BookmarkCategoryService) GetMy(ctx *gin.Context) (rt rg.Rs[[]modelBlogBookmarkCategory2.Vo]) {
+func (c *BookmarkCategoryService) GetMy(ctx *gin.Context) (rt rg.Rs[[]modApiBlogBookmarkCategory.Vo]) {
 	//
 	holder := holderApiPg.GetContextAccount(ctx)
 	//
-	data := make([]modelBlogBookmarkCategory2.Vo, 0)
+	data := make([]modApiBlogBookmarkCategory.Vo, 0)
 	//
 	{
 		q := entityBlog.BlogBookmarkCategoryEntity{}
@@ -103,7 +103,7 @@ func (c *BookmarkCategoryService) GetMy(ctx *gin.Context) (rt rg.Rs[[]modelBlogB
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, info := range infos {
-				data = append(data, modelBlogBookmarkCategory2.Vo{
+				data = append(data, modApiBlogBookmarkCategory.Vo{
 					ID:       typePg.Int64String(info.ID),
 					Name:     info.Name,
 					NameFl:   info.NameFl,
@@ -125,7 +125,7 @@ func (c *BookmarkCategoryService) GetMy(ctx *gin.Context) (rt rg.Rs[[]modelBlogB
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *BookmarkCategoryService) Save(ctx *gin.Context, ct modelBlogBookmark.CreateUpdate) (rt rg.Rs[string]) {
+func (c *BookmarkCategoryService) Save(ctx *gin.Context, ct modApiBlogBookmark.CreateUpdate) (rt rg.Rs[string]) {
 	log.Infof(ctx, log.TagAppDef, "ct=%#v", ct)
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")

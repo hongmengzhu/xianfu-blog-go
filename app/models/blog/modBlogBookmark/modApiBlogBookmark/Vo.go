@@ -1,4 +1,4 @@
-package modelBlogBookmark
+package modApiBlogBookmark
 
 import (
 	"time"
