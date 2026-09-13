@@ -19,6 +19,7 @@ var (
 	pkgMutex     sync.Mutex
 	moduleName   string
 	ignoreRules  []string
+	ignoreREs    []*regexp.Regexp
 )
 
 // 自动读取 go.mod 中的 module 名称
@@ -102,6 +103,7 @@ func main() {
 	fmt.Printf("✅ using module: %s\n", moduleName)
 
 	ignoreRules = strings.Split(*ignore, ",")
+	compileIgnoreRules()
 	sem := make(chan struct{}, *concurrency)
 	var wg sync.WaitGroup
 
@@ -125,7 +127,7 @@ func main() {
 			}
 
 			if f.IsDir() {
-				if isIgnored(path) {
+				if isIgnored(path, projectRoot) {
 					return filepath.SkipDir
 				}
 				return nil
@@ -134,7 +136,7 @@ func main() {
 			if !strings.HasSuffix(path, ".go") {
 				return nil
 			}
-			if isIgnored(path) {
+			if isIgnored(path, projectRoot) {
 				return nil
 			}
 
@@ -202,17 +204,56 @@ func hasInit(file string) bool {
 	return false
 }
 
-func isIgnored(path string) bool {
-	base := filepath.Base(path)
+// globToRegex 将 glob 模式转换为正则表达式，支持 ** 跨目录匹配。
+//   - **/xxx  匹配任意层目录前缀下的 xxx
+//   - xxx/**  匹配 xxx 目录本身及其下所有内容
+//   - *       匹配单层内任意字符（不含路径分隔符）
+func globToRegex(pattern string) string {
+	pattern = regexp.QuoteMeta(pattern)
+	// \*\*/ -> ([^/]*/)*  匹配任意层目录前缀
+	pattern = strings.ReplaceAll(pattern, `\*\*/`, "([^/]*/)*")
+	// /\*\* -> (/.*)?  匹配目录本身及其下所有内容（用于 SkipDir）
+	pattern = strings.ReplaceAll(pattern, `/\*\*`, "(/.*)?")
+	// 残留的 \*\* -> .*
+	pattern = strings.ReplaceAll(pattern, `\*\*`, ".*")
+	// \* -> [^/]*  匹配单层内任意字符
+	pattern = strings.ReplaceAll(pattern, `\*`, "[^/]*")
+	// \? -> [^/]
+	pattern = strings.ReplaceAll(pattern, `\?`, "[^/]")
+	return "^" + pattern + "$"
+}
+
+// compileIgnoreRules 预编译忽略规则为正则，在解析 ignoreRules 后调用。
+func compileIgnoreRules() {
+	ignoreREs = make([]*regexp.Regexp, 0, len(ignoreRules))
 	for _, r := range ignoreRules {
 		r = strings.TrimSpace(r)
 		if r == "" {
 			continue
 		}
-		if ok, _ := filepath.Match(r, base); ok {
-			return true
+		// 去掉相对路径前缀 ./，统一基于项目根进行匹配
+		r = strings.TrimPrefix(r, "./")
+		re, err := regexp.Compile(globToRegex(r))
+		if err != nil {
+			fmt.Printf("⚠️ invalid ignore pattern: %s\n", r)
+			continue
 		}
-		if strings.Contains(path, r) {
+		ignoreREs = append(ignoreREs, re)
+	}
+}
+
+// isIgnored 判断路径是否命中忽略规则。
+// path 为绝对路径，projRoot 为项目根绝对路径；
+// 内部转换为相对项目根的路径后再用正则匹配，
+// 使 ./xxx/** 与 **/xxx/** 等规则均可对目录与文件生效。
+func isIgnored(path, projRoot string) bool {
+	rel, err := filepath.Rel(projRoot, path)
+	if err != nil {
+		rel = path
+	}
+	rel = filepath.ToSlash(rel)
+	for _, re := range ignoreREs {
+		if re.MatchString(rel) {
 			return true
 		}
 	}

@@ -56,7 +56,7 @@ all: generate run
 # 生成导入文件
 generate:
 	@echo "===== 运行扫描工具 ====="
-	go run ./auto_tool/main.go \
+	go run ./pkg/tools/auto_import/auto-import.go \
 		-module=$(MODULE_NAME) \
 		-dir=$(SCAN_DIR) \
 		-output=$(OUTPUT_FILE) \
