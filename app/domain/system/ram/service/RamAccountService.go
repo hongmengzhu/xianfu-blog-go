@@ -22,9 +22,9 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/sdk-common-cache/cacheRamPostPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/sdk-common-cache/cacheRamRolePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/sdk-common-cache/cacheRamTeamPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbMakePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
-	"github.com/pangu-2/go-tools/tools/dbPg"
 	"github.com/pangu-2/go-tools/tools/dbPg/pagePg"
 	"github.com/pangu-2/go-tools/tools/filePg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -261,16 +261,14 @@ func (c *RamAccountService) Query(ctx *gin.Context, ct modRamAccount.QueryCt, tp
 			depInfo, result := depDb.FindAllByNoLinkArr(ctx, ct.Departments)
 			if result {
 				sqlDb := r.DbModel()
-				for i, obj := range depInfo {
-					if 0 == i {
-						sqlDb = sqlDb.Or("os->'departments' @> ? ", dbPg.StrToArrayJsonExpr(obj.No))
-					} else {
-						sqlDb = sqlDb.Or("os->'departments' @> ? ", dbPg.StrToArrayJsonExpr(obj.No))
-					}
+				for _, obj := range depInfo {
+					cond, args := dbMakePg.MakeJsonOsContainsCond(sqlDb, "departments", obj.No)
+					sqlDb = sqlDb.Or(cond, args...)
 				}
 				arg.Db = arg.Db.Where(sqlDb)
 			} else {
-				arg.Db = arg.Db.Where("os->'departments' @> ? ", dbPg.StrToArrayJsonExpr("0"))
+				cond, args := dbMakePg.MakeJsonOsContainsCond(arg.Db, "departments", "0")
+				arg.Db = arg.Db.Where(cond, args...)
 			}
 		}
 		//角色
@@ -279,11 +277,13 @@ func (c *RamAccountService) Query(ctx *gin.Context, ct modRamAccount.QueryCt, tp
 			if len(mapRoleCt) > 0 {
 				sqlDb := r.DbModel()
 				for _, obj := range mapRoleCt {
-					sqlDb = sqlDb.Or("os->'roles' @> ? ", dbPg.StrToArrayJsonExpr(obj.No))
+					cond, args := dbMakePg.MakeJsonOsContainsCond(sqlDb, "roles", obj.No)
+					sqlDb = sqlDb.Or(cond, args...)
 				}
 				arg.Db = arg.Db.Where(sqlDb)
 			} else {
-				arg.Db = arg.Db.Where("os->'roles' @> ? ", dbPg.StrToArrayJsonExpr("0"))
+				cond, args := dbMakePg.MakeJsonOsContainsCond(arg.Db, "roles", "0")
+				arg.Db = arg.Db.Where(cond, args...)
 			}
 		}
 		//级别
@@ -293,11 +293,13 @@ func (c *RamAccountService) Query(ctx *gin.Context, ct modRamAccount.QueryCt, tp
 				if len(mapLevelCt) > 0 {
 					sqlDb := r.DbModel()
 					for _, obj := range mapLevelCt {
-						sqlDb = sqlDb.Or("os->'levels' @> ? ", dbPg.StrToArrayJsonExpr(obj.No))
+						cond, args := dbMakePg.MakeJsonOsContainsCond(sqlDb, "levels", obj.No)
+						sqlDb = sqlDb.Or(cond, args...)
 					}
 					arg.Db = arg.Db.Where(sqlDb)
 				} else {
-					arg.Db = arg.Db.Where("os->'levels' @> ? ", dbPg.StrToArrayJsonExpr("0"))
+					cond, args := dbMakePg.MakeJsonOsContainsCond(arg.Db, "levels", "0")
+					arg.Db = arg.Db.Where(cond, args...)
 				}
 			}
 		}
@@ -308,7 +310,8 @@ func (c *RamAccountService) Query(ctx *gin.Context, ct modRamAccount.QueryCt, tp
 				if len(mapGroupCt) > 0 {
 					sqlDb := r.DbModel()
 					for _, obj := range mapGroupCt {
-						sqlDb = sqlDb.Or("os->'groups' @> ? ", dbPg.StrToArrayJsonExpr(obj.No))
+						cond, args := dbMakePg.MakeJsonOsContainsCond(sqlDb, "groups", obj.No)
+						sqlDb = sqlDb.Or(cond, args...)
 					}
 					arg.Db = arg.Db.Where(sqlDb)
 				}
@@ -321,7 +324,8 @@ func (c *RamAccountService) Query(ctx *gin.Context, ct modRamAccount.QueryCt, tp
 				if len(mapTeamCt) > 0 {
 					sqlDb := r.DbModel()
 					for _, obj := range mapTeamCt {
-						sqlDb = sqlDb.Or("os->'teams' @> ? ", dbPg.StrToArrayJsonExpr(obj.No))
+						cond, args := dbMakePg.MakeJsonOsContainsCond(sqlDb, "teams", obj.No)
+						sqlDb = sqlDb.Or(cond, args...)
 					}
 					arg.Db = arg.Db.Where(sqlDb)
 				}

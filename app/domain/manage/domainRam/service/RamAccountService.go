@@ -10,9 +10,9 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/yesNoPg/yesNoIntPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbMakePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
-	"github.com/pangu-2/go-tools/tools/dbPg"
 	"github.com/pangu-2/go-tools/tools/dbPg/pagePg"
 	"github.com/pangu-2/go-tools/tools/slicePg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -244,16 +244,14 @@ func (c *RamAccountService) Query(ctx *gin.Context, ct modRamAccount.QueryCt, tp
 			depInfo, result := depDb.FindAllByNoLinkArr(ctx, ct.Departments)
 			if result {
 				sqlDb := r.DbModel()
-				for i, obj := range depInfo {
-					if 0 == i {
-						sqlDb = sqlDb.Or("os->'departments' @> ? ", dbPg.StrToArrayJsonExpr(obj.No))
-					} else {
-						sqlDb = sqlDb.Or("os->'departments' @> ? ", dbPg.StrToArrayJsonExpr(obj.No))
-					}
+				for _, obj := range depInfo {
+					cond, args := dbMakePg.MakeJsonOsContainsCond(sqlDb, "departments", obj.No)
+					sqlDb = sqlDb.Or(cond, args...)
 				}
 				arg.Db = arg.Db.Where(sqlDb)
 			} else {
-				arg.Db = arg.Db.Where("os->'departments' @> ? ", dbPg.StrToArrayJsonExpr("0"))
+				cond, args := dbMakePg.MakeJsonOsContainsCond(arg.Db, "departments", "0")
+				arg.Db = arg.Db.Where(cond, args...)
 			}
 		}
 		//角色
@@ -261,16 +259,14 @@ func (c *RamAccountService) Query(ctx *gin.Context, ct modRamAccount.QueryCt, tp
 			depInfo, result := roleDb.FindAllByNoIn(ctx, ct.Roles)
 			if result {
 				sqlDb := r.DbModel()
-				for i, obj := range depInfo {
-					if 0 == i {
-						sqlDb = sqlDb.Or("os->'roles' @> ? ", dbPg.StrToArrayJsonExpr(obj.No))
-					} else {
-						sqlDb = sqlDb.Or("os->'roles' @> ? ", dbPg.StrToArrayJsonExpr(obj.No))
-					}
+				for _, obj := range depInfo {
+					cond, args := dbMakePg.MakeJsonOsContainsCond(sqlDb, "roles", obj.No)
+					sqlDb = sqlDb.Or(cond, args...)
 				}
 				arg.Db = arg.Db.Where(sqlDb)
 			} else {
-				arg.Db = arg.Db.Where("os->'roles' @> ? ", dbPg.StrToArrayJsonExpr("0"))
+				cond, args := dbMakePg.MakeJsonOsContainsCond(arg.Db, "roles", "0")
+				arg.Db = arg.Db.Where(cond, args...)
 			}
 		}
 		//级别
@@ -279,16 +275,14 @@ func (c *RamAccountService) Query(ctx *gin.Context, ct modRamAccount.QueryCt, tp
 				depInfo, result := levelDb.FindAllByNoIn(ctx, ct.Levels)
 				if result {
 					sqlDb := r.DbModel()
-					for i, obj := range depInfo {
-						if 0 == i {
-							sqlDb = sqlDb.Or("os->'levels' @> ? ", dbPg.StrToArrayJsonExpr(obj.No))
-						} else {
-							sqlDb = sqlDb.Or("os->'levels' @> ? ", dbPg.StrToArrayJsonExpr(obj.No))
-						}
+					for _, obj := range depInfo {
+						cond, args := dbMakePg.MakeJsonOsContainsCond(sqlDb, "levels", obj.No)
+						sqlDb = sqlDb.Or(cond, args...)
 					}
 					arg.Db = arg.Db.Where(sqlDb)
 				} else {
-					arg.Db = arg.Db.Where("os->'levels' @> ? ", dbPg.StrToArrayJsonExpr("0"))
+					cond, args := dbMakePg.MakeJsonOsContainsCond(arg.Db, "levels", "0")
+					arg.Db = arg.Db.Where(cond, args...)
 				}
 			}
 		}
@@ -298,12 +292,9 @@ func (c *RamAccountService) Query(ctx *gin.Context, ct modRamAccount.QueryCt, tp
 				depInfo, result := groupDb.FindAllByNoIn(ctx, ct.Groups)
 				if result {
 					sqlDb := r.DbModel()
-					for i, obj := range depInfo {
-						if 0 == i {
-							sqlDb = sqlDb.Or("os->'groups' @> ? ", dbPg.StrToArrayJsonExpr(obj.No))
-						} else {
-							sqlDb = sqlDb.Or("os->'groups' @> ? ", dbPg.StrToArrayJsonExpr(obj.No))
-						}
+					for _, obj := range depInfo {
+						cond, args := dbMakePg.MakeJsonOsContainsCond(sqlDb, "groups", obj.No)
+						sqlDb = sqlDb.Or(cond, args...)
 					}
 					arg.Db = arg.Db.Where(sqlDb)
 				}
@@ -315,12 +306,9 @@ func (c *RamAccountService) Query(ctx *gin.Context, ct modRamAccount.QueryCt, tp
 				depInfo, result := teamDb.FindAllByNoIn(ctx, ct.Teams)
 				if result {
 					sqlDb := r.DbModel()
-					for i, obj := range depInfo {
-						if 0 == i {
-							sqlDb = sqlDb.Or("os->'teams' @> ? ", dbPg.StrToArrayJsonExpr(obj.No))
-						} else {
-							sqlDb = sqlDb.Or("os->'teams' @> ? ", dbPg.StrToArrayJsonExpr(obj.No))
-						}
+					for _, obj := range depInfo {
+						cond, args := dbMakePg.MakeJsonOsContainsCond(sqlDb, "teams", obj.No)
+						sqlDb = sqlDb.Or(cond, args...)
 					}
 					arg.Db = arg.Db.Where(sqlDb)
 				}

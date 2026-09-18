@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/duke-git/lancet/v2/datetime"
+	"github.com/pangu-2/go-tools/tools/dbPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"
 	"gorm.io/gorm"
@@ -111,4 +112,25 @@ func MakeDataBaseAutoInc(dialect, table string, start int64) (sql string) {
 		sql = MakeMysqlAutoIncSql(table, start)
 	}
 	return
+}
+
+// MakeJsonOsContainsCond 按数据库方言生成 os JSON 字段内数组包含指定元素的查询条件
+//
+//	@Description:
+//	@param db gorm 数据库连接（用于 Dialector.Name() 判断方言）
+//	@param key os 内的 JSON 字段名，如 departments/roles/levels/groups/teams
+//	@param val 要匹配的元素值
+//	@return 条件 SQL 与绑定参数
+func MakeJsonOsContainsCond(db *gorm.DB, key string, val string) (string, []any) {
+	switch db.Dialector.Name() {
+	case "mysql":
+		// MySQL 5.7+：JSON_CONTAINS(目标, 候选值[, 路径])，JSON_QUOTE 保证值按 JSON 字符串正确转义
+		return "JSON_CONTAINS(os, JSON_QUOTE(?), '$." + key + "')", []any{val}
+	case "sqlite":
+		// SQLite：无 JSON_CONTAINS，用 json_each 展开数组后匹配元素（路径不存在时 json_extract 返回 NULL，EXISTS 为 false）
+		return "EXISTS (SELECT 1 FROM json_each(json_extract(os, '$." + key + "')) WHERE json_each.value = ?)", []any{val}
+	default:
+		// 默认 postgres：os->'key' @> '["val"]'
+		return "os->'" + key + "' @> ? ", []any{dbPg.StrToArrayJsonExpr(val)}
+	}
 }
