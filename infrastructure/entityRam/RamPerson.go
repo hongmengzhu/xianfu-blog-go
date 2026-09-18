@@ -7,8 +7,8 @@ import (
 // RamPersonEntity 用户
 type RamPersonEntity struct {
 	ID               int64      `gorm:"column:id;primaryKey;autoIncrement:true;comment:id" json:"id" comment:"" `
-	CreateAt         *time.Time `gorm:"column:create_at;type:datetime;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" ` // 创建时间
-	UpdateAt         *time.Time `gorm:"column:update_at;type:datetime;autoUpdateTime;comment:更新时间" json:"update_at" comment:"更新时间" `                                 // 更新时间
+	CreateAt         *time.Time `gorm:"column:create_at;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" ` // 创建时间
+	UpdateAt         *time.Time `gorm:"column:update_at;autoUpdateTime;comment:更新时间" json:"update_at" comment:"更新时间" `                                 // 更新时间
 	CreateBy         int64      `gorm:"column:create_by;type:bigint;not null;index;comment:创建人" json:"create_by" comment:"创建人" `
 	UpdateBy         int64      `gorm:"column:update_by;type:bigint;not null;comment:更新人" json:"update_by" comment:"更新人" `
 	No               string     `gorm:"column:no;type:varchar(80);index;default:;comment:编号" json:"no" comment:"编号" `
@@ -22,9 +22,9 @@ type RamPersonEntity struct {
 	MailVerify       int64      `gorm:"column:mail_verify;type:int8;not null;default:2;comment:邮箱验证1是2否" json:"mail_verify" comment:"邮箱验证1是2否" `                   // 邮箱验证1是2否
 	PhoneVerify      int64      `gorm:"column:phone_verify;type:int8;not null;default:2;comment:手机验证1是2否" json:"phone_verify" comment:"手机验证1是2否" `                 // 手机验证1是2否
 	State            int8       `gorm:"column:state;index;default:1;comment:启用1是2否" json:"state" comment:"启用1是2否" `                                                // 启用1是2否
-	RegisterTime     *time.Time `gorm:"column:register_time;type:datetime;not null;default:0001-01-01 00:00:00;comment:注册时间" json:"register_time" comment:"注册时间" ` // 注册时间
+	RegisterTime     *time.Time `gorm:"column:register_time;not null;default:0001-01-01 00:00:00;comment:注册时间" json:"register_time" comment:"注册时间" `               // 注册时间
 	RegisterIP       string     `gorm:"column:register_ip;type:varchar(100)" json:"register_ip;comment:注册ip" comment:"注册ip" `                                      // 注册ip
-	LoginTime        *time.Time `gorm:"column:login_time;type:datetime;default:0001-01-01 00:00:00;comment:登陆时间" json:"login_time" comment:"登陆时间" `                // 登陆时间
+	LoginTime        *time.Time `gorm:"column:login_time;default:0001-01-01 00:00:00;comment:登陆时间" json:"login_time" comment:"登陆时间" `                              // 登陆时间
 	RoleId           int64      `gorm:"column:role_id;type:bigint;not null;index;comment:角色id" json:"role_id" comment:"角色id" `                                     // 角色id
 	LevelID          int64      `gorm:"column:level_id;type:bigint;not null;index;comment:级别id" json:"level_id" comment:"级别id" `                                   // 级别id
 	GroupID          int64      `gorm:"column:group_id;type:bigint;not null;index;comment:组id" json:"group_id" comment:"组id" `                                     // 组id

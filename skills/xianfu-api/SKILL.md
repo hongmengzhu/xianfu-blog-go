@@ -71,8 +71,8 @@ type XxxEntity struct {
     Name        string     `gorm:"column:name;type:varchar(255);comment:名称" json:"name" comment:"名称"`
     State       int8       `gorm:"column:state;not null;index;default:1;comment:1有效2停用11取消12弃置13批量删除" json:"state" comment:"状态"`
     Description string     `gorm:"column:description;type:varchar(255);comment:描述" json:"description" comment:"描述"`
-    CreateAt    *time.Time `gorm:"column:create_at;type:datetime;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at"`
-    UpdateAt    *time.Time `gorm:"column:update_at;type:datetime;autoUpdateTime;comment:更新时间" json:"update_at"`
+    CreateAt    *time.Time `gorm:"column:create_at;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at"`
+    UpdateAt    *time.Time `gorm:"column:update_at;autoUpdateTime;comment:更新时间" json:"update_at"`
     CreateBy    string     `gorm:"column:create_by;type:varchar(80);default:;comment:创建人" json:"create_by"`
     UpdateBy    string     `gorm:"column:update_by;type:varchar(80);default:;comment:更新人" json:"update_by"`
     TenantNo    string     `gorm:"column:tenant_no;type:varchar(80);index;default:;comment:租户编号" json:"tenant_no"`

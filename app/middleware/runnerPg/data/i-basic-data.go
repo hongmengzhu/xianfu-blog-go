@@ -88,9 +88,9 @@ func (b *IBasicData) Run(ctx context.Context) error {
 	//
 	b.initDefaultTenantConfig()
 	//
-	b.initSystemModel()
+	//b.initSystemModel()
 	//
-	b.initDefaultTenantModel()
+	//b.initDefaultTenantModel()
 	//
 	b.initSystemEvent()
 	//
@@ -113,6 +113,7 @@ func (b *IBasicData) initSysConfig() {
 		ModelNo:     "systemConfig",
 		Field:       "systemConfig",
 		FieldPath:   "systemConfig",
+		TenantNo:    "system",
 		Description: "系统配置",
 	}
 	save.KindUnique = cryptPg.Md5(save.No)
@@ -126,6 +127,7 @@ func (b *IBasicData) initSysConfig() {
 	{
 		{
 			item := entityBasic.BasicConfigEntity{
+				TenantNo:     save.TenantNo,
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
 				ID:           1,
@@ -139,13 +141,14 @@ func (b *IBasicData) initSysConfig() {
 				Value:        "仙府系统",
 			}
 			item.No = noPg.No()
-			item.KindUnique = cryptPg.Md5(item.Field)
+			item.KindUnique = cryptPg.Md5(item.TenantNo + item.ModelNo + item.Field)
 			fields = append(fields, item.Field)
 			dataInset = append(dataInset, &item)
 		}
 		//
 		{
 			item := entityBasic.BasicConfigEntity{
+				TenantNo:     save.TenantNo,
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
 				ID:           2,
@@ -159,7 +162,7 @@ func (b *IBasicData) initSysConfig() {
 				Value:        "",
 			}
 			item.No = noPg.No()
-			item.KindUnique = cryptPg.Md5(item.Field)
+			item.KindUnique = cryptPg.Md5(item.TenantNo + item.ModelNo + item.Field)
 			fields = append(fields, item.Field)
 			dataInset = append(dataInset, &item)
 		}
@@ -207,7 +210,7 @@ func (b *IBasicData) initDefaultTenantConfig() {
 		FieldPath:   "tenantConfig",
 		Description: "默认租户配置",
 	}
-	save.KindUnique = cryptPg.Md5(save.No)
+	save.KindUnique = cryptPg.Md5(save.TenantNo + save.ModelNo + save.No)
 	//不存在时创建
 	_, result := b.conList.FindByNo(ctx, save.No)
 	if !result {
@@ -232,7 +235,7 @@ func (b *IBasicData) initDefaultTenantConfig() {
 				Value:        "仙府博客",
 			}
 			item.No = noPg.No()
-			item.KindUnique = cryptPg.Md5(item.Field)
+			item.KindUnique = cryptPg.Md5(item.TenantNo + item.ModelNo + item.Field)
 			fields = append(fields, item.Field)
 			dataInset = append(dataInset, &item)
 		}
@@ -252,7 +255,7 @@ func (b *IBasicData) initDefaultTenantConfig() {
 				Value:        "首页",
 			}
 			item.No = noPg.No()
-			item.KindUnique = cryptPg.Md5(item.Field)
+			item.KindUnique = cryptPg.Md5(item.TenantNo + item.ModelNo + item.Field)
 			fields = append(fields, item.Field)
 			dataInset = append(dataInset, &item)
 		}
@@ -272,7 +275,7 @@ func (b *IBasicData) initDefaultTenantConfig() {
 				Value:        "创造未来",
 			}
 			item.No = noPg.No()
-			item.KindUnique = cryptPg.Md5(item.Field)
+			item.KindUnique = cryptPg.Md5(item.TenantNo + item.ModelNo + item.Field)
 			fields = append(fields, item.Field)
 			dataInset = append(dataInset, &item)
 		}
@@ -292,7 +295,7 @@ func (b *IBasicData) initDefaultTenantConfig() {
 				Value:        "创造未来",
 			}
 			item.No = noPg.No()
-			item.KindUnique = cryptPg.Md5(item.Field)
+			item.KindUnique = cryptPg.Md5(item.TenantNo + item.ModelNo + item.Field)
 			fields = append(fields, item.Field)
 			dataInset = append(dataInset, &item)
 		}
@@ -312,7 +315,7 @@ func (b *IBasicData) initDefaultTenantConfig() {
 				Value:        "创造未来",
 			}
 			item.No = noPg.No()
-			item.KindUnique = cryptPg.Md5(item.Field)
+			item.KindUnique = cryptPg.Md5(item.TenantNo + item.ModelNo + item.Field)
 			fields = append(fields, item.Field)
 			dataInset = append(dataInset, &item)
 		}
@@ -350,6 +353,7 @@ func (b *IBasicData) initSystemModel() {
 		No:            "systemConfig",
 		Model:         "systemConfig",
 		Table:         "systemConfig",
+		TenantNo:      "systemConfig",
 		Name:          "系统配置",
 		ModelCategory: configModelPg.ModelCategoryTable.Index(),
 	}
@@ -366,6 +370,7 @@ func (b *IBasicData) initSystemModel() {
 	{
 		{
 			item := entityBasic.BasicConfigModelFieldsEntity{
+				TenantNo:     save.TenantNo,
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
 				ID:           1,
@@ -379,13 +384,14 @@ func (b *IBasicData) initSystemModel() {
 				Rules:        datatypes.NewJSONType(make([]string, 0)),
 			}
 			item.No = noPg.No()
-			item.KindUnique = cryptPg.Md5(item.Field)
+			item.KindUnique = cryptPg.Md5(item.TenantNo + item.ModelNo + item.Field)
 			fields = append(fields, item.Field)
 			dataInset = append(dataInset, &item)
 		}
 		//
 		{
 			item := entityBasic.BasicConfigModelFieldsEntity{
+				TenantNo:     save.TenantNo,
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
 				ID:           2,
@@ -399,7 +405,7 @@ func (b *IBasicData) initSystemModel() {
 				Rules:        datatypes.NewJSONType(make([]string, 0)),
 			}
 			item.No = noPg.No()
-			item.KindUnique = cryptPg.Md5(item.Field)
+			item.KindUnique = cryptPg.Md5(item.TenantNo + item.ModelNo + item.Field)
 			fields = append(fields, item.Field)
 			dataInset = append(dataInset, &item)
 		}
@@ -428,6 +434,8 @@ func (b *IBasicData) initSystemModel() {
 		}
 	}
 }
+
+// 模型
 func (b *IBasicData) initDefaultTenantModel() {
 	ctx := context.Background()
 	save := entityBasic.BasicConfigModelEntity{
@@ -435,13 +443,14 @@ func (b *IBasicData) initDefaultTenantModel() {
 		Show:          yesNoIntPg.Yes.Index(),
 		ID:            2,
 		No:            constsPg.ACCOUNT_MANAGE_No,
+		TenantNo:      constsPg.ACCOUNT_MANAGE_No,
 		Model:         "tenantConfig",
 		Table:         "tenantConfig",
 		Name:          "默认租户配置",
 		ModelCategory: configModelPg.ModelCategoryTable.Index(),
 	}
 	save.Tags = datatypes.NewJSONType[[]string](make([]string, 0))
-	save.KindUnique = cryptPg.Md5(save.Model)
+	save.KindUnique = cryptPg.Md5(save.TenantNo + save.Model)
 	//不存在时创建
 	_, result := b.model.FindByNo(ctx, save.No)
 	if !result {
@@ -467,7 +476,7 @@ func (b *IBasicData) initDefaultTenantModel() {
 				Rules:        datatypes.NewJSONType(make([]string, 0)),
 			}
 			item.No = noPg.No()
-			item.KindUnique = cryptPg.Md5(item.Field)
+			item.KindUnique = cryptPg.Md5(item.TenantNo + item.ModelNo + item.Field)
 			fields = append(fields, item.Field)
 			dataInset = append(dataInset, &item)
 		}
@@ -488,7 +497,7 @@ func (b *IBasicData) initDefaultTenantModel() {
 				Rules:        datatypes.NewJSONType(make([]string, 0)),
 			}
 			item.No = noPg.No()
-			item.KindUnique = cryptPg.Md5(item.Field)
+			item.KindUnique = cryptPg.Md5(item.TenantNo + item.ModelNo + item.Field)
 			fields = append(fields, item.Field)
 			dataInset = append(dataInset, &item)
 		}
@@ -509,7 +518,7 @@ func (b *IBasicData) initDefaultTenantModel() {
 				Rules:        datatypes.NewJSONType(make([]string, 0)),
 			}
 			item.No = noPg.No()
-			item.KindUnique = cryptPg.Md5(item.Field)
+			item.KindUnique = cryptPg.Md5(item.TenantNo + item.ModelNo + item.Field)
 			fields = append(fields, item.Field)
 			dataInset = append(dataInset, &item)
 		}
@@ -530,7 +539,7 @@ func (b *IBasicData) initDefaultTenantModel() {
 				Rules:        datatypes.NewJSONType(make([]string, 0)),
 			}
 			item.No = noPg.No()
-			item.KindUnique = cryptPg.Md5(item.Field)
+			item.KindUnique = cryptPg.Md5(item.TenantNo + item.ModelNo + item.Field)
 			fields = append(fields, item.Field)
 			dataInset = append(dataInset, &item)
 		}
@@ -551,7 +560,7 @@ func (b *IBasicData) initDefaultTenantModel() {
 				Rules:        datatypes.NewJSONType(make([]string, 0)),
 			}
 			item.No = noPg.No()
-			item.KindUnique = cryptPg.Md5(item.Field)
+			item.KindUnique = cryptPg.Md5(item.TenantNo + item.ModelNo + item.Field)
 			fields = append(fields, item.Field)
 			dataInset = append(dataInset, &item)
 		}
@@ -582,16 +591,17 @@ func (b *IBasicData) initDefaultTenantModel() {
 func (b *IBasicData) initSystemEvent() {
 	ctx := context.Background()
 	save := entityBasic.BasicConfigEventEntity{
-		State:   enumStatePg.ENABLE.Index(),
-		Show:    yesNoIntPg.Yes.Index(),
-		ID:      1,
-		No:      "systemConfig",
-		Model:   "systemConfig",
-		ModelNo: "systemConfig",
-		Name:    "系统配置",
+		State:    enumStatePg.ENABLE.Index(),
+		Show:     yesNoIntPg.Yes.Index(),
+		ID:       1,
+		No:       "systemConfig",
+		Model:    "systemConfig",
+		ModelNo:  "systemConfig",
+		Name:     "系统配置",
+		TenantNo: "systemConfig",
 	}
 	save.Tags = datatypes.NewJSONType[[]string](make([]string, 0))
-	save.KindUnique = cryptPg.Md5(save.Model)
+	save.KindUnique = cryptPg.Md5(save.TenantNo + save.Model)
 	//不存在时创建
 	_, result := b.event.FindByNo(ctx, save.No)
 	if !result {
@@ -603,6 +613,7 @@ func (b *IBasicData) initSystemEvent() {
 	{
 		{
 			item := entityBasic.BasicConfigEventFieldsEntity{
+				TenantNo:     save.TenantNo,
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
 				Binary:       yesNoIntPg.No.Index(),
@@ -618,13 +629,14 @@ func (b *IBasicData) initSystemEvent() {
 				Rules:        datatypes.NewJSONType(make([]string, 0)),
 			}
 			item.No = noPg.No()
-			item.KindUnique = cryptPg.Md5(item.Field)
+			item.KindUnique = cryptPg.Md5(item.TenantNo + item.ModelNo + item.Field)
 			fields = append(fields, item.Field)
 			dataInset = append(dataInset, &item)
 		}
 		//
 		{
 			item := entityBasic.BasicConfigEventFieldsEntity{
+				TenantNo:     save.TenantNo,
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
 				Binary:       yesNoIntPg.No.Index(),
@@ -640,7 +652,7 @@ func (b *IBasicData) initSystemEvent() {
 				Rules:        datatypes.NewJSONType(make([]string, 0)),
 			}
 			item.No = noPg.No()
-			item.KindUnique = cryptPg.Md5(item.Field)
+			item.KindUnique = cryptPg.Md5(item.TenantNo + item.ModelNo + item.Field)
 			fields = append(fields, item.Field)
 			dataInset = append(dataInset, &item)
 		}
@@ -709,7 +721,7 @@ func (b *IBasicData) initDefaultTenantEvent() {
 				Rules:        datatypes.NewJSONType(make([]string, 0)),
 			}
 			item.No = noPg.No()
-			item.KindUnique = cryptPg.Md5(item.Field)
+			item.KindUnique = cryptPg.Md5(item.TenantNo + item.ModelNo + item.Field)
 			fields = append(fields, item.Field)
 			dataInset = append(dataInset, &item)
 		}
@@ -731,7 +743,7 @@ func (b *IBasicData) initDefaultTenantEvent() {
 				Rules:        datatypes.NewJSONType(make([]string, 0)),
 			}
 			item.No = noPg.No()
-			item.KindUnique = cryptPg.Md5(item.Field)
+			item.KindUnique = cryptPg.Md5(item.TenantNo + item.ModelNo + item.Field)
 			fields = append(fields, item.Field)
 			dataInset = append(dataInset, &item)
 		}
@@ -753,7 +765,7 @@ func (b *IBasicData) initDefaultTenantEvent() {
 				Rules:        datatypes.NewJSONType(make([]string, 0)),
 			}
 			item.No = noPg.No()
-			item.KindUnique = cryptPg.Md5(item.Field)
+			item.KindUnique = cryptPg.Md5(item.TenantNo + item.ModelNo + item.Field)
 			fields = append(fields, item.Field)
 			dataInset = append(dataInset, &item)
 		}
@@ -775,7 +787,7 @@ func (b *IBasicData) initDefaultTenantEvent() {
 				Rules:        datatypes.NewJSONType(make([]string, 0)),
 			}
 			item.No = noPg.No()
-			item.KindUnique = cryptPg.Md5(item.Field)
+			item.KindUnique = cryptPg.Md5(item.TenantNo + item.ModelNo + item.Field)
 			fields = append(fields, item.Field)
 			dataInset = append(dataInset, &item)
 		}
@@ -797,7 +809,7 @@ func (b *IBasicData) initDefaultTenantEvent() {
 				Rules:        datatypes.NewJSONType(make([]string, 0)),
 			}
 			item.No = noPg.No()
-			item.KindUnique = cryptPg.Md5(item.Field)
+			item.KindUnique = cryptPg.Md5(item.TenantNo + item.ModelNo + item.Field)
 			fields = append(fields, item.Field)
 			dataInset = append(dataInset, &item)
 		}

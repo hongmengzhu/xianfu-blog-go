@@ -19,7 +19,7 @@ type RamAccountAuthMfaEntity struct {
 	MfaTokenExpireAt *time.Time `gorm:"column:mfa_token_expire_at;comment:MFA令牌过期时间"`
 	State            int8       `gorm:"column:state;not null;index;default:1;comment:1有效2停用" json:"state" comment:"1有效2停用" `
 	LastUsedAt       *time.Time `gorm:"column:last_used_at"`
-	CreateAt         *time.Time `gorm:"column:create_at;type:datetime;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `
+	CreateAt         *time.Time `gorm:"column:create_at;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `
 }
 
 func (*RamAccountAuthMfaEntity) TableName() string { return "ram_account_auth_mfa" }

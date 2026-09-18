@@ -7,8 +7,8 @@ type RamIdpBindingEntity struct {
 	ID            int64      `gorm:"column:id;primaryKey;autoIncrement:true" json:"id" comment:""`
 	No            string     `gorm:"column:no;type:varchar(80);index;default:;comment:编号" json:"no" comment:"编号" `
 	Description   string     `gorm:"column:description;type:varchar(255);comment:描述" json:"description" comment:"描述" `
-	CreateAt      *time.Time `gorm:"column:create_at;type:datetime;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `
-	UpdateAt      *time.Time `gorm:"column:update_at;type:datetime;autoUpdateTime;comment:更新时间" json:"update_at" comment:"更新时间" `
+	CreateAt      *time.Time `gorm:"column:create_at;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `
+	UpdateAt      *time.Time `gorm:"column:update_at;autoUpdateTime;comment:更新时间" json:"update_at" comment:"更新时间" `
 	CreateBy      string     `gorm:"column:create_by;type:varchar(80);index;default:;comment:创建人" json:"create_by" comment:"创建人" `
 	UpdateBy      string     `gorm:"column:update_by;type:varchar(80);default:;comment:更新人" json:"update_by" comment:"更新人" `
 	TenantNo      string     `gorm:"column:tenant_no;type:varchar(80);index;default:;comment:租户编号" json:"tenant_no" comment:"租户编号" ` // 租户
@@ -23,9 +23,9 @@ type RamIdpBindingEntity struct {
 	RefreshToken  string     `gorm:"column:refresh_token;type:varchar(255);comment:刷新令牌" json:"refresh_token" comment:"刷新令牌" `
 	State         int8       `gorm:"column:state;not null;index;default:1;comment:状态|1启用|2禁用" json:"state" comment:"状态:1启用;2禁用" ` // 状态:1启用;2禁用
 	StateBind     int8       `gorm:"column:state_bind;type:int8;not null;index;default:1;comment:绑定状态|1未绑定|2已绑定" json:"state_bind" comment:"绑定状态:1未绑定;2已绑定" `
-	BindTime      *time.Time `gorm:"column:bind_time;type:datetime;comment:绑定时间" json:"bind_time" comment:"绑定时间" `
-	UnBindTime    *time.Time `gorm:"column:un_bind_time;type:datetime;comment:解绑时间" json:"un_bind_time" comment:"解绑时间" `
-	LastLoginTime *time.Time `gorm:"column:last_login_time;type:datetime;comment:最后登录时间" json:"last_login_time" comment:"最后登录时间" `
+	BindTime      *time.Time `gorm:"column:bind_time;comment:绑定时间" json:"bind_time" comment:"绑定时间" `
+	UnBindTime    *time.Time `gorm:"column:un_bind_time;comment:解绑时间" json:"un_bind_time" comment:"解绑时间" `
+	LastLoginTime *time.Time `gorm:"column:last_login_time;comment:最后登录时间" json:"last_login_time" comment:"最后登录时间" `
 	Platform      string     `gorm:"column:platform;type:varchar(80);index;default:;comment:平台" json:"platform" comment:"平台" `
 	Protocol      string     `gorm:"column:protocol;type:varchar(80);index;default:;comment:协议|openid|oauth" json:"protocol" comment:"协议|openid|oauth" `
 	Mail          string     `gorm:"column:mail;type:varchar(80);index;default:;comment:邮箱" json:"mail" comment:"邮箱" `

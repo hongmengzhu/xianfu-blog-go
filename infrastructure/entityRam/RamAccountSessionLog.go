@@ -11,7 +11,7 @@ type RamAccountSessionLogEntity struct {
 	TenantNo   string     `gorm:"column:tenant_no;type:varchar(80);index;default:;comment:租户编号" json:"tenant_no" comment:"租户编号" `
 	OrgNo      string     `gorm:"column:org_no;type:varchar(80);index;default:;comment:组织编号" json:"org_no" comment:"组织编号" `
 	StoreNo    string     `gorm:"column:store_no;type:varchar(80);index;default:;comment:店编号" json:"store_no" comment:"店编号" `
-	CreateAt   *time.Time `gorm:"column:create_at;type:datetime;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `
+	CreateAt   *time.Time `gorm:"column:create_at;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `
 	TypeDomain string     `gorm:"column:type_domain;type:varchar(80);index;default:'general';comment:域类型" json:"type_domain" comment:"域类型系统-商户" `
 	// 关联认证源/IdP
 	Idp      string `gorm:"column:idp;type:varchar(80);index;default:;comment:身份 提供商" json:"idp" comment:"身份 提供商" `
@@ -35,10 +35,10 @@ type RamAccountSessionLogEntity struct {
 	UserAgent string `gorm:"column:user_agent;type:text;comment:UA" json:"user_agent" comment:"浏览器/客户端UA"`
 
 	// 时间维度
-	OperateAt *time.Time `gorm:"column:operate_at;type:datetime;index;comment:事件发生时间" json:"operate_at" comment:"事件发生时间"`
-	LoginAt   *time.Time `gorm:"column:login_at;type:datetime;index;comment:登录时间" json:"login_at" comment:"登录时间"`
-	LogoutAt  *time.Time `gorm:"column:logout_at;type:datetime;index;comment:登出时间" json:"logout_at" comment:"登出时间"`
-	ExpireAt  *time.Time `gorm:"column:expire_at;type:datetime;index;comment:会话过期时间" json:"expire_at" comment:"会话过期时间"`
+	OperateAt *time.Time `gorm:"column:operate_at;index;comment:事件发生时间" json:"operate_at" comment:"事件发生时间"`
+	LoginAt   *time.Time `gorm:"column:login_at;index;comment:登录时间" json:"login_at" comment:"登录时间"`
+	LogoutAt  *time.Time `gorm:"column:logout_at;index;comment:登出时间" json:"logout_at" comment:"登出时间"`
+	ExpireAt  *time.Time `gorm:"column:expire_at;index;comment:会话过期时间" json:"expire_at" comment:"会话过期时间"`
 
 	// 扩展原始报文（调试审计）
 	RawRequest string `gorm:"column:raw_request;type:text;comment:原始请求参数JSON" json:"-"`

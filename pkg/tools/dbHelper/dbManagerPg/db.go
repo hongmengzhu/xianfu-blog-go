@@ -6,6 +6,9 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"go-spring.org/log"
 	gormcore "go-spring.org/starter-gorm"
+	_ "go-spring.org/starter-gorm-mysql"
+	_ "go-spring.org/starter-gorm-postgres"
+	_ "go-spring.org/starter-gorm-sqlite"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )

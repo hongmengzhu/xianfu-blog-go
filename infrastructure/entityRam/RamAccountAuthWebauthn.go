@@ -14,7 +14,7 @@ type RamAccountAuthWebauthnEntity struct {
 	Counter      uint64     `gorm:"column:counter;comment:签名计数器，防重放"`
 	Enabled      int8       `gorm:"column:enabled;default:1"`
 	LastUsedAt   *time.Time `gorm:"column:last_used_at"`
-	CreateAt     *time.Time `gorm:"column:create_at;type:datetime;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `
+	CreateAt     *time.Time `gorm:"column:create_at;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `
 }
 
 func (*RamAccountAuthWebauthnEntity) TableName() string    { return "ram_account_auth_webauthn" }

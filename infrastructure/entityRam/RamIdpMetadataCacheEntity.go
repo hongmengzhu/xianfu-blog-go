@@ -24,14 +24,14 @@ type RamIdpMetadataCacheEntity struct {
 	MetadataRaw string `gorm:"column:metadata_raw;type:text;comment:原始元数据内容" json:"-"`
 
 	// 缓存生命周期
-	LastFetchAt *time.Time `gorm:"column:last_fetch_at;type:datetime;comment:上次拉取时间" json:"last_fetch_at" comment:"上次拉取时间"`
-	ExpireAt    *time.Time `gorm:"column:expire_at;type:datetime;index;comment:缓存过期时间" json:"expire_at" comment:"缓存过期时间"`
+	LastFetchAt *time.Time `gorm:"column:last_fetch_at;comment:上次拉取时间" json:"last_fetch_at" comment:"上次拉取时间"`
+	ExpireAt    *time.Time `gorm:"column:expire_at;index;comment:缓存过期时间" json:"expire_at" comment:"缓存过期时间"`
 	CacheTtl    int64      `gorm:"column:cache_ttl;type:bigint;default:3600;comment:缓存有效期(秒)" json:"cache_ttl" comment:"缓存TTL，单位秒"`
 
 	State int8 `gorm:"column:state;not null;index;default:1;comment:状态1有效2失效" json:"state" comment:"缓存状态：1有效 2失效"`
 
-	CreateAt *time.Time `gorm:"column:create_at;type:datetime;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间"`
-	UpdateAt *time.Time `gorm:"column:update_at;type:datetime;autoUpdateTime;comment:更新时间" json:"update_at" comment:"更新时间"`
+	CreateAt *time.Time `gorm:"column:create_at;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间"`
+	UpdateAt *time.Time `gorm:"column:update_at;autoUpdateTime;comment:更新时间" json:"update_at" comment:"更新时间"`
 }
 
 // TableName RamIdpMetadataCacheEntity's table name
