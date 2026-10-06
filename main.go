@@ -48,6 +48,11 @@ func main() {
 	var version bool
 	flag.BoolVar(&version, "v", false, "version")
 	flag.Parse()
+	// Unset env vars that leak from the developer shell so runs are reproducible
+	// and consistent with sibling examples.
+	_ = os.Unsetenv("_")
+	_ = os.Unsetenv("TERM")
+	_ = os.Unsetenv("TERM_SESSION_ID")
 	if version {
 		fmt.Printf("go version: %s\nBuild version: %s\nBuild commit: %s\nBuild time: %s\n",
 			runtime.Version(), cmd.BuildVersion, cmd.BuildGitCommit, cmd.BuildTime)

@@ -7,6 +7,10 @@ addr = ":9981"
 # 不带 / 后缀
 domain = "http://localhost:9981"
 
+
+[spring.governance.source.file]
+path = "data/config/governance.toml"
+
 # 数据库
 [database]
 # 是否启用

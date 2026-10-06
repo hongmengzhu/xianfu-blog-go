@@ -1,0 +1,7 @@
+
+[spring.governance]
+enabled = false
+driver = "default"
+
+[spring.governance.server.default]
+rate-limit = 5

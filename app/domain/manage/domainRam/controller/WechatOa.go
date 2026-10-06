@@ -80,7 +80,7 @@ func (c *WechatOaController) WebhookVerify(ctx *gin.Context) {
 func (c *WechatOaController) WebhookEvent(ctx *gin.Context) {
 	bodyBytes, err := io.ReadAll(ctx.Request.Body)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "读取微信 webhook body 失败: %v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "读取微信 webhook body 失败: %v", err)
 		ctx.String(http.StatusOK, "")
 		return
 	}
@@ -88,7 +88,7 @@ func (c *WechatOaController) WebhookEvent(ctx *gin.Context) {
 	sourceNo := ctx.Query("sourceNo")
 	result := c.sv.HandleEvent(ctx, bodyBytes, sourceNo)
 	if result.ErrorIs() {
-		log.Errorf(ctx, log.TagAppDef, "处理微信事件失败: %s", result.Message)
+		log.Errorf(ctx, log.TagAppDef, nil, "处理微信事件失败: %s", result.Message)
 	}
 
 	// 微信要求返回空字符串表示成功
