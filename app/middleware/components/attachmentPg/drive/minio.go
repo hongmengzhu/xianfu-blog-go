@@ -45,7 +45,7 @@ func (s *Minio) PutObject(r io.Reader, put modAttachment.PutFileDto, ext modAtta
 
 	_, err := s.Client.PutObject(context.Background(), s.Bucket, out, r, put.Size, minio.PutObjectOptions{})
 	if err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, "minio upload error: %v", err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "minio upload error: %v", err)
 		return attachment, errors.New("文件上传失败")
 	}
 
@@ -55,7 +55,7 @@ func (s *Minio) PutObject(r io.Reader, put modAttachment.PutFileDto, ext modAtta
 func (s *Minio) ExistsObject(name string) bool {
 	_, err := s.Client.StatObject(context.Background(), s.Bucket, name, minio.StatObjectOptions{})
 	if err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, "err=%+v", err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "err=%+v", err)
 		if err.Error() == "The specified key does not exist." {
 			return false
 		}

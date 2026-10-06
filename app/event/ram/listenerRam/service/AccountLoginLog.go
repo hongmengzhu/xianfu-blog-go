@@ -63,7 +63,7 @@ func (c *AccountLoginLog) Processor(ctx context.Context, data modRamAccount.Logi
 		}
 		err, _ := c.session.Create(ctx, &session)
 		if err != nil {
-			log.Errorf(ctx, log.TagAppDef, "", err)
+			log.Errorf(ctx, log.TagAppDef, err, "")
 		}
 	}
 	//登录日志
@@ -79,7 +79,7 @@ func (c *AccountLoginLog) Processor(ctx context.Context, data modRamAccount.Logi
 	}
 	err, _ := c.loginLog.Create(ctx, &save)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "", err)
+		log.Errorf(ctx, log.TagAppDef, err, "")
 	}
 	return err
 }

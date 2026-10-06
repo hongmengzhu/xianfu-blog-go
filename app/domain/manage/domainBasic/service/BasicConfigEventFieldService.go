@@ -134,7 +134,7 @@ func (c *BasicConfigEventFieldsService) CreateUpdate(ctx *gin.Context, ct modBas
 	if len(dataAdd) > 0 {
 		tx := c.sv.DbModel().CreateInBatches(dataAdd, 1000000)
 		if tx.Error != nil {
-			log.Errorf(ctx, log.TagAppDef, "save err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "save err=%+v", tx.Error)
 			return rt.ErrorMessage("保存失败：")
 		}
 	}

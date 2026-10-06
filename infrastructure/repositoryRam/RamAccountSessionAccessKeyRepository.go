@@ -27,7 +27,7 @@ func (c *RamAccountSessionAccessKeyRepository) FindByAno(ctx context.Context, no
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -42,7 +42,7 @@ func (c *RamAccountSessionAccessKeyRepository) FindByAnoAndAppNo(ctx context.Con
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -57,7 +57,7 @@ func (c *RamAccountSessionAccessKeyRepository) FindByNoAndState(ctx context.Cont
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -71,7 +71,7 @@ func (c *RamAccountSessionAccessKeyRepository) FindByNoAndClientAndState(ctx con
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -86,7 +86,7 @@ func (c *RamAccountSessionAccessKeyRepository) FindByTenantNoAndNoAndState(ctx c
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -101,7 +101,7 @@ func (c *RamAccountSessionAccessKeyRepository) FindByTypeDomainAndState(ctx cont
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -116,7 +116,7 @@ func (c *RamAccountSessionAccessKeyRepository) FindByTypeDomainInAndState(ctx co
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -131,7 +131,7 @@ func (c *RamAccountSessionAccessKeyRepository) FindByTypeDomainInAndClientAndSta
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -145,7 +145,7 @@ func (c *RamAccountSessionAccessKeyRepository) FindByTenantNoAndTypeDomainInAndC
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -159,7 +159,7 @@ func (c *RamAccountSessionAccessKeyRepository) FindByTenantNoAndTypeDomainInAndC
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -173,7 +173,7 @@ func (c *RamAccountSessionAccessKeyRepository) DeleteByTypeDomainInAndClientAndS
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return false
 	}
@@ -185,7 +185,7 @@ func (c *RamAccountSessionAccessKeyRepository) DeleteByTypeDomainAndClientAndSta
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return false
 	}
@@ -197,7 +197,7 @@ func (c *RamAccountSessionAccessKeyRepository) DeleteByTypeDomainAndClientAndTyp
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return false
 	}
@@ -208,7 +208,7 @@ func (c *RamAccountSessionAccessKeyRepository) DeleteByTenantNoAndTypeDomainAndC
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return false
 	}

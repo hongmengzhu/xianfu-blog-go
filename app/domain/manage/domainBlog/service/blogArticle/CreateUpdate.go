@@ -257,7 +257,7 @@ func (c CreateUpdate) save(ctx *gin.Context) (rt rg.Rs[string]) {
 		//
 		err = c.sp.statisticsDb.Update(ctx, statistics, c.ct.ID.ToInt64())
 		if err != nil {
-			log.Errorf(ctx, log.TagAppDef, "save statistics err=%+v", err)
+			log.Errorf(ctx, log.TagAppDef, err, "save statistics err=%+v", err)
 		}
 	} else {
 		log.Infof(ctx, log.TagAppDef, "info=%+v", c.entitySave)
@@ -278,7 +278,7 @@ func (c CreateUpdate) save(ctx *gin.Context) (rt rg.Rs[string]) {
 		statistics.ArticleNo = c.entitySave.No
 		err, _ = c.sp.statisticsDb.Create(ctx, &statistics)
 		if err != nil {
-			log.Errorf(ctx, log.TagAppDef, "save statistics err=%+v", err)
+			log.Errorf(ctx, log.TagAppDef, err, "save statistics err=%+v", err)
 		}
 	}
 	//话题
@@ -369,6 +369,6 @@ func (c *CreateUpdate) tagsListener(ctx *gin.Context) {
 		Holder:   c.holder,
 	})
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "error:%+v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "error:%+v", err)
 	}
 }

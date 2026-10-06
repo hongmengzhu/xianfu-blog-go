@@ -75,7 +75,7 @@ func (c *ConfigUpdate) Process(ctx *gin.Context, ct modBasicConfigList.ConfigUpd
 			var obj modCacheBasicEvent.FieldCache
 			err := json.Unmarshal([]byte(v), &obj)
 			if err != nil {
-				log.Errorf(ctx, log.TagAppDef, "json.Unmarshal.err:%+v", err)
+				log.Errorf(ctx, log.TagAppDef, err, "json.Unmarshal.err:%+v", err)
 			} else {
 				copier.Copy(&obj, v)
 				//
@@ -99,7 +99,7 @@ func (c *ConfigUpdate) Process(ctx *gin.Context, ct modBasicConfigList.ConfigUpd
 						var obj modCacheBasicRules.RulesCache
 						err := json.Unmarshal([]byte(v2), &obj)
 						if err != nil {
-							log.Errorf(ctx, log.TagAppDef, "json.Unmarshal.err:%+v", err)
+							log.Errorf(ctx, log.TagAppDef, err, "json.Unmarshal.err:%+v", err)
 						} else {
 							mapRules[k] = append(mapRules[k], &obj)
 						}

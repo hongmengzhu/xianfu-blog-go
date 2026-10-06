@@ -70,7 +70,7 @@ func (c *Get) GetJsonStruct(ctx context.Context, key string, v interface{}) (rt 
 	log.Debugf(ctx, log.TagAppDef, "缓存[key]=%+v,[data]=%+v", key, result)
 	err = json.Unmarshal([]byte(result), &v)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "缓存序列化失败: %+v", err.Error())
+		log.Errorf(ctx, log.TagAppDef, err, "缓存序列化失败: %+v", err.Error())
 		return rt.ErrorMessage("缓存序列化失败")
 	}
 	return rt.OkData(result)
@@ -100,13 +100,13 @@ func (c *Get) GetJsonMapStruct(ctx context.Context, key string, v any) (rt rg.Rs
 	var tmp map[string]interface{}
 	err = json.Unmarshal([]byte(result), &tmp)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "缓存序列化失败: %+v", err.Error())
+		log.Errorf(ctx, log.TagAppDef, err, "缓存序列化失败: %+v", err.Error())
 		return rt.ErrorMessage("缓存序列化失败")
 	}
 	log.Debugf(ctx, log.TagAppDef, "缓存[key]=%+v,[map[string]interface{}]=%+v", key, tmp)
 	//map 转为 struct
 	if err = mapstructure.Decode(tmp, &v); err != nil {
-		log.Errorf(ctx, log.TagAppDef, "map 转 struct err=%+v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "map 转 struct err=%+v", err)
 		return rt.ErrorMessage("缓存序列化失败")
 	}
 	return rt.OkData(result)
@@ -151,7 +151,7 @@ func (c *Get) GetStringToJson(ctx context.Context, key string, v any) (rt rg.Rs[
 	log.Debugf(ctx, log.TagAppDef, "缓存[key]=%+v,[data]=%+v", key, result)
 	err = json.Unmarshal([]byte(result), v)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "缓存序列化失败: %+v", err.Error())
+		log.Errorf(ctx, log.TagAppDef, err, "缓存序列化失败: %+v", err.Error())
 		return rt.ErrorMessage("缓存序列化失败")
 	}
 	log.Debugf(ctx, log.TagAppDef, "缓存[key]=%+v,[data]=%+v", key, v)
@@ -164,13 +164,13 @@ func (t *Get) GetAllEvalByLua(ctx context.Context, key []string) ([]interface{},
 		if errors.Is(err, redis.Nil) {
 			return nil, false
 		}
-		log.Errorf(context.Background(), log.TagAppDef, "获取缓存失败:", err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "获取缓存失败:", err)
 		return nil, false
 	}
 	// 解析返回结果
 	result, ok := resp.([]interface{})
 	if !ok {
-		log.Errorf(context.Background(), log.TagAppDef, "获取缓存失败:返回结果格式错误，预期为数组类型:", err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "获取缓存失败:返回结果格式错误，预期为数组类型:", err)
 		return nil, false
 	}
 	return result, true

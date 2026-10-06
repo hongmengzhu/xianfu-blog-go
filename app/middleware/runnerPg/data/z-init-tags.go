@@ -20,7 +20,7 @@ func (c *ZInitTagsCache) Run(ctx context.Context) error {
 	log.Infof(ctx, log.TagAppDef, "[init].[标签缓存]===================")
 	err := tagsBasicEvent.NewStartInit(c.sp).Processor(context.Background())
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "error:", err)
+		log.Errorf(ctx, log.TagAppDef, err, "error:", err)
 	}
 	return nil
 }

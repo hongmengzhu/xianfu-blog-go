@@ -19,7 +19,7 @@ func (c *ZInitCacheBlog) Run(ctx context.Context) error {
 	log.Infof(ctx, log.TagAppDef, "[init].[博客.分类.缓存]===================")
 	err := articleBlogEvent.NewStartInit(c.Bus).Processor(context.Background())
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "error:%+v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "error:%+v", err)
 	}
 	return nil
 }

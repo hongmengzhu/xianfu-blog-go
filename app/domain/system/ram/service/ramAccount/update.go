@@ -100,7 +100,7 @@ func (c *Update) accountUpdate(ctx *gin.Context, ct modRamAccount.CreateUpdateAc
 	log.Infof(ctx, log.TagAppDef, "update=%+v", entity)
 	err := r.Update(c.ctx, entity, entity.ID)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "save.error=%#v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "save.error=%#v", err)
 		return rt.ErrorMessage("保存失败")
 	}
 	return rt.Ok()
@@ -287,7 +287,7 @@ func (c *Update) updateAll(ctx *gin.Context, ct modRamAccount.CreateUpdateCt, tp
 	log.Infof(ctx, log.TagAppDef, "update=%+v", entity)
 	err := r.Update(c.ctx, entity, info.ID)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "save.error=%#v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "save.error=%#v", err)
 		return rt.ErrorMessage("保存失败")
 	}
 	return rt.OkData(numberPg.Int64ToString(info.ID))

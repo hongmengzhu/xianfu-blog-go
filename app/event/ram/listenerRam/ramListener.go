@@ -31,7 +31,7 @@ func (c *RamListener) Register(bus event.Bus) {
 		if strPg.IsNotBlank(e.Ano) {
 			err := service.NewAccountLoginLog(c.acc, c.loginLog, c.session).Processor(context.Background(), e)
 			if nil != err {
-				log.Errorf(ctx, log.TagAppDef, "", err)
+				log.Errorf(ctx, log.TagAppDef, err, "")
 			}
 		}
 		return nil
@@ -51,7 +51,7 @@ func (c *RamListener) Register(bus event.Bus) {
 //		if strPg.IsNotBlank(dto.Ano) {
 //			err := service.NewAccountLoginLog(c.acc, c.loginLog, c.session).Processor(context.Background(), dto)
 //			if nil != err {
-//				log.Errorf(ctx, log.TagAppDef, "", err)
+//				log.Errorf(ctx, log.TagAppDef, err, "")
 //			}
 //			message = nil
 //		}

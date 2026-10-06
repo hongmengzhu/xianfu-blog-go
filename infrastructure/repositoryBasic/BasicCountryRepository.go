@@ -27,7 +27,7 @@ func (c *BasicCountryRepository) FindByCountryCode(ctx context.Context, code str
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -41,7 +41,7 @@ func (c *BasicCountryRepository) FindByCountryCodeAndIdNot(ctx context.Context, 
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}

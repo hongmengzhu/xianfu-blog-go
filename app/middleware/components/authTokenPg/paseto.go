@@ -103,7 +103,7 @@ func VerifyByPublicKey(pubKey, signed string) (t *paseto.Token, rt rg.Rs[string]
 	parser.AddRule(paseto.ValidAt(time.Now()))
 	token, err := parser.ParseV4Public(publicKey, signed, nil)
 	if nil != err {
-		log.Errorf(context.Background(), log.TagAppDef, "验证失败= %+v", err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "验证失败= %+v", err)
 		return nil, rt.ErrorMessage("验证失败")
 	}
 	return token, rt.Ok()

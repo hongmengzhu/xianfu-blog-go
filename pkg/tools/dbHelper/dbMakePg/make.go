@@ -74,7 +74,7 @@ func MakeTable(db *gorm.DB, tmp interface{}, tableName, tableComment string) {
 	err := db.AutoMigrate(tmp)
 	if err != nil {
 		//panic(err)
-		log.Errorf(context.Background(), log.TagAppDef, "MakeTable err=%+v \n", err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "MakeTable err=%+v \n", err)
 		return
 	}
 	if strPg.IsNotBlank(tableComment) {

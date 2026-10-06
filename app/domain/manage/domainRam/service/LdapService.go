@@ -220,7 +220,7 @@ func (s *LdapService) Login(ctx *gin.Context, ct modRamLdap.LdapLoginCt) (rt rg.
 	// 验证用户密码
 	ldapUser, err := conn.CheckUserPassword(cfg, ct.Username, ct.Password)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "LDAP 用户 %s 认证失败: %v", ct.Username, err)
+		log.Errorf(ctx, log.TagAppDef, err, "LDAP 用户 %s 认证失败: %v", ct.Username, err)
 		return rt.ErrorMessage("LDAP 认证失败: " + err.Error())
 	}
 
@@ -331,7 +331,7 @@ func (s *LdapService) createAccountFromLdap(
 	}
 	errBind, _ := s.daoBinding.Create(ctx, binding)
 	if errBind != nil {
-		log.Errorf(ctx, log.TagAppDef, "创建 LDAP 绑定记录失败: %v", errBind)
+		log.Errorf(ctx, log.TagAppDef, errBind, "创建 LDAP 绑定记录失败: %v", errBind)
 	}
 
 	log.Infof(ctx, log.TagAppDef, "LDAP 自动创建账号: no=%s, account=%s", account.No, account.Account)
@@ -381,7 +381,7 @@ func (s *LdapService) loginSuccess(
 	}
 	errLog, _ := s.daoSessionLog.Create(ctx, logEntity)
 	if errLog != nil {
-		log.Errorf(ctx, log.TagAppDef, "保存 LDAP 登录审计日志失败: %v", errLog)
+		log.Errorf(ctx, log.TagAppDef, errLog, "保存 LDAP 登录审计日志失败: %v", errLog)
 	}
 
 	success := modRamLogin.IdpLoginSuccess{

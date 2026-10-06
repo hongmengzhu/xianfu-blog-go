@@ -204,7 +204,7 @@ func (c *RamMenuService) Update(ctx *gin.Context, ct modRamMenu.CreateUpdateCt) 
 	//
 	err = r.Update(ctx, info, info.ID)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "update error=%+v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "update error=%+v", err)
 		return rt.ErrorMessage(err.Error())
 	}
 	log.Infof(ctx, log.TagAppDef, "save.info=%+v", info)

@@ -154,7 +154,7 @@ func (c *AccountLoginService) loginLogSave(ctx *gin.Context, account *entityRam.
 	//保存到数据库
 	err := c.Bus.Publish(context.Background(), obj)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "error:%+v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "error:%+v", err)
 	}
 }
 

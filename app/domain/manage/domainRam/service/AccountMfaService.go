@@ -48,7 +48,7 @@ func (c *AccountMfaService) Setup(ctx *gin.Context, ct modRamMfa.SetupCt) (rt rg
 	// 初始化 MFA（生成 secret 和 URL）
 	props, err := mfaUtil.Initiate(ano, "XianfuBlog")
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "MFA Initiate 失败: %v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "MFA Initiate 失败: %v", err)
 		return rt.ErrorMessage("初始化 MFA 失败: " + err.Error())
 	}
 
@@ -118,7 +118,7 @@ func (c *AccountMfaService) Enable(ctx *gin.Context, ct modRamMfa.EnableCt) (rt 
 
 	errCreate, _ := c.daoMfa.Create(ctx, entity)
 	if errCreate != nil {
-		log.Errorf(ctx, log.TagAppDef, "创建 MFA 记录失败: %v", errCreate)
+		log.Errorf(ctx, log.TagAppDef, err, "创建 MFA 记录失败: %v", errCreate)
 		return rt.ErrorMessage("启用 MFA 失败: " + errCreate.Error())
 	}
 
@@ -156,7 +156,7 @@ func (c *AccountMfaService) Disable(ctx *gin.Context, ct modRamMfa.DisableCt) (r
 	// 删除所有 MFA 记录
 	err := c.daoMfa.DeleteByAno(ctx, ano)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "删除 MFA 记录失败: %v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "删除 MFA 记录失败: %v", err)
 		return rt.ErrorMessage("禁用 MFA 失败: " + err.Error())
 	}
 

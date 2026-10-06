@@ -29,7 +29,7 @@ func ManageConfigStructMapping(key string, data []byte) (any, bool) {
 	var info settingPg.ManageConfig
 	err := json.Unmarshal(data, &info)
 	if nil != err {
-		log.Errorf(context.Background(), log.TagAppDef, "json.error=%+v", err.Error())
+		log.Errorf(context.Background(), log.TagAppDef, err, "json.error=%+v", err.Error())
 		return nil, false
 	}
 	return key, true

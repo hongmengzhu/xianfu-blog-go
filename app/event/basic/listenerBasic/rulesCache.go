@@ -25,7 +25,7 @@ func (c *RulesCacheListener) Register(bus event.Bus) {
 	event.Subscribe(bus, func(ctx context.Context, e modEventBasicRules.RulesDto) error {
 		err := eventBasicRules.NewRulesMakeCache(c.sp, e).Processor(context.Background())
 		if nil != err {
-			log.Errorf(ctx, log.TagAppDef, "基础.模型事件.缓存:%+v", err)
+			log.Errorf(ctx, log.TagAppDef, err, "基础.模型事件.缓存:%+v", err)
 		}
 		return nil
 	})

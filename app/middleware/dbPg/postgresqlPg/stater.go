@@ -31,13 +31,13 @@ func (factory *Factory) CreateDB() (*gorm.DB, error) {
 		Logger: logger.Default.LogMode(logger.Info),
 	})
 	if err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, "open gorm postgresql %s error: %v", factory.database.URL, err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "open gorm postgresql %s error: %v", factory.database.URL, err)
 		panic(errors.New(err.Error()))
 		return nil, err
 	}
 	sqlDB, err := db.DB()
 	if err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, "failed to get database connection")
+		log.Errorf(context.Background(), log.TagAppDef, err, "failed to get database connection")
 	}
 	// 设置最大空闲连接数
 	sqlDB.SetMaxIdleConns(10)
@@ -96,13 +96,13 @@ func newClient(c configPg.Database) (*gorm.DB, error) {
 		Logger: logger.Default.LogMode(logger.Info),
 	})
 	if err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, "open gorm postgresql %s error: %v", c.URL, err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "open gorm postgresql %s error: %v", c.URL, err)
 		panic(errors.New(err.Error()))
 		return nil, err
 	}
 	sqlDB, err := db.DB()
 	if err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, "failed to get database connection")
+		log.Errorf(context.Background(), log.TagAppDef, err, "failed to get database connection")
 	}
 	// 设置最大空闲连接数
 	sqlDB.SetMaxIdleConns(10)

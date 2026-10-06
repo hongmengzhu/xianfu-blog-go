@@ -27,7 +27,7 @@ func (c *BasicConfigListRepository) FindByEventNo(ctx context.Context, eventNo s
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -42,7 +42,7 @@ func (c *BasicConfigListRepository) FindByTenantNoAndEventNoAndIdNot(ctx context
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}

@@ -28,7 +28,7 @@ func (c *RamResourceGroupRelationRepository) FindByMark(ctx context.Context, cod
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -41,7 +41,7 @@ func (c *RamResourceGroupRelationRepository) FindByMark(ctx context.Context, cod
 func (c *RamResourceGroupRelationRepository) DeleteByTypeCategoryAndTypeValue(ctx context.Context, typeCategory, typeValue string) error {
 	tx := c.DbModel().WithContext(ctx).Where("type_category = ?", typeCategory).Where("type_value = ?", typeValue).Delete(&entityRam.RamResourceGroupRelationEntity{})
 	if tx.Error != nil {
-		log.Errorf(ctx, log.TagAppDef, "", tx.Error)
+		log.Errorf(ctx, log.TagAppDef, tx.Error, "")
 		return tx.Error
 	}
 	return nil

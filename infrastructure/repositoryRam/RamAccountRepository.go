@@ -28,7 +28,7 @@ func (c *RamAccountRepository) FindByTypeDomainIn(ctx context.Context, typeDomai
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -41,7 +41,7 @@ func (c *RamAccountRepository) FindByTypeDomainIn(ctx context.Context, typeDomai
 func (c *RamAccountRepository) FindByAccount(ctx context.Context, code string, opts ...optionsPg.Option) (info *entityRam.RamAccountEntity, query bool, err error) {
 	tx := c.SetOptionScopes(c.DbModel().WithContext(ctx), opts...).Where("account=?", code).First(&info)
 	if tx.Error != nil {
-		log.Errorf(ctx, log.TagAppDef, "", tx.Error)
+		log.Errorf(ctx, log.TagAppDef, tx.Error, "")
 		return nil, false, tx.Error
 	}
 	if 0 == tx.RowsAffected {
@@ -53,7 +53,7 @@ func (c *RamAccountRepository) FindByAccount(ctx context.Context, code string, o
 func (c *RamAccountRepository) FindByAccountMd5(ctx context.Context, code string, opts ...optionsPg.Option) (info *entityRam.RamAccountEntity, query bool, err error) {
 	tx := c.SetOptionScopes(c.DbModel().WithContext(ctx), opts...).Where("account_md5=?", code).Find(&info)
 	if tx.Error != nil {
-		log.Errorf(ctx, log.TagAppDef, "", tx.Error)
+		log.Errorf(ctx, log.TagAppDef, tx.Error, "")
 		return nil, false, tx.Error
 	}
 	if 0 == tx.RowsAffected {
@@ -66,7 +66,7 @@ func (c *RamAccountRepository) FindByAccountAndTypeDomain(ctx context.Context, c
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -81,7 +81,7 @@ func (c *RamAccountRepository) FindByAccountAndTypeDomainAndIdNot(ctx context.Co
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -96,7 +96,7 @@ func (c *RamAccountRepository) FindByPhoneAndTypeDomainAndIdNot(ctx context.Cont
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -110,7 +110,7 @@ func (c *RamAccountRepository) FindByPhoneMd5AndTypeDomainAndIdNot(ctx context.C
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -124,7 +124,7 @@ func (c *RamAccountRepository) FindByMailAndTypeDomainAndIdNot(ctx context.Conte
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -138,7 +138,7 @@ func (c *RamAccountRepository) FindByCodeAndTypeDomainAndIdNot(ctx context.Conte
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -152,7 +152,7 @@ func (c *RamAccountRepository) FindByIdentityCodeAndTypeDomainAndIdNot(ctx conte
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -166,7 +166,7 @@ func (c *RamAccountRepository) FindByRealNameAndTypeDomainAndIdNot(ctx context.C
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -178,7 +178,7 @@ func (c *RamAccountRepository) FindByRealNameAndTypeDomainAndIdNot(ctx context.C
 func (c *RamAccountRepository) FindByAccountMd5AndTypeDomain(ctx context.Context, code, typeDomain string, opts ...optionsPg.Option) (info *entityRam.RamAccountEntity, query bool, err error) {
 	tx := c.SetOptionScopes(c.DbModel().WithContext(ctx), opts...).Where("account_md5=?", code).Where("type_domain=?", typeDomain).Find(&info)
 	if tx.Error != nil {
-		log.Errorf(ctx, log.TagAppDef, "", tx.Error)
+		log.Errorf(ctx, log.TagAppDef, tx.Error, "")
 		return nil, false, tx.Error
 	}
 	if 0 == tx.RowsAffected {
@@ -192,7 +192,7 @@ func (c *RamAccountRepository) FindByAccountMd5AndTypeDomainAndTenantNo(ctx cont
 		Where("account_md5=?", code).
 		Where("type_domain=?", typeDomain).Find(&info)
 	if tx.Error != nil {
-		log.Errorf(ctx, log.TagAppDef, "", tx.Error)
+		log.Errorf(ctx, log.TagAppDef, tx.Error, "")
 		return nil, false, tx.Error
 	}
 	if 0 == tx.RowsAffected {
@@ -206,7 +206,7 @@ func (c *RamAccountRepository) FindByNoAndTypeDomainAndIdNot(ctx context.Context
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -219,7 +219,7 @@ func (c *RamAccountRepository) FindByNoAndTypeDomainAndIdNot(ctx context.Context
 func (c *RamAccountRepository) FindByPhone(ctx context.Context, code string, opts ...optionsPg.Option) (info *entityRam.RamAccountEntity, query bool, err error) {
 	tx := c.SetOptionScopes(c.DbModel().WithContext(ctx), opts...).Where("phone=?", code).Find(&info)
 	if tx.Error != nil {
-		log.Errorf(ctx, log.TagAppDef, "", tx.Error)
+		log.Errorf(ctx, log.TagAppDef, tx.Error, "")
 		return nil, false, tx.Error
 	}
 	if 0 == tx.RowsAffected {
@@ -231,7 +231,7 @@ func (c *RamAccountRepository) FindByPhone(ctx context.Context, code string, opt
 func (c *RamAccountRepository) FindByMail(ctx context.Context, code string, opts ...optionsPg.Option) (info *entityRam.RamAccountEntity, query bool, err error) {
 	tx := c.SetOptionScopes(c.DbModel().WithContext(ctx), opts...).Where("mail=?", code).Find(&info)
 	if tx.Error != nil {
-		log.Errorf(ctx, log.TagAppDef, "", tx.Error)
+		log.Errorf(ctx, log.TagAppDef, tx.Error, "")
 		return nil, false, tx.Error
 	}
 	if 0 == tx.RowsAffected {
@@ -245,7 +245,7 @@ func (c *RamAccountRepository) FindByIdAndTypeDomain(ctx context.Context, code i
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -260,7 +260,7 @@ func (c *RamAccountRepository) FindByNoAndTypeDomain(ctx context.Context, code i
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -275,7 +275,7 @@ func (c *RamAccountRepository) FindAllByIdStringInAndTypeDomain(ctx context.Cont
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -289,7 +289,7 @@ func (c *RamAccountRepository) FindAllByNoInAndTypeDomain(ctx context.Context, i
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -304,7 +304,7 @@ func (c *RamAccountRepository) FindByTenantNoAccountAndTypeDomainAndIdNot(ctx co
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -316,7 +316,7 @@ func (c *RamAccountRepository) FindByTenantNoAccountAndTypeDomainAndIdNot(ctx co
 func (c *RamAccountRepository) FindByTenantNoAccountMd5AndTypeDomain(ctx context.Context, tenantNo, code, typeDomain string) (info *entityRam.RamAccountEntity, query bool, err error) {
 	tx := c.DbModel().Where("tenant_no=?", tenantNo).Where("account_md5=?", code).Where("type_domain=?", typeDomain).Find(&info)
 	if tx.Error != nil {
-		log.Errorf(ctx, log.TagAppDef, "", tx.Error)
+		log.Errorf(ctx, log.TagAppDef, tx.Error, "")
 		return nil, false, tx.Error
 	}
 	if 0 == tx.RowsAffected {

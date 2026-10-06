@@ -28,7 +28,7 @@ func (c *RamResourceAuthorityRepository) FindByMark(ctx context.Context, code st
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -43,7 +43,7 @@ func (c *RamResourceAuthorityRepository) FindAllByGroupIdStringIn(ctx context.Co
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -57,7 +57,7 @@ func (c *RamResourceAuthorityRepository) FindAllByTypeCategoryAndGroupIdStringIn
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -70,7 +70,7 @@ func (c *RamResourceAuthorityRepository) FindAllByTypeCategoryAndGroupIdStringIn
 func (c *RamResourceAuthorityRepository) DeleteByMark(ctx context.Context, code string) error {
 	tx := c.DbModel().WithContext(ctx).Where("mark=?", code).Delete(&entityRam.RamResourceAuthorityEntity{})
 	if tx.Error != nil {
-		log.Errorf(ctx, log.TagAppDef, "", tx.Error)
+		log.Errorf(ctx, log.TagAppDef, tx.Error, "")
 		return tx.Error
 	}
 	return nil

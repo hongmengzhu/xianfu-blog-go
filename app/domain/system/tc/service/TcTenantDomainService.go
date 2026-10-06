@@ -570,7 +570,7 @@ func (c *TcTenantDomainService) SetDefaulted(ctx *gin.Context, ct model.BaseStat
 	for _, info := range finds {
 		err := r.Update(ctx, entityTc.TcTenantDomainEntity{Defaulted: state.IndexInt8()}, info.ID)
 		if err != nil {
-			log.Errorf(ctx, log.TagAppDef, "更新失败 id:%+v,err=%+v", info.ID, err)
+			log.Errorf(ctx, log.TagAppDef, err, "更新失败 id:%+v,err=%+v", info.ID, err)
 		}
 	}
 	return rt.Ok()

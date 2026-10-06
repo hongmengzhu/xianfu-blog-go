@@ -94,7 +94,7 @@ func (c *AccountLoginIdpService) Login(ctx *gin.Context, ct modRamLogin.IdpLogin
 	var baseCfg idpBaseConfig
 	if strPg.IsNotBlank(source.BaseConfig) {
 		if err := json.Unmarshal([]byte(source.BaseConfig), &baseCfg); err != nil {
-			log.Errorf(ctx, log.TagAppDef, "解析 BaseConfig 失败: %v", err)
+			log.Errorf(ctx, log.TagAppDef, err, "解析 BaseConfig 失败: %v", err)
 			return rt.ErrorMessage("认证源配置解析失败")
 		}
 	}
@@ -126,7 +126,7 @@ func (c *AccountLoginIdpService) Login(ctx *gin.Context, ct modRamLogin.IdpLogin
 	// 6. 创建 IdProvider 实例
 	idProvider, err := idp.GetIdProvider(idpInfo, redirectUrl)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "创建 IdProvider 失败: %v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "创建 IdProvider 失败: %v", err)
 		return rt.ErrorMessage("不支持的认证提供商类型: " + providerEntity.Code)
 	}
 
@@ -136,7 +136,7 @@ func (c *AccountLoginIdpService) Login(ctx *gin.Context, ct modRamLogin.IdpLogin
 	// 8. 用授权码换 Token
 	oauthToken, err := idProvider.GetToken(ct.Code)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "获取 Token 失败: %v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "获取 Token 失败: %v", err)
 		return rt.ErrorMessage("获取 Token 失败: " + err.Error())
 	}
 	if oauthToken == nil || !oauthToken.Valid() {
@@ -146,7 +146,7 @@ func (c *AccountLoginIdpService) Login(ctx *gin.Context, ct modRamLogin.IdpLogin
 	// 9. 获取第三方用户信息
 	userInfo, err := idProvider.GetUserInfo(oauthToken)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "获取用户信息失败: %v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "获取用户信息失败: %v", err)
 		return rt.ErrorMessage("获取用户信息失败: " + err.Error())
 	}
 	if userInfo == nil {
@@ -266,7 +266,7 @@ func (c *AccountLoginIdpService) createAccountAndBinding(
 
 	err, _ := c.daoAccount.Create(ctx, account)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "创建账号失败: %v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "创建账号失败: %v", err)
 		return nil, nil, err
 	}
 	log.Infof(ctx, log.TagAppDef, "IDP 自动创建账号: no=%s, account=%s", account.No, account.Account)
@@ -300,7 +300,7 @@ func (c *AccountLoginIdpService) createAccountAndBinding(
 	}
 	errBind, _ := c.daoBinding.Create(ctx, binding)
 	if errBind != nil {
-		log.Errorf(ctx, log.TagAppDef, "创建绑定记录失败: %v", errBind)
+		log.Errorf(ctx, log.TagAppDef, err, "创建绑定记录失败: %v", errBind)
 		return nil, nil, errBind
 	}
 
@@ -376,7 +376,7 @@ func (c *AccountLoginIdpService) saveSessionLog(
 	}
 	err, _ := c.daoSessionLog.Create(ctx, logEntity)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "保存 IDP 登录审计日志失败: %v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "保存 IDP 登录审计日志失败: %v", err)
 	}
 }
 

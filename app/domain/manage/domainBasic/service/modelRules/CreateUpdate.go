@@ -98,7 +98,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		obj.ValueNo = ""
 		err := c.Sp.repRules.Update(ctx, obj, info.ID)
 		if err != nil {
-			log.Errorf(ctx, log.TagAppDef, "save err=%+v", err)
+			log.Errorf(ctx, log.TagAppDef, err, "save err=%+v", err)
 			return rt.ErrorMessage("保存失败：")
 		}
 	} else {
@@ -112,7 +112,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		obj.TypeModel = typeModel
 		err, _ := c.Sp.repRules.Create(ctx, &obj)
 		if err != nil {
-			log.Errorf(ctx, log.TagAppDef, "save err=%+v", err)
+			log.Errorf(ctx, log.TagAppDef, err, "save err=%+v", err)
 			return rt.ErrorMessage("保存失败：")
 		}
 	}

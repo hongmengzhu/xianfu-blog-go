@@ -71,7 +71,7 @@ func (c *DetailForm) Process(ctx *gin.Context, ct modBasicConfigList.DetailFormC
 			var obj modCacheBasicEvent.FieldCache
 			err := json.Unmarshal([]byte(v), &obj)
 			if err != nil {
-				log.Errorf(ctx, log.TagAppDef, "json.Unmarshal.err:%+v", err)
+				log.Errorf(ctx, log.TagAppDef, err, "json.Unmarshal.err:%+v", err)
 			} else {
 				copier.Copy(&obj, v)
 				//

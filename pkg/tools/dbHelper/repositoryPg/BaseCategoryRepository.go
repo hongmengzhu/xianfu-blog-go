@@ -215,7 +215,7 @@ func (b *BaseCategoryRepository[T, ID]) FindById(ctx context.Context, id ID, opt
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -238,7 +238,7 @@ func (b *BaseCategoryRepository[T, ID]) FindByIdString(ctx context.Context, id s
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -462,7 +462,7 @@ func (b *BaseCategoryRepository[T, ID]) FindByNo(ctx context.Context, no string,
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -485,7 +485,7 @@ func (b *BaseCategoryRepository[T, ID]) FindAllByNoIn(ctx context.Context, no []
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -508,7 +508,7 @@ func (b *BaseCategoryRepository[T, ID]) FindAllByNameIn(ctx context.Context, no 
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -531,7 +531,7 @@ func (b *BaseCategoryRepository[T, ID]) FindByName(ctx context.Context, no strin
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -553,7 +553,7 @@ func (b *BaseCategoryRepository[T, ID]) FindByNameAndIdNot(ctx context.Context, 
 	tx := b.SetOptionScopes(b.DbModel().WithContext(ctx), opts...).Where("name=?", name).Where("id <> ?", id).First(&info)
 	if tx.Error != nil {
 
-		log.Errorf(ctx, log.TagAppDef, "", tx.Error)
+		log.Errorf(ctx, log.TagAppDef, tx.Error, "")
 		return nil, false
 	}
 	if 0 == tx.RowsAffected {
@@ -575,7 +575,7 @@ func (c *BaseCategoryRepository[T, ID]) FindByNoAndIdNot(ctx context.Context, na
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -597,7 +597,7 @@ func (c *BaseCategoryRepository[T, ID]) FindAllByNoLink(ctx context.Context, cod
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -620,7 +620,7 @@ func (c *BaseCategoryRepository[T, ID]) FindByCode(ctx context.Context, no strin
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -643,7 +643,7 @@ func (b *BaseCategoryRepository[T, ID]) FindByCodeAndIdNot(ctx context.Context, 
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}

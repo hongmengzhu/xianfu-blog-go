@@ -26,7 +26,7 @@ func (c *ArticleCategoryCacheListener) Register(bus event.Bus) {
 	event.Subscribe(bus, func(ctx context.Context, e modEventBlogArticleCategory.CacheDto) error {
 		err := articleBlogEvent.NewCategoryCache(c.sp, e).Processor(context.Background())
 		if nil != err {
-			log.Errorf(ctx, log.TagAppDef, "博客.分类.缓存:%+v", err)
+			log.Errorf(ctx, log.TagAppDef, err, "博客.分类.缓存:%+v", err)
 		}
 		return nil
 	})

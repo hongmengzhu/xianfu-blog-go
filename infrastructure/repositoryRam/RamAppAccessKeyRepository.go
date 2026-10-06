@@ -27,7 +27,7 @@ func (c *RamAppAccessKeyRepository) FindByTenantNoAndAppNo(ctx context.Context, 
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -40,7 +40,7 @@ func (c *RamAppAccessKeyRepository) FindByTenantNoAndAppNo(ctx context.Context, 
 func (c *RamAppAccessKeyRepository) UpdateAllByAppNoAndNoSetState(ctx context.Context, appNo, id string, state int8) (sum int64, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("app_no=?", appNo).Where("id=?", id).Updates(entityRam.RamAppAccessKeyEntity{State: state})
 	if tx.Error != nil {
-		log.Errorf(ctx, log.TagAppDef, "", tx.Error)
+		log.Errorf(ctx, log.TagAppDef, tx.Error, "")
 		return 0, false
 	}
 	if 0 == tx.RowsAffected {

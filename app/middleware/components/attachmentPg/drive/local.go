@@ -97,7 +97,7 @@ func (s *Local) PutObject(r io.Reader, put modAttachment.PutFileDto, ext modAtta
 	attachment.Url = domain + out
 	_, err = io.Copy(dst, r)
 	if err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, "err=%+v\n", err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "err=%+v\n", err)
 		return attachment, errors.New("文件保存失败")
 	}
 	buf, _ := os.ReadFile(out_root)
@@ -135,7 +135,7 @@ func (s *Local) PutObject(r io.Reader, put modAttachment.PutFileDto, ext modAtta
 		ProtocolSpace: attachment.ProtocolSpace,
 	})
 	if err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, "err=%+v\n", err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "err=%+v\n", err)
 	}
 	return attachment, nil
 }

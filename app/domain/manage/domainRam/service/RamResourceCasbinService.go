@@ -121,7 +121,7 @@ func (c *RamResourceCasbinService) Casbin() *casbin.SyncedCachedEnforcer {
 	once.Do(func() {
 		a, err := gormadapter.NewAdapterByDB(c.sv.Db())
 		if err != nil {
-			log.Errorf(context.Background(), log.TagAppDef, "适配数据库失败请检查casbin表是否为InnoDB引擎! %+v", err)
+			log.Errorf(context.Background(), log.TagAppDef, err, "适配数据库失败请检查casbin表是否为InnoDB引擎! %+v", err)
 			return
 		}
 		text := `
@@ -142,7 +142,7 @@ func (c *RamResourceCasbinService) Casbin() *casbin.SyncedCachedEnforcer {
 		`
 		m, err := model.NewModelFromString(text)
 		if err != nil {
-			log.Errorf(context.Background(), log.TagAppDef, "字符串加载模型失败! %+v", err)
+			log.Errorf(context.Background(), log.TagAppDef, err, "字符串加载模型失败! %+v", err)
 			return
 		}
 		syncedCachedEnforcer, _ = casbin.NewSyncedCachedEnforcer(m, a)

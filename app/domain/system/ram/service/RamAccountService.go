@@ -721,7 +721,7 @@ func (c *RamAccountService) ResetPassword(ctx *gin.Context, ct model.BaseExistWd
 	err := os.Mkdir(dirName, 0755)
 	if err != nil {
 		if !os.IsExist(err) {
-			log.Errorf(ctx, log.TagAppDef, "创建目录失败: %v", err)
+			log.Errorf(ctx, log.TagAppDef, err, "创建目录失败: %v", err)
 		}
 	}
 	// 打开文件（如果不存在则创建，如果存在则截断）
@@ -739,7 +739,7 @@ func (c *RamAccountService) ResetPassword(ctx *gin.Context, ct model.BaseExistWd
 	// 打开文件
 	file, err := os.Open(fileTxt)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "无法打开文件: %v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "无法打开文件: %v", err)
 		return rt.ErrorMessage("无法打开文件")
 	}
 	defer file.Close()
@@ -747,7 +747,7 @@ func (c *RamAccountService) ResetPassword(ctx *gin.Context, ct model.BaseExistWd
 	// 获取文件大小
 	fileInfo, err := file.Stat()
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "获取文件信息失败: %v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "获取文件信息失败: %v", err)
 		return rt.ErrorMessage("获取文件信息失败")
 	}
 
@@ -757,7 +757,7 @@ func (c *RamAccountService) ResetPassword(ctx *gin.Context, ct model.BaseExistWd
 	// 读取整个文件
 	_, err = io.ReadFull(file, buffer)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "读取文件失败: %v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "读取文件失败: %v", err)
 		return rt.ErrorMessage("读取文件失败")
 	}
 

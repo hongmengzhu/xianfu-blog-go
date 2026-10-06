@@ -72,7 +72,7 @@ func (c *RamIdpBindingService) CreateUpdate(ctx *gin.Context, ct modRamIdpBindin
 	if isUpdate {
 		err := r.Update(ctx, info, find.ID)
 		if err != nil {
-			log.Errorf(ctx, log.TagAppDef, "update error=%+v", err)
+			log.Errorf(ctx, log.TagAppDef, err, "update error=%+v", err)
 			return rt.ErrorMessage(err.Error())
 		}
 	} else {

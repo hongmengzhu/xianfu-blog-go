@@ -115,7 +115,7 @@ func (c *BlogArticleCategoryService) Create(ctx *gin.Context, ct modBlogArticleC
 	dto.Nos = append(dto.Nos, info.No)
 	err2 := c.Bus.Publish(context.Background(), dto)
 	if err2 != nil {
-		log.Errorf(ctx, log.TagAppDef, "copier.Copy error: %+v", err2)
+		log.Errorf(ctx, log.TagAppDef, err2, "copier.Copy error: %+v", err2)
 	}
 	return rg.OkData(numberPg.Int64ToString(info.ID))
 }
@@ -199,7 +199,7 @@ func (c *BlogArticleCategoryService) Update(ctx *gin.Context, ct modBlogArticleC
 	log.Infof(ctx, log.TagAppDef, "info.IdLink=%+v", info.IdLink)
 	err = r.Update(ctx, info, info.ID)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "update error=%+v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "update error=%+v", err)
 		return rt.ErrorMessage(err.Error())
 	}
 	log.Infof(ctx, log.TagAppDef, "save.info=%+v", info)
@@ -239,7 +239,7 @@ func (c *BlogArticleCategoryService) Update(ctx *gin.Context, ct modBlogArticleC
 	dto.Nos = append(dto.Nos, info.No)
 	err2 := c.Bus.Publish(context.Background(), dto)
 	if err2 != nil {
-		log.Errorf(ctx, log.TagAppDef, "copier.Copy error: %+v", err2)
+		log.Errorf(ctx, log.TagAppDef, err2, "copier.Copy error: %+v", err2)
 	}
 	return rt.Ok()
 }
@@ -304,7 +304,7 @@ func (c *BlogArticleCategoryService) CacheAll(ctx *gin.Context) {
 		IsThisTenantAll: true,
 	})
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "copier.Copy error: %+v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "copier.Copy error: %+v", err)
 		return
 	}
 }

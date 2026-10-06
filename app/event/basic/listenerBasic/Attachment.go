@@ -29,7 +29,7 @@ func (c *AttachmentListener) Register(bus event.Bus) {
 		if len(e.File) > 0 {
 			err := attachment.NewCreate(c.dao, e).Processor(context.Background())
 			if nil != err {
-				log.Errorf(ctx, log.TagAppDef, "", err)
+				log.Errorf(ctx, log.TagAppDef, err, "")
 			}
 		}
 		return nil
@@ -49,7 +49,7 @@ func (c *AttachmentListener) Register(bus event.Bus) {
 //		if len(dto.File) > 0 {
 //			err := attachment.NewCreate(c.dao, dto).Processor(context.Background())
 //			if nil != err {
-//				log.Errorf(ctx, log.TagAppDef, "", err)
+//				log.Errorf(ctx, log.TagAppDef, err, "")
 //			}
 //			message = nil
 //		}

@@ -136,6 +136,6 @@ func (t *SaveByCategory) cache(categoryRoot []string) {
 	//缓存更新
 	err := NewCachePush(t.sp, dto).Processor(context.Background())
 	if err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, "tags.push.error:=", err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "tags.push.error:=", err)
 	}
 }

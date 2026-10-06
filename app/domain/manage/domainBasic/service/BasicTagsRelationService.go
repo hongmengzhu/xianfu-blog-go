@@ -74,7 +74,7 @@ func (c *BasicTagsRelationService) Create(ctx *gin.Context, ct modBasicTagsRelat
 	if nil != ct.AttributeMap {
 		//map 转为 struct
 		if err := mapstructure.Decode(ct.AttributeMap, &attributeVo); err != nil {
-			log.Errorf(ctx, log.TagAppDef, "map 转 struct err=%+v", err)
+			log.Errorf(ctx, log.TagAppDef, err, "map 转 struct err=%+v", err)
 		}
 	}
 
@@ -100,7 +100,7 @@ func (c *BasicTagsRelationService) Create(ctx *gin.Context, ct modBasicTagsRelat
 	info.TenantNo = holder.GetTenantNo()
 	err, _ := r.Create(ctx, &info)
 	if nil != err {
-		log.Errorf(ctx, log.TagAppDef, "save err=%+v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "save err=%+v", err)
 		return rt.ErrorMessage("保存失败")
 	}
 	log.Infof(ctx, log.TagAppDef, "save=%+v", info)
@@ -158,7 +158,7 @@ func (c *BasicTagsRelationService) Update(ctx *gin.Context, ct modBasicTagsRelat
 	if nil != ct.AttributeMap {
 		//map 转为 struct
 		if err := mapstructure.Decode(ct.AttributeMap, &attributeVo); err != nil {
-			log.Errorf(ctx, log.TagAppDef, "map 转 struct err=%+v", err)
+			log.Errorf(ctx, log.TagAppDef, err, "map 转 struct err=%+v", err)
 		}
 		log.Infof(ctx, log.TagAppDef, "attributeVo=%+v", attributeVo)
 	}
@@ -458,14 +458,14 @@ func (c *BasicTagsRelationService) All(ctx *gin.Context, ct modBasicTagsRelation
 			if strPg.IsNotBlank(item.Attribute) {
 				err := json.Unmarshal([]byte(item.Attribute), &vo.AttributeMap)
 				if err != nil {
-					log.Errorf(ctx, log.TagAppDef, "json解析失败 %+v", err)
+					log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
 				}
 				if obj, ok := vo.AttributeMap["color"]; ok {
 					color := make(map[string]interface{})
 					if strPg.IsNotBlank(obj.(string)) {
 						err := json.Unmarshal([]byte(obj.(string)), &color)
 						if err != nil {
-							log.Errorf(ctx, log.TagAppDef, "json解析失败 %+v", err)
+							log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
 						}
 					}
 					vo.AttributeMap["color"] = color
@@ -513,14 +513,14 @@ func (c *BasicTagsRelationService) AllByLink(ctx *gin.Context, ct modBasicTagsRe
 			if strPg.IsNotBlank(item.Attribute) {
 				err := json.Unmarshal([]byte(item.Attribute), &vo.AttributeMap)
 				if err != nil {
-					log.Errorf(ctx, log.TagAppDef, "json解析失败 %+v", err)
+					log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
 				}
 				if obj, ok := vo.AttributeMap["color"]; ok {
 					color := make(map[string]interface{})
 					if strPg.IsNotBlank(obj.(string)) {
 						err := json.Unmarshal([]byte(obj.(string)), &color)
 						if err != nil {
-							log.Errorf(ctx, log.TagAppDef, "json解析失败 %+v", err)
+							log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
 						}
 					}
 					vo.AttributeMap["color"] = color
@@ -638,7 +638,7 @@ func (c *BasicTagsRelationService) GetCategoryTagsAll(ctx *gin.Context, category
 		return rt.Ok()
 	}
 	if 0 == tx.RowsAffected {
-		log.Errorf(ctx, log.TagAppDef, "", tx.Error)
+		log.Errorf(ctx, log.TagAppDef, tx.Error, "")
 		return rt.Ok()
 	}
 	for _, item := range infos {
@@ -649,14 +649,14 @@ func (c *BasicTagsRelationService) GetCategoryTagsAll(ctx *gin.Context, category
 		if strPg.IsNotBlank(item.Attribute) {
 			err := json.Unmarshal([]byte(item.Attribute), &vo.AttributeMap)
 			if err != nil {
-				log.Errorf(ctx, log.TagAppDef, "json解析失败 %+v", err)
+				log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
 			}
 			if obj, ok := vo.AttributeMap["color"]; ok {
 				color := make(map[string]interface{})
 				if strPg.IsNotBlank(obj.(string)) {
 					err := json.Unmarshal([]byte(obj.(string)), &color)
 					if err != nil {
-						log.Errorf(ctx, log.TagAppDef, "json解析失败 %+v", err)
+						log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
 					}
 				}
 				vo.AttributeMap["color"] = color
@@ -730,14 +730,14 @@ func (c *BasicTagsRelationService) GetCategoryTags(ctx *gin.Context, categoryRoo
 			if strPg.IsNotBlank(item.Attribute) {
 				err := json.Unmarshal([]byte(item.Attribute), &vo.AttributeMap)
 				if err != nil {
-					log.Errorf(ctx, log.TagAppDef, "json解析失败 %+v", err)
+					log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
 				}
 				if obj, ok := vo.AttributeMap["color"]; ok {
 					color := make(map[string]interface{})
 					if strPg.IsNotBlank(obj.(string)) {
 						err := json.Unmarshal([]byte(obj.(string)), &color)
 						if err != nil {
-							log.Errorf(ctx, log.TagAppDef, "json解析失败 %+v", err)
+							log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
 						}
 					}
 					vo.AttributeMap["color"] = color

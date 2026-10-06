@@ -27,7 +27,7 @@ func (c *BasicAttachmentRepository) FindAllByModuleValue(ctx context.Context, mo
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -42,7 +42,7 @@ func (c *BasicAttachmentRepository) FindAllByModuleValueIn(ctx context.Context, 
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -57,7 +57,7 @@ func (c *BasicAttachmentRepository) FindByModuleTypeValue(ctx context.Context, m
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -72,7 +72,7 @@ func (c *BasicAttachmentRepository) DeleteByModuleTypeValue(ctx context.Context,
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -87,7 +87,7 @@ func (c *BasicAttachmentRepository) FindByMark(ctx context.Context, mark string)
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -102,7 +102,7 @@ func (c *BasicAttachmentRepository) DeleteByMark(ctx context.Context, mark strin
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -117,7 +117,7 @@ func (c *BasicAttachmentRepository) DeleteByNoAndFileOwner(ctx context.Context, 
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -132,7 +132,7 @@ func (c *BasicAttachmentRepository) DeleteByIdAndFileOwner(ctx context.Context, 
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -147,7 +147,7 @@ func (c *BasicAttachmentRepository) UpdateByNoAndFileOwnerSetState13(ctx context
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -162,7 +162,7 @@ func (c *BasicAttachmentRepository) UpdateByIdAndFileOwnerSetState13(ctx context
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return nil, false
 	}
@@ -176,7 +176,7 @@ func (c *BasicAttachmentRepository) UpdateByIdSetFileOwner(ctx context.Context, 
 	tx := c.DbModel().WithContext(ctx).Where("id in ?", no).Update("file_owner", fileOwner)
 	if tx.Error != nil {
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return false
 	}

@@ -74,7 +74,7 @@ func (s *BasicConfigEventService) Create(ctx *gin.Context, ct modBasicConfigEven
 
 	err, _ := s.sv.Create(ctx, &eventEntity)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "Create event error: %v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "Create event error: %v", err)
 		return rt.ErrorMessage("创建事件失败")
 	}
 
@@ -99,7 +99,7 @@ func (s *BasicConfigEventService) Create(ctx *gin.Context, ct modBasicConfigEven
 
 		err, _ := s.repoField.Create(ctx, &fieldEntity)
 		if err != nil {
-			log.Errorf(ctx, log.TagAppDef, "Create event field error: %v", err)
+			log.Errorf(ctx, log.TagAppDef, err, "Create event field error: %v", err)
 			continue
 		}
 	}

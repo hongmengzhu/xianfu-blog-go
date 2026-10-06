@@ -85,7 +85,7 @@ func (c *BlogTopicRelationService) AddByTopic(ctx *gin.Context, ct modBlogTopicR
 		obj.Description = find.Description
 		err, _ := c.relation.Create(ctx, &obj)
 		if nil != err {
-			log.Errorf(ctx, log.TagAppDef, "save err=%+v", err)
+			log.Errorf(ctx, log.TagAppDef, err, "save err=%+v", err)
 		}
 	}
 	return rt.Ok()
@@ -116,7 +116,7 @@ func (c *BlogTopicRelationService) PhysicalDeletion(ctx *gin.Context, ids []stri
 	if len(idsNew) > 0 {
 		err := cn.DeleteAllByTenantNoAndIdsString(ctx, tenantNo, idsNew)
 		if err != nil {
-			log.Errorf(ctx, log.TagAppDef, "操作 err=%+v", err)
+			log.Errorf(ctx, log.TagAppDef, err, "操作 err=%+v", err)
 		}
 	}
 	return rt.Ok()

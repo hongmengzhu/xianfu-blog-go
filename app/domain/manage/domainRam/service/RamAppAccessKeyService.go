@@ -61,7 +61,7 @@ func (c *RamAppAccessKeyService) MakeNewRecord(ctx *gin.Context, ct model.BaseId
 	save.KindUnique = userPg.SaltMake(save.Key, save.Secret+save.ExpiryDate.String())
 	err, _ := c.sv.Create(ctx, &save)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "", err)
+		log.Errorf(ctx, log.TagAppDef, err, "")
 		return rt.ErrorMessage("保存失败")
 	}
 	return rt.Ok()

@@ -28,7 +28,7 @@ func (c *EventCacheListener) Register(bus event.Bus) {
 		log.Infof(ctx, log.TagAppDef, "listener.[基础.模型事件.缓存]1===================")
 		err := eventBasicEvent.NewEventMakeCache(c.sp, e).Processor(context.Background())
 		if nil != err {
-			log.Errorf(ctx, log.TagAppDef, "基础.模型事件.缓存:%+v", err)
+			log.Errorf(ctx, log.TagAppDef, err, "基础.模型事件.缓存:%+v", err)
 		}
 		return nil
 	})
@@ -37,7 +37,7 @@ func (c *EventCacheListener) Register(bus event.Bus) {
 		log.Infof(ctx, log.TagAppDef, "listener.[基础.模型事件字段.缓存]2===================")
 		err := eventBasicEvent.NewEventFieldMakeCache(c.sp, e).Processor(context.Background())
 		if nil != err {
-			log.Errorf(ctx, log.TagAppDef, "基础.模型事件字段.缓存:%+v", err)
+			log.Errorf(ctx, log.TagAppDef, err, "基础.模型事件字段.缓存:%+v", err)
 		}
 		return nil
 	})

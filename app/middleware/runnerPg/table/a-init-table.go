@@ -182,7 +182,7 @@ func (b *AInitTable) seqEdit() {
 		}
 		rs := tx.Exec(raw)
 		if rs.Error != nil {
-			log.Errorf(context.Background(), log.TagAppDef, "初始化序号异常:%+v", rs.Error)
+			log.Errorf(context.Background(), log.TagAppDef, rs.Error, "初始化序号异常:%+v", rs.Error)
 			_ = tx.Rollback()
 			return
 		}
@@ -191,7 +191,7 @@ func (b *AInitTable) seqEdit() {
 	}
 	err := tx.Commit().Error
 	if err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, "创建表异常:%+v", err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "创建表异常:%+v", err)
 	}
 }
 
@@ -224,7 +224,7 @@ func (b *AInitTable) sqlBasicDictionary() {
 			// 判断该主键数据是否已存在，存在则跳过，继续下一条
 			var count int64
 			if err := tx.Model(&entityBasic.BasicDataDictionaryEntity{}).Where("id = ?", item.ID).Count(&count).Error; err != nil {
-				log.Errorf(context.Background(), log.TagAppDef, "查询数据字典主键 %d 异常:%+v", item.ID, err)
+				log.Errorf(context.Background(), log.TagAppDef, err, "查询数据字典主键 %d 异常:%+v", item.ID, err)
 				return err
 			}
 			if count > 0 {
@@ -233,7 +233,7 @@ func (b *AInitTable) sqlBasicDictionary() {
 			}
 			rs := tx.Create(&item)
 			if rs.Error != nil {
-				log.Errorf(context.Background(), log.TagAppDef, "初始化数据字典主键 %d 异常:%+v", item.ID, rs.Error)
+				log.Errorf(context.Background(), log.TagAppDef, rs.Error, "初始化数据字典主键 %d 异常:%+v", item.ID, rs.Error)
 				return rs.Error
 			}
 			log.Debugf(context.Background(), log.TagAppDef, "数据字典主键 %d 执行结果: %+v 行受影响", item.ID, rs.RowsAffected)
@@ -241,7 +241,7 @@ func (b *AInitTable) sqlBasicDictionary() {
 		return nil
 	})
 	if err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, "创建数据字典数据异常:%+v", err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "创建数据字典数据异常:%+v", err)
 	}
 }
 

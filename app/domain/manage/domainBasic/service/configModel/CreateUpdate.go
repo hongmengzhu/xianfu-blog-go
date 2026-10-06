@@ -197,7 +197,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 			{
 				tx := c.Sp.repField.DbModel().CreateInBatches(c.fields, 1000000)
 				if tx.Error != nil {
-					log.Errorf(ctx, log.TagAppDef, "save err=%+v", tx.Error)
+					log.Errorf(ctx, log.TagAppDef, tx.Error, "save err=%+v", tx.Error)
 					return rt.ErrorMessage("保存失败：")
 				}
 				//if 0 == tx.RowsAffected {
@@ -283,7 +283,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 			{
 				tx := c.Sp.repField.DbModel().CreateInBatches(dataInsert, 1000000)
 				if tx.Error != nil {
-					log.Errorf(ctx, log.TagAppDef, "save err=%+v", tx.Error)
+					log.Errorf(ctx, log.TagAppDef, tx.Error, "save err=%+v", tx.Error)
 					return rt.ErrorMessage("保存失败：")
 				}
 				//if 0 == tx.RowsAffected {

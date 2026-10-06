@@ -151,14 +151,14 @@ func (c *ArticleService) Detail(ctx *gin.Context, id string) (rt rg.Rs[modBlogAr
 						if strPg.IsNotBlank(item.Attribute) {
 							err := json.Unmarshal([]byte(item.Attribute), &vo.AttributeMap)
 							if err != nil {
-								log.Errorf(ctx, log.TagAppDef, "json解析失败 %+v", err)
+								log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
 							}
 							if obj, ok := vo.AttributeMap["color"]; ok {
 								color := make(map[string]interface{})
 								if strPg.IsNotBlank(obj.(string)) {
 									err := json.Unmarshal([]byte(obj.(string)), &color)
 									if err != nil {
-										log.Errorf(ctx, log.TagAppDef, "json解析失败 %+v", err)
+										log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
 									}
 								}
 								vo.AttributeMap["color"] = color
@@ -352,14 +352,14 @@ func (c *ArticleService) Query(ctx *gin.Context, ct modBlogArticle2.QueryCt) (rt
 						if strPg.IsNotBlank(item.Attribute) {
 							err := json.Unmarshal([]byte(item.Attribute), &vo.AttributeMap)
 							if err != nil {
-								log.Errorf(ctx, log.TagAppDef, "json解析失败 %+v", err)
+								log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
 							}
 							if obj, ok := vo.AttributeMap["color"]; ok {
 								color := make(map[string]interface{})
 								if strPg.IsNotBlank(obj.(string)) {
 									err := json.Unmarshal([]byte(obj.(string)), &color)
 									if err != nil {
-										log.Errorf(ctx, log.TagAppDef, "json解析失败 %+v", err)
+										log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
 									}
 								}
 								vo.AttributeMap["color"] = color

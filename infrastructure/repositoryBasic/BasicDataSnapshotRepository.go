@@ -28,7 +28,7 @@ func (c *BasicDataSnapshotRepository) FindByNameAndIdNot(ctx context.Context, na
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, "err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
 		}
 		return
 	}
@@ -41,7 +41,7 @@ func (c *BasicDataSnapshotRepository) FindByNameAndIdNot(ctx context.Context, na
 func (c *BasicDataSnapshotRepository) SnapshotVersion(ctx context.Context, obj interface{}, module, tenantNo, value, version, extend string) {
 	toJson, err := jsonPg.ObjToJson(obj)
 	if nil != err {
-		log.Errorf(ctx, log.TagAppDef, "snapshot version error: %+v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "snapshot version error: %+v", err)
 	} else {
 		mark := value + "|" + value
 		c.Create(ctx, &entityBasic.BasicDataSnapshotEntity{
@@ -60,7 +60,7 @@ func (c *BasicDataSnapshotRepository) SnapshotVersion(ctx context.Context, obj i
 func (c *BasicDataSnapshotRepository) SnapshotVersionAll(ctx context.Context, obj interface{}, module, tenantNo, value, version, name, extend string) {
 	toJson, err := jsonPg.ObjToJson(obj)
 	if nil != err {
-		log.Errorf(ctx, log.TagAppDef, "snapshot version error: %+v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "snapshot version error: %+v", err)
 	} else {
 		mark := value + "|" + value
 		c.Create(ctx, &entityBasic.BasicDataSnapshotEntity{

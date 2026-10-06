@@ -16,7 +16,7 @@ func ScopeRulePgWhereOrg(ctx *gin.Context, tableName string) func(db *gorm.DB) *
 		var iHolderRule interfaces.IHolderRule
 		value, exists := ctx.Get(constContextPg.CTX_RULE)
 		if exists && nil != value {
-			log.Errorf(ctx, log.TagAppDef, "CTX_RULE=%+v", value)
+			log.Errorf(ctx, log.TagAppDef, nil, "CTX_RULE=%+v", value)
 			iHolderRule = value.(interfaces.IHolderRule)
 			multiRule = iHolderRule.(*MultiRule)
 		}

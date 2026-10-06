@@ -43,7 +43,7 @@ func (c *RamResourceService) Create(ctx *gin.Context, ct modRamResource.CreateCt
 	var info entityRam.RamResourceEntity
 	err2 := copier.Copy(&info, &ct)
 	if err2 != nil {
-		log.Errorf(ctx, log.TagAppDef, "copier.Copy=%+v", err2)
+		log.Errorf(ctx, log.TagAppDef, err2, "copier.Copy=%+v", err2)
 		return rt.ErrorMessage(err2.Error())
 	}
 	if "" == ct.Name {
@@ -191,7 +191,7 @@ func (c *RamResourceService) Update(ctx *gin.Context, ct modRamResource.CreateUp
 	log.Infof(ctx, log.TagAppDef, "info.IdLink=%+v", info.IdLink)
 	err = r.Update(ctx, info, info.ID)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "update error=%+v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "update error=%+v", err)
 		return rt.ErrorMessage(err.Error())
 	}
 	log.Infof(ctx, log.TagAppDef, "save.info=%+v", info)

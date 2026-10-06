@@ -23,13 +23,13 @@ func (c *StartInit) Processor(ctx context.Context) error {
 	//保存到数据库
 	{
 		if c.Bus == nil {
-			log.Errorf(ctx, log.TagAppDef, "c.Bus 不存在～～～～～～～～～～～～")
+			log.Errorf(ctx, log.TagAppDef, nil, "c.Bus 不存在～～～～～～～～～～～～")
 		}
 		err := c.Bus.Publish(context.Background(), modEventBasicEvent.EventDto{
 			IsAll: true,
 		})
 		if err != nil {
-			log.Errorf(ctx, log.TagAppDef, "copier.Copy error: %+v", err)
+			log.Errorf(ctx, log.TagAppDef, err, "copier.Copy error: %+v", err)
 			return nil
 		}
 	}
@@ -38,7 +38,7 @@ func (c *StartInit) Processor(ctx context.Context) error {
 			IsAll: true,
 		})
 		if err != nil {
-			log.Errorf(ctx, log.TagAppDef, "copier.Copy error: %+v", err)
+			log.Errorf(ctx, log.TagAppDef, err, "copier.Copy error: %+v", err)
 			return nil
 		}
 	}

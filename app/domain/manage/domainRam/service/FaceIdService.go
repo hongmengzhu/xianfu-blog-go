@@ -101,7 +101,7 @@ func (s *FaceIdService) Verify(ctx *gin.Context, ct FaceIdVerifyCt) (rt rg.Rs[bo
 	// 执行人脸对比
 	matched, err := provider.Check(ct.ImageA, ct.ImageB)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "Face ID 验证失败: %v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "Face ID 验证失败: %v", err)
 		return rt.ErrorMessage("人脸对比失败: " + err.Error())
 	}
 

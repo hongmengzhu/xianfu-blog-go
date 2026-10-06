@@ -25,10 +25,10 @@ require (
 	github.com/nyaruka/phonenumbers v1.8.1
 	github.com/pangu-2/go-tools v0.1.20
 	github.com/pquerna/otp v1.5.0
-	github.com/redis/go-redis/v9 v9.22.0
+	github.com/redis/go-redis/v9 v9.23.0
 	github.com/russellhaering/gosaml2 v0.12.0
 	github.com/russellhaering/goxmldsig v1.6.1
-	github.com/shopspring/decimal v1.4.0
+	github.com/shopspring/decimal v1.5.0
 	github.com/tjfoc/gmsm v1.4.1
 	github.com/xuri/excelize/v2 v2.11.0
 	github.com/yuin/goldmark v1.8.6
@@ -37,7 +37,7 @@ require (
 	github.com/yuin/goldmark-meta v1.1.0
 	go-spring.org/log v0.1.4
 	go-spring.org/spring v1.3.4
-	go-spring.org/starter-gin v0.0.0
+	go-spring.org/starter-gin v1.3.4
 	go-spring.org/starter-gorm v0.0.0
 	go-spring.org/starter-gorm-mysql v1.3.4
 	go-spring.org/starter-gorm-postgres v0.0.0-00010101000000-000000000000
@@ -47,7 +47,7 @@ require (
 	go.abhg.dev/goldmark/frontmatter v0.3.0
 	go.abhg.dev/goldmark/toc v0.12.0
 	go.abhg.dev/goldmark/wikilink v0.6.0
-	golang.org/x/exp v0.0.0-20260908205506-85c1c2202aba
+	golang.org/x/exp v0.0.0-20261005173118-76772065c9b0
 	golang.org/x/oauth2 v0.37.0
 	gorm.io/datatypes v1.2.7
 	gorm.io/driver/mysql v1.6.0
@@ -74,7 +74,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cloudwego/base64x v0.1.7 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.1 // indirect
-	github.com/dlclark/regexp2/v2 v2.8.0 // indirect
+	github.com/dlclark/regexp2/v2 v2.8.3 // indirect
 	github.com/dustin/go-humanize v1.1.0 // indirect
 	github.com/expr-lang/expr v1.17.8 // indirect
 	github.com/fsnotify/fsnotify v1.10.1 // indirect
@@ -100,7 +100,7 @@ require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/pgx/v5 v5.11.0 // indirect
-	github.com/jackc/puddle/v2 v2.2.2 // indirect
+	github.com/jackc/puddle/v2 v2.2.3 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/jonboulle/clockwork v0.5.0 // indirect
@@ -147,7 +147,7 @@ require (
 	github.com/spf13/cast v1.10.0 // indirect
 	github.com/thedevsaddam/gojsonq/v2 v2.5.2 // indirect
 	github.com/tiendc/go-deepcopy v1.7.2 // indirect
-	github.com/tinylib/msgp v1.6.4 // indirect
+	github.com/tinylib/msgp v1.6.5 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.3.2 // indirect
 	github.com/valyala/fastjson v1.6.10 // indirect
@@ -156,12 +156,13 @@ require (
 	github.com/zeebo/xxh3 v1.1.0 // indirect
 	go-spring.org/cloud v0.0.0 // indirect
 	go-spring.org/gs-mock v0.0.9 // indirect
-	go-spring.org/starter-governance v0.0.0 // indirect
 	go.mongodb.org/mongo-driver/v2 v2.9.1 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
-	go.opentelemetry.io/otel v1.46.0 // indirect
-	go.opentelemetry.io/otel/metric v1.46.0 // indirect
-	go.opentelemetry.io/otel/trace v1.46.0 // indirect
+	go.opentelemetry.io/otel v1.47.0 // indirect
+	go.opentelemetry.io/otel/log v1.47.0 // indirect
+	go.opentelemetry.io/otel/metric v1.47.0 // indirect
+	go.opentelemetry.io/otel/sdk v1.47.0 // indirect
+	go.opentelemetry.io/otel/trace v1.47.0 // indirect
 	go.uber.org/atomic v1.12.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/arch v0.31.0 // indirect
@@ -192,6 +193,5 @@ replace (
 	go-spring.org/starter-gorm-mysql => ../go-spring/starter/starter-gorm-mysql
 	go-spring.org/starter-gorm-postgres => ../go-spring/starter/starter-gorm-postgres
 	go-spring.org/starter-gorm-sqlite => ../go-spring/starter/starter-gorm-sqlite
-	go-spring.org/starter-governance => ../go-spring/starter/starter-governance
 	go-spring.org/stdlib => ../go-spring/stdlib
 )

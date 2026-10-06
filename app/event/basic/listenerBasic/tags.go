@@ -29,7 +29,7 @@ func (c *TagsListener) Register(bus event.Bus) {
 		if strPg.IsNotBlank(e.Category) {
 			err := tagsBasicEvent.NewSaveByCategory(c.sp, e).Processor()
 			if nil != err {
-				log.Errorf(ctx, log.TagAppDef, "err:=%+v", err)
+				log.Errorf(ctx, log.TagAppDef, err, "err:=%+v", err)
 			}
 		}
 		return nil
@@ -50,7 +50,7 @@ func (c *TagsListener) Register(bus event.Bus) {
 //		if strPg.IsNotBlank(dto.Category) {
 //			err := tagsBasicEvent.NewSaveByCategory(c.sp, dto).Processor()
 //			if nil != err {
-//				log.Errorf(ctx, log.TagAppDef, "", err)
+//				log.Errorf(ctx, log.TagAppDef, err, "")
 //			}
 //			message = nil
 //		}

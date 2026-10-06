@@ -60,13 +60,13 @@ func (n *Cache) GetMapByNo(ctx context.Context, list []string) (maps map[string]
 		if errors.Is(err, redis.Nil) {
 			return maps
 		}
-		log.Errorf(ctx, log.TagAppDef, "获取缓存失败:%+v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "获取缓存失败:%+v", err)
 		return maps
 	}
 	// 解析返回结果
 	result, ok := resp.(string)
 	if !ok {
-		log.Errorf(ctx, log.TagAppDef, "获取缓存失败:返回结果格式错误，预期为数组类型:%+v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "获取缓存失败:返回结果格式错误，预期为数组类型:%+v", err)
 		return maps
 	}
 	ret := strings.TrimSpace(result)

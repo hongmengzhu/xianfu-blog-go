@@ -278,7 +278,7 @@ func (c *CollectService) PushAll(ctx *gin.Context, ct modApiBlogCollect.PushAll)
 		{
 			tx := c.sv.DbModel().CreateInBatches(save, 1000000)
 			if tx.Error != nil {
-				log.Errorf(ctx, log.TagAppDef, "save err=%+v", tx.Error)
+				log.Errorf(ctx, log.TagAppDef, tx.Error, "save err=%+v", tx.Error)
 				return rt.ErrorMessage("保存失败：")
 			}
 			if 0 == tx.RowsAffected {

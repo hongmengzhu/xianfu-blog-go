@@ -39,7 +39,7 @@ func (t *BatchString) SetPipeline(ctx context.Context, keysValues map[string]any
 	// 执行批量操作
 	_, err := pipeline.Exec(ctx)
 	if err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, "批量操作失败:", err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "批量操作失败:", err)
 		return
 	}
 }
@@ -51,7 +51,7 @@ func (t *BatchString) SetPipelineTimeDuration(ctx context.Context, keysValues ma
 	// 执行批量操作
 	_, err := pipeline.Exec(ctx)
 	if err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, "批量操作失败:", err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "批量操作失败:", err)
 		return
 	}
 }
@@ -62,7 +62,7 @@ func (t *BatchString) Get(ctx context.Context, key string) (string, bool) {
 		if errors.Is(err, redis.Nil) {
 			return "", false
 		}
-		log.Errorf(context.Background(), log.TagAppDef, "获取缓存失败:", err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "获取缓存失败:", err)
 		return "", false
 	}
 	return result, true
@@ -74,7 +74,7 @@ func (t *BatchString) GetAllByKeys(ctx context.Context, key []string) ([]any, bo
 		if errors.Is(err, redis.Nil) {
 			return nil, false
 		}
-		log.Errorf(context.Background(), log.TagAppDef, "获取缓存失败:", err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "获取缓存失败:", err)
 		return nil, false
 	}
 	return result, true
@@ -86,13 +86,13 @@ func (t *BatchString) GetAllEvalByLua(ctx context.Context, key []string) ([]any,
 		if errors.Is(err, redis.Nil) {
 			return nil, false
 		}
-		log.Errorf(context.Background(), log.TagAppDef, "获取缓存失败:", err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "获取缓存失败:", err)
 		return nil, false
 	}
 	// 解析返回结果
 	result, ok := resp.([]any)
 	if !ok {
-		log.Errorf(context.Background(), log.TagAppDef, "获取缓存失败:返回结果格式错误，预期为数组类型:", err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "获取缓存失败:返回结果格式错误，预期为数组类型:", err)
 		return nil, false
 	}
 	return result, true
@@ -108,7 +108,7 @@ func (t *BatchString) HSetPipeline(ctx context.Context, hashKey string, keysValu
 		return nil
 	})
 	if err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, "批量操作失败:", err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "批量操作失败:", err)
 		return
 	}
 	log.Debugf(ctx, log.TagAppDef, "批量操作命令数:%+v", len(cmders))
@@ -130,7 +130,7 @@ func (t *BatchString) HSetPipelineMapAll(ctx context.Context, keysValues map[str
 		return nil
 	})
 	if err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, "批量操作失败:", err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "批量操作失败:", err)
 		return
 	}
 	log.Debugf(ctx, log.TagAppDef, "批量操作命令数:%+v", len(cmders))
@@ -143,7 +143,7 @@ func (t *BatchString) HGetAll(ctx context.Context, hashKey string) (map[string]s
 		if errors.Is(err, redis.Nil) {
 			return nil, false
 		}
-		log.Errorf(context.Background(), log.TagAppDef, "获取缓存失败:", err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "获取缓存失败:", err)
 		return nil, false
 	}
 	return result, true
@@ -171,7 +171,7 @@ func (t *BatchString) HGetAllPipeline(ctx context.Context, hashKeys []string) (m
 	// 一次性执行所有命令（1次网络请求）
 	_, err := pipe.Exec(ctx)
 	if err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, "批量操作失败:", err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "批量操作失败:", err)
 		return nil, false
 	}
 	log.Debugf(ctx, log.TagAppDef, "批量操作命令数:%+v", len(cmds))

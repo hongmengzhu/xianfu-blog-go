@@ -42,7 +42,7 @@ func (c *CreateTable) DbOpen() (rt rg.Rs[string]) {
 	}
 	c.DB = db
 	if err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, "open gorm postgresql %s error: %v", c.Database.URL, err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "open gorm postgresql %s error: %v", c.Database.URL, err)
 		return rt.ErrorMessage(err.Error())
 	}
 	return rt.Ok()
@@ -59,7 +59,7 @@ func (c *CreateTable) TableCreateOne(entity interface{}) (rt rg.Rs[string]) {
 	} else {
 		err2 := c.Db().AutoMigrate(entity)
 		if err2 != nil {
-			log.Errorf(context.Background(), log.TagAppDef, "创建表异常", err2)
+			log.Errorf(context.Background(), log.TagAppDef, err2, "创建表异常", err2)
 			return
 		}
 	}
@@ -147,7 +147,7 @@ func (c *CreateTable) TableCreateAllByTransaction(dst []interface{}) (rt rg.Rs[s
 		return nil
 	})
 	if err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, "创建表异常 %+v", err)
+		log.Errorf(context.Background(), log.TagAppDef, err, "创建表异常 %+v", err)
 	}
 
 	return rt.Ok()

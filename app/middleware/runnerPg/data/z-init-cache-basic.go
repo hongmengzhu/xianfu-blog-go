@@ -21,13 +21,13 @@ func (c *ZInitCacheBasic) Run(ctx context.Context) error {
 	{
 		err := eventBasicEvent.NewStartInit(c.Bus).Processor(context.Background())
 		if err != nil {
-			log.Errorf(ctx, log.TagAppDef, "error:%+v", err)
+			log.Errorf(ctx, log.TagAppDef, err, "error:%+v", err)
 		}
 	}
 	{
 		err := eventBasicRules.NewStartInit(c.Bus).Processor(context.Background())
 		if err != nil {
-			log.Errorf(ctx, log.TagAppDef, "error:%+v", err)
+			log.Errorf(ctx, log.TagAppDef, err, "error:%+v", err)
 		}
 	}
 	return nil

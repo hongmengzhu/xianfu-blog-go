@@ -129,7 +129,7 @@ func (c *CreateUpdateData) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 	if len(dataAdd) > 0 {
 		tx := c.Sp.repRules.DbModel().CreateInBatches(dataAdd, 1000000)
 		if tx.Error != nil {
-			log.Errorf(ctx, log.TagAppDef, "save err=%+v", tx.Error)
+			log.Errorf(ctx, log.TagAppDef, tx.Error, "save err=%+v", tx.Error)
 			return rt.ErrorMessage("保存失败：")
 		}
 	}

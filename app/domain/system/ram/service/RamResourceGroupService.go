@@ -48,7 +48,7 @@ func (c *RamResourceGroupService) Create(ctx *gin.Context, ct modRamResourceGrou
 	var info entityRam.RamResourceGroupEntity
 	err2 := copier.Copy(&info, &ct)
 	if err2 != nil {
-		log.Errorf(ctx, log.TagAppDef, "copier.Copy=%+v", err2)
+		log.Errorf(ctx, log.TagAppDef, err2, "copier.Copy=%+v", err2)
 		return rt.ErrorMessage(err2.Error())
 	}
 	if "" == ct.Name {
@@ -210,7 +210,7 @@ func (c *RamResourceGroupService) Update(ctx *gin.Context, ct modRamResourceGrou
 	log.Infof(ctx, log.TagAppDef, "info.IdLink=%+v", info.IdLink)
 	err = r.Update(ctx, info, info.ID)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "update error=%+v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "update error=%+v", err)
 		return rt.ErrorMessage(err.Error())
 	}
 	log.Infof(ctx, log.TagAppDef, "save.info=%+v", info)
@@ -255,7 +255,7 @@ func (c *RamResourceGroupService) CreateCategory(ctx *gin.Context, ct modRamReso
 	var info entityRam.RamResourceGroupEntity
 	err2 := copier.Copy(&info, &ct)
 	if err2 != nil {
-		log.Errorf(ctx, log.TagAppDef, "copier.Copy=%+v", err2)
+		log.Errorf(ctx, log.TagAppDef, err2, "copier.Copy=%+v", err2)
 		return rt.ErrorMessage(err2.Error())
 	}
 	if "" == ct.Name {
@@ -395,7 +395,7 @@ func (c *RamResourceGroupService) UpdateCategory(ctx *gin.Context, ct modRamReso
 	log.Infof(ctx, log.TagAppDef, "info.IdLink=%+v", info.IdLink)
 	err = r.Update(ctx, info, info.ID)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, "update error=%+v", err)
+		log.Errorf(ctx, log.TagAppDef, err, "update error=%+v", err)
 		return rt.ErrorMessage(err.Error())
 	}
 	log.Infof(ctx, log.TagAppDef, "save.info=%+v", info)
