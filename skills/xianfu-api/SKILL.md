@@ -240,7 +240,7 @@ type XxxService struct {
 
 ```go
 func (c *XxxService) Create(ctx *gin.Context, ct modXxx.CreateCt) (rt rg.Rs[string]) {
-	log.Debugf(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Debug(ctx, log.TagAppDef, "ct=%+v", ct)
     var info entityXxx.XxxEntity
     copier.Copy(&info, &ct)
     // 1. 参数校验
@@ -265,7 +265,7 @@ func (c *XxxService) Create(ctx *gin.Context, ct modXxx.CreateCt) (rt rg.Rs[stri
 
 ```go
 func (c *XxxService) Update(ctx *gin.Context, ct modXxx.UpdateCt) (rt rg.Rs[string]) {
-    log.Debugf(ctx, log.TagAppDef, "ct=%+v", ct)
+    log.Debug(ctx, log.TagAppDef, "ct=%+v", ct)
 	var info entityXxx.XxxEntity
     copier.Copy(&info, &ct)
     if ct.ID < 1 {
@@ -309,7 +309,7 @@ func (c *XxxService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modXxx.Vo]) {
 
 ```go
 func (c *XxxService) Query(ctx *gin.Context, ct modXxx.QueryCt) (rt rg.Rs[pagePg.Paginator[modXxx.Vo]]) {
-    log.Debugf(ctx, log.TagAppDef, "ct=%+v", ct)
+    log.Debug(ctx, log.TagAppDef, "ct=%+v", ct)
     var query entityXxx.XxxEntity
     copier.Copy(&query, &ct)
     slice := make([]modXxx.Vo, 0)
@@ -348,7 +348,7 @@ func (c *XxxService) Query(ctx *gin.Context, ct modXxx.QueryCt) (rt rg.Rs[pagePg
 
 ```go
 func (c *XxxService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
-    log.Debugf(ctx, log.TagAppDef, "ct=%+v", ct)
+    log.Debug(ctx, log.TagAppDef, "ct=%+v", ct)
     return c.State(ctx, ct.Ids, enumStatePg.ENABLE)
 }
 
@@ -361,7 +361,7 @@ func (c *XxxService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt r
 
 ```go
 func (c *XxxService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-    log.Debugf(ctx, log.TagAppDef, "ct=%+v", ids)
+    log.Debug(ctx, log.TagAppDef, "ct=%+v", ids)
     if len(ids) < 1 {
         return rt.ErrorMessage("id错误")
     }
@@ -387,7 +387,7 @@ func (c *XxxService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[s
 
 ```go
 func (c *XxxService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
-    log.Debugf(ctx, log.TagAppDef, "ct=%+v", ct)
+    log.Debug(ctx, log.TagAppDef, "ct=%+v", ct)
     if "" == ct.Wd {
         return rt.ErrorMessage("关键词不能为空")
     }

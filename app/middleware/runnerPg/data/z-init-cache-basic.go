@@ -17,17 +17,17 @@ type ZInitCacheBasic struct {
 }
 
 func (c *ZInitCacheBasic) Run(ctx context.Context) error {
-	log.Infof(ctx, log.TagAppDef, "[init].[启动初始化.基础.缓存]===================")
+	log.Info(ctx, log.TagAppDef, "[init].[启动初始化.基础.缓存]===================")
 	{
 		err := eventBasicEvent.NewStartInit(c.Bus).Processor(context.Background())
 		if err != nil {
-			log.Errorf(ctx, log.TagAppDef, err, "error:%+v", err)
+			log.Error(ctx, log.TagAppDef, err, "error")
 		}
 	}
 	{
 		err := eventBasicRules.NewStartInit(c.Bus).Processor(context.Background())
 		if err != nil {
-			log.Errorf(ctx, log.TagAppDef, err, "error:%+v", err)
+			log.Error(ctx, log.TagAppDef, err, "error")
 		}
 	}
 	return nil

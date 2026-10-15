@@ -74,7 +74,7 @@ func (s *BasicConfigEventService) Create(ctx *gin.Context, ct modBasicConfigEven
 
 	err, _ := s.sv.Create(ctx, &eventEntity)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "Create event error: %v", err)
+		log.Error(ctx, log.TagAppDef, err, "Create event error")
 		return rt.ErrorMessage("创建事件失败")
 	}
 
@@ -99,7 +99,7 @@ func (s *BasicConfigEventService) Create(ctx *gin.Context, ct modBasicConfigEven
 
 		err, _ := s.repoField.Create(ctx, &fieldEntity)
 		if err != nil {
-			log.Errorf(ctx, log.TagAppDef, err, "Create event field error: %v", err)
+			log.Error(ctx, log.TagAppDef, err, "Create event field error")
 			continue
 		}
 	}
@@ -184,7 +184,7 @@ func (c *BasicConfigEventService) LogicalDeletion(ctx *gin.Context, ids []string
 	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
-			log.Infof(ctx, log.TagAppDef, "id=%v", info.ID)
+			log.Info(ctx, log.TagAppDef, "id", log.Any("id", info.ID))
 		}
 		repository.DeleteByIdsString(ctx, ids)
 	} else {
@@ -206,7 +206,7 @@ func (c *BasicConfigEventService) LogicalDeletion(ctx *gin.Context, ids []string
 //	@receiver c
 //	@param ct
 func (c *BasicConfigEventService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -231,7 +231,7 @@ func (c *BasicConfigEventService) LogicalRecovery(ctx *gin.Context, ids []string
 //	@receiver c
 //	@param ct
 func (c *BasicConfigEventService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -242,7 +242,7 @@ func (c *BasicConfigEventService) PhysicalDeletion(ctx *gin.Context, ids []strin
 	}
 	idsNew := make([]int64, 0)
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v", info.ID)
+		log.Info(ctx, log.TagAppDef, "id", log.Any("id", info.ID))
 		idsNew = append(idsNew, info.ID)
 	}
 	if len(idsNew) > 0 {
@@ -257,7 +257,7 @@ func (c *BasicConfigEventService) PhysicalDeletion(ctx *gin.Context, ids []strin
 //	@receiver c
 //	@param ct
 func (c *BasicConfigEventService) Query(ctx *gin.Context, ct modBasicConfigEvent.QueryCt) (rt rg.Rs[pagePg.Paginator[modBasicConfigEvent.Vo]]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityBasic.BasicConfigEventEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modBasicConfigEvent.Vo, 0)

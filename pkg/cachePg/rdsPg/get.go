@@ -38,7 +38,7 @@ func NewGet(rdb *redis.Client) *Get {
 func (c *Get) GetJson(ctx context.Context, key string) (rt rg.Rs[string]) {
 	result, err := c.rdb.JSONGet(ctx, key).Result()
 	if err != nil {
-		log.Warnf(ctx, log.TagAppDef, "获取缓存失败: %+v", err.Error())
+		log.Warn(ctx, log.TagAppDef, "获取缓存失败", log.Any("err", err.Error()))
 		if errors.Is(err, redis.Nil) {
 			return rt.ErrorMessage("缓存不存在")
 		}
@@ -61,16 +61,18 @@ func (c *Get) GetJsonStruct(ctx context.Context, key string, v interface{}) (rt 
 		return rt.ErrorMessage("缓存不存在")
 	}
 	if err != nil {
-		log.Warnf(ctx, log.TagAppDef, "获取缓存失败: %+v", err.Error())
+		log.Warn(ctx, log.TagAppDef, "获取缓存失败", log.Any("err", err.Error()))
 		if errors.Is(err, redis.Nil) {
 			return rt.ErrorMessage("缓存不存在")
 		}
 		return rt.ErrorMessage("获取缓存错误")
 	}
-	log.Debugf(ctx, log.TagAppDef, "缓存[key]=%+v,[data]=%+v", key, result)
+	log.Debug(ctx, log.TagAppDef, "缓存", func() []log.Field {
+		return []log.Field{log.Any("key", key), log.Any("result", result)}
+	})
 	err = json.Unmarshal([]byte(result), &v)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "缓存序列化失败: %+v", err.Error())
+		log.Error(ctx, log.TagAppDef, err, "缓存序列化失败", log.Any("err", err.Error()))
 		return rt.ErrorMessage("缓存序列化失败")
 	}
 	return rt.OkData(result)
@@ -90,23 +92,27 @@ func (c *Get) GetJsonMapStruct(ctx context.Context, key string, v any) (rt rg.Rs
 		return rt.ErrorMessage("缓存不存在")
 	}
 	if err != nil {
-		log.Warnf(ctx, log.TagAppDef, "获取缓存失败: %+v", err.Error())
+		log.Warn(ctx, log.TagAppDef, "获取缓存失败", log.Any("err", err.Error()))
 		if errors.Is(err, redis.Nil) {
 			return rt.ErrorMessage("缓存不存在")
 		}
 		return rt.ErrorMessage("获取缓存错误")
 	}
-	log.Debugf(ctx, log.TagAppDef, "缓存[key]=%+v,[data]=%+v", key, result)
+	log.Debug(ctx, log.TagAppDef, "缓存", func() []log.Field {
+		return []log.Field{log.Any("key", key), log.Any("result", result)}
+	})
 	var tmp map[string]interface{}
 	err = json.Unmarshal([]byte(result), &tmp)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "缓存序列化失败: %+v", err.Error())
+		log.Error(ctx, log.TagAppDef, err, "缓存序列化失败", log.Any("err", err.Error()))
 		return rt.ErrorMessage("缓存序列化失败")
 	}
-	log.Debugf(ctx, log.TagAppDef, "缓存[key]=%+v,[map[string]interface{}]=%+v", key, tmp)
+	log.Debug(ctx, log.TagAppDef, "缓存", func() []log.Field {
+		return []log.Field{log.Any("key", key), log.Any("tmp", tmp)}
+	})
 	//map 转为 struct
 	if err = mapstructure.Decode(tmp, &v); err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "map 转 struct err=%+v", err)
+		log.Error(ctx, log.TagAppDef, err, "map 转 struct", log.Any("err", err.Error()))
 		return rt.ErrorMessage("缓存序列化失败")
 	}
 	return rt.OkData(result)
@@ -122,7 +128,7 @@ func (c *Get) GetJsonMapStruct(ctx context.Context, key string, v any) (rt rg.Rs
 func (c *Get) GetString(ctx context.Context, key string) (rt rg.Rs[string]) {
 	result, err := c.rdb.Get(ctx, key).Result()
 	if err != nil {
-		log.Warnf(ctx, log.TagAppDef, "获取缓存失败: %+v", err.Error())
+		log.Warn(ctx, log.TagAppDef, "获取缓存失败", log.Any("err", err.Error()))
 		if errors.Is(err, redis.Nil) {
 			return rt.ErrorMessage("缓存不存在或已过期")
 		}
@@ -142,19 +148,23 @@ func (c *Get) GetString(ctx context.Context, key string) (rt rg.Rs[string]) {
 func (c *Get) GetStringToJson(ctx context.Context, key string, v any) (rt rg.Rs[string]) {
 	result, err := c.rdb.Get(ctx, key).Result()
 	if err != nil {
-		log.Warnf(ctx, log.TagAppDef, "获取缓存失败: %+v", err.Error())
+		log.Warn(ctx, log.TagAppDef, "获取缓存失败", log.Any("err", err.Error()))
 		if errors.Is(err, redis.Nil) {
 			return rt.ErrorMessage("缓存不存在或已过期")
 		}
 		return rt.ErrorMessage("获取缓存错误")
 	}
-	log.Debugf(ctx, log.TagAppDef, "缓存[key]=%+v,[data]=%+v", key, result)
+	log.Debug(ctx, log.TagAppDef, "缓存", func() []log.Field {
+		return []log.Field{log.Any("key", key), log.Any("result", result)}
+	})
 	err = json.Unmarshal([]byte(result), v)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "缓存序列化失败: %+v", err.Error())
+		log.Error(ctx, log.TagAppDef, err, "缓存序列化失败", log.Any("err", err.Error()))
 		return rt.ErrorMessage("缓存序列化失败")
 	}
-	log.Debugf(ctx, log.TagAppDef, "缓存[key]=%+v,[data]=%+v", key, v)
+	log.Debug(ctx, log.TagAppDef, "缓存", func() []log.Field {
+		return []log.Field{log.Any("key", key), log.Any("v", v)}
+	})
 	return rt.OkData(result)
 }
 
@@ -164,13 +174,13 @@ func (t *Get) GetAllEvalByLua(ctx context.Context, key []string) ([]interface{},
 		if errors.Is(err, redis.Nil) {
 			return nil, false
 		}
-		log.Errorf(context.Background(), log.TagAppDef, err, "获取缓存失败:", err)
+		log.Error(context.Background(), log.TagAppDef, err, "获取缓存失败")
 		return nil, false
 	}
 	// 解析返回结果
 	result, ok := resp.([]interface{})
 	if !ok {
-		log.Errorf(context.Background(), log.TagAppDef, err, "获取缓存失败:返回结果格式错误，预期为数组类型:", err)
+		log.Error(context.Background(), log.TagAppDef, err, "获取缓存失败:返回结果格式错误，预期为数组类型")
 		return nil, false
 	}
 	return result, true

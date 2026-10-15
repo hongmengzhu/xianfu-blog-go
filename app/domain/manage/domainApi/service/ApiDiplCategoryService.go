@@ -40,11 +40,11 @@ type ApiDiplCategoryService struct {
 //	@param ct
 //	@return rt
 func (c *ApiDiplCategoryService) Create(ctx *gin.Context, ct modApiDiplCategory.CreateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%#v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityApi.ApiDiplCategoryEntity
 	err := copier.Copy(&info, &ct)
 	if err != nil {
-		log.Infof(ctx, log.TagAppDef, "copier.Copy error: %+v", err)
+		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 	}
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
@@ -82,7 +82,7 @@ func (c *ApiDiplCategoryService) Create(ctx *gin.Context, ct modApiDiplCategory.
 		info.Code = strPg.GenerateNumberId22()
 	}
 	info.TenantNo = holder.GetTenantNo()
-	log.Infof(ctx, log.TagAppDef, "info=%+v", info)
+	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	err, _ = r.Create(ctx, &info)
 	if err != nil {
 		return rt.ErrorMessage("保存失败 " + err.Error())
@@ -113,7 +113,7 @@ func (c *ApiDiplCategoryService) Create(ctx *gin.Context, ct modApiDiplCategory.
 //	@param ct
 //	@return rt
 func (c *ApiDiplCategoryService) Update(ctx *gin.Context, ct modApiDiplCategory.UpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%#v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityApi.ApiDiplCategoryEntity
 	copier.Copy(&info, &ct)
 	if ct.ID < 1 {
@@ -152,7 +152,7 @@ func (c *ApiDiplCategoryService) Update(ctx *gin.Context, ct modApiDiplCategory.
 			result2 := false
 			childData, result2 = r.FindAllByNoLink(ctx, find.No)
 			if result2 {
-				//log.Infof(ctx, log.TagAppDef,"data=%+v \n", childData)
+				//log.Info(ctx, log.TagAppDef,"data=%+v \n", childData)
 				for _, item := range childData {
 					if item.No == parent.No {
 						return rt.ErrorMessage("无法保存，不能设置为自己的子集")
@@ -176,13 +176,13 @@ func (c *ApiDiplCategoryService) Update(ctx *gin.Context, ct modApiDiplCategory.
 		info.ParentId = ""
 	}
 	info.No = ""
-	log.Infof(ctx, log.TagAppDef, "info.IdLink=%+v", info.IdLink)
+	//
 	err := r.Update(ctx, info, info.ID)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "update error=%+v", err)
+		log.Error(ctx, log.TagAppDef, err, "update error")
 		return rt.ErrorMessage(err.Error())
 	}
-	log.Infof(ctx, log.TagAppDef, "save.info=%+v", info)
+	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	//更改上级后，相关子集修改
 	if strPg.IsNotBlank(ct.ParentNo) && nil != childData {
 		maps := slicePg.ToMapArray(childData, func(t *entityApi.ApiDiplCategoryEntity) (string, *entityApi.ApiDiplCategoryEntity) {
@@ -199,7 +199,7 @@ func (c *ApiDiplCategoryService) Update(ctx *gin.Context, ct modApiDiplCategory.
 			item.NoLink = constNodePg.NoLinkAssemble(info.NoLink, item.No)
 			c.childParentIdLink(maps, item)
 		}
-		log.Infof(ctx, log.TagAppDef, "maps=%+v", maps)
+		//
 		for _, val := range maps {
 			for _, item := range val {
 				if item.ID == find.ID {
@@ -253,7 +253,7 @@ func (c *ApiDiplCategoryService) CacheOverride(ctx *gin.Context) {
 		item.NoLink = constNodePg.NoLinkDefault(item.No)
 		c.childParentIdLink(maps, item)
 	}
-	log.Infof(ctx, log.TagAppDef, "maps=%+v", maps)
+	//
 	for _, val := range maps {
 		for _, item := range val {
 			r.Update(ctx, entityApi.ApiDiplCategoryEntity{
@@ -341,7 +341,7 @@ func (c *ApiDiplCategoryService) StateEnableDisable(ctx *gin.Context, ids []stri
 //	@receiver c
 //	@param ct
 func (c *ApiDiplCategoryService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -352,7 +352,7 @@ func (c *ApiDiplCategoryService) LogicalDeletion(ctx *gin.Context, ids []string)
 	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
-			log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, 0)
+			log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
 		repository.DeleteByIdsString(ctx, ids)
 	} else {
@@ -374,7 +374,7 @@ func (c *ApiDiplCategoryService) LogicalDeletion(ctx *gin.Context, ids []string)
 //	@receiver c
 //	@param ct
 func (c *ApiDiplCategoryService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -399,7 +399,7 @@ func (c *ApiDiplCategoryService) LogicalRecovery(ctx *gin.Context, ids []string)
 //	@receiver c
 //	@param ct
 func (c *ApiDiplCategoryService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -410,7 +410,7 @@ func (c *ApiDiplCategoryService) PhysicalDeletion(ctx *gin.Context, ids []string
 	}
 	idsNew := make([]int64, 0)
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, 0)
+		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		idsNew = append(idsNew, info.ID)
 	}
 	if len(idsNew) > 0 {
@@ -425,7 +425,7 @@ func (c *ApiDiplCategoryService) PhysicalDeletion(ctx *gin.Context, ids []string
 //	@receiver c
 //	@param ct
 func (c *ApiDiplCategoryService) Query(ctx *gin.Context, ct modApiDiplCategory.QueryCt) (rt rg.Rs[pagePg.Paginator[modApiDiplCategory.Vo]]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityApi.ApiDiplCategoryEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modApiDiplCategory.Vo, 0)

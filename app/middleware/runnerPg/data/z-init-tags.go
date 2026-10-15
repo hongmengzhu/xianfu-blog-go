@@ -17,10 +17,10 @@ type ZInitTagsCache struct {
 }
 
 func (c *ZInitTagsCache) Run(ctx context.Context) error {
-	log.Infof(ctx, log.TagAppDef, "[init].[标签缓存]===================")
+	log.Info(ctx, log.TagAppDef, "[init].[标签缓存]===================")
 	err := tagsBasicEvent.NewStartInit(c.sp).Processor(context.Background())
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "error:", err)
+		log.Error(ctx, log.TagAppDef, err, "error:")
 	}
 	return nil
 }

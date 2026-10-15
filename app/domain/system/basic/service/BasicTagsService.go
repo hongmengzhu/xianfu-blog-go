@@ -38,11 +38,11 @@ type BasicTagsService struct {
 //	@param ct
 //	@return rt
 func (c *BasicTagsService) Create(ctx *gin.Context, ct modBasicTags.CreateUpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityBasic.BasicTagsEntity
 	err := copier.Copy(&info, &ct)
 	if err != nil {
-		log.Infof(ctx, log.TagAppDef, "copier.Copy error: %+v", err)
+		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 	}
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
@@ -81,12 +81,12 @@ func (c *BasicTagsService) Create(ctx *gin.Context, ct modBasicTags.CreateUpdate
 	if automatedPg.IsCreateCode(info.Code) {
 		info.Code = info.No
 	}
-	log.Infof(ctx, log.TagAppDef, "info%+v", info)
+	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	err, _ = r.Create(ctx, &info)
 	if err != nil {
 		return rt.ErrorMessage("保存失败 " + err.Error())
 	}
-	log.Infof(ctx, log.TagAppDef, "save=%+v", info)
+	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	return rg.OkData(numberPg.Int64ToString(info.ID))
 }
 
@@ -97,7 +97,7 @@ func (c *BasicTagsService) Create(ctx *gin.Context, ct modBasicTags.CreateUpdate
 //	@param ct
 //	@return rt
 func (c *BasicTagsService) Update(ctx *gin.Context, ct modBasicTags.CreateUpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%#v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityBasic.BasicTagsEntity
 	copier.Copy(&info, &ct)
 	r := c.sv
@@ -133,10 +133,10 @@ func (c *BasicTagsService) Update(ctx *gin.Context, ct modBasicTags.CreateUpdate
 	}
 	info.ID = 0
 	info.No = ""
-	log.Infof(ctx, log.TagAppDef, "info.save=%+v", info)
+	log.Info(ctx, log.TagAppDef, "update", log.Any("info", info))
 	err := r.Update(ctx, info, find.ID)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "update error=%+v", err)
+		log.Error(ctx, log.TagAppDef, err, "update error")
 		return rt.ErrorMessage(err.Error())
 	}
 	return rt.Ok()
@@ -218,7 +218,7 @@ func (c *BasicTagsService) StateEnableDisable(ctx *gin.Context, ids []string, st
 //	@receiver c
 //	@param ct
 func (c *BasicTagsService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -229,7 +229,7 @@ func (c *BasicTagsService) LogicalDeletion(ctx *gin.Context, ids []string) (rt r
 	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
-			log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+			log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
 		repository.DeleteByIdsString(ctx, ids)
 	} else {
@@ -251,7 +251,7 @@ func (c *BasicTagsService) LogicalDeletion(ctx *gin.Context, ids []string) (rt r
 //	@receiver c
 //	@param ct
 func (c *BasicTagsService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -276,7 +276,7 @@ func (c *BasicTagsService) LogicalRecovery(ctx *gin.Context, ids []string) (rt r
 //	@receiver c
 //	@param ct
 func (c *BasicTagsService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -287,7 +287,7 @@ func (c *BasicTagsService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt 
 	}
 	idsNew := make([]int64, 0)
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		idsNew = append(idsNew, info.ID)
 	}
 	if len(idsNew) > 0 {
@@ -302,7 +302,7 @@ func (c *BasicTagsService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt 
 //	@receiver c
 //	@param ct
 func (c *BasicTagsService) Query(ctx *gin.Context, ct modBasicTags.QueryCt) (rt rg.Rs[pagePg.Paginator[modBasicTags.Vo]]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityBasic.BasicTagsEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modBasicTags.Vo, 0)

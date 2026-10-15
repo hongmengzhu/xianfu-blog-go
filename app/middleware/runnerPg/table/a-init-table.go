@@ -27,7 +27,7 @@ type AInitTable struct {
 }
 
 func (b *AInitTable) Run(ctx context.Context) error {
-	log.Infof(context.Background(), log.TagAppDef, "初始化表=>表不存在时,则进行初始化")
+	log.Info(context.Background(), log.TagAppDef, "初始化表=>表不存在时,则进行初始化")
 	entityData := make([]any, 0)
 	{
 		entityData = append(entityData, &entityApi.ApiDiplEntity{})
@@ -115,9 +115,9 @@ func (b *AInitTable) Run(ctx context.Context) error {
 		//插入 基础数据
 		b.sqlBasicDictionary()
 		//
-		log.Infof(context.Background(), log.TagAppDef, "[init].[主键序号保留].")
+		log.Info(context.Background(), log.TagAppDef, "[init].[主键序号保留].")
 		b.seqEdit()
-		log.Infof(context.Background(), log.TagAppDef, "初始化表 successfully")
+		log.Info(context.Background(), log.TagAppDef, "初始化表 successfully")
 	}
 	sv = nil
 	return nil
@@ -134,7 +134,7 @@ func (b *AInitTable) Db() *gorm.DB {
 func (b *AInitTable) seqEdit() {
 	dialect := b.Db().Dialector.Name()
 	if dialect == "sqlite" {
-		log.Infof(context.Background(), log.TagAppDef, "[init][autoinc] sqlite skip auto increment init")
+		log.Info(context.Background(), log.TagAppDef, "[init][autoinc] sqlite skip auto increment init")
 		return
 	}
 	// 判断是否已初始化过：以 api_dipl_id_seq 为标志序列，当前值已达初始值则跳过，避免重启重复执行
@@ -182,16 +182,18 @@ func (b *AInitTable) seqEdit() {
 		}
 		rs := tx.Exec(raw)
 		if rs.Error != nil {
-			log.Errorf(context.Background(), log.TagAppDef, rs.Error, "初始化序号异常:%+v", rs.Error)
+			log.Error(context.Background(), log.TagAppDef, rs.Error, "初始化序号异常")
 			_ = tx.Rollback()
 			return
 		}
-		log.Debugf(context.Background(), log.TagAppDef, "执行结果: %+v 行受影响", rs.RowsAffected)
+		log.Debug(context.Background(), log.TagAppDef, "执行结果:行受影响", func() []log.Field {
+			return []log.Field{log.Int("rows_affected", rs.RowsAffected)}
+		})
 		time.Sleep(time.Microsecond * 10)
 	}
 	err := tx.Commit().Error
 	if err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, err, "创建表异常:%+v", err)
+		log.Error(context.Background(), log.TagAppDef, err, "创建表异常")
 	}
 }
 
@@ -224,24 +226,28 @@ func (b *AInitTable) sqlBasicDictionary() {
 			// 判断该主键数据是否已存在，存在则跳过，继续下一条
 			var count int64
 			if err := tx.Model(&entityBasic.BasicDataDictionaryEntity{}).Where("id = ?", item.ID).Count(&count).Error; err != nil {
-				log.Errorf(context.Background(), log.TagAppDef, err, "查询数据字典主键 %d 异常:%+v", item.ID, err)
+				log.Error(context.Background(), log.TagAppDef, err, "查询数据字典主键异常", log.Any("id", item.ID))
 				return err
 			}
 			if count > 0 {
-				log.Debugf(context.Background(), log.TagAppDef, "数据字典主键 %d 已存在,跳过插入", item.ID)
+				log.Debug(context.Background(), log.TagAppDef, "数据字典主键 %d 已存在,跳过插入", func() []log.Field {
+					return []log.Field{log.Int("id", item.ID)}
+				})
 				continue
 			}
 			rs := tx.Create(&item)
 			if rs.Error != nil {
-				log.Errorf(context.Background(), log.TagAppDef, rs.Error, "初始化数据字典主键 %d 异常:%+v", item.ID, rs.Error)
+				log.Error(context.Background(), log.TagAppDef, rs.Error, "初始化数据字典", log.Any("id", item.ID))
 				return rs.Error
 			}
-			log.Debugf(context.Background(), log.TagAppDef, "数据字典主键 %d 执行结果: %+v 行受影响", item.ID, rs.RowsAffected)
+			log.Debug(context.Background(), log.TagAppDef, "数据字典主键执行结果", func() []log.Field {
+				return []log.Field{log.Int("id", item.ID), log.Any("rows_affected", rs.RowsAffected)}
+			})
 		}
 		return nil
 	})
 	if err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, err, "创建数据字典数据异常:%+v", err)
+		log.Error(context.Background(), log.TagAppDef, err, "创建数据字典数据异常")
 	}
 }
 

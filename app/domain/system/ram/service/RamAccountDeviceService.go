@@ -39,7 +39,7 @@ type RamAccountDeviceService struct {
 //	@param ct
 //	@return rt
 func (c *RamAccountDeviceService) Create(ctx *gin.Context, ct modRamAccountDevice2.CreateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityRam.RamAccountDeviceEntity
 	copier.Copy(&info, &ct)
 	if "" == ct.Name {
@@ -67,12 +67,12 @@ func (c *RamAccountDeviceService) Create(ctx *gin.Context, ct modRamAccountDevic
 	if automatedPg.IsCreateCode(info.Code) {
 		info.Code = info.No
 	}
-	log.Infof(ctx, log.TagAppDef, "info%+v", info)
+	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	err, _ := r.Create(ctx, &info)
 	if err != nil {
 		return rt.ErrorMessage("保存失败 " + err.Error())
 	}
-	log.Infof(ctx, log.TagAppDef, "save=%+v", info)
+	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	return rg.OkData(numberPg.Int64ToString(info.ID))
 }
 
@@ -83,7 +83,7 @@ func (c *RamAccountDeviceService) Create(ctx *gin.Context, ct modRamAccountDevic
 //	@param ct
 //	@return rt
 func (c *RamAccountDeviceService) Update(ctx *gin.Context, ct modRamAccountDevice2.UpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityRam.RamAccountDeviceEntity
 	copier.Copy(&info, &ct)
 	r := c.sv
@@ -107,10 +107,10 @@ func (c *RamAccountDeviceService) Update(ctx *gin.Context, ct modRamAccountDevic
 	}
 	info.ID = 0
 	info.No = ""
-	log.Infof(ctx, log.TagAppDef, "info.save=%+v", info)
+	log.Info(ctx, log.TagAppDef, "update", log.Any("info", info))
 	err := r.Update(ctx, info, find.ID)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "update error=%+v", err)
+		log.Error(ctx, log.TagAppDef, err, "update error")
 		return rt.ErrorMessage(err.Error())
 	}
 	return rt.Ok()
@@ -140,7 +140,7 @@ func (c *RamAccountDeviceService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[m
 //	@receiver c
 //	@param ct
 func (c *RamAccountDeviceService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.ENABLE)
 }
 
@@ -150,7 +150,7 @@ func (c *RamAccountDeviceService) Enable(ctx *gin.Context, ct model.BaseIdsCt[st
 //	@receiver c
 //	@param ct
 func (c *RamAccountDeviceService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.GetType(enumStatePg.DISABLE))
 }
 
@@ -194,7 +194,7 @@ func (c *RamAccountDeviceService) StateEnableDisable(ctx *gin.Context, ids []str
 //	@receiver c
 //	@param ct
 func (c *RamAccountDeviceService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -205,7 +205,7 @@ func (c *RamAccountDeviceService) LogicalDeletion(ctx *gin.Context, ids []string
 	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
-			log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+			log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
 		repository.DeleteByIdsString(ctx, ids)
 	} else {
@@ -226,7 +226,7 @@ func (c *RamAccountDeviceService) LogicalDeletion(ctx *gin.Context, ids []string
 //	@receiver c
 //	@param ct
 func (c *RamAccountDeviceService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -251,7 +251,7 @@ func (c *RamAccountDeviceService) LogicalRecovery(ctx *gin.Context, ids []string
 //	@receiver c
 //	@param ct
 func (c *RamAccountDeviceService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -262,7 +262,7 @@ func (c *RamAccountDeviceService) PhysicalDeletion(ctx *gin.Context, ids []strin
 	}
 	idsNew := make([]int64, 0)
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		idsNew = append(idsNew, info.ID)
 	}
 	if len(idsNew) > 0 {
@@ -277,7 +277,7 @@ func (c *RamAccountDeviceService) PhysicalDeletion(ctx *gin.Context, ids []strin
 //	@receiver c
 //	@param ct
 func (c *RamAccountDeviceService) Query(ctx *gin.Context, ct modRamAccountDevice2.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamAccountDevice2.Vo]]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamAccountDeviceEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modRamAccountDevice2.Vo, 0)
@@ -351,7 +351,7 @@ func (c *RamAccountDeviceService) Query(ctx *gin.Context, ct modRamAccountDevice
 //	@receiver c
 //	@param ct
 func (c *RamAccountDeviceService) SelectNodePublic(ctx *gin.Context, ct modRamAccountDevice2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamAccountDeviceEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
@@ -380,7 +380,7 @@ func (c *RamAccountDeviceService) SelectNodePublic(ctx *gin.Context, ct modRamAc
 //	@receiver c
 //	@param ct
 func (c *RamAccountDeviceService) SelectNodeAllPublic(ctx *gin.Context, ct modRamAccountDevice2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamAccountDeviceEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
@@ -409,7 +409,7 @@ func (c *RamAccountDeviceService) SelectNodeAllPublic(ctx *gin.Context, ct modRa
 //	@receiver c
 //	@param ct
 func (c *RamAccountDeviceService) SelectPublic(ctx *gin.Context, ct modRamAccountDevice2.QueryCt) (rt rg.Rs[[]modRamAccountDevice2.Vo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamAccountDeviceEntity
 	copier.Copy(&query, &ct)
 	rt.Data = []modRamAccountDevice2.Vo{}
@@ -432,7 +432,7 @@ func (c *RamAccountDeviceService) SelectPublic(ctx *gin.Context, ct modRamAccoun
 //	@receiver c
 //	@param ct
 func (c *RamAccountDeviceService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Wd {
 		return rt.ErrorMessage("查询内容不能为空")
 	}
@@ -453,7 +453,7 @@ func (c *RamAccountDeviceService) ExistName(ctx *gin.Context, ct model.BaseExist
 //	@receiver c
 //	@param ct
 func (c *RamAccountDeviceService) ExistCode(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Wd {
 		return rt.ErrorMessage("查询内容不能为空")
 	}

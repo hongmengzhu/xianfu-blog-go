@@ -40,11 +40,11 @@ type BasicModuleService struct {
 //	@param ct
 //	@return rt
 func (c *BasicModuleService) Create(ctx *gin.Context, ct modBasicModule.CreateUpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%#v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityBasic.BasicModuleEntity
 	err := copier.Copy(&info, &ct)
 	if err != nil {
-		log.Infof(ctx, log.TagAppDef, "copier.Copy error: %+v", err)
+		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 	}
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
@@ -80,7 +80,7 @@ func (c *BasicModuleService) Create(ctx *gin.Context, ct modBasicModule.CreateUp
 		info.Code = strPg.GenerateNumberId22()
 	}
 	info.TenantNo = holder.GetTenantNo()
-	log.Infof(ctx, log.TagAppDef, "info=%+v", info)
+	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	err, _ = r.Create(ctx, &info)
 	if err != nil {
 		return rt.ErrorMessage("保存失败 " + err.Error())
@@ -111,11 +111,11 @@ func (c *BasicModuleService) Create(ctx *gin.Context, ct modBasicModule.CreateUp
 //	@param ct
 //	@return rt
 func (c *BasicModuleService) Update(ctx *gin.Context, ct modBasicModule.CreateUpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%#v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityBasic.BasicModuleEntity
 	err := copier.Copy(&info, &ct)
 	if err != nil {
-		log.Infof(ctx, log.TagAppDef, "copier.Copy error: %+v", err)
+		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 	}
 	if ct.ID < 1 {
 		return rt.ErrorMessage("id错误")
@@ -156,7 +156,7 @@ func (c *BasicModuleService) Update(ctx *gin.Context, ct modBasicModule.CreateUp
 			result2 := false
 			childData, result2 = r.FindAllByNoLink(ctx, find.NoLink)
 			if result2 {
-				//log.Infof(ctx, log.TagAppDef,"data=%+v \n", childData)
+				//log.Info(ctx, log.TagAppDef,"data=%+v \n", childData)
 				for _, item := range childData {
 					if item.No == parent.No {
 						return rt.ErrorMessage("无法保存，不能设置为自己的子集")
@@ -180,13 +180,13 @@ func (c *BasicModuleService) Update(ctx *gin.Context, ct modBasicModule.CreateUp
 		info.ParentCode = ""
 	}
 	info.No = ""
-	log.Infof(ctx, log.TagAppDef, "info.NoLink=%+v", info.NoLink)
+	//
 	err = r.Update(ctx, info, info.ID)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "update error=%+v", err)
+		log.Error(ctx, log.TagAppDef, err, "update error")
 		return rt.ErrorMessage(err.Error())
 	}
-	log.Infof(ctx, log.TagAppDef, "save.info=%+v", info)
+	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	//更改上级后，相关子集修改
 	if strPg.IsNotBlank(ct.ParentNo) && nil != childData {
 		maps := slicePg.ToMapArray(childData, func(t *entityBasic.BasicModuleEntity) (string, *entityBasic.BasicModuleEntity) {
@@ -203,7 +203,7 @@ func (c *BasicModuleService) Update(ctx *gin.Context, ct modBasicModule.CreateUp
 			item.NoLink = constNodePg.NoLinkAssemble(info.NoLink, item.No)
 			c.childParentIdLink(maps, item)
 		}
-		log.Infof(ctx, log.TagAppDef, "maps=%+v", maps)
+		//
 		for _, val := range maps {
 			for _, item := range val {
 				if item.ID == find.ID {
@@ -257,7 +257,7 @@ func (c *BasicModuleService) CacheOverride(ctx *gin.Context) {
 		item.NoLink = constNodePg.NoLinkDefault(item.No)
 		c.childParentIdLink(maps, item)
 	}
-	log.Infof(ctx, log.TagAppDef, "maps=%+v", maps)
+	//
 	for _, val := range maps {
 		for _, item := range val {
 			r.Update(ctx, entityBasic.BasicModuleEntity{
@@ -345,7 +345,7 @@ func (c *BasicModuleService) StateEnableDisable(ctx *gin.Context, ids []string, 
 //	@receiver c
 //	@param ct
 func (c *BasicModuleService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -356,7 +356,7 @@ func (c *BasicModuleService) LogicalDeletion(ctx *gin.Context, ids []string) (rt
 	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
-			log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, 0)
+			log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
 		repository.DeleteByIdsString(ctx, ids)
 	} else {
@@ -378,7 +378,7 @@ func (c *BasicModuleService) LogicalDeletion(ctx *gin.Context, ids []string) (rt
 //	@receiver c
 //	@param ct
 func (c *BasicModuleService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -403,7 +403,7 @@ func (c *BasicModuleService) LogicalRecovery(ctx *gin.Context, ids []string) (rt
 //	@receiver c
 //	@param ct
 func (c *BasicModuleService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -414,7 +414,7 @@ func (c *BasicModuleService) PhysicalDeletion(ctx *gin.Context, ids []string) (r
 	}
 	idsNew := make([]int64, 0)
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, 0)
+		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		idsNew = append(idsNew, info.ID)
 	}
 	if len(idsNew) > 0 {
@@ -429,7 +429,7 @@ func (c *BasicModuleService) PhysicalDeletion(ctx *gin.Context, ids []string) (r
 //	@receiver c
 //	@param ct
 func (c *BasicModuleService) Query(ctx *gin.Context, ct modBasicModule.QueryCt) (rt rg.Rs[pagePg.Paginator[modBasicModule.Vo]]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityBasic.BasicModuleEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modBasicModule.Vo, 0)

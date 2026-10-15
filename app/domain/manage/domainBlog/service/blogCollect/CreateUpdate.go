@@ -75,7 +75,7 @@ type CreateUpdate struct {
 //	@param ctx
 //	@return rt
 func (c *CreateUpdate) Process(ctx *gin.Context) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", c.ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", c.ct))
 	c.entitySave = &entityBlog.BlogCollectEntity{}
 	ret := c.verify(ctx)
 	if ret.ErrorIs() {
@@ -239,15 +239,17 @@ func (c CreateUpdate) save(ctx *gin.Context) (rt rg.Rs[string]) {
 		var info entityBlog.BlogCollectEntity
 		copier.Copy(&info, c.entitySave)
 		info.ID = 0
-		log.Infof(ctx, log.TagAppDef, "info=%+v", info)
+		log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 		err := r.Update(ctx, info, c.ct.ID.ToInt64())
 		if err != nil {
-			log.Debugf(ctx, log.TagAppDef, "save err=%+v", err.Error())
+			log.Debug(ctx, log.TagAppDef, "save err", func() []log.Field {
+				return []log.Field{log.Any("error", err.Error())}
+			})
 			return rt.ErrorMessage("保存失败：" + err.Error())
 		}
 		//
 	} else {
-		log.Infof(ctx, log.TagAppDef, "info=%+v", c.entitySave)
+		log.Info(ctx, log.TagAppDef, "info", log.Any("info", c.entitySave))
 		c.entitySave.TenantNo = c.holder.GetTenantNo()
 		c.entitySave.No = noPg.No()
 		if automatedPg.IsCreateCode(c.entitySave.Code) {
@@ -255,10 +257,12 @@ func (c CreateUpdate) save(ctx *gin.Context) (rt rg.Rs[string]) {
 		}
 		err, _ := r.Create(ctx, c.entitySave)
 		if err != nil {
-			log.Debugf(ctx, log.TagAppDef, "save err=%+v", err)
+			log.Debug(ctx, log.TagAppDef, "save err=%+v", func() []log.Field {
+				return []log.Field{log.Any("error", err)}
+			})
 			return rt.ErrorMessage("保存失败：" + err.Error())
 		}
-		log.Infof(ctx, log.TagAppDef, "save=%+v", c.entitySave)
+		log.Info(ctx, log.TagAppDef, "save", log.Any("info", c.entitySave))
 		c.record = c.entitySave
 	}
 	//话题

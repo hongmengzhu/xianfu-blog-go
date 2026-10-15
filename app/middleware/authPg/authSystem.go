@@ -47,7 +47,11 @@ func GroupSystemMiddleware(m *GroupSystemMiddlewareSp) gin.HandlerFunc {
 			token = strings.Replace(token, authTokenPg2.AuthScheme+" ", "", -1)
 			t, r := authTokenPg2.VerifyByPublicKey(get.Public, token)
 			if r.ErrorIs() {
-				log.Debugf(context.Background(), log.TagAppDef, "JWT= %+v", r)
+				log.Debug(context.Background(), log.TagAppDef, "JWT", func() []log.Field {
+					return []log.Field{
+						log.Any("JWT", r),
+					}
+				})
 				c.JSON(200, r)
 				c.Abort()
 				return
@@ -71,8 +75,12 @@ func GroupSystemMiddleware(m *GroupSystemMiddlewareSp) gin.HandlerFunc {
 				c.Abort()
 				return
 			}
-			log.Debugf(context.Background(), log.TagAppDef, "rt= %+v", rt)
-			log.Debugf(context.Background(), log.TagAppDef, "rt.Rule= %+v", rt.Data.Rule)
+			log.Debug(context.Background(), log.TagAppDef, "rt", func() []log.Field {
+				return []log.Field{
+					log.Any("rt.Rule", rt.Data.Rule),
+					log.Any("rt", rt),
+				}
+			})
 			//
 			var data = rt.Data
 			//如果配置了systemUrlPaths，则必须携带ownerCode
@@ -81,7 +89,11 @@ func GroupSystemMiddleware(m *GroupSystemMiddlewareSp) gin.HandlerFunc {
 				for _, item := range systemUrlPaths {
 					//必须登录 验证，url 包含的路径，那么提示错误
 					if "" != item && strings.Index(path, item) != -1 {
-						log.Tracef(context.Background(), log.TagAppDef, "pass %+v", c.Request.URL.Path)
+						log.Trace(context.Background(), log.TagAppDef, "pass", func() []log.Field {
+							return []log.Field{
+								log.String("path", c.Request.URL.Path),
+							}
+						})
 						c.JSON(200, rg.Error[string]("所有者错误"))
 						c.Abort()
 						return
@@ -94,7 +106,7 @@ func GroupSystemMiddleware(m *GroupSystemMiddlewareSp) gin.HandlerFunc {
 			c.Set(constContextPg.AUTH_LOGIN, rt.Data)
 			c.Set(constContextPg.CTX_RULE, rt.Data.Rule)
 			//value, exists := c.Get(constContextPg.CTX_RULE)
-			//m.log.Infof("Set.constContextPg.CTX_RULE.get= %+v,", value, exists)
+			//m.log.Info("Set.constContextPg.CTX_RULE.get= %+v,", value, exists)
 			//m.log.WithContext(c.Context()).Tracef("::AdminManageFilter")
 
 			//详细权限

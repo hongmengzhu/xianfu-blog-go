@@ -43,10 +43,10 @@ func (c *RamResourceRelationService) Create(ctx *gin.Context, ct modRamResourceR
 
 	var info entityRam.RamResourceRelationEntity
 	copier.Copy(&info, &ct)
-	log.Infof(ctx, log.TagAppDef, "info%+v", info)
+	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	info.TenantNo = holder.GetTenantNo()
 	c.sv.Create(ctx, &info)
-	log.Infof(ctx, log.TagAppDef, "save=%+v", info)
+	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	return rg.OkData(numberPg.Int64ToString(info.ID))
 }
 
@@ -107,7 +107,7 @@ func (c *RamResourceRelationService) Delete(ctx *gin.Context, ct model.BaseIdsCt
 		return rt.ErrorMessage("数据不存在")
 	}
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		r.DeleteById(ctx, info.ID)
 	}
 	return rt.Ok()
@@ -171,7 +171,7 @@ func (c *RamResourceRelationService) StateEnableDisable(ctx *gin.Context, ids []
 //	@receiver c
 //	@param ct
 func (c *RamResourceRelationService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -182,7 +182,7 @@ func (c *RamResourceRelationService) LogicalDeletion(ctx *gin.Context, ids []str
 	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
-			log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+			log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
 		repository.DeleteByIdsString(ctx, ids)
 	} else {
@@ -204,7 +204,7 @@ func (c *RamResourceRelationService) LogicalDeletion(ctx *gin.Context, ids []str
 //	@receiver c
 //	@param ct
 func (c *RamResourceRelationService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -229,7 +229,7 @@ func (c *RamResourceRelationService) LogicalRecovery(ctx *gin.Context, ids []str
 //	@receiver c
 //	@param ct
 func (c *RamResourceRelationService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -240,7 +240,7 @@ func (c *RamResourceRelationService) PhysicalDeletion(ctx *gin.Context, ids []st
 	}
 	idsNew := make([]int64, 0)
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		idsNew = append(idsNew, info.ID)
 	}
 	if len(idsNew) > 0 {
@@ -255,7 +255,7 @@ func (c *RamResourceRelationService) PhysicalDeletion(ctx *gin.Context, ids []st
 //	@receiver c
 //	@param ct
 func (c *RamResourceRelationService) Query(ctx *gin.Context, ct modRamResourceRelation2.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamResourceRelation2.Vo]]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamResourceRelationEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modRamResourceRelation2.Vo, 0)
@@ -298,7 +298,7 @@ func (c *RamResourceRelationService) Query(ctx *gin.Context, ct modRamResourceRe
 //	@receiver c
 //	@param ct
 func (c *RamResourceRelationService) SelectNodePublic(ctx *gin.Context, ct modRamResourceRelation2.QueryCt) (rt rg.Rs[[]model.BaseNode]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamResourceRelationEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNode, 0)
@@ -321,7 +321,7 @@ func (c *RamResourceRelationService) SelectNodePublic(ctx *gin.Context, ct modRa
 //	@receiver c
 //	@param ct
 func (c *RamResourceRelationService) SelectNodeAllPublic(ctx *gin.Context, ct modRamResourceRelation2.QueryCt) (rt rg.Rs[[]model.BaseNode]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamResourceRelationEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNode, 0)
@@ -347,7 +347,7 @@ func (c *RamResourceRelationService) SelectNodeAllPublic(ctx *gin.Context, ct mo
 //	@receiver c
 //	@param ct
 func (c *RamResourceRelationService) SelectPublic(ctx *gin.Context, ct modRamResourceRelation2.QueryCt) (rt rg.Rs[[]modRamResourceRelation2.Vo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamResourceRelationEntity
 	copier.Copy(&query, &ct)
 	rt.Data = []modRamResourceRelation2.Vo{}

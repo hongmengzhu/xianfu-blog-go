@@ -32,25 +32,25 @@ type RamIdpBindingService struct {
 
 // Create 新增
 func (c *RamIdpBindingService) Create(ctx *gin.Context, ct modRamIdpBinding.CreateUpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityRam.RamIdpBindingEntity
 	copier.Copy(&info, &ct)
 	r := c.sv
 	holder := holderPg.GetContextAccount(ctx)
 	info.TenantNo = holder.GetTenantNo()
 	info.No = noPg.No()
-	log.Infof(ctx, log.TagAppDef, "info%+v", info)
+	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	err, _ := r.Create(ctx, &info)
 	if err != nil {
 		return rt.ErrorMessage("保存失败 " + err.Error())
 	}
-	log.Infof(ctx, log.TagAppDef, "save=%+v", info)
+	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	return rg.OkData(numberPg.Int64ToString(info.ID))
 }
 
 // Update 更新
 func (c *RamIdpBindingService) Update(ctx *gin.Context, ct modRamIdpBinding.CreateUpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityRam.RamIdpBindingEntity
 	copier.Copy(&info, &ct)
 	r := c.sv
@@ -63,10 +63,10 @@ func (c *RamIdpBindingService) Update(ctx *gin.Context, ct modRamIdpBinding.Crea
 	}
 	info.ID = 0
 	info.No = ""
-	log.Infof(ctx, log.TagAppDef, "info.save=%+v", info)
+	log.Info(ctx, log.TagAppDef, "update", log.Any("info", info))
 	err := r.Update(ctx, info, find.ID)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "update error=%+v", err)
+		log.Error(ctx, log.TagAppDef, err, "update error")
 		return rt.ErrorMessage(err.Error())
 	}
 	return rt.Ok()
@@ -88,13 +88,13 @@ func (c *RamIdpBindingService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modR
 
 // Enable 启用
 func (c *RamIdpBindingService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.ENABLE)
 }
 
 // Disable 禁用
 func (c *RamIdpBindingService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.GetType(enumStatePg.DISABLE))
 }
 
@@ -126,7 +126,7 @@ func (c *RamIdpBindingService) StateEnableDisable(ctx *gin.Context, ids []string
 
 // LogicalDeletion 逻辑删除
 func (c *RamIdpBindingService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -137,7 +137,7 @@ func (c *RamIdpBindingService) LogicalDeletion(ctx *gin.Context, ids []string) (
 	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
-			log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+			log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
 		repository.DeleteByIdsString(ctx, ids)
 	} else {
@@ -153,7 +153,7 @@ func (c *RamIdpBindingService) LogicalDeletion(ctx *gin.Context, ids []string) (
 
 // LogicalRecovery 逻辑删除恢复
 func (c *RamIdpBindingService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -173,7 +173,7 @@ func (c *RamIdpBindingService) LogicalRecovery(ctx *gin.Context, ids []string) (
 
 // PhysicalDeletion 物理删除
 func (c *RamIdpBindingService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -184,7 +184,7 @@ func (c *RamIdpBindingService) PhysicalDeletion(ctx *gin.Context, ids []string) 
 	}
 	idsNew := make([]int64, 0)
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		idsNew = append(idsNew, info.ID)
 	}
 	if len(idsNew) > 0 {
@@ -195,7 +195,7 @@ func (c *RamIdpBindingService) PhysicalDeletion(ctx *gin.Context, ids []string) 
 
 // Query 查询
 func (c *RamIdpBindingService) Query(ctx *gin.Context, ct modRamIdpBinding.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdpBinding.Vo]]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamIdpBindingEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modRamIdpBinding.Vo, 0)
@@ -232,7 +232,7 @@ func (c *RamIdpBindingService) Query(ctx *gin.Context, ct modRamIdpBinding.Query
 
 // SelectPublic 查询
 func (c *RamIdpBindingService) SelectPublic(ctx *gin.Context, ct modRamIdpBinding.QueryCt) (rt rg.Rs[[]modRamIdpBinding.Vo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamIdpBindingEntity
 	copier.Copy(&query, &ct)
 	rt.Data = []modRamIdpBinding.Vo{}

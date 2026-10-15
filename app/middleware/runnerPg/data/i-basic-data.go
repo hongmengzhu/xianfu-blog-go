@@ -37,7 +37,7 @@ type IBasicData struct {
 }
 
 func (b *IBasicData) Run(ctx context.Context) error {
-	log.Infof(context.Background(), log.TagAppDef, "[init].[基础数据：国家:中国]===================")
+	log.Info(context.Background(), log.TagAppDef, "[init].[基础数据：国家:中国]===================")
 	{
 		save := entityBasic.BasicCountryEntity{
 			ID:           100000,
@@ -61,7 +61,7 @@ func (b *IBasicData) Run(ctx context.Context) error {
 		}
 	}
 	//
-	log.Infof(context.Background(), log.TagAppDef, "[init].[基础数据：标签:分类]===================")
+	log.Info(context.Background(), log.TagAppDef, "[init].[基础数据：标签:分类]===================")
 	{
 		save := entityBasic.BasicTagsCategoryEntity{
 			ID:       100000,
@@ -101,7 +101,7 @@ func (b *IBasicData) Run(ctx context.Context) error {
 // initSysConfig 初始化系统配置
 func (b *IBasicData) initSysConfig() {
 	ctx := context.Background()
-	log.Infof(context.Background(), log.TagAppDef, "[init].[基础数据：配置.系统配置]===================")
+	log.Info(context.Background(), log.TagAppDef, "[init].[基础数据：配置.系统配置]===================")
 	save := entityBasic.BasicConfigListEntity{
 		State:       enumStatePg.ENABLE.Index(),
 		Show:        yesNoIntPg.Yes.Index(),
@@ -195,7 +195,7 @@ func (b *IBasicData) initSysConfig() {
 // 默认租户配置
 func (b *IBasicData) initDefaultTenantConfig() {
 	ctx := context.Background()
-	log.Infof(context.Background(), log.TagAppDef, "[init].[基础数据：配置.默认租户配置]===================")
+	log.Info(context.Background(), log.TagAppDef, "[init].[基础数据：配置.默认租户配置]===================")
 	save := entityBasic.BasicConfigListEntity{
 		State:       enumStatePg.ENABLE.Index(),
 		Show:        yesNoIntPg.Yes.Index(),

@@ -53,7 +53,7 @@ func (c *TcTenantDomainCacheService) InitTenantDomain(ctx context.Context) {
 		}
 		//
 		for _, item := range infos {
-			log.Infof(context.Background(), log.TagAppDef, "domian=tenant,%+v=%+v", item.Code, item.TenantNo)
+			log.Info(context.Background(), log.TagAppDef, "domian=tenant,%+v=%+v", log.Any("Code", item.Code), log.Any("TenantNo", item.TenantNo))
 			c.ca.Domain.Store(item.Code, item.TenantNo)
 			dto := dtoTenantDomain.Dto{
 				TenantNo: item.TenantNo,

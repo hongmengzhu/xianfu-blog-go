@@ -41,7 +41,7 @@ type RamLevelService struct {
 //	@param ct
 //	@return rt
 func (c *RamLevelService) Create(ctx *gin.Context, ct modRamLevel2.CreateUpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityRam.RamLevelEntity
 	copier.Copy(&info, &ct)
 	if "" == ct.Name {
@@ -69,12 +69,12 @@ func (c *RamLevelService) Create(ctx *gin.Context, ct modRamLevel2.CreateUpdateC
 	if automatedPg.IsCreateCode(info.Code) {
 		info.Code = info.No
 	}
-	log.Infof(ctx, log.TagAppDef, "info%+v", info)
+	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	err, _ := r.Create(ctx, &info)
 	if err != nil {
 		return rt.ErrorMessage("保存失败 " + err.Error())
 	}
-	log.Infof(ctx, log.TagAppDef, "save=%+v", info)
+	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	return rg.OkData(numberPg.Int64ToString(info.ID))
 }
 
@@ -85,7 +85,7 @@ func (c *RamLevelService) Create(ctx *gin.Context, ct modRamLevel2.CreateUpdateC
 //	@param ct
 //	@return rt
 func (c *RamLevelService) Update(ctx *gin.Context, ct modRamLevel2.CreateUpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityRam.RamLevelEntity
 	copier.Copy(&info, &ct)
 	r := c.sv
@@ -109,10 +109,10 @@ func (c *RamLevelService) Update(ctx *gin.Context, ct modRamLevel2.CreateUpdateC
 	}
 	info.ID = 0
 	info.No = ""
-	log.Infof(ctx, log.TagAppDef, "info.save=%+v", info)
+	log.Info(ctx, log.TagAppDef, "update", log.Any("info", info))
 	err := r.Update(ctx, info, find.ID)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "update error=%+v", err)
+		log.Error(ctx, log.TagAppDef, err, "update error")
 		return rt.ErrorMessage(err.Error())
 	}
 	return rt.Ok()
@@ -142,7 +142,7 @@ func (c *RamLevelService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamLev
 //	@receiver c
 //	@param ct
 func (c *RamLevelService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.ENABLE)
 }
 
@@ -152,7 +152,7 @@ func (c *RamLevelService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (
 //	@receiver c
 //	@param ct
 func (c *RamLevelService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.GetType(enumStatePg.DISABLE))
 }
 
@@ -196,7 +196,7 @@ func (c *RamLevelService) StateEnableDisable(ctx *gin.Context, ids []string, sta
 //	@receiver c
 //	@param ct
 func (c *RamLevelService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -207,7 +207,7 @@ func (c *RamLevelService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg
 	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
-			log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+			log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
 		repository.DeleteByIdsString(ctx, ids)
 		//
@@ -230,7 +230,7 @@ func (c *RamLevelService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg
 //	@receiver c
 //	@param ct
 func (c *RamLevelService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -255,7 +255,7 @@ func (c *RamLevelService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg
 //	@receiver c
 //	@param ct
 func (c *RamLevelService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -267,7 +267,7 @@ func (c *RamLevelService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt r
 	idsNew := make([]int64, 0)
 	keys := make([]string, 0)
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		idsNew = append(idsNew, info.ID)
 		//
 		keys = append(keys, info.No)
@@ -286,7 +286,7 @@ func (c *RamLevelService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt r
 //	@receiver c
 //	@param ct
 func (c *RamLevelService) Query(ctx *gin.Context, ct modRamLevel2.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamLevel2.Vo]]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamLevelEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modRamLevel2.Vo, 0)
@@ -330,7 +330,7 @@ func (c *RamLevelService) Query(ctx *gin.Context, ct modRamLevel2.QueryCt) (rt r
 //	@receiver c
 //	@param ct
 func (c *RamLevelService) SelectNodeAll(ctx *gin.Context, ct modRamLevel2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamLevelEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
@@ -359,7 +359,7 @@ func (c *RamLevelService) SelectNodeAll(ctx *gin.Context, ct modRamLevel2.QueryP
 //	@receiver c
 //	@param ct
 func (c *RamLevelService) SelectNodeAllPublic(ctx *gin.Context, ct modRamLevel2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamLevelEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
@@ -388,7 +388,7 @@ func (c *RamLevelService) SelectNodeAllPublic(ctx *gin.Context, ct modRamLevel2.
 //	@receiver c
 //	@param ct
 func (c *RamLevelService) SelectPublic(ctx *gin.Context, ct modRamLevel2.QueryCt) (rt rg.Rs[[]modRamLevel2.Vo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamLevelEntity
 	copier.Copy(&query, &ct)
 	rt.Data = []modRamLevel2.Vo{}
@@ -411,7 +411,7 @@ func (c *RamLevelService) SelectPublic(ctx *gin.Context, ct modRamLevel2.QueryCt
 //	@receiver c
 //	@param ct
 func (c *RamLevelService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Wd {
 		return rt.ErrorMessage("查询内容不能为空")
 	}
@@ -432,7 +432,7 @@ func (c *RamLevelService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[str
 //	@receiver c
 //	@param ct
 func (c *RamLevelService) ExistCode(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Wd {
 		return rt.ErrorMessage("查询内容不能为空")
 	}

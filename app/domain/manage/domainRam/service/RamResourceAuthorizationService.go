@@ -51,7 +51,7 @@ func (c *RamResourceAuthorizationService) UpdateByResourceGroup(ctx *gin.Context
 	if !b {
 		return rt.ErrorMessage("创建资源权限失败")
 	}
-	log.Infof(ctx, log.TagAppDef, "authPg=%+v", auth)
+	log.Info(ctx, log.TagAppDef, "authPg", log.Any("auth", auth))
 	holder := holderPg.GetContextAccount(ctx)
 	c.resourceRel.DeleteByAuthorityId(ctx, auth.ID)
 	if len(ct.Ids) > 0 {
@@ -81,10 +81,10 @@ func (c *RamResourceAuthorizationService) UpdateByResourceGroup(ctx *gin.Context
 				info.AuthorityId = auth.ID
 				info.TypeValue = ct.SourceId.ToString()
 				info.ResourceId = item.ID
-				log.Infof(ctx, log.TagAppDef, "info%+v", info)
+				log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 				info.TenantNo = holder.GetTenantNo()
 				c.resourceRel.Create(ctx, &info)
-				log.Infof(ctx, log.TagAppDef, "save=%+v", info)
+				log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 
 				slice = append(slice, &info)
 			}

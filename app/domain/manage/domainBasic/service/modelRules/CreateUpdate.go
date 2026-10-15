@@ -42,7 +42,7 @@ func (c *CreateUpdate) Process(ctx *gin.Context) (rt rg.Rs[string]) {
 }
 
 func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", c.ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", c.ct))
 	ct := c.ct
 	if strPg.IsBlank(ct.FieldNo) {
 		return rt.ErrorMessage("字段编号不能为空")
@@ -73,7 +73,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 	obj := entityBasic.BasicModelRulesEntity{}
 	err := copier.Copy(&obj, &ct)
 	if err != nil {
-		log.Infof(ctx, log.TagAppDef, "copier.Copy error: %+v", err)
+		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 	}
 	obj.Name = strings.TrimSpace(obj.Name)
 	obj.RuleMode = strings.TrimSpace(obj.RuleMode)
@@ -98,7 +98,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		obj.ValueNo = ""
 		err := c.Sp.repRules.Update(ctx, obj, info.ID)
 		if err != nil {
-			log.Errorf(ctx, log.TagAppDef, err, "save err=%+v", err)
+			log.Error(ctx, log.TagAppDef, err, "save err")
 			return rt.ErrorMessage("保存失败：")
 		}
 	} else {
@@ -112,7 +112,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		obj.TypeModel = typeModel
 		err, _ := c.Sp.repRules.Create(ctx, &obj)
 		if err != nil {
-			log.Errorf(ctx, log.TagAppDef, err, "save err=%+v", err)
+			log.Error(ctx, log.TagAppDef, err, "save err")
 			return rt.ErrorMessage("保存失败：")
 		}
 	}

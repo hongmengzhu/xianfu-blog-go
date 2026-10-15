@@ -126,7 +126,7 @@ func (c *BookmarkCategoryService) GetMy(ctx *gin.Context) (rt rg.Rs[[]modApiBlog
 //	@param ct
 //	@return rt
 func (c *BookmarkCategoryService) Save(ctx *gin.Context, ct modApiBlogBookmark.CreateUpdate) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%#v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
 	}
@@ -134,7 +134,7 @@ func (c *BookmarkCategoryService) Save(ctx *gin.Context, ct modApiBlogBookmark.C
 	var info entityBlog.BlogBookmarkCategoryEntity
 	err := copier.Copy(&info, &ct)
 	if err != nil {
-		log.Infof(ctx, log.TagAppDef, "copier.Copy error: %+v", err)
+		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 	}
 	r := c.sv
 	parent := &entityBlog.BlogBookmarkCategoryEntity{}
@@ -189,13 +189,13 @@ func (c *BookmarkCategoryService) Save(ctx *gin.Context, ct modApiBlogBookmark.C
 			info.ParentId = ""
 		}
 		info.No = ""
-		log.Infof(ctx, log.TagAppDef, "info.IdLink=%+v", info.IdLink)
+		//
 		err = r.Update(ctx, info, info.ID)
 		if err != nil {
-			log.Infof(ctx, log.TagAppDef, "update error=%+v", err)
+			log.Error(ctx, log.TagAppDef, err, "update error")
 			return rt.ErrorMessage(err.Error())
 		}
-		log.Infof(ctx, log.TagAppDef, "save.info=%+v", info)
+		log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 		//更改上级后，相关子集修改
 		if strPg.IsNotBlank(ct.ParentNo) && nil != childData {
 			maps := slicePg.ToMapArray(childData, func(t *entityBlog.BlogBookmarkCategoryEntity) (string, *entityBlog.BlogBookmarkCategoryEntity) {
@@ -212,7 +212,7 @@ func (c *BookmarkCategoryService) Save(ctx *gin.Context, ct modApiBlogBookmark.C
 				item.NoLink = constNodePg.NoLinkAssemble(info.NoLink, item.No)
 				c.childParentIdLink(maps, item)
 			}
-			log.Infof(ctx, log.TagAppDef, "maps=%+v", maps)
+			//
 			for _, val := range maps {
 				for _, item := range val {
 					if item.ID == find.ID {
@@ -256,7 +256,7 @@ func (c *BookmarkCategoryService) Save(ctx *gin.Context, ct modApiBlogBookmark.C
 	}
 	holder := holderPg.GetContextAccount(ctx)
 	info.TenantNo = holder.GetTenantNo()
-	log.Infof(ctx, log.TagAppDef, "info=%+v", info)
+	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	err, _ = r.Create(ctx, &info)
 	if err != nil {
 		return rt.ErrorMessage("保存失败 " + err.Error())

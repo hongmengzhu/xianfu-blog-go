@@ -58,9 +58,9 @@ func (c *BasicAttachmentService) Upload(ctx *gin.Context) (rt rg.Rs[modBasicAtta
 		_ = f.Close()
 	}()
 
-	log.Infof(ctx, log.TagAppDef, "file.Filename=%+v, file.Size = %+v", file.Filename, file.Size)
+	log.Info(ctx, log.TagAppDef, "file.Filename ", log.Any("fileName", file.Filename), log.Any("fileSize", file.Size))
 	atta, err := c.FileService.PutObject(f, modAttachment.PutFile(file.Filename, file.Size), nil)
-	log.Infof(ctx, log.TagAppDef, "atta=%#v", atta)
+	log.Info(ctx, log.TagAppDef, "atta", log.Any("atta", atta))
 	if err == nil {
 		var vo modBasicAttachment.OkVo
 		copier.Copy(&vo, &atta)
@@ -94,7 +94,7 @@ func (c *BasicAttachmentService) UploadMore(ctx *gin.Context) (rt rg.Rs[map[int]
 			data[i+1] = modBasicAttachment.OkVo{Error: file.Filename + " 上传文件错误:" + err.Error()}
 			continue
 		}
-		log.Infof(ctx, log.TagAppDef, "file.Filename=%+v, file.Size = %+v", file.Filename, file.Size)
+		log.Info(ctx, log.TagAppDef, "file.Filename ", log.Any("fileName", file.Filename), log.Any("fileSize", file.Size))
 		atta, err := c.FileService.PutObject(f, modAttachment.PutFile(file.Filename, file.Size), nil)
 		if err == nil {
 			var vo modBasicAttachment.OkVo
@@ -113,7 +113,7 @@ func (c *BasicAttachmentService) UploadMore(ctx *gin.Context) (rt rg.Rs[map[int]
 
 // UploadLink 多url文件上传
 func (c *BasicAttachmentService) UploadLink(ctx *gin.Context, ct modBasicAttachment.WebUrlCt) (rt rg.Rs[map[int]modBasicAttachment.OkVo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if nil == ct.Url || len(ct.Url) == 0 {
 		return rt.ErrorMessage("上传文件不能为空")
 	}
@@ -139,7 +139,7 @@ func (c *BasicAttachmentService) UploadLink(ctx *gin.Context, ct modBasicAttachm
 		reader := bytes.NewReader(content)
 		filename := path.Base(url)
 		size := int64(len(content))
-		log.Infof(ctx, log.TagAppDef, "file.Filename=%+v, file.Size = %+v", filename, size)
+		log.Info(ctx, log.TagAppDef, "file.Filename ", log.Any("fileName", filename), log.Any("fileSize", size))
 		atta, err := c.FileService.PutObject(reader, modAttachment.PutFile(filename, size), nil)
 		if err == nil {
 			var vo modBasicAttachment.OkVo

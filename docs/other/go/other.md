@@ -13,7 +13,7 @@ pg.Rule = &rule
 			knife.Delete(ctx.Context(), constContext.CTX_RULE)
 			err = ctx.Set(constContext.CTX_RULE, rt.Data.Rule)
 			if err != nil {
-				f.log.Warnf("Set.constContext.CTX_RULE.err= %+v", err)
+				f.log.Warn("Set.constContext.CTX_RULE.err= %+v", err)
 			}
 		}
 		
@@ -27,7 +27,7 @@ func ScopeRulePgWhere(ctx *gin.Context, tableName string) func(db *gorm.DB) *gor
         //
         get := ctx.Get(constContext.CTX_RULE)
         if nil != get {
-            log.Debugf(context.Background(), log.TagAppDef,"multiRule:%+v", get)
+            log.Debug(context.Background(), log.TagAppDef,"multiRule:%+v", get)
             iHolderRule = get.(interfaces.IHolderRule)
             multiRule = iHolderRule.(*MultiRule)
         }

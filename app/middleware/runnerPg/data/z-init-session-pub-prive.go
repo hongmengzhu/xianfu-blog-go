@@ -21,7 +21,7 @@ type InitSessionPubPrive struct {
 }
 
 func (b *InitSessionPubPrive) Run(ctx context.Context) error {
-	log.Infof(context.Background(), log.TagAppDef, "[init].[密钥缓存初始化]===================")
+	log.Info(context.Background(), log.TagAppDef, "[init].[密钥缓存初始化]===================")
 	accountSessionRamEvent.NewInitSessionPubPrive(b.sessionAk, b.cacheSessionPubPrive, b.tenant).Processor(context.Background())
 	return nil
 }

@@ -42,11 +42,11 @@ type RamResourceGroupService struct {
 //	@param ct
 //	@return rt
 func (c *RamResourceGroupService) Create(ctx *gin.Context, ct modRamResourceGroup.CreateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityRam.RamResourceGroupEntity
 	err2 := copier.Copy(&info, &ct)
 	if err2 != nil {
-		log.Errorf(ctx, log.TagAppDef, err2, "copier.Copy=%+v", err2)
+		log.Error(ctx, log.TagAppDef, err2, "copier.Copy")
 		return rt.ErrorMessage(err2.Error())
 	}
 	if "" == ct.Name {
@@ -104,7 +104,7 @@ func (c *RamResourceGroupService) Create(ctx *gin.Context, ct modRamResourceGrou
 	info.No = noPg.No()
 	info.ID = 0
 	info.State = enumStatePg.ENABLE.Index()
-	log.Infof(ctx, log.TagAppDef, "info=%+v", info)
+	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	err, _ := r.Create(ctx, &info)
 	if err != nil {
 		return rt.ErrorMessage("保存失败 " + err.Error())
@@ -125,7 +125,7 @@ func (c *RamResourceGroupService) Create(ctx *gin.Context, ct modRamResourceGrou
 	if err != nil {
 		return rt.ErrorMessage(err.Error())
 	}
-	log.Infof(ctx, log.TagAppDef, "save=%+v", info)
+	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	return rg.OkData(numberPg.Int64ToString(info.ID))
 }
 
@@ -136,7 +136,7 @@ func (c *RamResourceGroupService) Create(ctx *gin.Context, ct modRamResourceGrou
 //	@param ct
 //	@return rt
 func (c *RamResourceGroupService) Update(ctx *gin.Context, ct modRamResourceGroup.CreateUpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityRam.RamResourceGroupEntity
 	err := copier.Copy(&info, &ct)
 	if err != nil {
@@ -173,7 +173,7 @@ func (c *RamResourceGroupService) Update(ctx *gin.Context, ct modRamResourceGrou
 			result2 := false
 			childData, result2 = r.FindAllByNoLink(ctx, find.No)
 			if result2 {
-				//log.Infof(ctx, log.TagAppDef,"data=%+v \n", childData)
+				//log.Info(ctx, log.TagAppDef,"data=%+v \n", childData)
 				for _, item := range childData {
 					if item.ID == parent.ID {
 						return rt.ErrorMessage("无法保存，不能设置为自己的子集")
@@ -205,13 +205,13 @@ func (c *RamResourceGroupService) Update(ctx *gin.Context, ct modRamResourceGrou
 		info.ParentId = ""
 	}
 	info.No = ""
-	log.Infof(ctx, log.TagAppDef, "info.IdLink=%+v", info.IdLink)
+	//
 	err = r.Update(ctx, info, info.ID)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "update error=%+v", err)
+		log.Error(ctx, log.TagAppDef, err, "update error")
 		return rt.ErrorMessage(err.Error())
 	}
-	log.Infof(ctx, log.TagAppDef, "save.info=%+v", info)
+	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	//更改上级后，相关子集修改
 	if strPg.IsNotBlank(ct.ParentNo) && nil != childData {
 		maps := slicePg.ToMapArray(childData, func(t *entityRam.RamResourceGroupEntity) (string, *entityRam.RamResourceGroupEntity) {
@@ -225,7 +225,7 @@ func (c *RamResourceGroupService) Update(ctx *gin.Context, ct modRamResourceGrou
 			item.NoLink = constNodePg.NoLinkAssemble(info.NoLink, item.No)
 			c.childParentIdLink(maps, item)
 		}
-		log.Infof(ctx, log.TagAppDef, "maps=%+v", maps)
+		//
 		for _, val := range maps {
 			for _, item := range val {
 				if item.ID == find.ID {
@@ -276,7 +276,7 @@ func (c *RamResourceGroupService) CacheOverride(ctx *gin.Context) {
 		item.NoLink = constNodePg.NoLinkDefault(item.No)
 		c.childParentIdLink(maps, item)
 	}
-	log.Infof(ctx, log.TagAppDef, "maps=%+v", maps)
+	//
 	for _, val := range maps {
 		for _, item := range val {
 			r.Update(ctx, entityRam.RamResourceGroupEntity{IdLink: item.IdLink, NoLink: item.NoLink}, item.ID)
@@ -291,7 +291,7 @@ func (c *RamResourceGroupService) CacheOverride(ctx *gin.Context) {
 //	@receiver c
 //	@param ct
 func (c *RamResourceGroupService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -304,7 +304,8 @@ func (c *RamResourceGroupService) PhysicalDeletion(ctx *gin.Context, ids []strin
 	idsNew := make([]int64, 0)
 	idsCategory := make([]string, 0)
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v,TypeAttr=%+v", info.ID, 0, info.TypeAttr)
+		log.Info(ctx, log.TagAppDef, "PhysicalDeletion", log.Any("id", info.ID), log.Any("tenantId", 0), log.Any("typeAttr", info.TypeAttr))
+
 		//判断 是否是 分类
 		if typeAttrPg.CategoryLast.IsEqual(info.TypeAttr) || typeAttrPg.Category.IsEqual(info.TypeAttr) {
 			link, b := r.FindAllByIdLink(ctx, numberPg.Int64ToString(info.ID))
@@ -353,7 +354,7 @@ func (c *RamResourceGroupService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[m
 //	@receiver c
 //	@param ct
 func (c *RamResourceGroupService) Query(ctx *gin.Context, ct modRamResourceGroup.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamResourceGroup.Vo]]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamResourceGroupEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modRamResourceGroup.Vo, 0)
@@ -397,7 +398,7 @@ func (c *RamResourceGroupService) Query(ctx *gin.Context, ct modRamResourceGroup
 //	@receiver c
 //	@param ct
 func (c *RamResourceGroupService) SelectNodePublic(ctx *gin.Context, ct modRamResourceGroup.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamResourceGroupEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
@@ -427,7 +428,7 @@ func (c *RamResourceGroupService) SelectNodePublic(ctx *gin.Context, ct modRamRe
 //	@receiver c
 //	@param ct
 func (c *RamResourceGroupService) SelectNodeAllPublic(ctx *gin.Context, ct modRamResourceGroup.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamResourceGroupEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
@@ -457,7 +458,7 @@ func (c *RamResourceGroupService) SelectNodeAllPublic(ctx *gin.Context, ct modRa
 //	@receiver c
 //	@param ct
 func (c *RamResourceGroupService) SelectPublic(ctx *gin.Context, ct modRamResourceGroup.QueryCt) (rt rg.Rs[[]modRamResourceGroup.Vo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamResourceGroupEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modRamResourceGroup.Vo, 0)
@@ -480,7 +481,7 @@ func (c *RamResourceGroupService) SelectPublic(ctx *gin.Context, ct modRamResour
 //	@receiver c
 //	@param ct
 func (c *RamResourceGroupService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Wd {
 		return rt.ErrorMessage("查询内容不能为空")
 	}
@@ -501,7 +502,7 @@ func (c *RamResourceGroupService) ExistName(ctx *gin.Context, ct model.BaseExist
 //	@receiver c
 //	@param ct
 func (c *RamResourceGroupService) ExistCode(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Wd {
 		return rt.ErrorMessage("查询内容不能为空")
 	}

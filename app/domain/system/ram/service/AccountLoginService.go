@@ -56,7 +56,7 @@ func NewAccountLoginService() *AccountLoginService {
 //	@param ct
 //	@return rt
 func (c *AccountLoginService) Login(ctx *gin.Context, ct modRamLogin2.LoginCt, tp typeDomainPg.TypeDomain, tenantNo string) (rt rg.Rs[modRamLogin2.LoginSuccess]) {
-	log.Infof(ctx, log.TagAppDef, "tp=%+v,ct=%+v", tp, ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct), log.Any("tp", tp))
 	//
 	client := clientPg.Browser
 	//
@@ -70,7 +70,7 @@ func (c *AccountLoginService) Login(ctx *gin.Context, ct modRamLogin2.LoginCt, t
 		return rt.ErrorMessage("密码不能为空")
 	}
 	pwd := ct.Password
-	log.Infof(context.Background(), log.TagAppDef, "authLogin=%+v", c.authLogin)
+	log.Info(context.Background(), log.TagAppDef, "authLogin", log.Any("authLogin", c.authLogin))
 	//解密密码
 	if logingEn, ok := c.authLogin.LoginEncrypt["default"]; ok && logingEn {
 		login := c.cacheSessionPubPrive.DecodeByLoginSystem(ctx, pwd)
@@ -79,7 +79,7 @@ func (c *AccountLoginService) Login(ctx *gin.Context, ct modRamLogin2.LoginCt, t
 		}
 		pwd = login.Data
 	}
-	log.Infof(context.Background(), log.TagAppDef, "pwd=%+v", pwd)
+	log.Info(context.Background(), log.TagAppDef, "pwd", log.Any("pwd", pwd))
 
 	md5 := cryptPg.Md5(ct.Account)
 	info, b, err := c.dao.FindByAccountMd5AndTypeDomainAndTenantNo(ctx, md5, tp.Code(), tenantNo)
@@ -97,7 +97,15 @@ func (c *AccountLoginService) Login(ctx *gin.Context, ct modRamLogin2.LoginCt, t
 		return rt.ErrorMessage("用户密码未设置")
 	}
 	if !userPg.PasswordVerify(pwdInfo.Value, pwd, pwdInfo.ExtraData) {
-		log.Debugf(ctx, log.TagAppDef, "pwd=%+v,[%+v],[value]=%+v,[extra]=%+v", pwd, userPg.PasswordSalt(pwd, pwdInfo.ExtraData), pwdInfo.Value, pwdInfo.ExtraData)
+		log.Debug(ctx, log.TagAppDef, "userPg.PasswordVerify",
+			func() []log.Field {
+				return []log.Field{
+					log.String("pwd", pwd),
+					log.String("salt", userPg.PasswordSalt(pwd, pwdInfo.ExtraData)),
+					log.String("value", pwdInfo.Value),
+					log.String("extra", pwdInfo.ExtraData),
+				}
+			})
 		return rt.ErrorMessage("账号密码错误")
 	}
 	//
@@ -148,7 +156,7 @@ func (c *AccountLoginService) loginLogSave(ctx *gin.Context, account *entityRam.
 	//保存到数据库
 	err := c.Bus.Publish(context.Background(), obj)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "Bus.Publish err: %+v", err)
+		log.Error(ctx, log.TagAppDef, err, "Bus.Publish err")
 	}
 }
 

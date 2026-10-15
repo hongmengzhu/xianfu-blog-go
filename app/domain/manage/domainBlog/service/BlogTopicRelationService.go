@@ -35,7 +35,7 @@ type BlogTopicRelationService struct {
 //	@param ct
 //	@return rt
 func (c *BlogTopicRelationService) AddByTopic(ctx *gin.Context, ct modBlogTopicRelation.AddByTopicCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if strPg.IsBlank(ct.TopicNo) {
 		return rt.ErrorMessage("话题编号不能为空")
 	}
@@ -85,7 +85,7 @@ func (c *BlogTopicRelationService) AddByTopic(ctx *gin.Context, ct modBlogTopicR
 		obj.Description = find.Description
 		err, _ := c.relation.Create(ctx, &obj)
 		if nil != err {
-			log.Errorf(ctx, log.TagAppDef, err, "save err=%+v", err)
+			log.Error(ctx, log.TagAppDef, err, "save err")
 		}
 	}
 	return rt.Ok()
@@ -97,7 +97,7 @@ func (c *BlogTopicRelationService) AddByTopic(ctx *gin.Context, ct modBlogTopicR
 //	@receiver c
 //	@param ct
 func (c *BlogTopicRelationService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -110,13 +110,13 @@ func (c *BlogTopicRelationService) PhysicalDeletion(ctx *gin.Context, ids []stri
 	tenantNo := holder.GetTenantNo()
 	idsNew := make([]string, 0)
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantNo=%v", info.ID, info.TenantNo)
+		log.Info(ctx, log.TagAppDef, "LogicalDeletion", log.Any("id", info.ID), log.Any("TenantNo", info.TenantNo))
 		idsNew = append(idsNew, numberPg.Int64ToString(info.ID))
 	}
 	if len(idsNew) > 0 {
 		err := cn.DeleteAllByTenantNoAndIdsString(ctx, tenantNo, idsNew)
 		if err != nil {
-			log.Errorf(ctx, log.TagAppDef, err, "操作 err=%+v", err)
+			log.Error(ctx, log.TagAppDef, err, "操作 err")
 		}
 	}
 	return rt.Ok()
@@ -128,7 +128,7 @@ func (c *BlogTopicRelationService) PhysicalDeletion(ctx *gin.Context, ids []stri
 //	@receiver c
 //	@param ct
 func (c *BlogTopicRelationService) Query(ctx *gin.Context, ct modBlogTopicRelation.QueryCt) (rt rg.Rs[pagePg.Paginator[modBlogTopicRelation.Vo]]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityBlog.BlogTopicRelationEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modBlogTopicRelation.Vo, 0)

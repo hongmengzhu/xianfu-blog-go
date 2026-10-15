@@ -23,7 +23,7 @@ type ZInitDiplCache struct {
 }
 
 func (b *ZInitDiplCache) Run(ctx context.Context) error {
-	log.Infof(ctx, log.TagAppDef, "初始化 => 接口密钥")
+	log.Info(ctx, log.TagAppDef, "初始化 => 接口密钥")
 	var query entityApi.ApiDiplAccessKeyEntity
 	query.State = enumStatePg.ENABLE.Index()
 	infos := b.sv.FindAll(context.Background(), query, optionsPg.WithCondition(func(db *gorm.DB) *gorm.DB {

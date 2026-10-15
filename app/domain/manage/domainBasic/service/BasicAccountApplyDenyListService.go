@@ -41,11 +41,11 @@ type BasicAccountApplyDenyListService struct {
 //	@param ct
 //	@return rt
 func (c *BasicAccountApplyDenyListService) Create(ctx *gin.Context, ct modBasicAccountApplyDenyList.CreateUpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%#v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityBasic.BasicAccountApplyDenyListEntity
 	err := copier.Copy(&info, &ct)
 	if err != nil {
-		log.Infof(ctx, log.TagAppDef, "copier.Copy error: %+v", err)
+		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 	}
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
@@ -88,7 +88,7 @@ func (c *BasicAccountApplyDenyListService) Create(ctx *gin.Context, ct modBasicA
 	holder := holderPg.GetContextAccount(ctx)
 	info.No = noPg.No()
 	info.TenantNo = holder.GetTenantNo()
-	log.Infof(ctx, log.TagAppDef, "info%+v", info)
+	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	err, _ = r.Create(ctx, &info)
 	if err != nil {
 		return rt.ErrorMessage("保存失败 " + err.Error())
@@ -103,7 +103,7 @@ func (c *BasicAccountApplyDenyListService) Create(ctx *gin.Context, ct modBasicA
 //	@param ct
 //	@return rt
 func (c *BasicAccountApplyDenyListService) Update(ctx *gin.Context, ct modBasicAccountApplyDenyList.CreateUpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%#v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityBasic.BasicAccountApplyDenyListEntity
 	copier.Copy(&info, &ct)
 	if ct.ID < 1 {
@@ -153,10 +153,10 @@ func (c *BasicAccountApplyDenyListService) Update(ctx *gin.Context, ct modBasicA
 	info.No = ""
 	err := r.Update(ctx, info, find.ID)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "update error=%+v", err)
+		log.Error(ctx, log.TagAppDef, err, "update error")
 		return rt.ErrorMessage(err.Error())
 	}
-	log.Infof(ctx, log.TagAppDef, "save.info=%+v", info)
+	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	return rt.Ok()
 }
 
@@ -243,7 +243,7 @@ func (c *BasicAccountApplyDenyListService) StateEnableDisable(ctx *gin.Context, 
 //	@receiver c
 //	@param ct
 func (c *BasicAccountApplyDenyListService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -254,7 +254,7 @@ func (c *BasicAccountApplyDenyListService) LogicalDeletion(ctx *gin.Context, ids
 	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
-			log.Infof(ctx, log.TagAppDef, "id=%v", info.ID)
+			log.Info(ctx, log.TagAppDef, "id", log.Any("id", info.ID))
 		}
 		repository.DeleteByIdsString(ctx, ids)
 	} else {
@@ -276,7 +276,7 @@ func (c *BasicAccountApplyDenyListService) LogicalDeletion(ctx *gin.Context, ids
 //	@receiver c
 //	@param ct
 func (c *BasicAccountApplyDenyListService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -301,7 +301,7 @@ func (c *BasicAccountApplyDenyListService) LogicalRecovery(ctx *gin.Context, ids
 //	@receiver c
 //	@param ct
 func (c *BasicAccountApplyDenyListService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -312,7 +312,7 @@ func (c *BasicAccountApplyDenyListService) PhysicalDeletion(ctx *gin.Context, id
 	}
 	idsNew := make([]int64, 0)
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v", info.ID)
+		log.Info(ctx, log.TagAppDef, "id", log.Any("id", info.ID))
 		idsNew = append(idsNew, info.ID)
 	}
 	if len(idsNew) > 0 {
@@ -327,7 +327,7 @@ func (c *BasicAccountApplyDenyListService) PhysicalDeletion(ctx *gin.Context, id
 //	@receiver c
 //	@param ct
 func (c *BasicAccountApplyDenyListService) Query(ctx *gin.Context, ct modBasicAccountApplyDenyList.QueryCt) (rt rg.Rs[pagePg.Paginator[modBasicAccountApplyDenyList.Vo]]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityBasic.BasicAccountApplyDenyListEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modBasicAccountApplyDenyList.Vo, 0)
@@ -426,7 +426,7 @@ func (c *BasicAccountApplyDenyListService) SelectNodeAllPublic(ctx *gin.Context,
 //	@receiver c
 //	@param ct
 func (c *BasicAccountApplyDenyListService) SelectPublic(ctx *gin.Context, ct modBasicAccountApplyDenyList.QueryPublicCt) (rt rg.Rs[[]modBasicAccountApplyDenyList.Vo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityBasic.BasicAccountApplyDenyListEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modBasicAccountApplyDenyList.Vo, 0)
@@ -449,7 +449,7 @@ func (c *BasicAccountApplyDenyListService) SelectPublic(ctx *gin.Context, ct mod
 //	@receiver c
 //	@param ct
 func (c *BasicAccountApplyDenyListService) ExportExcel(ctx *gin.Context, ct modBasicAccountApplyDenyList.QueryCt) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityBasic.BasicAccountApplyDenyListEntity
 	copier.Copy(&query, &ct)
 	infos := c.sv.FindAll(ctx, query)
@@ -460,7 +460,7 @@ func (c *BasicAccountApplyDenyListService) ExportExcel(ctx *gin.Context, ct modB
 			copier.Copy(&vo, &item)
 			slice = append(slice, vo)
 		}
-		log.Infof(ctx, log.TagAppDef, "导出数据 %+v", slice)
+		//
 		strings := []string{"ID", "名称", "名称外文",
 			"编号代号",
 			"全称",

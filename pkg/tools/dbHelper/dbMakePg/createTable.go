@@ -42,7 +42,7 @@ func (c *CreateTable) DbOpen() (rt rg.Rs[string]) {
 	}
 	c.DB = db
 	if err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, err, "open gorm postgresql %s error: %v", c.Database.URL, err)
+		log.Error(context.Background(), log.TagAppDef, err, "open gorm postgresql", log.Any("url", c.Database.URL))
 		return rt.ErrorMessage(err.Error())
 	}
 	return rt.Ok()
@@ -55,11 +55,11 @@ func (c *CreateTable) Db() *gorm.DB {
 func (c *CreateTable) TableCreateOne(entity interface{}) (rt rg.Rs[string]) {
 	isExists := c.Db().Migrator().HasTable(entity)
 	if isExists {
-		log.Infof(context.Background(), log.TagAppDef, "表存在")
+		log.Info(context.Background(), log.TagAppDef, "表存在")
 	} else {
 		err2 := c.Db().AutoMigrate(entity)
 		if err2 != nil {
-			log.Errorf(context.Background(), log.TagAppDef, err2, "创建表异常", err2)
+			log.Error(context.Background(), log.TagAppDef, err2, "创建表异常")
 			return
 		}
 	}
@@ -71,12 +71,12 @@ func (c *CreateTable) TableCreateOne(entity interface{}) (rt rg.Rs[string]) {
 func (c *CreateTable) dbRun(tmp interface{}, tableName, tableComment string) {
 	// 判断表是否已创建
 	if !slice.Contain(c.tableList, tableName) {
-		log.Infof(context.Background(), log.TagAppDef, "创建表 %s", tableName)
+		log.Info(context.Background(), log.TagAppDef, "创建表", log.Any("tableName", tableName))
 		MakeTable(c.Db(), tmp, tableName, tableComment)
 
-		log.Infof(context.Background(), log.TagAppDef, "创建表 %s [完成]", tableName)
+		log.Info(context.Background(), log.TagAppDef, "创建表[完成]", log.Any("tableName", tableName))
 	} else {
-		log.Infof(context.Background(), log.TagAppDef, "表已存在 %s", tableName)
+		log.Info(context.Background(), log.TagAppDef, "表已存在", log.Any("tableName", tableName))
 	}
 }
 
@@ -84,12 +84,12 @@ func (c *CreateTable) dbRun(tmp interface{}, tableName, tableComment string) {
 func (c *CreateTable) dbRunByDb(db *gorm.DB, tmp interface{}, tableName, tableComment string) {
 	// 判断表是否已创建
 	if !slice.Contain(c.tableList, tableName) {
-		log.Infof(context.Background(), log.TagAppDef, "创建表 %s", tableName)
+		log.Info(context.Background(), log.TagAppDef, "创建表", log.Any("tableName", tableName))
 		MakeTable(db, tmp, tableName, tableComment)
 
-		log.Infof(context.Background(), log.TagAppDef, "创建表 %s [完成]", tableName)
+		log.Info(context.Background(), log.TagAppDef, "创建表[完成]", log.Any("tableName", tableName))
 	} else {
-		log.Infof(context.Background(), log.TagAppDef, "表已存在 %s", tableName)
+		log.Info(context.Background(), log.TagAppDef, "表已存在", log.Any("tableName", tableName))
 	}
 }
 
@@ -101,11 +101,15 @@ func (c *CreateTable) dbRunByDb(db *gorm.DB, tmp interface{}, tableName, tableCo
 //	@return rt
 func (c *CreateTable) TableCreateAll(dst []interface{}) (rt rg.Rs[string]) {
 	c.tableList = GetTablesByTime3Minute(c.Db())
-	log.Debugf(context.Background(), log.TagAppDef, "已存在的表: %+v", c.tableList)
+	log.Debug(context.Background(), log.TagAppDef, "已存在的表", func() []log.Field {
+		return []log.Field{log.Any("tableList", c.tableList)}
+	})
 	i := 0
 	for _, item := range dst {
 		name := tablePg.GetTableName(item)
-		log.Debugf(context.Background(), log.TagAppDef, "创建表: %s", name)
+		log.Debug(context.Background(), log.TagAppDef, "创建表: %s", func() []log.Field {
+			return []log.Field{log.Any("tableName", name)}
+		})
 		comment := tablePg.GetTableComment(item)
 		if strPg.IsNotBlank(name) {
 			c.dbRun(item, name, comment)
@@ -127,13 +131,17 @@ func (c *CreateTable) TableCreateAll(dst []interface{}) (rt rg.Rs[string]) {
 //	@return rt
 func (c *CreateTable) TableCreateAllByTransaction(dst []interface{}) (rt rg.Rs[string]) {
 	c.tableList = GetTablesByTime3Minute(c.Db())
-	log.Debugf(context.Background(), log.TagAppDef, "已存在的表: %+v", c.tableList)
+	log.Debug(context.Background(), log.TagAppDef, "已存在的表: %+v", func() []log.Field {
+		return []log.Field{log.Any("tableList", c.tableList)}
+	})
 	//
 	err := c.Db().Transaction(func(tx *gorm.DB) error {
 		i := 0
 		for _, item := range dst {
 			name := tablePg.GetTableName(item)
-			log.Debugf(context.Background(), log.TagAppDef, "创建表: %s", name)
+			log.Debug(context.Background(), log.TagAppDef, "创建表: %s", func() []log.Field {
+				return []log.Field{log.Any("tableName", name)}
+			})
 			comment := tablePg.GetTableComment(item)
 			if strPg.IsNotBlank(name) {
 				c.dbRunByDb(tx, item, name, comment)
@@ -147,7 +155,7 @@ func (c *CreateTable) TableCreateAllByTransaction(dst []interface{}) (rt rg.Rs[s
 		return nil
 	})
 	if err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, err, "创建表异常 %+v", err)
+		log.Error(context.Background(), log.TagAppDef, err, "创建表异常")
 	}
 
 	return rt.Ok()

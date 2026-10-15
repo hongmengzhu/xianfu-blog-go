@@ -44,7 +44,7 @@ func GroupApiMiddleware(m *GroupApiMiddlewareSp) gin.HandlerFunc {
 			val = ""
 		}
 		//fmt.Printf("租户.no => %+v\n", val)
-		//log.Infof(context.Background(), log.TagAppDef, "租户.no => %+v", val)
+		//log.Info(context.Background(), log.TagAppDef, "租户.no => %+v", val)
 		header := c.GetHeader(constHeaderPg.HeaderAuthorization)
 		if strPg.IsNotBlank(header) {
 			split := strings.Split(header, ":")

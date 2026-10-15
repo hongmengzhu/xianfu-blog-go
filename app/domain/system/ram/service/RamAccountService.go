@@ -154,7 +154,7 @@ func (c *RamAccountService) LogicalDeletion(ctx *gin.Context, ids []string, tp a
 				continue
 			}
 			idsNow = append(idsNow, info.ID)
-			log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+			log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
 		if len(idsNow) > 0 {
 			r.DeleteByIds(ctx, idsNow)
@@ -225,7 +225,7 @@ func (c *RamAccountService) PhysicalDeletion(ctx *gin.Context, ids []string, tp 
 		if yesNoIntPg.Yes.IsEqual(info.Founder) {
 			continue
 		}
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 	}
 	if len(idsNow) > 0 {
 		r.DeleteByIds(ctx, idsNow)
@@ -704,7 +704,7 @@ func (c *RamAccountService) ExistRealName(ctx *gin.Context, ct model.BaseExistWd
 //	@param ctx
 //	@return rt
 func (c *RamAccountService) ResetPassword(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if !c.sv.Config().Domain.System {
 		return rt.ErrorMessage("系统管理模块已禁用，不允许操作")
 	}
@@ -721,25 +721,25 @@ func (c *RamAccountService) ResetPassword(ctx *gin.Context, ct model.BaseExistWd
 	err := os.Mkdir(dirName, 0755)
 	if err != nil {
 		if !os.IsExist(err) {
-			log.Errorf(ctx, log.TagAppDef, err, "创建目录失败: %v", err)
+			log.Error(ctx, log.TagAppDef, err, "创建目录失败:")
 		}
 	}
 	// 打开文件（如果不存在则创建，如果存在则截断）
 	//file, err := os.OpenFile(fileTxt, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0755)
 	//if err != nil {
-	//	log.Errorf(ctx, log.TagAppDef, "无法打开文件: %v", err)
+	//	log.Error(ctx, log.TagAppDef, "无法打开文件: %v", err)
 	//}
 	//defer file.Close()
 	//
 	//// 写入字符串
 	//_, err = file.WriteString("Hello, World!\n")
 	//if err != nil {
-	//	log.Errorf(ctx, log.TagAppDef, "写入文件失败: %v", err)
+	//	log.Error(ctx, log.TagAppDef, "写入文件失败: %v", err)
 	//}
 	// 打开文件
 	file, err := os.Open(fileTxt)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "无法打开文件: %v", err)
+		log.Error(ctx, log.TagAppDef, err, "无法打开文件")
 		return rt.ErrorMessage("无法打开文件")
 	}
 	defer file.Close()
@@ -747,7 +747,7 @@ func (c *RamAccountService) ResetPassword(ctx *gin.Context, ct model.BaseExistWd
 	// 获取文件大小
 	fileInfo, err := file.Stat()
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "获取文件信息失败: %v", err)
+		log.Error(ctx, log.TagAppDef, err, "获取文件信息失败")
 		return rt.ErrorMessage("获取文件信息失败")
 	}
 
@@ -757,7 +757,7 @@ func (c *RamAccountService) ResetPassword(ctx *gin.Context, ct model.BaseExistWd
 	// 读取整个文件
 	_, err = io.ReadFull(file, buffer)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "读取文件失败: %v", err)
+		log.Error(ctx, log.TagAppDef, err, "读取文件失败")
 		return rt.ErrorMessage("读取文件失败")
 	}
 

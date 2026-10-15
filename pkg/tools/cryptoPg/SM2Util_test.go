@@ -17,7 +17,7 @@ func Test_SM2Util_001(t *testing.T) {
 	// 1. 生成密钥对
 	privateKey, err := sm2.GenerateKey(rand.Reader)
 	if err != nil {
-		log.Fatalf(context.Background(), log.TagBizDef, "%+v", err)
+		log.Fatal(context.Background(), log.TagBizDef, "%+v", err)
 	}
 	publicKey := &privateKey.PublicKey
 

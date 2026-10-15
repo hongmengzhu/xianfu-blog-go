@@ -44,7 +44,7 @@ type BasicTagsRelationService struct {
 //	@param ct
 //	@return rt
 func (c *BasicTagsRelationService) Create(ctx *gin.Context, ct modBasicTagsRelation.CreateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	ct.No = strings.TrimSpace(ct.No)
 	ct.Name = strings.TrimSpace(ct.Name)
 	ct.NameShort = strings.TrimSpace(ct.NameShort)
@@ -74,7 +74,7 @@ func (c *BasicTagsRelationService) Create(ctx *gin.Context, ct modBasicTagsRelat
 	if nil != ct.AttributeMap {
 		//map 转为 struct
 		if err := mapstructure.Decode(ct.AttributeMap, &attributeVo); err != nil {
-			log.Errorf(ctx, log.TagAppDef, err, "map 转 struct err=%+v", err)
+			log.Error(ctx, log.TagAppDef, err, "map 转 struct", log.Any("err", err.Error()))
 		}
 	}
 
@@ -90,20 +90,20 @@ func (c *BasicTagsRelationService) Create(ctx *gin.Context, ct modBasicTagsRelat
 	copier.Copy(&info, &ct)
 	toJson, err2 := jsonPg.ObjToJson(attributeVo)
 	if nil != err2 {
-		log.Infof(ctx, log.TagAppDef, "jsonPg.ObjToJson err=%+v", err2)
+		log.Info(ctx, log.TagAppDef, "jsonPg.ObjToJson err", log.Any("err", err2))
 		info.Attribute = "{}"
 	} else {
 		info.Attribute = toJson
 	}
 
-	log.Infof(ctx, log.TagAppDef, "info%+v", info)
+	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	info.TenantNo = holder.GetTenantNo()
 	err, _ := r.Create(ctx, &info)
 	if nil != err {
-		log.Errorf(ctx, log.TagAppDef, err, "save err=%+v", err)
+		log.Error(ctx, log.TagAppDef, err, "save err")
 		return rt.ErrorMessage("保存失败")
 	}
-	log.Infof(ctx, log.TagAppDef, "save=%+v", info)
+	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	return rg.OkData(numberPg.Int64ToString(info.ID))
 }
 
@@ -114,7 +114,7 @@ func (c *BasicTagsRelationService) Create(ctx *gin.Context, ct modBasicTagsRelat
 //	@param ct
 //	@return rt
 func (c *BasicTagsRelationService) Update(ctx *gin.Context, ct modBasicTagsRelation.UpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if ct.ID < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -153,20 +153,20 @@ func (c *BasicTagsRelationService) Update(ctx *gin.Context, ct modBasicTagsRelat
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
-	log.Infof(ctx, log.TagAppDef, "AttributeMap=%+v", ct.AttributeMap)
+	log.Info(ctx, log.TagAppDef, "AttributeMap", log.Any("AttributeMap", ct.AttributeMap))
 	var attributeVo modBasicTagsRelation.AttributeVo
 	if nil != ct.AttributeMap {
 		//map 转为 struct
 		if err := mapstructure.Decode(ct.AttributeMap, &attributeVo); err != nil {
-			log.Errorf(ctx, log.TagAppDef, err, "map 转 struct err=%+v", err)
+			log.Error(ctx, log.TagAppDef, err, "map 转 struct", log.Any("err", err.Error()))
 		}
-		log.Infof(ctx, log.TagAppDef, "attributeVo=%+v", attributeVo)
+		log.Info(ctx, log.TagAppDef, "attributeVo", log.Any("attributeVo", attributeVo))
 	}
 	var info entityBasic.BasicTagsRelationEntity
 	copier.Copy(&info, &ct)
 	toJson, err2 := jsonPg.ObjToJson(attributeVo)
 	if nil != err2 {
-		log.Infof(ctx, log.TagAppDef, "jsonPg.ObjToJson err=%+v", err2)
+		log.Info(ctx, log.TagAppDef, "jsonPg.ObjToJson err", log.Any("err", err2))
 		info.Attribute = "{}"
 	} else {
 		info.Attribute = toJson
@@ -261,7 +261,7 @@ func (c *BasicTagsRelationService) LogicalDeletion(ctx *gin.Context, ids []strin
 	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
-			log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+			log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
 		//不是系统类型情况下可以删除
 		repository.DeleteByIdsStringAndTypeSysNot(ctx, ids, typeSysPg.System.String())
@@ -318,7 +318,7 @@ func (c *BasicTagsRelationService) PhysicalDeletion(ctx *gin.Context, ids []stri
 	}
 	idsNew := make([]string, 0)
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		idsNew = append(idsNew, numberPg.Int64ToString(info.ID))
 	}
 	if len(idsNew) > 0 {
@@ -452,18 +452,18 @@ func (c *BasicTagsRelationService) All(ctx *gin.Context, ct modBasicTagsRelation
 			copier.Copy(&vo, &item)
 			vo.AttributeMap = make(map[string]interface{})
 			vo.Show = true
-			//log.Infof(ctx, log.TagAppDef,"item.AttributeMap=%+v", item.Attribute)
+			//log.Info(ctx, log.TagAppDef,"item.AttributeMap=%+v", item.Attribute)
 			if strPg.IsNotBlank(item.Attribute) {
 				err := json.Unmarshal([]byte(item.Attribute), &vo.AttributeMap)
 				if err != nil {
-					log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
+					log.Error(ctx, log.TagAppDef, err, "json解析失败")
 				}
 				if obj, ok := vo.AttributeMap["color"]; ok {
 					color := make(map[string]interface{})
 					if strPg.IsNotBlank(obj.(string)) {
 						err := json.Unmarshal([]byte(obj.(string)), &color)
 						if err != nil {
-							log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
+							log.Error(ctx, log.TagAppDef, err, "json解析失败")
 						}
 					}
 					vo.AttributeMap["color"] = color
@@ -483,7 +483,7 @@ func (c *BasicTagsRelationService) All(ctx *gin.Context, ct modBasicTagsRelation
 //	@receiver c
 //	@param ct
 func (c *BasicTagsRelationService) AllByLink(ctx *gin.Context, ct modBasicTagsRelation.AllCt) (rt rg.Rs[[]modBasicTagsRelation.AllVo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	category := make([]string, 0)
 	if strPg.IsNotBlank(ct.CategoryNo) {
 		data, result := c.categoryRep.FindAllByNoLink(ctx, ct.CategoryNo)
@@ -507,18 +507,18 @@ func (c *BasicTagsRelationService) AllByLink(ctx *gin.Context, ct modBasicTagsRe
 			copier.Copy(&vo, &item)
 			vo.AttributeMap = make(map[string]interface{})
 			vo.Show = true
-			//log.Infof(ctx, log.TagAppDef,"item.AttributeMap=%+v", item.Attribute)
+			//log.Info(ctx, log.TagAppDef,"item.AttributeMap=%+v", item.Attribute)
 			if strPg.IsNotBlank(item.Attribute) {
 				err := json.Unmarshal([]byte(item.Attribute), &vo.AttributeMap)
 				if err != nil {
-					log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
+					log.Error(ctx, log.TagAppDef, err, "json解析失败")
 				}
 				if obj, ok := vo.AttributeMap["color"]; ok {
 					color := make(map[string]interface{})
 					if strPg.IsNotBlank(obj.(string)) {
 						err := json.Unmarshal([]byte(obj.(string)), &color)
 						if err != nil {
-							log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
+							log.Error(ctx, log.TagAppDef, err, "json解析失败")
 						}
 					}
 					vo.AttributeMap["color"] = color
@@ -578,7 +578,7 @@ func (c *BasicTagsRelationService) ExistCode(ctx *gin.Context, ct modBasicTagsRe
 //	@Description: 获取下 所有 分类
 //	@receiver c
 func (c *BasicTagsRelationService) GetCategory(ctx *gin.Context, category string) (rt rg.Rs[modBasicTagsRelation.GroupVo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", category)
+	log.Info(ctx, log.TagAppDef, "category", log.Any("category", category))
 	var groupVo modBasicTagsRelation.GroupVo
 	groupVo.General = make([]modBasicTagsCategory.Vo, 0)
 	groupVo.Sys = make([]modBasicTagsCategory.Vo, 0)
@@ -636,7 +636,7 @@ func (c *BasicTagsRelationService) GetCategoryTagsAll(ctx *gin.Context, category
 		return rt.Ok()
 	}
 	if 0 == tx.RowsAffected {
-		log.Errorf(ctx, log.TagAppDef, tx.Error, "")
+		log.Error(ctx, log.TagAppDef, tx.Error, "")
 		return rt.Ok()
 	}
 	for _, item := range infos {
@@ -647,14 +647,14 @@ func (c *BasicTagsRelationService) GetCategoryTagsAll(ctx *gin.Context, category
 		if strPg.IsNotBlank(item.Attribute) {
 			err := json.Unmarshal([]byte(item.Attribute), &vo.AttributeMap)
 			if err != nil {
-				log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
+				log.Error(ctx, log.TagAppDef, err, "json解析失败")
 			}
 			if obj, ok := vo.AttributeMap["color"]; ok {
 				color := make(map[string]interface{})
 				if strPg.IsNotBlank(obj.(string)) {
 					err := json.Unmarshal([]byte(obj.(string)), &color)
 					if err != nil {
-						log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
+						log.Error(ctx, log.TagAppDef, err, "json解析失败")
 					}
 				}
 				vo.AttributeMap["color"] = color
@@ -726,14 +726,14 @@ func (c *BasicTagsRelationService) GetCategoryTags(ctx *gin.Context, categoryRoo
 			if strPg.IsNotBlank(item.Attribute) {
 				err := json.Unmarshal([]byte(item.Attribute), &vo.AttributeMap)
 				if err != nil {
-					log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
+					log.Error(ctx, log.TagAppDef, err, "json解析失败")
 				}
 				if obj, ok := vo.AttributeMap["color"]; ok {
 					color := make(map[string]interface{})
 					if strPg.IsNotBlank(obj.(string)) {
 						err := json.Unmarshal([]byte(obj.(string)), &color)
 						if err != nil {
-							log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
+							log.Error(ctx, log.TagAppDef, err, "json解析失败")
 						}
 					}
 					vo.AttributeMap["color"] = color

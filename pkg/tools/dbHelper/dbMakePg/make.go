@@ -49,7 +49,7 @@ func GetTablesByTime(db *gorm.DB, minute int64) []string {
 		tableList = GetTables(db)
 		lastTime = time.Now()
 	}
-	log.Infof(context.Background(), log.TagAppDef, "tableList.len=%+v", len(tableList))
+	log.Info(context.Background(), log.TagAppDef, "tableList", log.Any("len", len(tableList)))
 	return tableList
 }
 
@@ -74,7 +74,7 @@ func MakeTable(db *gorm.DB, tmp interface{}, tableName, tableComment string) {
 	err := db.AutoMigrate(tmp)
 	if err != nil {
 		//panic(err)
-		log.Errorf(context.Background(), log.TagAppDef, err, "MakeTable err=%+v \n", err)
+		log.Error(context.Background(), log.TagAppDef, err, "MakeTable err")
 		return
 	}
 	if strPg.IsNotBlank(tableComment) {

@@ -40,7 +40,7 @@ type BasicConfigEventFieldsService struct {
 //	@param ct
 //	@return rt
 func (c *BasicConfigEventFieldsService) CreateUpdate(ctx *gin.Context, ct modBasicConfigEventFields.CreateUpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%#v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if nil == ct.Body || len(ct.Body) < 1 {
 		return rt.ErrorMessage("表体字段不能为空")
 	}
@@ -84,7 +84,7 @@ func (c *BasicConfigEventFieldsService) CreateUpdate(ctx *gin.Context, ct modBas
 		obj := entityBasic.BasicConfigEventFieldsEntity{}
 		err := copier.Copy(&obj, &item)
 		if err != nil {
-			log.Infof(ctx, log.TagAppDef, "copier.Copy error: %+v", err)
+			log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 		}
 		obj.Name = strings.TrimSpace(obj.Name)
 		obj.Field = strings.TrimSpace(obj.Field)
@@ -134,7 +134,7 @@ func (c *BasicConfigEventFieldsService) CreateUpdate(ctx *gin.Context, ct modBas
 	if len(dataAdd) > 0 {
 		tx := c.sv.DbModel().CreateInBatches(dataAdd, 1000000)
 		if tx.Error != nil {
-			log.Errorf(ctx, log.TagAppDef, tx.Error, "save err=%+v", tx.Error)
+			log.Error(ctx, log.TagAppDef, tx.Error, "save err")
 			return rt.ErrorMessage("保存失败：")
 		}
 	}
@@ -222,7 +222,7 @@ func (c *BasicConfigEventFieldsService) StateEnableDisable(ctx *gin.Context, ids
 //	@receiver c
 //	@param ct
 func (c *BasicConfigEventFieldsService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -233,7 +233,7 @@ func (c *BasicConfigEventFieldsService) LogicalDeletion(ctx *gin.Context, ids []
 	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
-			log.Infof(ctx, log.TagAppDef, "id=%v", info.ID)
+			log.Info(ctx, log.TagAppDef, "id", log.Any("id", info.ID))
 		}
 		repository.DeleteByIdsString(ctx, ids)
 	} else {
@@ -255,7 +255,7 @@ func (c *BasicConfigEventFieldsService) LogicalDeletion(ctx *gin.Context, ids []
 //	@receiver c
 //	@param ct
 func (c *BasicConfigEventFieldsService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -280,7 +280,7 @@ func (c *BasicConfigEventFieldsService) LogicalRecovery(ctx *gin.Context, ids []
 //	@receiver c
 //	@param ct
 func (c *BasicConfigEventFieldsService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -291,7 +291,7 @@ func (c *BasicConfigEventFieldsService) PhysicalDeletion(ctx *gin.Context, ids [
 	}
 	idsNew := make([]int64, 0)
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v", info.ID)
+		log.Info(ctx, log.TagAppDef, "id", log.Any("id", info.ID))
 		idsNew = append(idsNew, info.ID)
 	}
 	if len(idsNew) > 0 {
@@ -306,7 +306,7 @@ func (c *BasicConfigEventFieldsService) PhysicalDeletion(ctx *gin.Context, ids [
 //	@receiver c
 //	@param ct
 func (c *BasicConfigEventFieldsService) Query(ctx *gin.Context, ct modBasicConfigEventFields.QueryCt) (rt rg.Rs[pagePg.Paginator[modBasicConfigEventFields.Vo]]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityBasic.BasicConfigEventFieldsEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modBasicConfigEventFields.Vo, 0)

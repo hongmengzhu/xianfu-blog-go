@@ -30,7 +30,7 @@ type ArticleService struct {
 //	@Description: 推送文章连接
 //	@receiver c
 func (c *ArticleService) Push(ctx *gin.Context, ct modApiBlogArticle.PushCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if strPg.IsBlank(ct.CategoryNo) {
 		return rt.ErrorMessage("请选择分类")
 	}
@@ -57,12 +57,16 @@ func (c *ArticleService) Push(ctx *gin.Context, ct modApiBlogArticle.PushCt) (rt
 	save.Ano = holder.GetAccountNo()
 	err, _ := c.sv.Create(ctx, &save)
 	if err != nil {
-		log.Debugf(ctx, log.TagAppDef, "save err=%+v", err)
+		log.Debug(ctx, log.TagAppDef, "save err=%+v", func() []log.Field {
+			return []log.Field{log.Any("error", err)}
+		})
 		return rt.ErrorMessage("保存失败：" + err.Error())
 	}
 	err, _ = c.sata.Create(ctx, &entityBlog.BlogArticleStatisticsEntity{ID: save.ID, ArticleNo: save.No})
 	if err != nil {
-		log.Debugf(ctx, log.TagAppDef, "save err=%+v", err)
+		log.Debug(ctx, log.TagAppDef, "save err=%+v", func() []log.Field {
+			return []log.Field{log.Any("error", err)}
+		})
 	}
 	return rt.Ok()
 }

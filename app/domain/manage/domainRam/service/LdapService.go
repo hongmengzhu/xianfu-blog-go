@@ -220,11 +220,11 @@ func (s *LdapService) Login(ctx *gin.Context, ct modRamLdap.LdapLoginCt) (rt rg.
 	// 验证用户密码
 	ldapUser, err := conn.CheckUserPassword(cfg, ct.Username, ct.Password)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "LDAP 用户 %s 认证失败: %v", ct.Username, err)
+		log.Error(ctx, log.TagAppDef, err, "LDAP 用户 认证失败", log.Any("username", ct.Username))
 		return rt.ErrorMessage("LDAP 认证失败: " + err.Error())
 	}
 
-	log.Infof(ctx, log.TagAppDef, "LDAP 用户认证成功: uid=%s, cn=%s", ldapUser.Uid, ldapUser.Cn)
+	log.Info(ctx, log.TagAppDef, "LDAP 用户认证成功:", log.Any("uid", ldapUser.Uid), log.Any("cn", ldapUser.Cn))
 
 	// 查找绑定
 	binding, bindingFound := s.daoBinding.FindByIdpAndExternalSub(ctx, source.Idp, ldapUser.GetLdapUuid())
@@ -331,10 +331,10 @@ func (s *LdapService) createAccountFromLdap(
 	}
 	errBind, _ := s.daoBinding.Create(ctx, binding)
 	if errBind != nil {
-		log.Errorf(ctx, log.TagAppDef, errBind, "创建 LDAP 绑定记录失败: %v", errBind)
+		log.Error(ctx, log.TagAppDef, errBind, "创建 LDAP 绑定记录失败: ", log.Any("errBind", errBind))
 	}
 
-	log.Infof(ctx, log.TagAppDef, "LDAP 自动创建账号: no=%s, account=%s", account.No, account.Account)
+	log.Info(ctx, log.TagAppDef, "LDAP 自动创建账号: ", log.Any("no", account.No), log.Any("account", account.Account))
 	return account, nil
 }
 
@@ -381,7 +381,7 @@ func (s *LdapService) loginSuccess(
 	}
 	errLog, _ := s.daoSessionLog.Create(ctx, logEntity)
 	if errLog != nil {
-		log.Errorf(ctx, log.TagAppDef, errLog, "保存 LDAP 登录审计日志失败: %v", errLog)
+		log.Error(ctx, log.TagAppDef, errLog, "保存 LDAP 登录审计日志失败:")
 	}
 
 	success := modRamLogin.IdpLoginSuccess{

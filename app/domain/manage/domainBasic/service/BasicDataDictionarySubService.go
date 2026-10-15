@@ -41,7 +41,7 @@ type BasicDataDictionarySubService struct {
 //	@param ct
 //	@return rt
 func (c *BasicDataDictionarySubService) CreateUpdate(ctx *gin.Context, ct modBasicDataDictionary.CreateUpdateSubCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%#v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
 	}
@@ -77,12 +77,12 @@ func (c *BasicDataDictionarySubService) CreateUpdate(ctx *gin.Context, ct modBas
 			}
 		}
 		info.No = noPg.No()
-		log.Infof(ctx, log.TagAppDef, "info%+v", info)
+		log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 		err, _ := r.Create(ctx, &info)
 		if err != nil {
 			return rt.ErrorMessage("保存失败")
 		}
-		log.Infof(ctx, log.TagAppDef, "save=%+v", info)
+		log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	} else {
 		{
 			_, result := c.sv.FindByCodeAndTypeCodeAndIdNotAndOwnerNo(ctx, info.Code, info.TypeCode, ct.ID.ToString(), info.OwnerNo)
@@ -90,7 +90,7 @@ func (c *BasicDataDictionarySubService) CreateUpdate(ctx *gin.Context, ct modBas
 				return rt.ErrorMessage("码值已存在")
 			}
 		}
-		log.Infof(ctx, log.TagAppDef, "save=%+v", info)
+		log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 		err := r.Update(ctx, info, info.ID)
 		if err != nil {
 			return rt.ErrorMessage("保存失败")
@@ -188,7 +188,7 @@ func (c *BasicDataDictionarySubService) LogicalDeletion(ctx *gin.Context, ids []
 	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
-			log.Infof(ctx, log.TagAppDef, "id=%v", info.ID)
+			log.Info(ctx, log.TagAppDef, "id", log.Any("id", info.ID))
 		}
 		repository.DeleteByIdsString(ctx, ids)
 	} else {
@@ -243,7 +243,7 @@ func (c *BasicDataDictionarySubService) PhysicalDeletion(ctx *gin.Context, ids [
 		return rt.ErrorMessage("数据不存在")
 	}
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v", info.ID)
+		log.Info(ctx, log.TagAppDef, "id", log.Any("id", info.ID))
 	}
 	cn.DeleteByIdsString(ctx, ids)
 	return rt.Ok()

@@ -10,7 +10,7 @@ import (
 
 func GetContextAccount(ctx *gin.Context) (holder HolderPg) {
 	get, is := ctx.Get(constContextPg.AUTH_LOGIN)
-	log.Infof(context.Background(), log.TagAppDef, "holder-get:%+v", get)
+	log.Info(context.Background(), log.TagAppDef, "holder-get:", log.Any("holder", get))
 	if !is || nil == get {
 		return
 	}

@@ -5,7 +5,7 @@ func init() {
 	//mockPg.Context()
 	////设置有效
 	//eventBus.Subscribe("ResourceAuthorization:AuthorityValid", func(message any, ea core.EventArgs) {
-	//	log.Fatalf("message=%+v \n", message)
+	//	log.Fatal("message=%+v \n", message)
 	//
 	//})
 }

@@ -25,7 +25,7 @@ func (c *StartInit) Processor(ctx context.Context) error {
 		IsAll: true,
 	})
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "copier.Copy error: %+v", err)
+		log.Error(ctx, log.TagAppDef, err, "copier.Copy error")
 		return nil
 	}
 	return nil

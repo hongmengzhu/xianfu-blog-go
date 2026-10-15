@@ -80,7 +80,7 @@ func (c *CacheSessionPubPrive) LoginPubPriveKeyByNew(ctx context.Context,
 	if isMakeNewKey {
 		ret := cryptoPg.Sm2GenerateKey()
 		if ret.ErrorIs() {
-			log.Debugf(ctx, log.TagBizDef, "生成密钥失败")
+			log.Debug(ctx, log.TagBizDef, "生成密钥失败", nil)
 			return model.AuthPubPriveDto{}
 		}
 		privatePubKey := ret.Data
@@ -106,7 +106,11 @@ func (c *CacheSessionPubPrive) LoginPubPriveKeyByNew(ctx context.Context,
 		save.KindUnique = userPg.SaltMake(str, save.Key)
 		err, _ := c.sessionAk.Create(ctx, &save)
 		if err != nil {
-			log.Debugf(ctx, log.TagBizDef, "创建新密钥失败.%+v", err)
+			log.Debug(ctx, log.TagBizDef, "创建新密钥失败", func() []log.Field {
+				return []log.Field{
+					log.Any("err", err.Error()),
+				}
+			})
 		}
 	}
 
@@ -120,7 +124,7 @@ func (c *CacheSessionPubPrive) LoginPubPriveKeyByNew(ctx context.Context,
 
 func (c *CacheSessionPubPrive) DecodeByLogin(ctx context.Context, pwd string, typeDomain typeDomainPg.TypeDomain,
 	client clientPg.Client, tenantNo string, keyType sessionKeyTypePg.SessionKeyType) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagBizDef, "ct.len=%+v,=%+v", len(pwd), pwd)
+	log.Info(ctx, log.TagBizDef, "ct", log.Any("len", len(pwd)), log.Any("pwd", pwd))
 	if len(pwd) < 194 {
 		return rt.ErrorMessage("密文过短，可能已损坏，实际长度：" + string(rune(len(pwd))))
 	}
@@ -179,7 +183,11 @@ func (c *CacheSessionPubPrive) PaseKeyByNew(ctx context.Context, isMakeNewKey bo
 		save.KindUnique = userPg.SaltMake(str, save.Key)
 		err, _ := c.sessionAk.Create(ctx, &save)
 		if err != nil {
-			log.Debugf(ctx, log.TagBizDef, "创建新密钥失败.%+v", err)
+			log.Debug(ctx, log.TagBizDef, "创建新密钥失败", func() []log.Field {
+				return []log.Field{
+					log.Any("err", err.Error()),
+				}
+			})
 		}
 	} else {
 		//toJson, _ := jsonPg.ObjToJson(jsonEntity)

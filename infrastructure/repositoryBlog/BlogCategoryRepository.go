@@ -27,7 +27,7 @@ func (c *BlogCategoryRepository) FindAllByParentIdLink(ctx context.Context, code
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
 		}
 		return
 	}
@@ -41,7 +41,7 @@ func (c *BlogCategoryRepository) FindAllByNoLink(ctx context.Context, code strin
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
 		}
 		return
 	}
@@ -55,7 +55,7 @@ func (c *BlogCategoryRepository) FindAllByCodeLinkAndTypeSys(ctx context.Context
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
 		}
 		return
 	}

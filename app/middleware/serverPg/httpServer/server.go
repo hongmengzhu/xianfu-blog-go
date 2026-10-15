@@ -25,7 +25,7 @@ func (s *MyServer) ListenAndServe(sig gs.ReadySignal) error {
 		return err
 	}
 	<-sig.TriggerAndWait() // 等待启动信号
-	log.Infof(context.Background(), log.TagBizDef, "starting successfully... Port: %+v", s.svr.Addr)
+	log.Info(context.Background(), log.TagBizDef, "starting successfully... Port: %+v", s.svr.Addr)
 	return s.svr.Serve(ln)
 }
 

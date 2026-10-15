@@ -36,7 +36,7 @@ func NewRamAccountPasswordService() *RamAccountPasswordService {
 //	@receiver c
 //	@param ct
 func (c *RamAccountPasswordService) UpdatePassword(ctx *gin.Context, ct modRamAccount.PasswordCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "tp=%+v,ct=%+v", tp, ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct), log.Any("tp", tp))
 	if ct.ID == 0 {
 		return rt.ErrorMessage("id错误")
 	}

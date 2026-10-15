@@ -48,7 +48,7 @@ func (b *BaseOrgRepository[T, ID]) SetOptionScopes(db *gorm.DB, opts ...optionsP
 	}
 	if nil != arg.Ctx {
 		_, exists := arg.Ctx.Get(constContextPg.CTX_MULITI_TENANT)
-		//log.Errorf(ctx, log.TagAppDef,"exists=xxxxxxx=%+v", exists)
+		//log.Error(ctx, log.TagAppDef,"exists=xxxxxxx=%+v", exists)
 		if exists {
 			//解析表名称
 			arg.Db.Statement.Parse(b.Entity)
@@ -70,7 +70,7 @@ func (b *BaseOrgRepository[T, ID]) SetOptionPgScopes(db *gorm.DB, opts ...option
 	}
 	if nil != arg.Ctx {
 		_, exists := arg.Ctx.Get(constContextPg.CTX_MULITI_TENANT)
-		//log.Errorf(ctx, log.TagAppDef,"exists=xxxxxxx=%+v", exists)
+		//log.Error(ctx, log.TagAppDef,"exists=xxxxxxx=%+v", exists)
 		if exists {
 			//解析表名称
 			arg.Db.Statement.Parse(b.Entity)
@@ -234,7 +234,7 @@ func (b *BaseOrgRepository[T, ID]) FindById(ctx context.Context, id ID, opts ...
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
 		}
 		return nil, false
 	}
@@ -257,7 +257,7 @@ func (b *BaseOrgRepository[T, ID]) FindByIdString(ctx context.Context, id string
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
 		}
 		return nil, false
 	}
@@ -351,7 +351,7 @@ func (b *BaseOrgRepository[T, ID]) FindAllPage(ctx context.Context, t T, opts ..
 	}
 	var infos []*T
 	tx := countTx.Scopes(optionsPg.WithScopes(pageable)).Find(&infos)
-	//log.Infof(ctx, log.TagAppDef,"sql=%+v", tx.Statement.SQL.String())
+	//log.Info(ctx, log.TagAppDef,"sql=%+v", tx.Statement.SQL.String())
 	if tx.Error != nil {
 		return pg, tx.Error
 	}
@@ -384,7 +384,7 @@ func (b *BaseOrgRepository[T, ID]) FindAllPageQuery(ctx context.Context, t T, op
 	}
 	var infos []*T
 	tx := countTx.Scopes(optionsPg.WithScopes(pageable)).Find(&infos)
-	//log.Infof(ctx, log.TagAppDef,"sql=%+v", tx.Statement.SQL.String())
+	//log.Info(ctx, log.TagAppDef,"sql=%+v", tx.Statement.SQL.String())
 	if tx.Error != nil {
 		return pg, tx.Error
 	}
@@ -481,7 +481,7 @@ func (b *BaseOrgRepository[T, ID]) FindByNo(ctx context.Context, no string, opts
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
 		}
 		return nil, false
 	}
@@ -504,7 +504,7 @@ func (b *BaseOrgRepository[T, ID]) FindAllByNoIn(ctx context.Context, no []strin
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
 		}
 		return nil, false
 	}
@@ -527,7 +527,7 @@ func (b *BaseOrgRepository[T, ID]) FindAllByNameIn(ctx context.Context, no []str
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
 		}
 		return nil, false
 	}
@@ -550,7 +550,7 @@ func (b *BaseOrgRepository[T, ID]) FindByName(ctx context.Context, no string, op
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
 		}
 		return nil, false
 	}
@@ -573,7 +573,7 @@ func (b *BaseOrgRepository[T, ID]) FindByNameAndIdNot(ctx context.Context, name 
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
 		}
 		return
 	}
@@ -596,7 +596,7 @@ func (c *BaseOrgRepository[T, ID]) FindByNoAndIdNot(ctx context.Context, name st
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
 		}
 		return
 	}
@@ -618,7 +618,7 @@ func (c *BaseOrgRepository[T, ID]) FindAllByNoLink(ctx context.Context, code str
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
 		}
 		return
 	}
@@ -641,7 +641,7 @@ func (c *BaseOrgRepository[T, ID]) FindByCode(ctx context.Context, no string, op
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
 		}
 		return nil, false
 	}
@@ -664,7 +664,7 @@ func (b *BaseOrgRepository[T, ID]) FindByCodeAndIdNot(ctx context.Context, name 
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
 		}
 		return
 	}
@@ -687,7 +687,7 @@ func (b *BaseOrgRepository[T, ID]) FindByCodeAndNoNot(ctx context.Context, name 
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
 		}
 		return
 	}

@@ -40,10 +40,10 @@ func (c *TcLevelService) Create(ctx *gin.Context, ct modTcLevel.CreateCt) (rt rg
 	//holder := holderPg.GetContextAccount(ctx)
 	var info entityTc.TcLevelEntity
 	copier.Copy(&info, &ct)
-	log.Infof(ctx, log.TagAppDef, "info%+v", info)
+	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	//info.TenantId = holder.GetTenantNo()
 	c.sv.Create(ctx, &info)
-	log.Infof(ctx, log.TagAppDef, "save=%+v", info)
+	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	return rg.OkData(numberPg.Int64ToString(info.ID))
 }
 
@@ -157,7 +157,7 @@ func (c *TcLevelService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.
 	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
-			log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, "info.TenantId")
+			log.Info(ctx, log.TagAppDef, "LogicalDeletion", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
 		repository.DeleteByIdsString(ctx, ids)
 	} else {
@@ -213,7 +213,7 @@ func (c *TcLevelService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg
 	}
 	idsNew := make([]int64, 0)
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, 0)
+		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		idsNew = append(idsNew, info.ID)
 	}
 	if len(idsNew) > 0 {

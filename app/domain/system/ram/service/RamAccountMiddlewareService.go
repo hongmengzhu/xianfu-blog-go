@@ -36,7 +36,9 @@ func NewRamAccountMiddlewareService() *RamAccountMiddlewareService {
 //	@param jwt
 //	@return rt
 func (c *RamAccountMiddlewareService) FindByLoginNo(ctx *gin.Context, no string) (rt rg.Rs[holderPg2.HolderPg]) {
-	log.Debugf(ctx, log.TagAppDef, "jwt=%+v", no)
+	log.Debug(ctx, log.TagAppDef, "no", func() []log.Field {
+		return []log.Field{log.String("no", no)}
+	})
 	if strPg.IsBlank(no) {
 		return rt.ErrorMessage("账号登陆失败")
 	}

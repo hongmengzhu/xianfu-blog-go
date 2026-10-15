@@ -31,7 +31,7 @@ func (c *Detail) Process(ctx *gin.Context, id string) (rt rg.Rs[modBasicConfigMo
 	}
 	err := copier.Copy(&vo.Header, info)
 	if err != nil {
-		log.Infof(ctx, log.TagAppDef, "copier.Copy error: %+v", err)
+		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 	}
 	//
 	vo.Body = make([]modBasicConfigModel.ItemVo, 0)

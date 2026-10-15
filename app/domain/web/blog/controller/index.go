@@ -45,7 +45,7 @@ func (c *IndexController) Index(ctx *gin.Context) {
 	ctx.Bind(&ct)
 	//
 	rt := c.sv.Query(ctx, ct)
-	log.Infof(context.Background(), log.TagBizDef, "Data=%+v", rt.Data.Pageable)
+	log.Info(context.Background(), log.TagBizDef, "Data", log.Any("Pageable", rt.Data.Pageable))
 	//
 	tenantNo := webPg.GetTenantNo(ctx)
 	tree, _ := c.catCache.FormatTree(ctx, tenantNo)

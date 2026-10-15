@@ -145,7 +145,7 @@ func (c *UpdateByTypeValue) roleProcess() (rt rg.Rs[string]) {
 	//删除 角色 对应的资源组
 	c.groupRelationDb.DeleteByTypeCategoryAndTypeValue(c.ctx, c.typeCategory.Index(), numberPg.Int64ToString(c.role.ID))
 	//
-	log.Infof(c.ctx, log.TagAppDef, "c.groupData=%+v", len(c.groupData))
+	log.Info(c.ctx, log.TagAppDef, "groupData", log.Any("len", len(c.groupData)))
 	//插入数据
 	for _, item := range c.groupData {
 		//不是资源属性，跳过
@@ -171,12 +171,12 @@ func (c *UpdateByTypeValue) roleProcess() (rt rg.Rs[string]) {
 			continue
 		}
 		//
-		log.Infof(c.ctx, log.TagAppDef, "info%+v", info)
+		log.Info(c.ctx, log.TagAppDef, "info", log.Any("info", info))
 		err, _ := c.groupRelationDb.Create(c.ctx, &info)
 		if err != nil {
 			return rt.ErrorMessage("保存失败")
 		}
-		log.Infof(c.ctx, log.TagAppDef, "save=%+v", info)
+		log.Info(c.ctx, log.TagAppDef, "save", log.Any("info", info))
 	}
 	return rt.Ok()
 }
@@ -187,7 +187,7 @@ func (c *UpdateByTypeValue) roleProcess() (rt rg.Rs[string]) {
 //	@receiver c
 //	@return rt
 func (c *UpdateByTypeValue) saveResourceRelationByRole() (rt rg.Rs[string]) {
-	log.Infof(c.ctx, log.TagAppDef, "c.groupAuthData=%+v", len(c.groupAuthData))
+	log.Info(c.ctx, log.TagAppDef, "groupAuthData", log.Any("len", len(c.groupAuthData)))
 	if len(c.groupAuthData) > 0 {
 		ids := make([]string, 0)
 		for _, item := range c.groupAuthData {
@@ -222,12 +222,14 @@ func (c *UpdateByTypeValue) saveResourceRelationByRole() (rt rg.Rs[string]) {
 				continue
 			}
 			//
-			log.Debugf(c.ctx, log.TagAppDef, "info%+v", info)
+			log.Debug(c.ctx, log.TagAppDef, "info", func() []log.Field {
+				return []log.Field{log.Any("info", info)}
+			})
 			err, _ := c.relationDb.Create(c.ctx, &info)
 			if err != nil {
 				return rt.ErrorMessage("保存失败")
 			}
-			log.Infof(c.ctx, log.TagAppDef, "save=%+v", info)
+			log.Info(c.ctx, log.TagAppDef, "save", log.Any("info", info))
 		}
 	}
 

@@ -29,7 +29,7 @@ func (c *TagsListener) Register(bus event.Bus) {
 		if strPg.IsNotBlank(e.Category) {
 			err := tagsBasicEvent.NewSaveByCategory(c.sp, e).Processor()
 			if nil != err {
-				log.Errorf(ctx, log.TagAppDef, err, "err:=%+v", err)
+				log.Error(ctx, log.TagAppDef, err, "err")
 			}
 		}
 		return nil
@@ -42,15 +42,15 @@ func (c *TagsListener) Register(bus event.Bus) {
 //	@receiver c
 //	@param ctx
 //func (c *TagsListener) Run(ctx context.Context) error {
-//	log.Infof(context.Background(), log.TagAppDef, "eventBus.Register=%+v", constEventBusPg.BlogArticle)
+//	log.Info(context.Background(), log.TagAppDef, "eventBus.Register=%+v", constEventBusPg.BlogArticle)
 //	//博客文章
 //	eventBus.RegisterEvent(constEventBusPg.BlogArticle).RegisterSubscribe(constEventBusPg.BlogArticle, func(message any, _ core.EventArgs) {
-//		log.Infof(ctx, log.TagAppDef, "SchedulerEvent.event=%+v", message)
+//		log.Info(ctx, log.TagAppDef, "SchedulerEvent.event=%+v", message)
 //		dto := message.(modEventBasicTags.TagsRelation)
 //		if strPg.IsNotBlank(dto.Category) {
 //			err := tagsBasicEvent.NewSaveByCategory(c.sp, dto).Processor()
 //			if nil != err {
-//				log.Errorf(ctx, log.TagAppDef, err, "")
+//				log.Error(ctx, log.TagAppDef, err, "")
 //			}
 //			message = nil
 //		}

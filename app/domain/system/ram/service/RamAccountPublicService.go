@@ -39,8 +39,7 @@ func NewRamAccountPublicService() *RamAccountPublicService {
 
 // Public 登陆用户信息
 func (c *RamAccountPublicService) Public(ctx *gin.Context, holder holderPg2.HolderPg) (rt rg.Rs[modRamAccount.AccountPub]) {
-	log.Infof(ctx, log.TagAppDef, "holder=%+v", holder)
-	log.Infof(ctx, log.TagAppDef, "HolderData=%+v", holder.HolderData)
+	log.Info(ctx, log.TagAppDef, "holder", log.Any("holder", holder), log.Any("HolderData", holder.HolderData))
 	if nil == holder.HolderData {
 		return rt.ErrorMessage("账号登陆失败")
 	}
@@ -61,8 +60,7 @@ func (c *RamAccountPublicService) Public(ctx *gin.Context, holder holderPg2.Hold
 
 // InfoPublic 登陆用户信息
 func (c *RamAccountPublicService) InfoPublic(ctx *gin.Context, holder holderPg2.HolderPg) (rt rg.Rs[modPublic2.InfoPublicVo]) {
-	log.Infof(ctx, log.TagAppDef, "holder=%+v", holder)
-	log.Infof(ctx, log.TagAppDef, "HolderData=%+v", holder.HolderData)
+	log.Info(ctx, log.TagAppDef, "holder", log.Any("holder", holder), log.Any("HolderData", holder.HolderData))
 	if nil == holder.HolderData {
 		return rt.ErrorMessage("账号登陆失败")
 	}

@@ -29,7 +29,7 @@ func (c *AttachmentListener) Register(bus event.Bus) {
 		if len(e.File) > 0 {
 			err := attachment.NewCreate(c.dao, e).Processor(context.Background())
 			if nil != err {
-				log.Errorf(ctx, log.TagAppDef, err, "")
+				log.Error(ctx, log.TagAppDef, err, "")
 			}
 		}
 		return nil
@@ -42,14 +42,14 @@ func (c *AttachmentListener) Register(bus event.Bus) {
 //	@receiver c
 //	@param ctx
 //func (c *AttachmentListener) Run(ctx context.Context) error {
-//	log.Infof(context.Background(), log.TagAppDef, "eventBus.Register=%+v", constEventBusPg.BasicAttachmentCreate)
+//	log.Info(context.Background(), log.TagAppDef, "eventBus.Register=%+v", constEventBusPg.BasicAttachmentCreate)
 //	eventBus.RegisterEvent(constEventBusPg.BasicAttachmentCreate).RegisterSubscribe(constEventBusPg.BasicAttachmentCreate, func(message any, _ core.EventArgs) {
-//		log.Infof(context.Background(), log.TagAppDef, "SchedulerEvent.event=%+v", message)
+//		log.Info(context.Background(), log.TagAppDef, "SchedulerEvent.event=%+v", message)
 //		dto := message.(entityBasic.BasicAttachmentEntity)
 //		if len(dto.File) > 0 {
 //			err := attachment.NewCreate(c.dao, dto).Processor(context.Background())
 //			if nil != err {
-//				log.Errorf(ctx, log.TagAppDef, err, "")
+//				log.Error(ctx, log.TagAppDef, err, "")
 //			}
 //			message = nil
 //		}

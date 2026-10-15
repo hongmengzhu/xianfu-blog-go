@@ -123,14 +123,14 @@ func (c *BlogCollectService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modBlo
 						if strPg.IsNotBlank(item.Attribute) {
 							err := json.Unmarshal([]byte(item.Attribute), &vo.AttributeMap)
 							if err != nil {
-								log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
+								log.Error(ctx, log.TagAppDef, err, "json解析失败")
 							}
 							if obj, ok := vo.AttributeMap["color"]; ok {
 								color := make(map[string]interface{})
 								if strPg.IsNotBlank(obj.(string)) {
 									err := json.Unmarshal([]byte(obj.(string)), &color)
 									if err != nil {
-										log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
+										log.Error(ctx, log.TagAppDef, err, "json解析失败")
 									}
 								}
 								vo.AttributeMap["color"] = color
@@ -253,7 +253,7 @@ func (c *BlogCollectService) LogicalDeletion(ctx *gin.Context, ids []string) (rt
 	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
-			log.Infof(ctx, log.TagAppDef, "id=%v,TenantNo=%v", info.ID, info.TenantNo)
+			log.Info(ctx, log.TagAppDef, "LogicalDeletion", log.Any("id", info.ID), log.Any("TenantNo", info.TenantNo))
 		}
 		repository.DeleteByIdsString(ctx, ids)
 	} else {
@@ -309,7 +309,7 @@ func (c *BlogCollectService) PhysicalDeletion(ctx *gin.Context, ids []string) (r
 	}
 	idsNew := make([]int64, 0)
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantNo=%v", info.ID, info.TenantNo)
+		log.Info(ctx, log.TagAppDef, "LogicalDeletion", log.Any("id", info.ID), log.Any("TenantNo", info.TenantNo))
 		idsNew = append(idsNew, info.ID)
 	}
 	if len(idsNew) > 0 {
@@ -439,14 +439,14 @@ func (c *BlogCollectService) Query(ctx *gin.Context, ct modBlogCollect.QueryCt) 
 						if strPg.IsNotBlank(item.Attribute) {
 							err := json.Unmarshal([]byte(item.Attribute), &vo.AttributeMap)
 							if err != nil {
-								log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
+								log.Error(ctx, log.TagAppDef, err, "json解析失败")
 							}
 							if obj, ok := vo.AttributeMap["color"]; ok {
 								color := make(map[string]interface{})
 								if strPg.IsNotBlank(obj.(string)) {
 									err := json.Unmarshal([]byte(obj.(string)), &color)
 									if err != nil {
-										log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
+										log.Error(ctx, log.TagAppDef, err, "json解析失败")
 									}
 								}
 								vo.AttributeMap["color"] = color

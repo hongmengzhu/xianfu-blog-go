@@ -31,7 +31,7 @@ func (c *RamListener) Register(bus event.Bus) {
 		if strPg.IsNotBlank(e.Ano) {
 			err := service.NewAccountLoginLog(c.acc, c.loginLog, c.session).Processor(context.Background(), e)
 			if nil != err {
-				log.Errorf(ctx, log.TagAppDef, err, "")
+				log.Error(ctx, log.TagAppDef, err, "")
 			}
 		}
 		return nil
@@ -46,12 +46,12 @@ func (c *RamListener) Register(bus event.Bus) {
 //func (c *RamListener) Run(ctx context.Context) error {
 //	//账号 登录日志
 //	eventBus.RegisterEvent(constEventBusPg.RamAccountLoginLog).RegisterSubscribe(constEventBusPg.RamAccountLoginLog, func(message any, _ core.EventArgs) {
-//		log.Infof(ctx, log.TagAppDef, "SchedulerEvent[账号.登录日志].event=%+v", message)
+//		log.Info(ctx, log.TagAppDef, "SchedulerEvent[账号.登录日志].event=%+v", message)
 //		dto := message.(modRamAccount.LoginLogDto)
 //		if strPg.IsNotBlank(dto.Ano) {
 //			err := service.NewAccountLoginLog(c.acc, c.loginLog, c.session).Processor(context.Background(), dto)
 //			if nil != err {
-//				log.Errorf(ctx, log.TagAppDef, err, "")
+//				log.Error(ctx, log.TagAppDef, err, "")
 //			}
 //			message = nil
 //		}

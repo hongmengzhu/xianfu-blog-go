@@ -37,7 +37,7 @@ func NewTcTenantAccountPasswordService() *TcTenantAccountPasswordService {
 //	@receiver c
 //	@param ct
 func (c *TcTenantAccountPasswordService) UpdatePassword(ctx *gin.Context, ct modTcAccount.PasswordCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "tp=%+v,ct=%+v", tp, ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct), log.Any("tp", tp))
 	if ct.ID == 0 {
 		return rt.ErrorMessage("id错误")
 	}

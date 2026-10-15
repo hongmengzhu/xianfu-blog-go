@@ -73,7 +73,7 @@ func (c *EventMakeCache) ThisTenantAll(ctx context.Context) error {
 			//	keysAll := basicEventKey.EventTenantNoKeys(c.ct.TenantNo)
 			//	err := c.Sp.rdt.GetRdb().SAdd(ctx, keysAll, keysAdd).Err()
 			//	if err != nil {
-			//		log.Errorf(ctx,log.TagAppDef,"缓存失败:", err)
+			//		log.Error(ctx,log.TagAppDef,"缓存失败:", err)
 			//	}
 			//}
 		}
@@ -114,7 +114,7 @@ func (c *EventMakeCache) All(ctx context.Context) error {
 			//		keysAll := basicEventKey.EventTenantNoKeys(tenantNo)
 			//		err := c.Sp.rdt.GetRdb().SAdd(ctx, keysAll, keys).Err()
 			//		if err != nil {
-			//			log.Errorf(ctx,log.TagAppDef,"缓存失败:", err)
+			//			log.Error(ctx,log.TagAppDef,"缓存失败:", err)
 			//		}
 			//	}
 			//}
@@ -167,7 +167,7 @@ func (c *EventMakeCache) Nos(ctx context.Context) error {
 			//	keysAll := basicEventKey.EventTenantNoKeys(c.ct.TenantNo)
 			//	err := c.Sp.rdt.GetRdb().SAdd(ctx, keysAll, keysAdd).Err()
 			//	if err != nil {
-			//		log.Errorf(ctx,log.TagAppDef,"缓存失败:", err)
+			//		log.Error(ctx,log.TagAppDef,"缓存失败:", err)
 			//	}
 			//}
 		}

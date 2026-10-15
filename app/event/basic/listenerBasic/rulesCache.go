@@ -25,7 +25,7 @@ func (c *RulesCacheListener) Register(bus event.Bus) {
 	event.Subscribe(bus, func(ctx context.Context, e modEventBasicRules.RulesDto) error {
 		err := eventBasicRules.NewRulesMakeCache(c.sp, e).Processor(context.Background())
 		if nil != err {
-			log.Errorf(ctx, log.TagAppDef, err, "基础.模型事件.缓存:%+v", err)
+			log.Error(ctx, log.TagAppDef, err, "基础.模型事件.缓存")
 		}
 		return nil
 	})
@@ -37,15 +37,15 @@ func (c *RulesCacheListener) Register(bus event.Bus) {
 //	@receiver c
 //	@param ctx
 //func (c *RulesCacheListener) Run(ctx context.Context) error {
-//	log.Infof(ctx, log.TagAppDef, "[init].listener.[基础.模型字段规则.缓存]===================")
+//	log.Info(ctx, log.TagAppDef, "[init].listener.[基础.模型字段规则.缓存]===================")
 //	//模型事件
 //	eventBus.RegisterEvent(constEventBusPg.BasicModelRulesCache).RegisterSubscribe(constEventBusPg.BasicModelRulesCache, func(message any, _ core.EventArgs) {
-//		log.Infof(ctx, log.TagAppDef, "listener.[基础.模型字段规则.缓存]22===================")
+//		log.Info(ctx, log.TagAppDef, "listener.[基础.模型字段规则.缓存]22===================")
 //		dto := message.(modEventBasicRules.RulesDto)
-//		//log.Infof(ctx, log.TagAppDef,"dto=%+v", dto)
+//		//log.Info(ctx, log.TagAppDef,"dto=%+v", dto)
 //		err := eventBasicRules.NewRulesMakeCache(c.sp, dto).Processor(context.Background())
 //		if nil != err {
-//			log.Errorf(ctx, log.TagAppDef, "基础.模型事件.缓存:%+v", err)
+//			log.Error(ctx, log.TagAppDef, "基础.模型事件.缓存:%+v", err)
 //		}
 //		message = nil
 //	})

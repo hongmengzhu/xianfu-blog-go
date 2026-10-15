@@ -73,7 +73,7 @@ func (c *ArticleService) Detail(ctx *gin.Context, id string) (rt rg.Rs[modBlogAr
 			}
 		}
 	}
-	log.Infof(ctx, log.TagAppDef, "find=%+v", find)
+	log.Info(ctx, log.TagAppDef, "find=%+v", log.Any("find", find))
 	var info modBlogArticle2.DetailVo
 	copier.Copy(&info, find)
 	//
@@ -151,14 +151,14 @@ func (c *ArticleService) Detail(ctx *gin.Context, id string) (rt rg.Rs[modBlogAr
 						if strPg.IsNotBlank(item.Attribute) {
 							err := json.Unmarshal([]byte(item.Attribute), &vo.AttributeMap)
 							if err != nil {
-								log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
+								log.Error(ctx, log.TagAppDef, err, "json解析失败")
 							}
 							if obj, ok := vo.AttributeMap["color"]; ok {
 								color := make(map[string]interface{})
 								if strPg.IsNotBlank(obj.(string)) {
 									err := json.Unmarshal([]byte(obj.(string)), &color)
 									if err != nil {
-										log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
+										log.Error(ctx, log.TagAppDef, err, "json解析失败")
 									}
 								}
 								vo.AttributeMap["color"] = color
@@ -210,8 +210,8 @@ func (c *ArticleService) Detail(ctx *gin.Context, id string) (rt rg.Rs[modBlogAr
 		raw := markdownPg2.Markdown([]byte(find.Content))
 		info.ContentConv = raw.String()
 	}
-	//log.Infof(context.Background(), log.TagAppDef, "info:%+v", info)
-	//log.Infof(context.Background(), log.TagAppDef, "info.create:%+v", datetimePg.Format(info.CreateAt, "2006"))
+	//log.Info(context.Background(), log.TagAppDef, "info:%+v", info)
+	//log.Info(context.Background(), log.TagAppDef, "info.create:%+v", datetimePg.Format(info.CreateAt, "2006"))
 	return rt.OkData(info)
 }
 
@@ -352,14 +352,14 @@ func (c *ArticleService) Query(ctx *gin.Context, ct modBlogArticle2.QueryCt) (rt
 						if strPg.IsNotBlank(item.Attribute) {
 							err := json.Unmarshal([]byte(item.Attribute), &vo.AttributeMap)
 							if err != nil {
-								log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
+								log.Error(ctx, log.TagAppDef, err, "json解析失败")
 							}
 							if obj, ok := vo.AttributeMap["color"]; ok {
 								color := make(map[string]interface{})
 								if strPg.IsNotBlank(obj.(string)) {
 									err := json.Unmarshal([]byte(obj.(string)), &color)
 									if err != nil {
-										log.Errorf(ctx, log.TagAppDef, err, "json解析失败 %+v", err)
+										log.Error(ctx, log.TagAppDef, err, "json解析失败")
 									}
 								}
 								vo.AttributeMap["color"] = color

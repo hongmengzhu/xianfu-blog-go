@@ -41,7 +41,7 @@ type TcTenantDomainService struct {
 //	@param ct
 //	@return rt
 func (c *TcTenantDomainService) Create(ctx *gin.Context, ct modTcTenantDomain.CreateUpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
 	}
@@ -80,12 +80,12 @@ func (c *TcTenantDomainService) Create(ctx *gin.Context, ct modTcTenantDomain.Cr
 	}
 	info.CreateBy = holder.GetAccountNo()
 	info.TenantNo = ten.No
-	log.Infof(ctx, log.TagAppDef, "info=%+v", info)
+	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	err, _ := r.Create(ctx, &info)
 	if err != nil {
 		return rt.ErrorMessage("保存失败 " + err.Error())
 	}
-	log.Infof(ctx, log.TagAppDef, "save=%+v", info)
+	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	// 设置默认
 	c.setDefaulted(ctx, ten.No, info.ID)
 	return rt.OkData(numberPg.Int64ToString(info.ID))
@@ -98,7 +98,7 @@ func (c *TcTenantDomainService) Create(ctx *gin.Context, ct modTcTenantDomain.Cr
 //	@param ct
 //	@return rt
 func (c *TcTenantDomainService) Update(ctx *gin.Context, ct modTcTenantDomain.CreateUpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if ct.ID < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -131,7 +131,7 @@ func (c *TcTenantDomainService) Update(ctx *gin.Context, ct modTcTenantDomain.Cr
 	//编号，不参与更新
 	info.No = ""
 	info.TenantNo = ten.No
-	log.Infof(ctx, log.TagAppDef, "save=%+v", info)
+	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	err := r.Update(ctx, info, info.ID)
 	if err != nil {
 		return rt.ErrorMessage("更新失败:" + err.Error())
@@ -205,7 +205,7 @@ func (c *TcTenantDomainService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[mod
 //	@receiver c
 //	@param ct
 func (c *TcTenantDomainService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	ct2 := model.BaseStateIdsCt[string]{
 		Ids: ct.Ids,
 	}
@@ -219,7 +219,7 @@ func (c *TcTenantDomainService) Enable(ctx *gin.Context, ct model.BaseIdsCt[stri
 //	@receiver c
 //	@param ct
 func (c *TcTenantDomainService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	ct2 := model.BaseStateIdsCt[string]{
 		Ids: ct.Ids,
 	}
@@ -233,7 +233,7 @@ func (c *TcTenantDomainService) Disable(ctx *gin.Context, ct model.BaseIdsCt[str
 //	@receiver c
 //	@param ct
 func (c *TcTenantDomainService) State(ctx *gin.Context, ct model.BaseStateIdsCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	ids := ct.Ids
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
@@ -283,7 +283,7 @@ func (c *TcTenantDomainService) LogicalDeletion(ctx *gin.Context, ids []string) 
 	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
-			log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, "info.TenantId")
+			log.Info(ctx, log.TagAppDef, "LogicalDeletion", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
 		repository.DeleteByIdsString(ctx, ids)
 	} else {
@@ -339,7 +339,7 @@ func (c *TcTenantDomainService) PhysicalDeletion(ctx *gin.Context, ids []string)
 	}
 	idsNew := make([]int64, 0)
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, 0)
+		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		idsNew = append(idsNew, info.ID)
 	}
 	if len(idsNew) > 0 {
@@ -546,7 +546,7 @@ func (c *TcTenantDomainService) ExistNo(ctx *gin.Context, ct model.BaseExistWdCt
 //	@receiver c
 //	@param ct
 func (c *TcTenantDomainService) SetDefaulted(ctx *gin.Context, ct model.BaseStateIdsCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	ids := ct.Ids
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
@@ -570,7 +570,7 @@ func (c *TcTenantDomainService) SetDefaulted(ctx *gin.Context, ct model.BaseStat
 	for _, info := range finds {
 		err := r.Update(ctx, entityTc.TcTenantDomainEntity{Defaulted: state.IndexInt8()}, info.ID)
 		if err != nil {
-			log.Errorf(ctx, log.TagAppDef, err, "更新失败 id:%+v,err=%+v", info.ID, err)
+			log.Error(ctx, log.TagAppDef, err, "更新失败", log.Any("id", info.ID))
 		}
 	}
 	return rt.Ok()

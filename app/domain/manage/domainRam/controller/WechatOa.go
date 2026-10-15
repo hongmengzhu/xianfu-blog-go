@@ -57,7 +57,7 @@ func (c *WechatOaController) WebhookVerify(ctx *gin.Context) {
 	// 如果配置了 token 则验证签名
 	if wechatToken != "" {
 		if !c.sv.VerifySignature(wechatToken, nonce, timestamp, signature) {
-			log.Warnf(ctx, log.TagAppDef, "微信 webhook 签名验证失败: sourceNo=%s", sourceNo)
+			log.Warn(ctx, log.TagAppDef, "微信 webhook 签名验证失败: sourceNo=%s", log.Any("sourceNo", sourceNo))
 			ctx.String(http.StatusOK, "invalid signature")
 			return
 		}
@@ -80,7 +80,7 @@ func (c *WechatOaController) WebhookVerify(ctx *gin.Context) {
 func (c *WechatOaController) WebhookEvent(ctx *gin.Context) {
 	bodyBytes, err := io.ReadAll(ctx.Request.Body)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "读取微信 webhook body 失败: %v", err)
+		log.Error(ctx, log.TagAppDef, err, "读取微信 webhook body 失败")
 		ctx.String(http.StatusOK, "")
 		return
 	}
@@ -88,7 +88,7 @@ func (c *WechatOaController) WebhookEvent(ctx *gin.Context) {
 	sourceNo := ctx.Query("sourceNo")
 	result := c.sv.HandleEvent(ctx, bodyBytes, sourceNo)
 	if result.ErrorIs() {
-		log.Errorf(ctx, log.TagAppDef, nil, "处理微信事件失败: %s", result.Message)
+		log.Error(ctx, log.TagAppDef, nil, "处理微信事件失败:", log.Any("err", result.Message))
 	}
 
 	// 微信要求返回空字符串表示成功

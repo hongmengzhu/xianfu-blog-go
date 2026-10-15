@@ -58,7 +58,7 @@ func generateCancelToken() string {
 
 // StartDeviceAuth 发起设备授权
 func (c *DeviceAuthService) StartDeviceAuth(ctx *gin.Context, ct modRamDeviceAuth2.DeviceAuthRequestCt) (rt rg.Rs[modRamDeviceAuth2.DeviceAuthVo]) {
-	log.Infof(ctx, log.TagAppDef, "StartDeviceAuth ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "StartDeviceAuth ct", log.Any("ct", ct))
 
 	// 生成 deviceCode，确保唯一
 	deviceCode := generateDeviceCode()
@@ -204,7 +204,7 @@ func (c *DeviceAuthService) ApproveDeviceAuth(ctx *gin.Context, ct modRamDeviceA
 	cache.TenantNo = accountHolder.TenantNo
 	c.store.Update(cache)
 
-	log.Infof(ctx, log.TagAppDef, "ApproveDeviceAuth userCode=%s, user=%s", ct.UserCode, accountHolder.Account)
+	log.Info(ctx, log.TagAppDef, "ApproveDeviceAuth", log.Any("UserCode", ct.UserCode), log.Any("User", accountHolder.Account))
 	return rt.OkMessage("授权成功")
 }
 
@@ -219,7 +219,7 @@ func (c *DeviceAuthService) CancelDeviceAuth(ctx *gin.Context, ct modRamDeviceAu
 	}
 
 	c.store.Delete(cache.DeviceCode)
-	log.Infof(ctx, log.TagAppDef, "CancelDeviceAuth userCode=%s", ct.UserCode)
+	log.Info(ctx, log.TagAppDef, "CancelDeviceAuth", log.Any("UserCode", ct.UserCode))
 	return rt.OkMessage("已取消")
 }
 

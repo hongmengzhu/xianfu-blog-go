@@ -41,11 +41,11 @@ type RamMenuService struct {
 //	@param ct
 //	@return rt
 func (c *RamMenuService) Create(ctx *gin.Context, ct modRamMenu2.CreateUpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityRam.RamMenuEntity
 	err := copier.Copy(&info, &ct)
 	if err != nil {
-		log.Infof(ctx, log.TagAppDef, "copier.Copy error: %+v", err)
+		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 	}
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
@@ -93,7 +93,7 @@ func (c *RamMenuService) Create(ctx *gin.Context, ct modRamMenu2.CreateUpdateCt)
 	if automatedPg.IsCreateCode(info.Code) {
 		info.Code = strPg.GenerateNumberId22()
 	}
-	log.Infof(ctx, log.TagAppDef, "info=%+v", info)
+	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	err, _ = r.Create(ctx, &info)
 	if err != nil {
 		return rt.ErrorMessage("保存失败 " + err.Error())
@@ -114,7 +114,7 @@ func (c *RamMenuService) Create(ctx *gin.Context, ct modRamMenu2.CreateUpdateCt)
 	if err != nil {
 		return rt.ErrorMessage(err.Error())
 	}
-	log.Infof(ctx, log.TagAppDef, "save=%+v", info)
+	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	return rg.OkData(numberPg.Int64ToString(info.ID))
 }
 
@@ -125,7 +125,7 @@ func (c *RamMenuService) Create(ctx *gin.Context, ct modRamMenu2.CreateUpdateCt)
 //	@param ct
 //	@return rt
 func (c *RamMenuService) Update(ctx *gin.Context, ct modRamMenu2.CreateUpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityRam.RamMenuEntity
 	err := copier.Copy(&info, &ct)
 	if err != nil {
@@ -170,7 +170,7 @@ func (c *RamMenuService) Update(ctx *gin.Context, ct modRamMenu2.CreateUpdateCt)
 			result2 := false
 			childData, result2 = r.FindAllByNoLink(ctx, find.No)
 			if result2 {
-				//log.Infof(ctx, log.TagAppDef,"data=%+v \n", childData)
+				//log.Info(ctx, log.TagAppDef,"data=%+v \n", childData)
 				for _, item := range childData {
 					if item.No == parent.No {
 						return rt.ErrorMessage("无法保存，不能设置为自己的子集")
@@ -204,14 +204,14 @@ func (c *RamMenuService) Update(ctx *gin.Context, ct modRamMenu2.CreateUpdateCt)
 		info.ParentId = ""
 	}
 	info.No = ""
-	log.Infof(ctx, log.TagAppDef, "info.IdLink=%+v", info.IdLink)
+	//
 	//
 	err = r.Update(ctx, info, info.ID)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "update error=%+v", err)
+		log.Error(ctx, log.TagAppDef, err, "update error")
 		return rt.ErrorMessage(err.Error())
 	}
-	log.Infof(ctx, log.TagAppDef, "save.info=%+v", info)
+	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	//更改上级后，相关子集修改
 	if strPg.IsNotBlank(ct.ParentNo) && nil != childData {
 		maps := slicePg.ToMapArray(childData, func(t *entityRam.RamMenuEntity) (string, *entityRam.RamMenuEntity) {
@@ -225,7 +225,7 @@ func (c *RamMenuService) Update(ctx *gin.Context, ct modRamMenu2.CreateUpdateCt)
 			item.NoLink = constNodePg.NoLinkAssemble(info.NoLink, item.No)
 			c.childParentIdLink(maps, item)
 		}
-		log.Infof(ctx, log.TagAppDef, "maps=%+v", maps)
+		//
 		for _, val := range maps {
 			for _, item := range val {
 				if item.ID == find.ID {
@@ -273,7 +273,7 @@ func (c *RamMenuService) CacheOverride(ctx *gin.Context) {
 		item.NoLink = constNodePg.NoLinkDefault(item.No)
 		c.childParentIdLink(maps, item)
 	}
-	log.Infof(ctx, log.TagAppDef, "maps=%+v", maps)
+	//
 	for _, val := range maps {
 		for _, item := range val {
 			r.Update(ctx, entityRam.RamMenuEntity{NoLink: item.IdLink}, item.ID)
@@ -315,7 +315,7 @@ func (c *RamMenuService) Delete(ctx *gin.Context, ct model.BaseIdsCt[string]) (r
 		return rt.ErrorMessage("数据不存在")
 	}
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, "")
+		log.Info(ctx, log.TagAppDef, "LogicalDeletion", log.Any("id", info.ID), log.Any("tenantId", ""))
 		r.DeleteById(ctx, info.ID)
 	}
 	return rt.Ok()
@@ -379,7 +379,7 @@ func (c *RamMenuService) StateEnableDisable(ctx *gin.Context, ids []string, stat
 //	@receiver c
 //	@param ct
 func (c *RamMenuService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -390,7 +390,7 @@ func (c *RamMenuService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.
 	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
-			log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, "")
+			log.Info(ctx, log.TagAppDef, "LogicalDeletion", log.Any("id", info.ID), log.Any("tenantId", ""))
 		}
 		repository.DeleteByIdsString(ctx, ids)
 	} else {
@@ -412,7 +412,7 @@ func (c *RamMenuService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.
 //	@receiver c
 //	@param ct
 func (c *RamMenuService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -437,7 +437,7 @@ func (c *RamMenuService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.
 //	@receiver c
 //	@param ct
 func (c *RamMenuService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -448,7 +448,7 @@ func (c *RamMenuService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg
 	}
 	idsNew := make([]int64, 0)
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, "")
+		log.Info(ctx, log.TagAppDef, "LogicalDeletion", log.Any("id", info.ID), log.Any("tenantId", ""))
 		idsNew = append(idsNew, info.ID)
 	}
 	if len(idsNew) > 0 {
@@ -463,7 +463,7 @@ func (c *RamMenuService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg
 //	@receiver c
 //	@param ct
 func (c *RamMenuService) Query(ctx *gin.Context, ct modRamMenu2.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamMenu2.Vo]]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamMenuEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modRamMenu2.Vo, 0)
@@ -511,7 +511,7 @@ func (c *RamMenuService) Query(ctx *gin.Context, ct modRamMenu2.QueryCt) (rt rg.
 //	@receiver c
 //	@param ct
 func (c *RamMenuService) QueryPublic(ctx *gin.Context, ct modRamMenu2.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamMenu2.Vo]]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamMenuEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modRamMenu2.Vo, 0)
@@ -559,7 +559,7 @@ func (c *RamMenuService) QueryPublic(ctx *gin.Context, ct modRamMenu2.QueryCt) (
 //	@receiver c
 //	@param ct
 func (c *RamMenuService) QueryAll(ctx *gin.Context, ct modRamMenu2.QueryCt) (rt rg.Rs[[]modRamMenu2.Vo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamMenuEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modRamMenu2.Vo, 0)
@@ -582,7 +582,7 @@ func (c *RamMenuService) QueryAll(ctx *gin.Context, ct modRamMenu2.QueryCt) (rt 
 //	@receiver c
 //	@param ct
 func (c *RamMenuService) SelectNodeAll(ctx *gin.Context, ct modRamMenu2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamMenuEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
@@ -612,7 +612,7 @@ func (c *RamMenuService) SelectNodeAll(ctx *gin.Context, ct modRamMenu2.QueryPub
 //	@receiver c
 //	@param ct
 func (c *RamMenuService) SelectNodeAllPublic(ctx *gin.Context, ct modRamMenu2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamMenuEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
@@ -642,7 +642,7 @@ func (c *RamMenuService) SelectNodeAllPublic(ctx *gin.Context, ct modRamMenu2.Qu
 //	@receiver c
 //	@param ct
 func (c *RamMenuService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Wd {
 		return rt.ErrorMessage("查询内容不能为空")
 	}
@@ -663,7 +663,7 @@ func (c *RamMenuService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[stri
 //	@receiver c
 //	@param ct
 func (c *RamMenuService) ExistCode(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Wd {
 		return rt.ErrorMessage("查询内容不能为空")
 	}

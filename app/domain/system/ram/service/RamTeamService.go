@@ -40,7 +40,7 @@ type RamTeamService struct {
 //	@param ct
 //	@return rt
 func (c *RamTeamService) CreateUpdate(ctx *gin.Context, ct modRamTeam2.CreateUpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
 	holder := holderPg.GetContextAccount(ctx)
 	//
@@ -98,11 +98,11 @@ func (c *RamTeamService) CreateUpdate(ctx *gin.Context, ct modRamTeam2.CreateUpd
 		info.State = enumStatePg.ENABLE.Index()
 	}
 
-	log.Infof(ctx, log.TagAppDef, "info.save=%+v", info)
+	log.Info(ctx, log.TagAppDef, "update", log.Any("info", info))
 	if isUpdate {
 		err := r.Update(ctx, info, find.ID)
 		if err != nil {
-			log.Errorf(ctx, log.TagAppDef, err, "update error=%+v", err)
+			log.Error(ctx, log.TagAppDef, err, "update error")
 			return rt.ErrorMessage(err.Error())
 		}
 	} else {
@@ -110,7 +110,7 @@ func (c *RamTeamService) CreateUpdate(ctx *gin.Context, ct modRamTeam2.CreateUpd
 		if err != nil {
 			return rt.ErrorMessage("保存失败 " + err.Error())
 		}
-		log.Infof(ctx, log.TagAppDef, "save=%+v", info)
+		log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	}
 
 	return rt.Ok()
@@ -140,7 +140,7 @@ func (c *RamTeamService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamTeam
 //	@receiver c
 //	@param ct
 func (c *RamTeamService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.ENABLE)
 }
 
@@ -150,7 +150,7 @@ func (c *RamTeamService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (r
 //	@receiver c
 //	@param ct
 func (c *RamTeamService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.GetType(enumStatePg.DISABLE))
 }
 
@@ -194,7 +194,7 @@ func (c *RamTeamService) StateEnableDisable(ctx *gin.Context, ids []string, stat
 //	@receiver c
 //	@param ct
 func (c *RamTeamService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -205,7 +205,7 @@ func (c *RamTeamService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.
 	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
-			log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+			log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
 		repository.DeleteByIdsString(ctx, ids)
 		//
@@ -228,7 +228,7 @@ func (c *RamTeamService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.
 //	@receiver c
 //	@param ct
 func (c *RamTeamService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -253,7 +253,7 @@ func (c *RamTeamService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.
 //	@receiver c
 //	@param ct
 func (c *RamTeamService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -265,7 +265,7 @@ func (c *RamTeamService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg
 	idsNew := make([]int64, 0)
 	keys := make([]string, 0)
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		idsNew = append(idsNew, info.ID)
 		//
 		keys = append(keys, info.No)
@@ -284,7 +284,7 @@ func (c *RamTeamService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg
 //	@receiver c
 //	@param ct
 func (c *RamTeamService) Query(ctx *gin.Context, ct modRamTeam2.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamTeam2.Vo]]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamTeamEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modRamTeam2.Vo, 0)
@@ -328,7 +328,7 @@ func (c *RamTeamService) Query(ctx *gin.Context, ct modRamTeam2.QueryCt) (rt rg.
 //	@receiver c
 //	@param ct
 func (c *RamTeamService) SelectNodeAll(ctx *gin.Context, ct modRamTeam2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamTeamEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
@@ -356,7 +356,7 @@ func (c *RamTeamService) SelectNodeAll(ctx *gin.Context, ct modRamTeam2.QueryPub
 //	@receiver c
 //	@param ct
 func (c *RamTeamService) SelectNodeAllPublic(ctx *gin.Context, ct modRamTeam2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamTeamEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
@@ -384,7 +384,7 @@ func (c *RamTeamService) SelectNodeAllPublic(ctx *gin.Context, ct modRamTeam2.Qu
 //	@receiver c
 //	@param ct
 func (c *RamTeamService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Wd {
 		return rt.ErrorMessage("查询内容不能为空")
 	}
@@ -405,7 +405,7 @@ func (c *RamTeamService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[stri
 //	@receiver c
 //	@param ct
 func (c *RamTeamService) ExistCode(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Wd {
 		return rt.ErrorMessage("查询内容不能为空")
 	}

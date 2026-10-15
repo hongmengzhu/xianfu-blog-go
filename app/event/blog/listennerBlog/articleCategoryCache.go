@@ -26,7 +26,7 @@ func (c *ArticleCategoryCacheListener) Register(bus event.Bus) {
 	event.Subscribe(bus, func(ctx context.Context, e modEventBlogArticleCategory.CacheDto) error {
 		err := articleBlogEvent.NewCategoryCache(c.sp, e).Processor(context.Background())
 		if nil != err {
-			log.Errorf(ctx, log.TagAppDef, err, "博客.分类.缓存:%+v", err)
+			log.Error(ctx, log.TagAppDef, err, "博客.分类.缓存")
 		}
 		return nil
 	})
@@ -38,15 +38,15 @@ func (c *ArticleCategoryCacheListener) Register(bus event.Bus) {
 //	@receiver c
 //	@param ctx
 //func (c *ArticleCategoryCacheListener) Run(ctx context.Context) error {
-//	log.Infof(ctx, log.TagAppDef, "[init].listener.[博客.分类.缓存]===================")
+//	log.Info(ctx, log.TagAppDef, "[init].listener.[博客.分类.缓存]===================")
 //	//博客文章 分类
 //	eventBus.RegisterEvent(constEventBusPg.BlogArticleCategoryCache).RegisterSubscribe(constEventBusPg.BlogArticleCategoryCache, func(message any, _ core.EventArgs) {
-//		//log.Infof(ctx, log.TagAppDef,"[init].listener.[博客.分类.缓存]22===================")
+//		//log.Info(ctx, log.TagAppDef,"[init].listener.[博客.分类.缓存]22===================")
 //		dto := message.(modEventBlogArticleCategory.CacheDto)
-//		//log.Infof(ctx, log.TagAppDef,"dto=%+v", dto)
+//		//log.Info(ctx, log.TagAppDef,"dto=%+v", dto)
 //		err := articleBlogEvent.NewCategoryCache(c.sp, dto).Processor(context.Background())
 //		if nil != err {
-//			log.Errorf(ctx, log.TagAppDef, "博客.分类.缓存:%+v", err)
+//			log.Error(ctx, log.TagAppDef, "博客.分类.缓存:%+v", err)
 //		}
 //		message = nil
 //	})

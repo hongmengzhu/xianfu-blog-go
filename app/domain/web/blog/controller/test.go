@@ -29,7 +29,7 @@ func (c *TestController) RegisterRoutes(e *gin.Engine) {
 func (c *TestController) Cache(ctx *gin.Context) {
 	//err := articleBlogEvent.NewStartInit(c.log).Processor(context.Background())
 	//if err != nil {
-	//	log.Errorf(ctx, log.TagAppDef,"error:", err)
+	//	log.Error(ctx, log.TagAppDef,"error:", err)
 	//}
 	// 模版
 	ctx.JSON(200, gin.H{"data": "ok"})

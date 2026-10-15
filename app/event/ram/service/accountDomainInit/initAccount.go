@@ -71,7 +71,11 @@ func (t *InitAccount) Processor(ctx context.Context) error {
 				t.manageAccount(ctx, item)
 			}
 		} else {
-			log.Debugf(ctx, log.TagAppDef, "[init].[账号初始化] %+v 已存在,无需初始化", item)
+			log.Debug(ctx, log.TagAppDef, "[init].[账号初始化] %+v 已存在,无需初始化", func() []log.Field {
+				return []log.Field{
+					log.String("domain", item),
+				}
+			})
 		}
 	}
 	return nil

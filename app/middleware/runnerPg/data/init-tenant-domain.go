@@ -17,7 +17,7 @@ type InitTenantDomain struct {
 }
 
 func (b *InitTenantDomain) Run(ctx context.Context) error {
-	log.Infof(context.Background(), log.TagAppDef, "初始化 => 域名与租户的关系")
+	log.Info(context.Background(), log.TagAppDef, "初始化 => 域名与租户的关系")
 	b.domain.InitTenantDomain(context.Background())
 	return nil
 }

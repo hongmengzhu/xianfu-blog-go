@@ -27,7 +27,7 @@ func (c *BasicConfigRepository) FindByTypeDomainTenantAndField(ctx context.Conte
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
 		}
 		return
 	}
@@ -41,7 +41,7 @@ func (c *BasicConfigRepository) FindByEventNoAndFieldIn(ctx context.Context, eve
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
 		}
 		return
 	}
@@ -55,7 +55,7 @@ func (c *BasicConfigRepository) FindByEventNo(ctx context.Context, eventNo strin
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
 		}
 		return
 	}
@@ -69,7 +69,7 @@ func (c *BasicConfigRepository) FindByEventNoTenantAndFieldIn(ctx context.Contex
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
 		}
 		return
 	}
@@ -83,7 +83,7 @@ func (c *BasicConfigRepository) UpdateByTenantEventNoAndNoAndValue(ctx context.C
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
 		}
 		return
 	}
@@ -98,7 +98,7 @@ func (c *BasicConfigRepository) UpdateByEventNoAndNoAndValue(ctx context.Context
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			log.Errorf(ctx, log.TagAppDef, tx.Error, "err=%+v", tx.Error)
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
 		}
 		return false
 	}

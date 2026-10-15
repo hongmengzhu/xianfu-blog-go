@@ -57,7 +57,7 @@ func NewCreate(
 //	@receiver c
 //	@param ct
 func (c *Create) accountCreate(ctx *gin.Context, ct modTcAccount.CreateAccountCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if strPg.IsBlank(ct.TenantNo) {
 		return rt.ErrorMessage("租户不能为空")
 	}
@@ -144,7 +144,7 @@ func (c *Create) accountCreate(ctx *gin.Context, ct modTcAccount.CreateAccountCt
 	}
 	c.entity.No = noPg.No()
 	c.entity.TenantNo = holder.GetTenantNo()
-	log.Infof(ctx, log.TagAppDef, "save=%#v", c.entity)
+	log.Info(ctx, log.TagAppDef, "save", log.Any("entity", c.entity))
 	err, _ := r.Create(c.ctx, c.entity)
 	if err != nil {
 		return rt.ErrorMessage("创建用户失败")
@@ -182,7 +182,7 @@ func (c *Create) CreateAccount(ctx *gin.Context, ct modTcAccount.CreateAccountCt
 //	@param tp
 //	@return rt
 func (c *Create) createAll(ctx *gin.Context, ct modTcAccount.CreateCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var ctAccount modTcAccount.CreateAccountCt
 	copier.Copy(&ctAccount, &ct)
 	account := c.accountCreate(ctx, ctAccount, tp)
@@ -329,7 +329,7 @@ func (c *Create) createAll(ctx *gin.Context, ct modTcAccount.CreateCt, tp appMod
 	//
 	entity.Os = datatypes.NewJSONType(os)
 	//
-	log.Infof(ctx, log.TagAppDef, "save=%#v", entity)
+	log.Info(ctx, log.TagAppDef, "save", log.Any("entity", c.entity))
 	err := c.sp.accDb.Update(c.ctx, entity, c.entity.ID)
 	if err != nil {
 		return rt.ErrorMessage("创建用户失败")

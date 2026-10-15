@@ -47,12 +47,12 @@ func (c *CreateUpdate) Process(ctx *gin.Context) (rt rg.Rs[string]) {
 }
 
 func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", c.ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", c.ct))
 	header := c.ct.Header
 	//
 	err := copier.Copy(c.event, &header)
 	if err != nil {
-		log.Infof(ctx, log.TagAppDef, "copier.Copy error: %+v", err)
+		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 	}
 	c.event.Name = strings.TrimSpace(c.event.Name)
 	c.event.Model = strings.TrimSpace(c.event.Model)
@@ -93,7 +93,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 			var field entityBasic.BasicConfigEventFieldsEntity
 			err := copier.Copy(&field, &item)
 			if err != nil {
-				log.Infof(ctx, log.TagAppDef, "copier.Copy error: %+v", err)
+				log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 				errs = append(errs, modelBasePg.ItemResult{
 					Col:   i,
 					Field: "col",
@@ -189,7 +189,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 			{
 				tx := c.Sp.repEventField.DbModel().CreateInBatches(c.fields, 1000000)
 				if tx.Error != nil {
-					log.Errorf(ctx, log.TagAppDef, err, "save err=%+v", tx.Error)
+					log.Error(ctx, log.TagAppDef, err, "save err")
 					return rt.ErrorMessage("保存失败：")
 				}
 				//if 0 == tx.RowsAffected {
@@ -208,13 +208,13 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		{
 			err := copier.Copy(&save, info)
 			if err != nil {
-				log.Infof(ctx, log.TagAppDef, "copier.Copy error: %+v", err)
+				log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 			}
 		}
 		{
 			err := copier.Copy(&save, &header)
 			if err != nil {
-				log.Infof(ctx, log.TagAppDef, "copier.Copy error: %+v", err)
+				log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 			}
 		}
 		save.KindUnique = cryptPg.Md5(save.Field)
@@ -260,7 +260,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		//
 		err := c.Sp.repEvent.Update(ctx, save, info.ID)
 		if err != nil {
-			log.Infof(ctx, log.TagAppDef, "copier.Copy error: %+v", err)
+			log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 		}
 		//
 		if nil != c.ct.BodyDelIds && len(c.ct.BodyDelIds) > 0 {
@@ -278,7 +278,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 			{
 				tx := c.Sp.repEventField.DbModel().CreateInBatches(dataInsert, 1000000)
 				if tx.Error != nil {
-					log.Errorf(ctx, log.TagAppDef, tx.Error, "save err=%+v", tx.Error)
+					log.Error(ctx, log.TagAppDef, tx.Error, "save err")
 					return rt.ErrorMessage("保存失败：")
 				}
 				//if 0 == tx.RowsAffected {

@@ -18,8 +18,8 @@ func (i Uint64String) MarshalJSON() ([]byte, error) {
 func (i *Uint64String) UnmarshalJSON(value []byte) error {
 
 	str := string(value)
-	//log.Infof("UnmarshalJSON.%+v", value)
-	//log.Infof("UnmarshalJSON.%+v", str)
+	//log.Info("UnmarshalJSON.%+v", value)
+	//log.Info("UnmarshalJSON.%+v", str)
 	if len(str) == 0 {
 		*i = Uint64String(0)
 		return nil
@@ -33,7 +33,7 @@ func (i *Uint64String) UnmarshalJSON(value []byte) error {
 	}
 	m, err := strconv.ParseUint(str, 10, 64)
 	if err != nil {
-		log.Infof(context.Background(), log.TagAppDef, "UnmarshalJSON.%+v", err)
+		log.Error(context.Background(), log.TagAppDef, err, "UnmarshalJSON")
 		*i = Uint64String(0)
 	} else {
 		*i = Uint64String(m)

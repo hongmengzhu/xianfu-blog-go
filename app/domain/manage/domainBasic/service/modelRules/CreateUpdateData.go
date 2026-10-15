@@ -43,7 +43,7 @@ func (c *CreateUpdateData) Process(ctx *gin.Context) (rt rg.Rs[string]) {
 }
 
 func (c *CreateUpdateData) verify(ctx *gin.Context) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", c.ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", c.ct))
 	ct := c.ct
 	if nil == ct.Body || len(ct.Body) < 1 {
 		return rt.ErrorMessage("规则不能为空")
@@ -94,7 +94,7 @@ func (c *CreateUpdateData) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		obj := entityBasic.BasicModelRulesEntity{}
 		err := copier.Copy(&obj, &item)
 		if err != nil {
-			log.Infof(ctx, log.TagAppDef, "copier.Copy error: %+v", err)
+			log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 		}
 		obj.Name = strings.TrimSpace(obj.Name)
 		obj.RuleMode = strings.TrimSpace(obj.RuleMode)
@@ -129,7 +129,7 @@ func (c *CreateUpdateData) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 	if len(dataAdd) > 0 {
 		tx := c.Sp.repRules.DbModel().CreateInBatches(dataAdd, 1000000)
 		if tx.Error != nil {
-			log.Errorf(ctx, log.TagAppDef, tx.Error, "save err=%+v", tx.Error)
+			log.Error(ctx, log.TagAppDef, tx.Error, "save err")
 			return rt.ErrorMessage("保存失败：")
 		}
 	}

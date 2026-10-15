@@ -37,7 +37,7 @@ type RamIdentityProviderService struct {
 //	@param ct
 //	@return rt
 func (c *RamIdentityProviderService) CreateUpdate(ctx *gin.Context, ct modRamIdentityProvider2.CreateUpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
 	holder := holderPg.GetContextAccount(ctx)
 	//
@@ -95,11 +95,11 @@ func (c *RamIdentityProviderService) CreateUpdate(ctx *gin.Context, ct modRamIde
 		info.State = enumStatePg.ENABLE.Index()
 	}
 
-	log.Infof(ctx, log.TagAppDef, "info.save=%+v", info)
+	log.Info(ctx, log.TagAppDef, "update", log.Any("info", info))
 	if isUpdate {
 		err := r.Update(ctx, info, find.ID)
 		if err != nil {
-			log.Errorf(ctx, log.TagAppDef, err, "update error=%+v", err)
+			log.Error(ctx, log.TagAppDef, err, "update error")
 			return rt.ErrorMessage(err.Error())
 		}
 	} else {
@@ -107,7 +107,7 @@ func (c *RamIdentityProviderService) CreateUpdate(ctx *gin.Context, ct modRamIde
 		if err != nil {
 			return rt.ErrorMessage("保存失败 " + err.Error())
 		}
-		log.Infof(ctx, log.TagAppDef, "save=%+v", info)
+		log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	}
 
 	return rt.Ok()
@@ -137,7 +137,7 @@ func (c *RamIdentityProviderService) Detail(ctx *gin.Context, id int64) (rt rg.R
 //	@receiver c
 //	@param ct
 func (c *RamIdentityProviderService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.ENABLE)
 }
 
@@ -147,7 +147,7 @@ func (c *RamIdentityProviderService) Enable(ctx *gin.Context, ct model.BaseIdsCt
 //	@receiver c
 //	@param ct
 func (c *RamIdentityProviderService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.GetType(enumStatePg.DISABLE))
 }
 
@@ -179,7 +179,7 @@ func (c *RamIdentityProviderService) State(ctx *gin.Context, ids []string, state
 //	@receiver c
 //	@param ct
 func (c *RamIdentityProviderService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -190,7 +190,7 @@ func (c *RamIdentityProviderService) LogicalDeletion(ctx *gin.Context, ids []str
 	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
-			log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+			log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
 		repository.DeleteByIdsString(ctx, ids)
 	} else {
@@ -211,7 +211,7 @@ func (c *RamIdentityProviderService) LogicalDeletion(ctx *gin.Context, ids []str
 //	@receiver c
 //	@param ct
 func (c *RamIdentityProviderService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -236,7 +236,7 @@ func (c *RamIdentityProviderService) LogicalRecovery(ctx *gin.Context, ids []str
 //	@receiver c
 //	@param ct
 func (c *RamIdentityProviderService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -247,7 +247,7 @@ func (c *RamIdentityProviderService) PhysicalDeletion(ctx *gin.Context, ids []st
 	}
 	idsNew := make([]int64, 0)
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		idsNew = append(idsNew, info.ID)
 	}
 	if len(idsNew) > 0 {
@@ -262,7 +262,7 @@ func (c *RamIdentityProviderService) PhysicalDeletion(ctx *gin.Context, ids []st
 //	@receiver c
 //	@param ct
 func (c *RamIdentityProviderService) Query(ctx *gin.Context, ct modRamIdentityProvider2.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdentityProvider2.Vo]]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamIdentityProviderEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modRamIdentityProvider2.Vo, 0)
@@ -306,7 +306,7 @@ func (c *RamIdentityProviderService) Query(ctx *gin.Context, ct modRamIdentityPr
 //	@receiver c
 //	@param ct
 func (c *RamIdentityProviderService) SelectNodeAll(ctx *gin.Context, ct modRamIdentityProvider2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamIdentityProviderEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
@@ -334,7 +334,7 @@ func (c *RamIdentityProviderService) SelectNodeAll(ctx *gin.Context, ct modRamId
 //	@receiver c
 //	@param ct
 func (c *RamIdentityProviderService) SelectNodeAllPublic(ctx *gin.Context, ct modRamIdentityProvider2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamIdentityProviderEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
@@ -362,7 +362,7 @@ func (c *RamIdentityProviderService) SelectNodeAllPublic(ctx *gin.Context, ct mo
 //	@receiver c
 //	@param ct
 func (c *RamIdentityProviderService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Wd {
 		return rt.ErrorMessage("查询内容不能为空")
 	}

@@ -34,7 +34,7 @@ type RamResourceGroupRelationService struct {
 //	@receiver c
 //	@param ct
 func (c *RamResourceGroupRelationService) SelectNodePublic(ctx *gin.Context, ct modRamResourceGroupRelation2.QueryCt) (rt rg.Rs[[]model.BaseNode]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamResourceGroupRelationEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNode, 0)
@@ -59,7 +59,7 @@ func (c *RamResourceGroupRelationService) SelectNodePublic(ctx *gin.Context, ct 
 //	@receiver c
 //	@param ct
 func (c *RamResourceGroupRelationService) SelectNodeAllPublic(ctx *gin.Context, ct modRamResourceGroupRelation2.QueryCt) (rt rg.Rs[[]model.BaseNode]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamResourceGroupRelationEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNode, 0)
@@ -87,7 +87,7 @@ func (c *RamResourceGroupRelationService) SelectNodeAllPublic(ctx *gin.Context, 
 //	@receiver c
 //	@param ct
 func (c *RamResourceGroupRelationService) SelectPublic(ctx *gin.Context, ct modRamResourceGroupRelation2.QueryCt) (rt rg.Rs[[]modRamResourceRelation.Vo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamResourceGroupRelationEntity
 	copier.Copy(&query, &ct)
 	rt.Data = []modRamResourceRelation.Vo{}
@@ -110,7 +110,7 @@ func (c *RamResourceGroupRelationService) SelectPublic(ctx *gin.Context, ct modR
 //	@receiver c
 //	@param ct
 func (c *RamResourceGroupRelationService) Selected(ctx *gin.Context, ct modRamResourceGroupRelation2.QueryByTypeValueCt) (rt rg.Rs[[]string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if strPg.IsBlank(ct.TypeValue) {
 		return rt.ErrorMessage("资源组类型id 不能为空")
 	}

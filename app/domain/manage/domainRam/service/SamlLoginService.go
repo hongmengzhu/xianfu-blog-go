@@ -73,7 +73,7 @@ func (c *SamlLoginService) GetSamlLoginUrl(ctx *gin.Context, sourceNo string) (r
 	// 2. 构建 SP
 	sp, cfg, err := c.buildSpFromSource(ctx, source)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "构建 SAML SP 失败: %v", err)
+		log.Error(ctx, log.TagAppDef, err, "构建 SAML SP 失败")
 		return rt.ErrorMessage("构建 SAML SP 失败: " + err.Error())
 	}
 	_ = cfg
@@ -89,7 +89,7 @@ func (c *SamlLoginService) GetSamlLoginUrl(ctx *gin.Context, sourceNo string) (r
 	// 4. 生成 SAML Request
 	authURL, method, err := samlPkg.GenerateSamlRequest(sp, string(relayState))
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "生成 SAML Request 失败: %v", err)
+		log.Error(ctx, log.TagAppDef, err, "生成 SAML Request 失败")
 		return rt.ErrorMessage("生成 SAML 请求失败: " + err.Error())
 	}
 
@@ -114,7 +114,7 @@ func (c *SamlLoginService) HandleSamlCallback(ctx *gin.Context, ct modRamSaml.Sa
 	// 1. 解析 RelayState 获取 sourceNo
 	var relayData map[string]string
 	if err := json.Unmarshal([]byte(ct.RelayState), &relayData); err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "解析 RelayState 失败: %v", err)
+		log.Error(ctx, log.TagAppDef, err, "解析 RelayState 失败")
 		return rt.ErrorMessage("RelayState 解析失败")
 	}
 	sourceNo := relayData["sourceNo"]
@@ -134,17 +134,17 @@ func (c *SamlLoginService) HandleSamlCallback(ctx *gin.Context, ct modRamSaml.Sa
 	// 3. 构建 SP
 	sp, _, err := c.buildSpFromSource(ctx, source)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "构建 SAML SP 失败: %v", err)
+		log.Error(ctx, log.TagAppDef, err, "构建 SAML SP 失败")
 		return rt.ErrorMessage("构建 SAML SP 失败: " + err.Error())
 	}
 
 	// 4. 解析 SAML Response
 	samlUserInfo, err := samlPkg.ParseSamlResponse(ct.SAMLResponse, sp)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "解析 SAML Response 失败: %v", err)
+		log.Error(ctx, log.TagAppDef, err, "解析 SAML Response 失败")
 		return rt.ErrorMessage("解析 SAML 响应失败: " + err.Error())
 	}
-	log.Infof(ctx, log.TagAppDef, "SAML userInfo: NameID=%s, attrs=%v", samlUserInfo.NameID, samlUserInfo.Attributes)
+	log.Info(ctx, log.TagAppDef, "SAML userInfo", log.Any("NameID", samlUserInfo.NameID), log.Any("Attributes", samlUserInfo.Attributes))
 
 	// 5. 解析属性映射
 	userInfo := c.mapSamlAttributes(samlUserInfo, source.AttributeMapping)
@@ -363,10 +363,10 @@ func (c *SamlLoginService) createAccountAndBinding(
 
 	err, _ := c.daoAccount.Create(ctx, account)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "SAML 创建账号失败: %v", err)
+		log.Error(ctx, log.TagAppDef, err, "SAML 创建账号失败")
 		return nil, err
 	}
-	log.Infof(ctx, log.TagAppDef, "SAML 自动创建账号: no=%s, account=%s", account.No, account.Account)
+	log.Info(ctx, log.TagAppDef, "SAML 自动创建账号", log.Any("no", account.No), log.Any("account", account.Account))
 
 	// 创建 RamIdpBinding
 	bindingNo := noPg.No()
@@ -392,7 +392,7 @@ func (c *SamlLoginService) createAccountAndBinding(
 	}
 	errBind, _ := c.daoBinding.Create(ctx, binding)
 	if errBind != nil {
-		log.Errorf(ctx, log.TagAppDef, errBind, "SAML 创建绑定记录失败: %v", errBind)
+		log.Error(ctx, log.TagAppDef, errBind, "SAML 创建绑定记录失败")
 		return nil, errBind
 	}
 
@@ -499,6 +499,6 @@ func (c *SamlLoginService) saveSessionLog(
 	}
 	err, _ := c.daoSessionLog.Create(ctx, logEntity)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "保存 SAML 登录审计日志失败: %v", err)
+		log.Error(ctx, log.TagAppDef, err, "保存 SAML 登录审计日志失败")
 	}
 }

@@ -51,16 +51,24 @@ func GroupManageMiddleware(m *GroupManageMiddlewareSp) gin.HandlerFunc {
 					return
 				}
 			}
-			log.Debugf(context.Background(), log.TagAppDef, "[中间件].unverified= %+v", string(unverified))
+			log.Debug(context.Background(), log.TagAppDef, "[中间件]", func() []log.Field {
+				return []log.Field{
+					log.String("unverified", string(unverified)),
+					log.Any("payload", payload),
+				}
+			})
 			tenantNo := ""
 			{
 				//获取租户信息
 				if tmp, ok := payload[authTokenPg2.TenantNo]; ok {
 					tenantNo = convPg.ObjToStr(tmp)
 				}
-				log.Debugf(context.Background(), log.TagAppDef, "[中间件].payload= %+v", payload)
 			}
-			log.Debugf(context.Background(), log.TagAppDef, "[中间件].tenantNo= %+v", tenantNo)
+			log.Debug(context.Background(), log.TagAppDef, "[中间件]", func() []log.Field {
+				return []log.Field{
+					log.String("tenantNo", tenantNo),
+				}
+			})
 			//密钥
 			get, b := cacheAuthPubPrivPg2.Get(cacheAuthPubPrivPg2.AccessTokenKeyManage(tenantNo))
 			if !b {
@@ -70,7 +78,11 @@ func GroupManageMiddleware(m *GroupManageMiddlewareSp) gin.HandlerFunc {
 			}
 			t, r := authTokenPg2.VerifyByPublicKey(get.Public, token)
 			if r.ErrorIs() {
-				log.Debugf(context.Background(), log.TagAppDef, "JWT= %+v", r)
+				log.Debug(context.Background(), log.TagAppDef, "JWT= %+v", func() []log.Field {
+					return []log.Field{
+						log.Any("JWT", r),
+					}
+				})
 				c.JSON(200, r)
 				c.Abort()
 				return
@@ -94,8 +106,12 @@ func GroupManageMiddleware(m *GroupManageMiddlewareSp) gin.HandlerFunc {
 				c.Abort()
 				return
 			}
-			log.Debugf(context.Background(), log.TagAppDef, "rt= %+v", rt)
-			log.Debugf(context.Background(), log.TagAppDef, "rt.Rule= %+v", rt.Data.Rule)
+			log.Debug(context.Background(), log.TagAppDef, "rt", func() []log.Field {
+				return []log.Field{
+					log.Any("rt.Rule", rt.Data.Rule),
+					log.Any("rt", rt),
+				}
+			})
 			//
 			var data = rt.Data
 			//如果配置了managerUrlPaths，则必须携带ownerCode
@@ -104,7 +120,11 @@ func GroupManageMiddleware(m *GroupManageMiddlewareSp) gin.HandlerFunc {
 				for _, item := range managerUrlPaths {
 					//必须登录 验证，url 包含的路径，那么提示错误
 					if "" != item && strings.Index(path, item) != -1 {
-						log.Tracef(context.Background(), log.TagAppDef, "pass %+v", c.Request.URL.Path)
+						log.Trace(context.Background(), log.TagAppDef, "pass", func() []log.Field {
+							return []log.Field{
+								log.String("path", c.Request.URL.Path),
+							}
+						})
 						c.JSON(200, rg.Error[string]("所有者错误"))
 						c.Abort()
 						return
@@ -117,7 +137,7 @@ func GroupManageMiddleware(m *GroupManageMiddlewareSp) gin.HandlerFunc {
 			c.Set(constContextPg.AUTH_LOGIN, rt.Data)
 			c.Set(constContextPg.CTX_RULE, rt.Data.Rule)
 			//value, exists := c.Get(constContextPg.CTX_RULE)
-			//m.log.Infof("Set.constContextPg.CTX_RULE.get= %+v,", value, exists)
+			//m.log.Info("Set.constContextPg.CTX_RULE.get= %+v,", value, exists)
 			//m.log.WithContext(c.Context()).Tracef("::AdminManageFilter")
 
 			//详细权限

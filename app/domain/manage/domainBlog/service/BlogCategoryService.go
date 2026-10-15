@@ -64,7 +64,7 @@ func (c *BlogCategoryService) Create(ctx *gin.Context, ct modBlogCategory.Create
 	var info entityBlog.BlogCategoryEntity
 	err := copier.Copy(&info, &ct)
 	if err != nil {
-		log.Infof(ctx, log.TagAppDef, "copier.Copy error: %+v", err)
+		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 	}
 	info.TypeSys = typeSysPg.General.Index()
 	//
@@ -79,7 +79,7 @@ func (c *BlogCategoryService) Create(ctx *gin.Context, ct modBlogCategory.Create
 	if result {
 		return rt.ErrorMessage("字段已存在")
 	}
-	log.Infof(ctx, log.TagAppDef, "info%+v", info)
+	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	info.TenantNo = holder.GetTenantNo()
 	//自动设置编号
 	if automatedPg.IsCreateCode(ct.No) {
@@ -100,7 +100,7 @@ func (c *BlogCategoryService) Create(ctx *gin.Context, ct modBlogCategory.Create
 	}
 	r.Update(ctx, info, info.ID)
 
-	log.Infof(ctx, log.TagAppDef, "save=%+v", info)
+	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	return rg.OkData(numberPg.Int64ToString(info.ID))
 }
 
@@ -146,7 +146,7 @@ func (c *BlogCategoryService) Update(ctx *gin.Context, ct modBlogCategory.Update
 			result2 := false
 			childData, result2 = r.FindAllByParentIdLink(ctx, numberPg.Int64ToString(find.ID))
 			if result2 {
-				//log.Infof(ctx, log.TagAppDef,"data=%+v \n", childData)
+				//log.Info(ctx, log.TagAppDef,"data=%+v \n", childData)
 				for _, item := range childData {
 					if item.ID == parent.ID {
 						return rt.ErrorMessage("无法保存，不能设置为自己的子集")
@@ -173,10 +173,10 @@ func (c *BlogCategoryService) Update(ctx *gin.Context, ct modBlogCategory.Update
 
 	err := r.Update(ctx, info, info.ID)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "update error=%+v", err)
+		log.Error(ctx, log.TagAppDef, err, "update error")
 		return rt.ErrorMessage(err.Error())
 	}
-	log.Infof(ctx, log.TagAppDef, "save.info=%+v", info)
+	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	r.UpdateMap(ctx, map[string]interface{}{
 		"parent_id": info.ParentId,
 		"parent_no": info.ParentNo,
@@ -194,7 +194,7 @@ func (c *BlogCategoryService) Update(ctx *gin.Context, ct modBlogCategory.Update
 			item.NoLink = info.NoLink + item.No + "|"
 			c.childParentIdLink(maps, item)
 		}
-		log.Infof(ctx, log.TagAppDef, "maps=%+v", maps)
+		//
 		for _, val := range maps {
 			for _, item := range val {
 				if item.ID == info.ID {
@@ -240,7 +240,7 @@ func (c *BlogCategoryService) CacheOverride(ctx *gin.Context) {
 		item.IdLink = numberPg.Int64ToString(item.ID)
 		c.childParentIdLink(maps, item)
 	}
-	log.Infof(ctx, log.TagAppDef, "maps=%+v", maps)
+	//
 	for _, val := range maps {
 		for _, item := range val {
 			r.Update(ctx, entityBlog.BlogCategoryEntity{IdLink: item.IdLink}, item.ID)
@@ -335,7 +335,7 @@ func (c *BlogCategoryService) LogicalDeletion(ctx *gin.Context, ids []string) (r
 	}
 	if c.rep.Config().Data.Delete {
 		for _, info := range finds {
-			log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, 0)
+			log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
 		repository.DeleteByIdsString(ctx, ids)
 	} else {
@@ -391,7 +391,7 @@ func (c *BlogCategoryService) PhysicalDeletion(ctx *gin.Context, ids []string) (
 	}
 	idsNew := make([]int64, 0)
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, 0)
+		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		idsNew = append(idsNew, info.ID)
 	}
 	if len(idsNew) > 0 {

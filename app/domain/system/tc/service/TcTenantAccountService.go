@@ -136,7 +136,7 @@ func (c *TcTenantAccountService) LogicalDeletion(ctx *gin.Context, ids []string,
 				continue
 			}
 			idsNow = append(idsNow, info.ID)
-			log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+			log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
 		if len(idsNow) > 0 {
 			r.DeleteByIds(ctx, idsNow)
@@ -207,7 +207,7 @@ func (c *TcTenantAccountService) PhysicalDeletion(ctx *gin.Context, ids []string
 		if yesNoIntPg.Yes.IsEqual(info.Founder) {
 			continue
 		}
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 	}
 	if len(idsNow) > 0 {
 		r.DeleteByIds(ctx, idsNow)

@@ -21,23 +21,23 @@ type EventCacheListener struct {
 }
 
 func (c *EventCacheListener) Register(bus event.Bus) {
-	log.Infof(context.Background(), log.TagAppDef, "[init].listener.[基础.模型事件.缓存]===================")
+	log.Info(context.Background(), log.TagAppDef, "[init].listener.[基础.模型事件.缓存]===================")
 	// 创建适配器
 	//模型事件
 	event.Subscribe(bus, func(ctx context.Context, e modEventBasicEvent.EventDto) error {
-		log.Infof(ctx, log.TagAppDef, "listener.[基础.模型事件.缓存]1===================")
+		log.Info(ctx, log.TagAppDef, "listener.[基础.模型事件.缓存]1===================")
 		err := eventBasicEvent.NewEventMakeCache(c.sp, e).Processor(context.Background())
 		if nil != err {
-			log.Errorf(ctx, log.TagAppDef, err, "基础.模型事件.缓存:%+v", err)
+			log.Error(ctx, log.TagAppDef, err, "基础.模型事件.缓存")
 		}
 		return nil
 	})
 	//模型事件字段
 	event.Subscribe(bus, func(ctx context.Context, e modEventBasicEvent.FieldDto) error {
-		log.Infof(ctx, log.TagAppDef, "listener.[基础.模型事件字段.缓存]2===================")
+		log.Info(ctx, log.TagAppDef, "listener.[基础.模型事件字段.缓存]2===================")
 		err := eventBasicEvent.NewEventFieldMakeCache(c.sp, e).Processor(context.Background())
 		if nil != err {
-			log.Errorf(ctx, log.TagAppDef, err, "基础.模型事件字段.缓存:%+v", err)
+			log.Error(ctx, log.TagAppDef, err, "基础.模型事件字段.缓存")
 		}
 		return nil
 	})
@@ -49,26 +49,26 @@ func (c *EventCacheListener) Register(bus event.Bus) {
 //	@receiver c
 //	@param ctx
 //func (c *EventCacheListener) Run(ctx context.Context) error {
-//	log.Infof(ctx, log.TagAppDef, "[init].listener.[基础.模型事件.缓存]===================")
+//	log.Info(ctx, log.TagAppDef, "[init].listener.[基础.模型事件.缓存]===================")
 //	//模型事件
 //	eventBus.RegisterEvent(constEventBusPg.BasicConfigEventCache).RegisterSubscribe(constEventBusPg.BasicConfigEventCache, func(message any, _ core.EventArgs) {
-//		log.Infof(ctx, log.TagAppDef, "listener.[基础.模型事件.缓存]22===================")
+//		log.Info(ctx, log.TagAppDef, "listener.[基础.模型事件.缓存]22===================")
 //		dto := message.(modEventBasicEvent.EventDto)
-//		//log.Infof(ctx, log.TagAppDef,"dto=%+v", dto)
+//		//log.Info(ctx, log.TagAppDef,"dto=%+v", dto)
 //		err := eventBasicEvent.NewEventMakeCache(c.sp, dto).Processor(context.Background())
 //		if nil != err {
-//			log.Errorf(ctx, log.TagAppDef, "基础.模型事件.缓存:%+v", err)
+//			log.Error(ctx, log.TagAppDef, "基础.模型事件.缓存:%+v", err)
 //		}
 //		message = nil
 //	})
 //	//模型事件字段
 //	eventBus.RegisterEvent(constEventBusPg.BasicConfigEventFieldCache).RegisterSubscribe(constEventBusPg.BasicConfigEventFieldCache, func(message any, _ core.EventArgs) {
-//		log.Infof(ctx, log.TagAppDef, "listener.[基础.模型事件字段.缓存]22===================")
+//		log.Info(ctx, log.TagAppDef, "listener.[基础.模型事件字段.缓存]22===================")
 //		dto := message.(modEventBasicEvent.FieldDto)
-//		//log.Infof(ctx, log.TagAppDef,"dto=%+v", dto)
+//		//log.Info(ctx, log.TagAppDef,"dto=%+v", dto)
 //		err := eventBasicEvent.NewEventFieldMakeCache(c.sp, dto).Processor(context.Background())
 //		if nil != err {
-//			log.Errorf(ctx, log.TagAppDef, "基础.模型事件字段.缓存:%+v", err)
+//			log.Error(ctx, log.TagAppDef, "基础.模型事件字段.缓存:%+v", err)
 //		}
 //		message = nil
 //	})

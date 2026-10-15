@@ -82,7 +82,7 @@ func (s *WechatOaService) GetQRCode(ctx *gin.Context, sourceNo string) (rt rg.Rs
 	var cfg wechatOaBaseConfig
 	if strPg.IsNotBlank(source.BaseConfig) {
 		if err := json.Unmarshal([]byte(source.BaseConfig), &cfg); err != nil {
-			log.Errorf(ctx, log.TagAppDef, err, "解析 BaseConfig 失败: %v", err)
+			log.Error(ctx, log.TagAppDef, err, "解析 BaseConfig 失败")
 			return rt.ErrorMessage("认证源配置解析失败")
 		}
 	}
@@ -96,7 +96,7 @@ func (s *WechatOaService) GetQRCode(ctx *gin.Context, sourceNo string) (rt rg.Rs
 	// 调用微信 API 创建二维码
 	qrResult, err := idp2.WechatOaCreateQRCode(cfg.ClientId2, cfg.ClientSecret2, sceneStr)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "创建公众号二维码失败: %v", err)
+		log.Error(ctx, log.TagAppDef, err, "创建公众号二维码失败")
 		return rt.ErrorMessage("创建二维码失败: " + err.Error())
 	}
 
@@ -149,7 +149,7 @@ func (s *WechatOaService) HandleEvent(ctx *gin.Context, bodyBytes []byte, source
 	// 解析 XML
 	var eventData wechatEventXML
 	if err := xml.Unmarshal(bodyBytes, &eventData); err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "解析微信事件 XML 失败: %v", err)
+		log.Error(ctx, log.TagAppDef, err, "解析微信事件 XML 失败")
 		return rt.ErrorMessage("解析事件失败")
 	}
 
@@ -191,7 +191,7 @@ func (s *WechatOaService) HandleEvent(ctx *gin.Context, bodyBytes []byte, source
 		IsScanned:     true,
 		WechatUnionId: eventData.FromUserName,
 	})
-	log.Infof(ctx, log.TagAppDef, "微信扫码事件: ticket=%s, unionId=%s, event=%s", eventData.Ticket, eventData.FromUserName, event)
+	log.Info(ctx, log.TagAppDef, "微信扫码事件: ", log.Any("ticket", eventData.Ticket), log.Any("unionId", eventData.FromUserName), log.Any("event", event))
 
 	// 同时写入 idp 包的全局缓存（兼容已有的 wechat.go GetUserInfo 逻辑）
 	idp2.Lock.Lock()

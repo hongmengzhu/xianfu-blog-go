@@ -39,11 +39,11 @@ type ApiDiplService struct {
 //	@param ct
 //	@return rt
 func (c *ApiDiplService) Create(ctx *gin.Context, ct modApiDipl.CreateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityApi.ApiDiplEntity
 	err := copier.Copy(&info, &ct)
 	if err != nil {
-		log.Infof(ctx, log.TagAppDef, "copier.Copy error: %+v", err)
+		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 	}
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
@@ -76,12 +76,12 @@ func (c *ApiDiplService) Create(ctx *gin.Context, ct modApiDipl.CreateCt) (rt rg
 	if automatedPg.IsCreateCode(info.Code) {
 		info.Code = info.No
 	}
-	log.Infof(ctx, log.TagAppDef, "info%+v", info)
+	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	err, _ = r.Create(ctx, &info)
 	if err != nil {
 		return rt.ErrorMessage("保存失败 " + err.Error())
 	}
-	log.Infof(ctx, log.TagAppDef, "save=%+v", info)
+	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	return rg.OkData(numberPg.Int64ToString(info.ID))
 }
 
@@ -92,7 +92,7 @@ func (c *ApiDiplService) Create(ctx *gin.Context, ct modApiDipl.CreateCt) (rt rg
 //	@param ct
 //	@return rt
 func (c *ApiDiplService) Update(ctx *gin.Context, ct modApiDipl.UpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%#v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityApi.ApiDiplEntity
 	copier.Copy(&info, &ct)
 	r := c.sv
@@ -122,10 +122,10 @@ func (c *ApiDiplService) Update(ctx *gin.Context, ct modApiDipl.UpdateCt) (rt rg
 	}
 	info.ID = 0
 	info.No = ""
-	log.Infof(ctx, log.TagAppDef, "info.save=%+v", info)
+	log.Info(ctx, log.TagAppDef, "update", log.Any("info", info))
 	err := r.Update(ctx, info, find.ID)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "update error=%+v", err)
+		log.Error(ctx, log.TagAppDef, err, "update error")
 		return rt.ErrorMessage(err.Error())
 	}
 	return rt.Ok()
@@ -155,7 +155,7 @@ func (c *ApiDiplService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modApiDipl
 //	@receiver c
 //	@param ct
 func (c *ApiDiplService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.ENABLE)
 }
 
@@ -165,7 +165,7 @@ func (c *ApiDiplService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (r
 //	@receiver c
 //	@param ct
 func (c *ApiDiplService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.GetType(enumStatePg.DISABLE))
 }
 
@@ -209,7 +209,7 @@ func (c *ApiDiplService) StateEnableDisable(ctx *gin.Context, ids []string, stat
 //	@receiver c
 //	@param ct
 func (c *ApiDiplService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -220,7 +220,7 @@ func (c *ApiDiplService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.
 	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
-			log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+			log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
 		repository.DeleteByIdsString(ctx, ids)
 	} else {
@@ -241,7 +241,7 @@ func (c *ApiDiplService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.
 //	@receiver c
 //	@param ct
 func (c *ApiDiplService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -266,7 +266,7 @@ func (c *ApiDiplService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.
 //	@receiver c
 //	@param ct
 func (c *ApiDiplService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -277,7 +277,7 @@ func (c *ApiDiplService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg
 	}
 	idsNew := make([]int64, 0)
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		idsNew = append(idsNew, info.ID)
 	}
 	if len(idsNew) > 0 {
@@ -292,7 +292,7 @@ func (c *ApiDiplService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg
 //	@receiver c
 //	@param ct
 func (c *ApiDiplService) Query(ctx *gin.Context, ct modApiDipl.QueryCt) (rt rg.Rs[pagePg.Paginator[modApiDipl.Vo]]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityApi.ApiDiplEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modApiDipl.Vo, 0)
@@ -335,7 +335,7 @@ func (c *ApiDiplService) Query(ctx *gin.Context, ct modApiDipl.QueryCt) (rt rg.R
 //	@receiver c
 //	@param ct
 func (c *ApiDiplService) SelectNodePublic(ctx *gin.Context, ct modApiDipl.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityApi.ApiDiplEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
@@ -364,7 +364,7 @@ func (c *ApiDiplService) SelectNodePublic(ctx *gin.Context, ct modApiDipl.QueryP
 //	@receiver c
 //	@param ct
 func (c *ApiDiplService) SelectNodeAllPublic(ctx *gin.Context, ct modApiDipl.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityApi.ApiDiplEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
@@ -393,7 +393,7 @@ func (c *ApiDiplService) SelectNodeAllPublic(ctx *gin.Context, ct modApiDipl.Que
 //	@receiver c
 //	@param ct
 func (c *ApiDiplService) SelectPublic(ctx *gin.Context, ct modApiDipl.QueryCt) (rt rg.Rs[[]modApiDipl.Vo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityApi.ApiDiplEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modApiDipl.Vo, 0)
@@ -416,7 +416,7 @@ func (c *ApiDiplService) SelectPublic(ctx *gin.Context, ct modApiDipl.QueryCt) (
 //	@receiver c
 //	@param ct
 func (c *ApiDiplService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Wd {
 		return rt.ErrorMessage("查询内容不能为空")
 	}
@@ -437,7 +437,7 @@ func (c *ApiDiplService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[stri
 //	@receiver c
 //	@param ct
 func (c *ApiDiplService) ExistCode(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Wd {
 		return rt.ErrorMessage("查询内容不能为空")
 	}

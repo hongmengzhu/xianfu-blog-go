@@ -58,7 +58,7 @@ func ExportExcelByMap(c *gin.Context, titleList []string, data []map[string]inte
 		}
 	}
 	if err := f.SetColWidth(sheetName, "A", widthRow, 30); err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, err, "")
+		log.Error(context.Background(), log.TagAppDef, err, "")
 	}
 	rowNum := 1
 	for _, value := range data {
@@ -75,10 +75,10 @@ func ExportExcelByMap(c *gin.Context, titleList []string, data []map[string]inte
 		}
 		rowNum++
 		if err := f.SetSheetRow(sheetName, fmt.Sprintf("A%d", rowNum), &row); err != nil {
-			log.Errorf(context.Background(), log.TagAppDef, err, "", err)
+			log.Error(context.Background(), log.TagAppDef, err, "")
 		}
 		if err := f.SetCellStyle(sheetName, fmt.Sprintf("A%d", rowNum), fmt.Sprintf("%s", lastRow), rowStyleID); err != nil {
-			log.Errorf(context.Background(), log.TagAppDef, err, "", err)
+			log.Error(context.Background(), log.TagAppDef, err, "")
 		}
 
 	}
@@ -123,7 +123,7 @@ func ExportExcelByStruct(c *gin.Context, titleList []string, data []interface{},
 		}
 	}
 	if err := f.SetColWidth(sheetName, "A", widthRow, 30); err != nil {
-		log.Errorf(context.Background(), log.TagAppDef, err, "", err)
+		log.Error(context.Background(), log.TagAppDef, err, "")
 	}
 	rowNum := 1
 	for _, v := range data {

@@ -40,7 +40,7 @@ type CollectService struct {
 //	@Description: 推送文章连接
 //	@receiver c
 func (c *CollectService) Push(ctx *gin.Context, ct modApiBlogCollect.PushCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 
 	if strPg.IsBlank(ct.Title) {
 		return rt.ErrorMessage("标题不能为空")
@@ -123,7 +123,9 @@ func (c *CollectService) Push(ctx *gin.Context, ct modApiBlogCollect.PushCt) (rt
 	//
 	err, _ := c.sv.Create(ctx, &save)
 	if err != nil {
-		log.Debugf(ctx, log.TagAppDef, "save err=%+v", err)
+		log.Debug(ctx, log.TagAppDef, "save err=%+v", func() []log.Field {
+			return []log.Field{log.Any("error", err)}
+		})
 		return rt.ErrorMessage("保存失败：" + err.Error())
 	}
 	return rt.Ok()
@@ -134,7 +136,7 @@ func (c *CollectService) Push(ctx *gin.Context, ct modApiBlogCollect.PushCt) (rt
 //	@Description: 推送文章连接
 //	@receiver c
 func (c *CollectService) PushAll(ctx *gin.Context, ct modApiBlogCollect.PushAll) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if nil == ct.Data || len(ct.Data) <= 0 {
 		return rt.ErrorMessage("数据不能为空")
 	}
@@ -269,7 +271,7 @@ func (c *CollectService) PushAll(ctx *gin.Context, ct modApiBlogCollect.PushAll)
 					item.CategoryNo = ""
 				}
 			}
-			log.Infof(ctx, log.TagAppDef, "item=%+v", item)
+			log.Info(ctx, log.TagAppDef, "item", log.Any("item", item))
 			//
 			save = append(save, item)
 		}
@@ -278,7 +280,7 @@ func (c *CollectService) PushAll(ctx *gin.Context, ct modApiBlogCollect.PushAll)
 		{
 			tx := c.sv.DbModel().CreateInBatches(save, 1000000)
 			if tx.Error != nil {
-				log.Errorf(ctx, log.TagAppDef, tx.Error, "save err=%+v", tx.Error)
+				log.Error(ctx, log.TagAppDef, tx.Error, "save err")
 				return rt.ErrorMessage("保存失败：")
 			}
 			if 0 == tx.RowsAffected {

@@ -17,7 +17,7 @@ type ZInitAccountAdmin struct {
 }
 
 func (b *ZInitAccountAdmin) Run(ctx context.Context) error {
-	log.Infof(ctx, log.TagAppDef, "[init].[超管账号初始化]===================")
+	log.Info(ctx, log.TagAppDef, "[init].[超管账号初始化]===================")
 	accountDomainInit.NewInitAccount(b.sp).Processor(context.Background())
 	return nil
 }

@@ -33,7 +33,9 @@ func (c *Manager) DbSqlite() *gorm.DB {
 }
 
 func (c *Manager) Db() *gorm.DB {
-	log.Debugf(context.Background(), log.TagAppDef, "Database Driver=%+v", c.database.Driver)
+	log.Debug(context.Background(), log.TagAppDef, "Database Driver", func() []log.Field {
+		return []log.Field{log.Any("driver", c.database.Driver)}
+	})
 	if c.database.Driver == mysql.DefaultDriverName {
 		return c.dbMysql.DB
 	} else if c.database.Driver == "postgres" {

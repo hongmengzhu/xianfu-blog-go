@@ -48,7 +48,7 @@ func NewConfigUpdate(sp *Sp) *ConfigUpdate {
 //	@param ct
 //	@return rt
 func (c *ConfigUpdate) Process(ctx *gin.Context, ct modBasicConfigList.ConfigUpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if strPg.IsBlank(ct.EventNo) {
 		return rt.ErrorMessage("配置编号不能为空")
 	}
@@ -75,7 +75,7 @@ func (c *ConfigUpdate) Process(ctx *gin.Context, ct modBasicConfigList.ConfigUpd
 			var obj modCacheBasicEvent.FieldCache
 			err := json.Unmarshal([]byte(v), &obj)
 			if err != nil {
-				log.Errorf(ctx, log.TagAppDef, err, "json.Unmarshal.err:%+v", err)
+				log.Error(ctx, log.TagAppDef, err, "json.Unmarshal.err")
 			} else {
 				copier.Copy(&obj, v)
 				//
@@ -99,7 +99,7 @@ func (c *ConfigUpdate) Process(ctx *gin.Context, ct modBasicConfigList.ConfigUpd
 						var obj modCacheBasicRules.RulesCache
 						err := json.Unmarshal([]byte(v2), &obj)
 						if err != nil {
-							log.Errorf(ctx, log.TagAppDef, err, "json.Unmarshal.err:%+v", err)
+							log.Error(ctx, log.TagAppDef, err, "json.Unmarshal.err")
 						} else {
 							mapRules[k] = append(mapRules[k], &obj)
 						}
@@ -187,7 +187,7 @@ func (c *ConfigUpdate) Process(ctx *gin.Context, ct modBasicConfigList.ConfigUpd
 		}
 	}
 	// 更新数据库
-	log.Infof(ctx, log.TagAppDef, "dbUpdate=%+v", dbUpdate)
+	log.Info(ctx, log.TagAppDef, "dbUpdate", log.Any("dbUpdate", dbUpdate))
 	if len(dbUpdate) > 0 {
 		for key, val := range dbUpdate {
 			if no, ok := dbFields[key]; ok {

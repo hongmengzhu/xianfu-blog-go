@@ -39,7 +39,7 @@ func GroupWebMiddleware(m *GroupWebMiddlewareSp) gin.HandlerFunc {
 		if m.domain.IsServerHostExist(c.Request.Host, m.server) {
 			val = "1000"
 		}
-		log.Infof(context.Background(), log.TagAppDef, "租户.no => %+v", val)
+		log.Info(context.Background(), log.TagAppDef, "租户", log.Any("TenantNo", val))
 		c.Set(constHeaderPg.WebTenantNo, val)
 		c.Set(constHeaderPg.WebTemplatePg, m.pg)
 		c.Set(constHeaderPg.WebTemplatePgServer, m.server)

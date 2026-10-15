@@ -50,7 +50,7 @@ func NewUpdate(
 //	@receiver c
 //	@param ct
 func (c *Update) accountUpdate(ctx *gin.Context, ct modRamAccount.CreateUpdateAccountCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if ct.ID <= 0 {
 		return rt.ErrorMessage("id不能为空")
 	}
@@ -97,10 +97,10 @@ func (c *Update) accountUpdate(ctx *gin.Context, ct modRamAccount.CreateUpdateAc
 	entity.AccountMd5 = cryptPg.Md5(entity.Account)
 	//
 	entity.No = ""
-	log.Infof(ctx, log.TagAppDef, "update=%+v", entity)
+	log.Info(ctx, log.TagAppDef, "update", log.Any("entity", c.entity))
 	err := r.Update(c.ctx, entity, entity.ID)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "save.error=%#v", err)
+		log.Error(ctx, log.TagAppDef, err, "save.error")
 		return rt.ErrorMessage("保存失败")
 	}
 	return rt.Ok()
@@ -128,7 +128,7 @@ func (c *Update) UpdateAccount(ctx *gin.Context, ct modRamAccount.CreateUpdateAc
 //	@param tp
 //	@return rt
 func (c *Update) updateAll(ctx *gin.Context, ct modRamAccount.CreateUpdateCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var ctAccount modRamAccount.CreateUpdateAccountCt
 	copier.Copy(&ctAccount, &ct)
 	account := c.accountUpdate(ctx, ctAccount, tp)
@@ -142,8 +142,7 @@ func (c *Update) updateAll(ctx *gin.Context, ct modRamAccount.CreateUpdateCt, tp
 	var entity entityRam.RamAccountEntity
 	copier.Copy(&entity, &dataCt)
 	//
-	log.Infof(ctx, log.TagBizDef, "entity=%+v", entity)
-	log.Infof(ctx, log.TagBizDef, "dataCt=%+v", dataCt)
+	log.Info(ctx, log.TagBizDef, "entity", log.Any("entity", entity), log.Any("dataCt", dataCt))
 	//
 	r := c.sp.accDb
 	info, query := r.FindByIdAndTypeDomain(ctx, ct.ID.ToInt64(), tp.ToTypeDomain().String())
@@ -284,10 +283,10 @@ func (c *Update) updateAll(ctx *gin.Context, ct modRamAccount.CreateUpdateCt, tp
 	entity.Os = datatypes.NewJSONType(os)
 	entity.ID = 0
 	entity.No = ""
-	log.Infof(ctx, log.TagAppDef, "update=%+v", entity)
+	log.Info(ctx, log.TagAppDef, "update", log.Any("entity", c.entity))
 	err := r.Update(c.ctx, entity, info.ID)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "save.error=%#v", err)
+		log.Error(ctx, log.TagAppDef, err, "save.error")
 		return rt.ErrorMessage("保存失败")
 	}
 	return rt.OkData(numberPg.Int64ToString(info.ID))

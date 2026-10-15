@@ -39,7 +39,7 @@ type BasicDataDictionaryService struct {
 //	@param ct
 //	@return rt
 func (c *BasicDataDictionaryService) CreateUpdate(ctx *gin.Context, ct modBasicDataDictionary.CreateUpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%#v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
 	}
@@ -62,18 +62,18 @@ func (c *BasicDataDictionaryService) CreateUpdate(ctx *gin.Context, ct modBasicD
 		if result {
 			return rt.ErrorMessage("码值已存在")
 		}
-		log.Infof(ctx, log.TagAppDef, "info%+v", info)
+		log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 		err, _ := r.Create(ctx, &info)
 		if err != nil {
 			return rt.ErrorMessage("保存失败")
 		}
-		log.Infof(ctx, log.TagAppDef, "save=%+v", info)
+		log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	} else {
 		_, result := c.sv.FindByCodeAndIdNotAndOwnerNo(ctx, info.Code, ct.ID.ToString(), info.OwnerNo)
 		if result {
 			return rt.ErrorMessage("码值已存在")
 		}
-		log.Infof(ctx, log.TagAppDef, "save=%+v", info)
+		log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 		r.Update(ctx, info, info.ID)
 	}
 
@@ -168,7 +168,7 @@ func (c *BasicDataDictionaryService) LogicalDeletion(ctx *gin.Context, ids []str
 	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
-			log.Infof(ctx, log.TagAppDef, "id=%v", info.ID)
+			log.Info(ctx, log.TagAppDef, "id", log.Any("id", info.ID))
 		}
 		repository.DeleteByIdsString(ctx, ids)
 	} else {
@@ -223,7 +223,7 @@ func (c *BasicDataDictionaryService) PhysicalDeletion(ctx *gin.Context, ids []st
 		return rt.ErrorMessage("数据不存在")
 	}
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v", info.ID)
+		log.Info(ctx, log.TagAppDef, "id", log.Any("id", info.ID))
 	}
 	cn.DeleteByIdsString(ctx, ids)
 	return rt.Ok()
@@ -235,7 +235,7 @@ func (c *BasicDataDictionaryService) PhysicalDeletion(ctx *gin.Context, ids []st
 //	@receiver c
 //	@param ct
 func (c *BasicDataDictionaryService) Query(ctx *gin.Context, ct modBasicDataDictionary.QueryCt) (rt rg.Rs[pagePg.Paginator[modBasicDataDictionary.Vo]]) {
-	log.Debugf(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityBasic.BasicDataDictionaryEntity
 	copier.Copy(&query, &ct)
 	r := c.sv

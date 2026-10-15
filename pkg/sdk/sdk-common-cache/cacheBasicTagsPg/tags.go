@@ -60,13 +60,13 @@ func (n *Cache) GetMapByNo(ctx context.Context, list []string) (maps map[string]
 		if errors.Is(err, redis.Nil) {
 			return maps
 		}
-		log.Errorf(ctx, log.TagAppDef, err, "获取缓存失败:%+v", err)
+		log.Error(ctx, log.TagAppDef, err, "获取缓存失败")
 		return maps
 	}
 	// 解析返回结果
 	result, ok := resp.(string)
 	if !ok {
-		log.Errorf(ctx, log.TagAppDef, err, "获取缓存失败:返回结果格式错误，预期为数组类型:%+v", err)
+		log.Error(ctx, log.TagAppDef, err, "获取缓存失败:返回结果格式错误，预期为数组类型")
 		return maps
 	}
 	ret := strings.TrimSpace(result)
@@ -90,7 +90,7 @@ func (n *Cache) GetMapByNo(ctx context.Context, list []string) (maps map[string]
 				var vo entityBasic.BasicTagsEntity
 				err3 := json.Unmarshal([]byte(item), &vo)
 				if err3 != nil {
-					log.Warnf(ctx, log.TagAppDef, "解析json失败:%+v,err:%+v", item, err3)
+					log.Warn(ctx, log.TagAppDef, "解析json失败", log.Any("item", item), log.Any("err3", err3.Error()))
 					//解析失败，重新生成
 					return maps
 				}

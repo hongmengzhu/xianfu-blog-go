@@ -40,11 +40,11 @@ type RamAppCategoryService struct {
 //	@param ct
 //	@return rt
 func (c *RamAppCategoryService) Create(ctx *gin.Context, ct modRamAppCategory2.CreateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%#v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityRam.RamAppCategoryEntity
 	err := copier.Copy(&info, &ct)
 	if err != nil {
-		log.Infof(ctx, log.TagAppDef, "copier.Copy error: %+v", err)
+		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 	}
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
@@ -82,7 +82,7 @@ func (c *RamAppCategoryService) Create(ctx *gin.Context, ct modRamAppCategory2.C
 		info.Code = strPg.GenerateNumberId22()
 	}
 	info.TenantNo = holder.GetTenantNo()
-	log.Infof(ctx, log.TagAppDef, "info=%+v", info)
+	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	err, _ = r.Create(ctx, &info)
 	if err != nil {
 		return rt.ErrorMessage("保存失败 " + err.Error())
@@ -113,7 +113,7 @@ func (c *RamAppCategoryService) Create(ctx *gin.Context, ct modRamAppCategory2.C
 //	@param ct
 //	@return rt
 func (c *RamAppCategoryService) Update(ctx *gin.Context, ct modRamAppCategory2.UpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%#v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityRam.RamAppCategoryEntity
 	copier.Copy(&info, &ct)
 	if ct.ID < 1 {
@@ -152,7 +152,7 @@ func (c *RamAppCategoryService) Update(ctx *gin.Context, ct modRamAppCategory2.U
 			result2 := false
 			childData, result2 = r.FindAllByNoLink(ctx, find.No)
 			if result2 {
-				//log.Infof(ctx, log.TagAppDef,"data=%+v \n", childData)
+				//log.Info(ctx, log.TagAppDef,"data=%+v \n", childData)
 				for _, item := range childData {
 					if item.No == parent.No {
 						return rt.ErrorMessage("无法保存，不能设置为自己的子集")
@@ -176,13 +176,13 @@ func (c *RamAppCategoryService) Update(ctx *gin.Context, ct modRamAppCategory2.U
 		info.ParentId = ""
 	}
 	info.No = ""
-	log.Infof(ctx, log.TagAppDef, "info.IdLink=%+v", info.IdLink)
+	//
 	err := r.Update(ctx, info, info.ID)
 	if err != nil {
-		log.Errorf(ctx, log.TagAppDef, err, "update error=%+v", err)
+		log.Error(ctx, log.TagAppDef, err, "update error")
 		return rt.ErrorMessage(err.Error())
 	}
-	log.Infof(ctx, log.TagAppDef, "save.info=%+v", info)
+	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	//更改上级后，相关子集修改
 	if strPg.IsNotBlank(ct.ParentNo) && nil != childData {
 		maps := slicePg.ToMapArray(childData, func(t *entityRam.RamAppCategoryEntity) (string, *entityRam.RamAppCategoryEntity) {
@@ -199,7 +199,7 @@ func (c *RamAppCategoryService) Update(ctx *gin.Context, ct modRamAppCategory2.U
 			item.NoLink = constNodePg.NoLinkAssemble(info.NoLink, item.No)
 			c.childParentIdLink(maps, item)
 		}
-		log.Infof(ctx, log.TagAppDef, "maps=%+v", maps)
+		//
 		for _, val := range maps {
 			for _, item := range val {
 				if item.ID == find.ID {
@@ -253,7 +253,7 @@ func (c *RamAppCategoryService) CacheOverride(ctx *gin.Context) {
 		item.NoLink = constNodePg.NoLinkDefault(item.No)
 		c.childParentIdLink(maps, item)
 	}
-	log.Infof(ctx, log.TagAppDef, "maps=%+v", maps)
+	//
 	for _, val := range maps {
 		for _, item := range val {
 			r.Update(ctx, entityRam.RamAppCategoryEntity{
@@ -341,7 +341,7 @@ func (c *RamAppCategoryService) StateEnableDisable(ctx *gin.Context, ids []strin
 //	@receiver c
 //	@param ct
 func (c *RamAppCategoryService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -352,7 +352,7 @@ func (c *RamAppCategoryService) LogicalDeletion(ctx *gin.Context, ids []string) 
 	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
-			log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, 0)
+			log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
 		repository.DeleteByIdsString(ctx, ids)
 	} else {
@@ -374,7 +374,7 @@ func (c *RamAppCategoryService) LogicalDeletion(ctx *gin.Context, ids []string) 
 //	@receiver c
 //	@param ct
 func (c *RamAppCategoryService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -399,7 +399,7 @@ func (c *RamAppCategoryService) LogicalRecovery(ctx *gin.Context, ids []string) 
 //	@receiver c
 //	@param ct
 func (c *RamAppCategoryService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -410,7 +410,7 @@ func (c *RamAppCategoryService) PhysicalDeletion(ctx *gin.Context, ids []string)
 	}
 	idsNew := make([]int64, 0)
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, 0)
+		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		idsNew = append(idsNew, info.ID)
 	}
 	if len(idsNew) > 0 {
@@ -425,7 +425,7 @@ func (c *RamAppCategoryService) PhysicalDeletion(ctx *gin.Context, ids []string)
 //	@receiver c
 //	@param ct
 func (c *RamAppCategoryService) Query(ctx *gin.Context, ct modRamAppCategory2.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamAppCategory2.Vo]]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamAppCategoryEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modRamAppCategory2.Vo, 0)

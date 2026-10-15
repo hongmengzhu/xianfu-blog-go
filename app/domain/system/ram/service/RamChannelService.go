@@ -37,7 +37,7 @@ type RamChannelService struct {
 //	@param ct
 //	@return rt
 func (c *RamChannelService) CreateUpdate(ctx *gin.Context, ct modRamChannel2.CreateUpdateCt) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
 	holder := holderPg.GetContextAccount(ctx)
 	//
@@ -95,11 +95,11 @@ func (c *RamChannelService) CreateUpdate(ctx *gin.Context, ct modRamChannel2.Cre
 		info.State = enumStatePg.ENABLE.Index()
 	}
 
-	log.Infof(ctx, log.TagAppDef, "info.save=%+v", info)
+	log.Info(ctx, log.TagAppDef, "update", log.Any("info", info))
 	if isUpdate {
 		err := r.Update(ctx, info, find.ID)
 		if err != nil {
-			log.Errorf(ctx, log.TagAppDef, err, "update error=%+v", err)
+			log.Error(ctx, log.TagAppDef, err, "update error")
 			return rt.ErrorMessage(err.Error())
 		}
 	} else {
@@ -107,7 +107,7 @@ func (c *RamChannelService) CreateUpdate(ctx *gin.Context, ct modRamChannel2.Cre
 		if err != nil {
 			return rt.ErrorMessage("保存失败 " + err.Error())
 		}
-		log.Infof(ctx, log.TagAppDef, "save=%+v", info)
+		log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	}
 
 	return rt.Ok()
@@ -137,7 +137,7 @@ func (c *RamChannelService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamC
 //	@receiver c
 //	@param ct
 func (c *RamChannelService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.ENABLE)
 }
 
@@ -147,7 +147,7 @@ func (c *RamChannelService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string])
 //	@receiver c
 //	@param ct
 func (c *RamChannelService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.GetType(enumStatePg.DISABLE))
 }
 
@@ -191,7 +191,7 @@ func (c *RamChannelService) StateEnableDisable(ctx *gin.Context, ids []string, s
 //	@receiver c
 //	@param ct
 func (c *RamChannelService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -202,7 +202,7 @@ func (c *RamChannelService) LogicalDeletion(ctx *gin.Context, ids []string) (rt 
 	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
-			log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+			log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
 		repository.DeleteByIdsString(ctx, ids)
 	} else {
@@ -223,7 +223,7 @@ func (c *RamChannelService) LogicalDeletion(ctx *gin.Context, ids []string) (rt 
 //	@receiver c
 //	@param ct
 func (c *RamChannelService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -248,7 +248,7 @@ func (c *RamChannelService) LogicalRecovery(ctx *gin.Context, ids []string) (rt 
 //	@receiver c
 //	@param ct
 func (c *RamChannelService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ids)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -259,7 +259,7 @@ func (c *RamChannelService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt
 	}
 	idsNew := make([]int64, 0)
 	for _, info := range finds {
-		log.Infof(ctx, log.TagAppDef, "id=%v,TenantId=%v", info.ID, info.TenantNo)
+		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		idsNew = append(idsNew, info.ID)
 	}
 	if len(idsNew) > 0 {
@@ -274,7 +274,7 @@ func (c *RamChannelService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt
 //	@receiver c
 //	@param ct
 func (c *RamChannelService) Query(ctx *gin.Context, ct modRamChannel2.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamChannel2.Vo]]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamChannelEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modRamChannel2.Vo, 0)
@@ -318,7 +318,7 @@ func (c *RamChannelService) Query(ctx *gin.Context, ct modRamChannel2.QueryCt) (
 //	@receiver c
 //	@param ct
 func (c *RamChannelService) SelectNodeAll(ctx *gin.Context, ct modRamChannel2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamChannelEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
@@ -346,7 +346,7 @@ func (c *RamChannelService) SelectNodeAll(ctx *gin.Context, ct modRamChannel2.Qu
 //	@receiver c
 //	@param ct
 func (c *RamChannelService) SelectNodeAllPublic(ctx *gin.Context, ct modRamChannel2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamChannelEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
@@ -374,7 +374,7 @@ func (c *RamChannelService) SelectNodeAllPublic(ctx *gin.Context, ct modRamChann
 //	@receiver c
 //	@param ct
 func (c *RamChannelService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Wd {
 		return rt.ErrorMessage("查询内容不能为空")
 	}
@@ -395,7 +395,7 @@ func (c *RamChannelService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[s
 //	@receiver c
 //	@param ct
 func (c *RamChannelService) ExistCode(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
-	log.Infof(ctx, log.TagAppDef, "ct=%+v", ct)
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Wd {
 		return rt.ErrorMessage("查询内容不能为空")
 	}
