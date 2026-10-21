@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBasic"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/rdsPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/bigCachePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/pangu-2/go-tools/tools/cryptPg"
 )
@@ -13,7 +13,7 @@ import (
 // StartInit
 // @Description: 启动后初始化一些数据
 type StartInit struct {
-	rdb *rdsPg.BatchString `autowire:"?"`
+	rdb *bigCachePg.BatchString `autowire:"?"`
 
 	sp *Sp `autowire:"?"`
 }

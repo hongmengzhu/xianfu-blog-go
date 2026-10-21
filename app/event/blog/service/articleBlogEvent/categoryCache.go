@@ -99,7 +99,7 @@ func (c *CategoryCache) thisAll(ctx context.Context) error {
 			//存入所有集合
 			if len(keysAdd) > 0 {
 				keysAll := blogKeyPg.ArticleCategoryTenantNoKeys(c.dto.TenantNo)
-				err := c.sp.rdt.GetRdb().SAdd(ctx, keysAll, keysAdd).Err()
+				err := c.sp.rdt.SAdd(ctx, keysAll, keysAdd)
 				if err != nil {
 					log.Error(ctx, log.TagAppDef, err, "缓存失败")
 				}
@@ -176,7 +176,7 @@ func (c *CategoryCache) all(ctx context.Context) error {
 					}
 					//存入所有集合
 					keysAll := blogKeyPg.ArticleCategoryTenantNoKeys(tenantNo)
-					err := c.sp.rdt.GetRdb().SAdd(ctx, keysAll, keys).Err()
+					err := c.sp.rdt.SAdd(ctx, keysAll, keys)
 					if err != nil {
 						log.Error(ctx, log.TagAppDef, err, "缓存失败")
 					}
@@ -253,7 +253,7 @@ func (c *CategoryCache) custom(ctx context.Context) error {
 			if len(keysAdd) > 0 {
 				//存入所有集合
 				keysAll := blogKeyPg.ArticleCategoryTenantNoKeys(c.dto.TenantNo)
-				err := c.sp.rdt.GetRdb().SAdd(ctx, keysAll, keysAdd).Err()
+				err := c.sp.rdt.SAdd(ctx, keysAll, keysAdd)
 				if err != nil {
 					log.Error(ctx, log.TagAppDef, err, "缓存失败")
 				}

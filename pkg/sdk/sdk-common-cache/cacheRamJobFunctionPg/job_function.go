@@ -3,16 +3,13 @@ package cacheRamJobFunctionPg
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"slices"
 	"strings"
 
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/rdsPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constRedisPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/bigCachePg"
 	"github.com/pangu-2/go-tools/tools/strPg"
-	"github.com/redis/go-redis/v9"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
 )
@@ -24,7 +21,7 @@ func init() {
 // Cache  职务缓存
 type Cache struct {
 	sv  *repositoryRam.RamJobFunctionRepository `autowire:"?"`
-	rdb *rdsPg.BatchString                      `autowire:"?"`
+	rdb *bigCachePg.BatchString                 `autowire:"?"`
 }
 
 func (n *Cache) KeyNo(no string) string {
@@ -52,81 +49,36 @@ func (n *Cache) GetMapByNo(ctx context.Context, list []string) (maps map[string]
 	if len(idsKey) == 0 {
 		return maps
 	}
-	keys := make([]string, 0)
-	keys = append(keys, strings.Join(idsKey, ","))
-	//
-	resp, err := n.rdb.GetRdb().Eval(ctx, constRedisPg.BATCH_MGET, keys).Result()
-	if err != nil {
-		if errors.Is(err, redis.Nil) {
-			return maps
-		}
-		log.Error(ctx, log.TagAppDef, err, "获取缓存失败")
-		return maps
-	}
-	// 解析返回结果
-	result, ok := resp.(string)
+	values, ok := n.rdb.GetAllByKeys(ctx, idsKey)
 	if !ok {
-		log.Error(ctx, log.TagAppDef, err, "获取缓存失败:返回结果格式错误，预期为数组类型")
 		return maps
 	}
-	ret := strings.TrimSpace(result)
-	if strPg.IsNotBlank(ret) && ret != "[false]" {
-		idsNot := make([]string, 0)
-		valueList := make([]string, 0)
-		err2 := json.Unmarshal([]byte(ret), &valueList)
-		if err2 != nil {
+	idsNot := make([]string, 0)
+	idsFind := make([]string, 0)
+	for _, item := range values {
+		valueStr, ok := item.(string)
+		if !ok || strPg.IsBlank(valueStr) {
+			continue
+		}
+		var vo entityRam.RamJobFunctionEntity
+		if err := json.Unmarshal([]byte(valueStr), &vo); err != nil {
+			log.Warn(ctx, log.TagAppDef, "解析json失败", log.Any("item", valueStr), log.Any("err", err.Error()))
 			//解析失败，重新生成
 			return maps
 		}
-		if nil != valueList && len(valueList) > 0 {
-			idsFind := make([]string, 0)
-			for _, item := range valueList {
-				if strPg.IsBlank(item) {
-					continue
-				}
-				if "false" == item {
-					continue
-				}
-				var vo entityRam.RamJobFunctionEntity
-				err3 := json.Unmarshal([]byte(item), &vo)
-				if err3 != nil {
-					log.Warn(ctx, log.TagAppDef, "解析json失败", log.Any("item", item), log.Any("err3", err3.Error()))
-					//解析失败，重新生成
-					return maps
-				}
-
-				if vo.ID > 0 {
-					maps[vo.No] = &vo
-					idsFind = append(idsFind, vo.No)
-				}
-			}
-			//
-			for _, id := range ids {
-				if !slices.Contains(idsFind, id) {
-					idsNot = append(idsNot, id)
-				}
-			}
+		if vo.ID > 0 {
+			maps[vo.No] = &vo
+			idsFind = append(idsFind, vo.No)
 		}
-		//
-		if len(idsNot) > 0 {
-			info, b := n.sv.FindAllByNoIn(ctx, idsNot)
-			if b {
-				mapTmp := make(map[string]any)
-				for _, item := range info {
-					str1, err4 := json.Marshal(item)
-					if err4 == nil {
-						mapTmp[n.KeyNo(item.No)] = string(str1)
-						maps[item.No] = item
-					}
-				}
-				//
-				n.rdb.SetPipelineTimeDuration(ctx, mapTmp, 30*24*60*60+10)
-			}
+	}
+	for _, id := range ids {
+		if !slices.Contains(idsFind, id) {
+			idsNot = append(idsNot, id)
 		}
-		return maps
-	} else {
-		//先读 数据库
-		info, b := n.sv.FindAllByNoIn(ctx, ids)
+	}
+	//
+	if len(idsNot) > 0 {
+		info, b := n.sv.FindAllByNoIn(ctx, idsNot)
 		if b {
 			mapTmp := make(map[string]any)
 			for _, item := range info {
@@ -147,19 +99,17 @@ func (n *Cache) GetMapByNo(ctx context.Context, list []string) (maps map[string]
 // GetNo 单个
 func (n *Cache) GetNo(ctx context.Context, no string) (*entityRam.RamJobFunctionEntity, bool) {
 	key := n.KeyNo(no)
-	result, err := n.rdb.GetRdb().Get(ctx, key).Result()
-	if errors.Is(err, redis.Nil) {
+	result, ok := n.rdb.Get(ctx, key)
+	if !ok {
 		//先读 数据库
 		info, b := n.sv.FindByNo(ctx, no)
 		if b {
 			str1, err4 := json.Marshal(info)
 			if err4 == nil {
-				n.rdb.GetRdb().Set(ctx, key, str1, 30*24*60*60+10)
+				_ = n.rdb.Set(ctx, key, str1, 30*24*60*60+10)
 			}
 			return info, b
 		}
-	}
-	if err != nil {
 		return nil, false
 	}
 	if strPg.IsNotBlank(result) {
@@ -180,7 +130,7 @@ func (n *Cache) UpdateNo(ctx context.Context, no string) {
 	if b {
 		str1, err4 := json.Marshal(info)
 		if err4 == nil {
-			n.rdb.GetRdb().Set(ctx, key, str1, 30*24*60*60+10)
+			_ = n.rdb.Set(ctx, key, str1, 30*24*60*60+10)
 		}
 	}
 }
@@ -199,6 +149,6 @@ func (n *Cache) DeleteNos(ctx context.Context, nos []string) {
 		keys = append(keys, key)
 	}
 	if len(keys) > 0 {
-		n.rdb.GetRdb().Del(ctx, keys...)
+		_ = n.rdb.Del(ctx, keys...)
 	}
 }

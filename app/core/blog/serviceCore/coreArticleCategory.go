@@ -7,7 +7,7 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticleCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/rdsPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/bigCachePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/blog/key/blogKeyPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -20,7 +20,7 @@ func init() {
 
 type CoreArticleCategory struct {
 	sv  *repositoryBlog.BlogArticleCategoryRepository `autowire:"?"`
-	rdt *rdsPg.BatchString                            `autowire:"?"`
+	rdt *bigCachePg.BatchString                       `autowire:"?"`
 }
 
 // GetAllByKeysRetMap
@@ -76,10 +76,9 @@ func (c *CoreArticleCategory) GetAllByKeysRetMap(ctx *gin.Context, keys []string
 //	@return bool
 func (c *CoreArticleCategory) GetAllByCache(ctx *gin.Context, tenantNo string) ([]*modBlogArticleCategory.Cache, bool) {
 	data := make([]*modBlogArticleCategory.Cache, 0)
-	keys := make([]string, 0)
-	keys = append(keys, blogKeyPg.ArticleCategoryTenantNoKeys(tenantNo))
-	result, b := c.rdt.GetAllEvalByLua(ctx, keys)
-	//fmt.Printf("获取缓存结果: %v\n", keys)
+	// 原来是把集合 key 交给 Lua（SMEMBERS + MGET）；现在由 GetAllBySetKey 在进程内完成同样的两步。
+	setKey := blogKeyPg.ArticleCategoryTenantNoKeys(tenantNo)
+	result, b := c.rdt.GetAllBySetKey(ctx, setKey)
 	//fmt.Printf("获取缓存结果: %v\n", result)
 	if b {
 		//从集合中获取的键值对

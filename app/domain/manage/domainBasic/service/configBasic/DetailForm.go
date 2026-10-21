@@ -9,7 +9,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicConfigEvent"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicConfigList"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/rdsPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/bigCachePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/yesNoPg/yesNoIntPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/basic/key/basicEventKey"
 	"github.com/jinzhu/copier"
@@ -21,7 +21,7 @@ import (
 type DetailForm struct {
 	Sp *Sp `autowire:"?"`
 
-	rdt *rdsPg.BatchString `autowire:"?"`
+	rdt *bigCachePg.BatchString `autowire:"?"`
 }
 
 func NewDetailForm(sp *Sp) *DetailForm {

@@ -2,7 +2,7 @@ package tagsBasicEvent
 
 import (
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBasic"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/rdsPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/bigCachePg"
 	"go-spring.org/spring/gs"
 )
 
@@ -15,5 +15,5 @@ type Sp struct {
 	TagRela *repositoryBasic.BasicTagsRelationRepository `autowire:"?"`
 	TagCate *repositoryBasic.BasicTagsCategoryRepository `autowire:"?"`
 	TagsDb  *repositoryBasic.BasicTagsRepository         `autowire:"?"`
-	rdt     *rdsPg.BatchString                           `autowire:"?"`
+	rdt     *bigCachePg.BatchString                      `autowire:"?"`
 }

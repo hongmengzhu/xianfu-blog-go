@@ -15,7 +15,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/rdsPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/bigCachePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constTags"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/blog/attachmentTypePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumApprovedPg"
@@ -41,7 +41,7 @@ type ArticleService struct {
 	catDb     *repositoryBlog.BlogArticleCategoryRepository   `autowire:"?"`
 	sp        *blogArticle.Sp                                 `autowire:"?"`
 	tagsRelat *repositoryBasic.BasicTagsRelationRepository    `autowire:"?"`
-	rdu       *rdsPg.BatchString                              `autowire:"?"`
+	rdu       *bigCachePg.BatchString                         `autowire:"?"`
 	catCore   *serviceCore.CoreArticleCategory                `autowire:"?"`
 }
 

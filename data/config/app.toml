@@ -22,7 +22,7 @@ driver = "postgres"
 
 # 数据库
 [spring.gorm.postgres.instances.primary]
-host = "localhost"
+host = "127.0.0.1"
 port = 5432
 user = "postgres"
 password = "postgres"
@@ -118,15 +118,29 @@ minio.secret = ""
 minio.secure = false
 minio.bucket = "gs-demo"
 
-[pg.redis]
-# 是否启用
-enabled = true
-host = "127.0.0.1"
-port = 6379
-addrs = ["127.0.0.1:6379"]
-database = 0
-username = ""
-password = "a12345678"
+# 进程内缓存（starter-bigcache），已替代原 Redis。
+# spring.bigcache.default 是家族默认值，instances.<name> 没写的键都从这里继承。
+[spring.bigcache.default]
+# 分片数决定并发度，也决定单条上限：hard-max-cache-size / shards。
+shards = 64
+# 实例级 life-window：只决定条目何时算“陈旧”，逐条 TTL 由 rdsPg.BatchString 的值信封负责。
+life-window = "720h"
+# 0 表示不启动后台按龄清理；过期条目由读路径隐藏，内存靠 hard-max-cache-size 兜底。
+clean-window = "0s"
+# 这两个值只影响启动时的预分配，不是上限：
+#   BytesQueue 初始容量 = min(max-entries-in-window/shards * max-entry-size, hard-max-cache-size/shards)
+#   按下面取值约 12MB 起步，之后按需增长到 hard-max-cache-size。
+max-entries-in-window = 12000
+max-entry-size = 1024
+# 总内存上限 256MB；单条上限 = 256MB/64 = 4MB，超过的文章会写失败（回落到数据库）。
+hard-max-cache-size = 256
+stats-enabled = true
+
+[spring.bigcache.instances.app]
+# 选用 pkg/cachePg/bigCachePg 注册的 longterm Driver：
+# 要求 life-window >= 24h、clean-window = 0、必须设置内存上限，正好匹配“常驻读缓存”的定位。
+driver = "longterm"
+life-window = "720h"
 
 [mail]
 host = "127.0.0.1"

@@ -6,15 +6,15 @@ import (
 
 	"github.com/hongmengzhu/xianfu-blog-go/app/event/basic/model/modEventBasicTags"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBasic"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/rdsPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/bigCachePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 )
 
 // CachePush
 // @Description: 缓存更新
 type CachePush struct {
-	rdt *rdsPg.BatchString `autowire:"?"`
-	sp  *Sp                `autowire:"?"`
+	rdt *bigCachePg.BatchString `autowire:"?"`
+	sp  *Sp                     `autowire:"?"`
 	dto modEventBasicTags.TagsCacheDto
 }
 

@@ -4,6 +4,7 @@ go 1.27
 
 require (
 	aidanwoods.dev/go-paseto v1.6.0
+	github.com/allegro/bigcache/v3 v3.1.0
 	github.com/casbin/casbin/v3 v3.11.0
 	github.com/casbin/gorm-adapter/v3 v3.41.0
 	github.com/duke-git/lancet/v2 v2.3.9
@@ -37,6 +38,7 @@ require (
 	github.com/yuin/goldmark-meta v1.1.0
 	go-spring.org/log v0.1.4
 	go-spring.org/spring v1.3.4
+	go-spring.org/starter-bigcache v0.0.0-00010101000000-000000000000
 	go-spring.org/starter-gin v1.3.4
 	go-spring.org/starter-gorm v0.0.0
 	go-spring.org/starter-gorm-mysql v1.3.4
@@ -188,6 +190,7 @@ replace (
 	go-spring.org/cloud => ../go-spring/cloud
 	go-spring.org/log => ../go-spring/log
 	go-spring.org/spring => ../go-spring/spring
+	go-spring.org/starter-bigcache => ../go-spring/starter/starter-bigcache
 	go-spring.org/starter-gin => ../go-spring/starter/starter-gin
 	go-spring.org/starter-gorm => ../go-spring/starter/starter-gorm
 	go-spring.org/starter-gorm-mysql => ../go-spring/starter/starter-gorm-mysql

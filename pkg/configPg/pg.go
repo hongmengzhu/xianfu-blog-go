@@ -5,7 +5,6 @@ import "github.com/hongmengzhu/xianfu-blog-go/pkg/configPg/pg"
 type Pg struct {
 	Domain pg.Domain `json:"domain" value:"${domain}" label:"域模块"`
 	Jwt    pg.Jwt    `json:"jwt" value:"${jwt}"`
-	Redis  pg.Redis  `json:"redis" value:"${redis}"`
 	//Upload        pg.Upload        `json:"upload" value:"${upload}"`
 	Template pg.Template `json:"template" value:"${template}"`
 	//Elasticsearch pg.Elasticsearch `json:"elasticsearch" value:"${elasticsearch}"`
