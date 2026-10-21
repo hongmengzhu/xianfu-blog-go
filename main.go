@@ -10,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/hongmengzhu/xianfu-blog-go/app/middleware"
 	"github.com/hongmengzhu/xianfu-blog-go/cmd"
-	// 注册 bigcache 的自定义 Driver（longterm），供 spring.bigcache.instances.app.driver 选择。
 	_ "github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/bigCachePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbManagerPg"
