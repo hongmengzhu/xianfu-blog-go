@@ -16,7 +16,12 @@ import (
 	"github.com/pangu-2/go-tools/tools/numberPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/log"
+	"go-spring.org/spring/gs"
 )
+
+func init() {
+	gs.Provide(new(BookmarkService))
+}
 
 type BookmarkService struct {
 	sv     *repositoryBlog.BlogBookmarkRepository         `autowire:"?"`
