@@ -58,13 +58,13 @@ func GroupApiMiddleware(m *GroupApiMiddlewareSp) gin.HandlerFunc {
 				//验证
 				if b2 && cacheDiplPg2.HashShaVerify(get.Key, get.Secret, split[1]) {
 					val = get.TenantNo
-					pg := holderApiPg2.HolderPg{}
-					pg.HolderData = holderApiPg2.DiplHolder{
-						Name:     get.Name,
-						No:       get.No,
-						TenantNo: get.TenantNo,
-						Ano:      get.Ano,
-					}
+					pg := holderApiPg2.HolderPg{
+						HolderData: holderApiPg2.DiplHolder{
+							Name:     get.Name,
+							No:       get.No,
+							TenantNo: get.TenantNo,
+							Ano:      get.Ano,
+						}}
 					c.Set(constContextPg.AUTH_LOGIN_API, pg)
 				}
 				c.Set(constHeaderPg.WebTenantNo, val)

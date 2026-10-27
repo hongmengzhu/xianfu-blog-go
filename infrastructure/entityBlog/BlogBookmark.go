@@ -35,6 +35,7 @@ type BlogBookmarkEntity struct {
 	TypeContent      string                       `gorm:"column:type_content;type:varchar(80);index;default:original;comment:内容类型|原创|翻译|转载;" json:"type_content" comment:"类型|原创|翻译|转载" `
 	TypeSource       string                       `gorm:"column:type_source;type:varchar(80);index;default:handwritten;comment:类型源|采集|手写;" json:"type_source" comment:"类型源|采集|手写" `
 	TypeDataSource   string                       `gorm:"column:type_data_source;type:varchar(80);index;default:'general';comment:数据源类型|本平台|外部;" json:"type_data_source" comment:"数据源类型|本平台|外部" `
+	TypeFeed         string                       `gorm:"column:type_feed;type:varchar(80);index;default:'no';comment:订阅类型|;" json:"type_feed" comment:"订阅类型|"`
 	Where            datatypes.JSONType[[]string] `gorm:"column:where;type:jsonb;index;default:'[]';comment:可用范围" json:"where" comment:"可用范围" `
 	Attachments      string                       `gorm:"column:attachments;type:text;comment:附件" json:"attachments" comment:"附件" `
 	UrlSource        string                       `gorm:"column:url_source;type:varchar(2000);comment:来源地址" json:"url_source" comment:"来源地址"`

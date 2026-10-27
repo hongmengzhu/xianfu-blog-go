@@ -4,6 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/api/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogBookmarkCategory/modApiBlogBookmarkCategory"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"go-spring.org/spring/gs"
 )
@@ -26,9 +28,37 @@ type BookmarkCategoryApiController struct {
 func (c *BookmarkCategoryApiController) RegisterRoutes(e *gin.Engine) {
 	group := e.Group("/api/bookmark-category", authPg.GroupApiMiddleware(c.Sp))
 	group.POST("/getAll", c.GetAll)
+	group.POST("/createUpdate", c.CreateUpdate)
+	group.POST("/delete", c.Delete)
 }
 
 // GetAll 获取所有
 func (c *BookmarkCategoryApiController) GetAll(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.GetAll(ctx))
+}
+
+// CreateUpdate 创建
+//
+//	@Description:
+//	@receiver c
+//	@param ctx
+func (c *BookmarkCategoryApiController) CreateUpdate(ctx *gin.Context) {
+	var ct modApiBlogBookmarkCategory.CreateUpdateCt
+	if !routerPg.BindJson(ctx, &ct) {
+		return
+	}
+	ctx.JSON(200, c.sv.CreateUpdate(ctx, ct))
+}
+
+// Delete 逻辑删除
+//
+//	@Description:
+//	@receiver c
+//	@param ctx
+func (c *BookmarkCategoryApiController) Delete(ctx *gin.Context) {
+	var ct model.BaseIdsCt[string]
+	if !routerPg.BindJson(ctx, &ct) {
+		return
+	}
+	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
 }

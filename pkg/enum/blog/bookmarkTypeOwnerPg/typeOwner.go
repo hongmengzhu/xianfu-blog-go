@@ -10,6 +10,7 @@ type TypeOwner string
 const (
 	GENERAL TypeOwner = "general"
 	TEAM    TypeOwner = "team"
+	ORG     TypeOwner = "org"
 	MY      TypeOwner = "my"
 )
 
@@ -19,6 +20,8 @@ func (this TypeOwner) Name() string {
 		return "普通"
 	case "team":
 		return "团队"
+	case "org":
+		return "组织"
 	case "my":
 		return "我的"
 	default:
@@ -36,6 +39,7 @@ func (this TypeOwner) Code() string {
 var MapTypeOwner = map[string]enumBasePg.EnumString{
 	GENERAL.String(): enumBasePg.EnumString{GENERAL.String(), GENERAL.Name()},
 	TEAM.String():    enumBasePg.EnumString{TEAM.String(), TEAM.Name()},
+	ORG.String():     enumBasePg.EnumString{ORG.String(), ORG.Name()},
 	MY.String():      enumBasePg.EnumString{MY.String(), MY.Name()},
 }
 

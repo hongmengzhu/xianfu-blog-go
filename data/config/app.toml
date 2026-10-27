@@ -15,9 +15,7 @@ path = "data/config/governance.toml"
 [database]
 # 是否启用
 enabled = true
-# postgres
-#url = "host=localhost user=postgres password=postgres dbname=blog_go port=5432 sslmode=disable TimeZone=Asia/Shanghai"
-
+# 数据库类型
 driver = "postgres"
 
 # 数据库
@@ -130,7 +128,7 @@ clean-window = "0s"
 # 这两个值只影响启动时的预分配，不是上限：
 #   BytesQueue 初始容量 = min(max-entries-in-window/shards * max-entry-size, hard-max-cache-size/shards)
 #   按下面取值约 12MB 起步，之后按需增长到 hard-max-cache-size。
-max-entries-in-window = 12000
+max-entries-in-window = 24000
 max-entry-size = 1024
 # 总内存上限 256MB；单条上限 = 256MB/64 = 4MB，超过的文章会写失败（回落到数据库）。
 hard-max-cache-size = 256

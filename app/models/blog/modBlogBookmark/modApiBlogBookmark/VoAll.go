@@ -9,4 +9,6 @@ type VoAll struct {
 	MyCategory   []modApiBlogBookmarkCategory.Vo `json:"MyCategory"`
 	Team         []Vo                            `json:"team"`
 	TeamCategory []modApiBlogBookmarkCategory.Vo `json:"teamCategory"`
+	Org          []Vo                            `json:"org"`
+	OrgCategory  []modApiBlogBookmarkCategory.Vo `json:"orgCategory"`
 }

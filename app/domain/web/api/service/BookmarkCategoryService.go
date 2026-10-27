@@ -2,7 +2,6 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogBookmark/modApiBlogBookmark"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogBookmarkCategory/modApiBlogBookmarkCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
@@ -40,6 +39,7 @@ func (c *BookmarkCategoryService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBlogB
 	vo := modApiBlogBookmarkCategory.VoAll{}
 	vo.My = make([]modApiBlogBookmarkCategory.Vo, 0)
 	vo.Team = make([]modApiBlogBookmarkCategory.Vo, 0)
+	vo.Org = make([]modApiBlogBookmarkCategory.Vo, 0)
 	//
 	{
 		q := entityBlog.BlogBookmarkCategoryEntity{}
@@ -62,7 +62,7 @@ func (c *BookmarkCategoryService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBlogB
 			}
 		}
 	}
-
+	//
 	{
 		q := entityBlog.BlogBookmarkCategoryEntity{}
 		q.State = enumStatePg.ENABLE.Index()
@@ -72,6 +72,27 @@ func (c *BookmarkCategoryService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBlogB
 		if nil != infos {
 			for _, info := range infos {
 				vo.Team = append(vo.Team, modApiBlogBookmarkCategory.Vo{
+					ID:       typePg.Int64String(info.ID),
+					Name:     info.Name,
+					NameFl:   info.NameFl,
+					NameFull: info.NameFull,
+					No:       info.No,
+					Code:     info.Code,
+					ParentNo: info.ParentNo,
+				})
+			}
+		}
+	}
+	//
+	{
+		q := entityBlog.BlogBookmarkCategoryEntity{}
+		q.State = enumStatePg.ENABLE.Index()
+		q.TenantNo = holder.GetTenantNo()
+		q.TypeOwner = bookmarkTypeOwnerPg.ORG.Code()
+		infos := c.sv.FindAll(ctx, q)
+		if nil != infos {
+			for _, info := range infos {
+				vo.Org = append(vo.Org, modApiBlogBookmarkCategory.Vo{
 					ID:       typePg.Int64String(info.ID),
 					Name:     info.Name,
 					NameFl:   info.NameFl,
@@ -119,13 +140,13 @@ func (c *BookmarkCategoryService) GetMy(ctx *gin.Context) (rt rg.Rs[[]modApiBlog
 	return rt.OkData(data)
 }
 
-// Save 创建或更新
+// CreateUpdate 创建或更新
 //
 //	@Description: ct.ID > 0 表示更新，否则表示创建
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *BookmarkCategoryService) Save(ctx *gin.Context, ct modApiBlogBookmark.CreateUpdate) (rt rg.Rs[string]) {
+func (c *BookmarkCategoryService) CreateUpdate(ctx *gin.Context, ct modApiBlogBookmarkCategory.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
@@ -295,4 +316,34 @@ func (c *BookmarkCategoryService) childParentIdLink(maps map[string][]*entityBlo
 		item.IdLink = constNodePg.NoLinkAssemble(parent.IdLink, numberPg.Int64ToString(item.ID))
 		item.NoLink = constNodePg.NoLinkAssemble(parent.NoLink, item.No)
 	}
+}
+
+// LogicalDeletion 逻辑删除
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *BookmarkCategoryService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+	if len(ids) < 1 {
+		return rt.ErrorMessage("id错误")
+	}
+	repository := c.sv
+	finds, b := repository.FindAllByIdStringIn(ctx, ids, optionsPg.WithCtx(ctx))
+	if !b {
+		return rt.ErrorMessage("数据不存在")
+	}
+	if c.sv.Config().Data.Delete {
+		for _, info := range finds {
+			log.Info(ctx, log.TagAppDef, "LogicalDeletion", log.Any("id", info.ID), log.Any("TenantNo", info.TenantNo))
+		}
+		repository.DeleteByIdsString(ctx, ids)
+	} else {
+		for _, info := range finds {
+			enum := enumStatePg.State(info.State)
+			if ok, reverse := enum.ReverseEnableDisable(); ok {
+				repository.Update(ctx, entityBlog.BlogBookmarkCategoryEntity{State: reverse.IndexInt8()}, info.ID)
+			}
+		}
+	}
+	return rt.Ok()
 }
