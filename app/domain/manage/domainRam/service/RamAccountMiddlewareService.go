@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
 	holderPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
-	multiTenantPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg/multiTenantPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/typeDomainPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
@@ -50,7 +50,7 @@ func (c *RamAccountMiddlewareService) FindByLoginNo(ctx *gin.Context, no, tenant
 		return rt.ErrorMessage("账号不存在")
 	}
 	pg := rt.Data
-	rule := multiTenantPg2.NewMultiRuleDefaultBySystem()
+	rule := multiTenantPg.NewMultiRuleDefaultBySystem()
 	//
 	rule.Tenant = true
 	rule.Merchant = false
@@ -70,7 +70,7 @@ func (c *RamAccountMiddlewareService) FindByLoginNo(ctx *gin.Context, no, tenant
 	accountHolder2.Os.Shops = info.Os.Data().Shops
 	accountHolder2.Os.Stores = info.Os.Data().Stores
 	//
-	pg.MultiTenant = multiTenantPg2.MultiTenantPg{
+	pg.MultiTenant = multiTenantPg.MultiTenantPg{
 		TenantNo: accountHolder2.Os.Tenants,
 	}
 	pg.HolderData = accountHolder2

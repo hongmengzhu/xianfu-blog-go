@@ -53,6 +53,12 @@ func ScopeRulePgWhere(ctx *gin.Context, tableName string) func(db *gorm.DB) *gor
 			if verifyMultiByTable(&multiTableManage, tableName) && multiRule.Tenant {
 				ruleTenant(db, tenant, multiRule)
 			}
+		} else if typeDomainPg.Customer.IsEqual(holder.GetTypeDomain()) {
+			// 客户
+			//租户
+			if verifyMultiByTable(&multiTableCustomer, tableName) && multiRule.Tenant {
+				ruleTenant(db, tenant, multiRule)
+			}
 		} else {
 			// 客户
 			//租户
