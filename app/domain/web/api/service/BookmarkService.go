@@ -141,7 +141,8 @@ func (c *BookmarkService) GetMy(ctx *gin.Context, ct modApiBlogBookmark.QueryCt)
 }
 
 // GetOrg 获取
-func (c *BookmarkService) GetOrg(ctx *gin.Context) (rt rg.Rs[[]modApiBlogBookmark.Vo]) {
+func (c *BookmarkService) GetOrg(ctx *gin.Context, ct modApiBlogBookmark.QueryCt) (rt rg.Rs[[]modApiBlogBookmark.Vo]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
 	holder := holderApiPg.GetContextAccount(ctx)
 	//
@@ -153,7 +154,15 @@ func (c *BookmarkService) GetOrg(ctx *gin.Context) (rt rg.Rs[[]modApiBlogBookmar
 		q.TenantNo = holder.GetTenantNo()
 		q.Ano = holder.GetAno()
 		q.TypeOwner = bookmarkTypeOwnerPg.ORG.Code()
-		infos := c.sv.FindAll(ctx, q)
+		infos := c.sv.FindAll(ctx, q, optionsPg.WithCondition(func(db *gorm.DB) *gorm.DB {
+			// 未读完
+			if ("un" + typeReadingPg.COMPLETED.Index()) == ct.TypeReading {
+				db = db.Where("type_reading in ?", []string{typeReadingPg.UNREAD.Index(), typeReadingPg.READING.Index()})
+				//排序
+				db = db.Order("CASE type_reading WHEN 'unread' THEN 1 WHEN 'reading' THEN 2 WHEN 'completed' THEN 3 ELSE 4 END")
+			}
+			return db
+		}))
 		if nil != infos {
 			for _, item := range infos {
 				var vo modApiBlogBookmark.Vo

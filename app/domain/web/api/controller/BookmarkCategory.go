@@ -30,11 +30,23 @@ func (c *BookmarkCategoryApiController) RegisterRoutes(e *gin.Engine) {
 	group.POST("/getAll", c.GetAll)
 	group.POST("/createUpdate", c.CreateUpdate)
 	group.POST("/delete", c.Delete)
+	group.POST("/getMy	", c.GetMy)
+	group.POST("/getOrg	", c.GetOrg)
 }
 
 // GetAll 获取所有
 func (c *BookmarkCategoryApiController) GetAll(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.GetAll(ctx))
+}
+
+// GetMy 获取我的
+func (c *BookmarkCategoryApiController) GetMy(ctx *gin.Context) {
+	ctx.JSON(200, c.sv.GetMy(ctx))
+}
+
+// GetOrg 获取组织
+func (c *BookmarkCategoryApiController) GetOrg(ctx *gin.Context) {
+	ctx.JSON(200, c.sv.GetOrg(ctx))
 }
 
 // CreateUpdate 创建

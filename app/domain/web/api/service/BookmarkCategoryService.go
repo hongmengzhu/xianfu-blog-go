@@ -108,7 +108,7 @@ func (c *BookmarkCategoryService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBlogB
 	return rt.OkData(vo)
 }
 
-// GetMy 获取所有
+// GetMy 获取我的
 func (c *BookmarkCategoryService) GetMy(ctx *gin.Context) (rt rg.Rs[[]modApiBlogBookmarkCategory.Vo]) {
 	//
 	holder := holderApiPg.GetContextAccount(ctx)
@@ -121,6 +121,38 @@ func (c *BookmarkCategoryService) GetMy(ctx *gin.Context) (rt rg.Rs[[]modApiBlog
 		q.TenantNo = holder.GetTenantNo()
 		q.Ano = holder.GetAno()
 		q.TypeOwner = bookmarkTypeOwnerPg.MY.Code()
+		infos := c.sv.FindAll(ctx, q)
+		if nil != infos {
+			for _, info := range infos {
+				data = append(data, modApiBlogBookmarkCategory.Vo{
+					ID:       typePg.Int64String(info.ID),
+					Name:     info.Name,
+					NameFl:   info.NameFl,
+					NameFull: info.NameFull,
+					No:       info.No,
+					Code:     info.Code,
+					ParentNo: info.ParentNo,
+				})
+			}
+		}
+	}
+	//
+	return rt.OkData(data)
+}
+
+// GetOrg 获取所有
+func (c *BookmarkCategoryService) GetOrg(ctx *gin.Context) (rt rg.Rs[[]modApiBlogBookmarkCategory.Vo]) {
+	//
+	holder := holderApiPg.GetContextAccount(ctx)
+	//
+	data := make([]modApiBlogBookmarkCategory.Vo, 0)
+	//
+	{
+		q := entityBlog.BlogBookmarkCategoryEntity{}
+		q.State = enumStatePg.ENABLE.Index()
+		q.TenantNo = holder.GetTenantNo()
+		q.Ano = holder.GetAno()
+		q.TypeOwner = bookmarkTypeOwnerPg.ORG.Code()
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, info := range infos {

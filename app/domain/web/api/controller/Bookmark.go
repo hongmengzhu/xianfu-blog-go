@@ -51,7 +51,11 @@ func (c *BookmarkApiController) GetMy(ctx *gin.Context) {
 
 // GetOrg 获取组织
 func (c *BookmarkApiController) GetOrg(ctx *gin.Context) {
-	ctx.JSON(200, c.sv.GetOrg(ctx))
+	var ct modApiBlogBookmark.QueryCt
+	if !routerPg.BindJson(ctx, &ct) {
+		return
+	}
+	ctx.JSON(200, c.sv.GetOrg(ctx, ct))
 }
 
 // Create 创建
