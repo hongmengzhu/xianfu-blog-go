@@ -11,6 +11,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/enumCommonPg/typeSysPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/sdk-common-cache/cacheRamDepartmentPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/excelPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
@@ -33,6 +34,8 @@ func init() {
 // @Description:
 type RamDepartmentService struct {
 	sv *repositoryRam.RamDepartmentRepository `autowire:"?"`
+
+	chd *cacheRamDepartmentPg.Cache `autowire:"?"`
 }
 
 // Create 新增
@@ -152,7 +155,7 @@ func (c *RamDepartmentService) Update(ctx *gin.Context, ct modRamDepartment.Crea
 		//新的ID 不等于 旧的上级时,检测是否已经 在新的子集已存在
 		if parent.No != find.ParentNo {
 			result2 := false
-			childData, result2 = r.FindAllByNoLink(ctx, find.No)
+			childData, result2 = r.FindAllByNoLink(ctx, find.No, optionsPg.WithCtx(ctx))
 			if result2 {
 				//log.Info(ctx, log.TagAppDef,"data=%+v \n", childData)
 				for _, item := range childData {
@@ -179,14 +182,16 @@ func (c *RamDepartmentService) Update(ctx *gin.Context, ct modRamDepartment.Crea
 	}
 	info.No = ""
 	//
-	err := r.Update(ctx, info, info.ID)
+	err := r.Update(ctx, info, info.ID, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
+		arg.Db = arg.Db.Select("parent_no", "parent_id")
+	}))
 	if err != nil {
 		log.Error(ctx, log.TagAppDef, err, "update error")
 		return rt.ErrorMessage(err.Error())
 	}
 	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	//更改上级后，相关子集修改
-	if strPg.IsNotBlank(ct.ParentNo) && nil != childData {
+	if strPg.IsNotBlank(ct.ParentNo) {
 		maps := slicePg.ToMapArray(childData, func(t *entityRam.RamDepartmentEntity) (string, *entityRam.RamDepartmentEntity) {
 			if len(t.ParentId) == 0 {
 				return constNodePg.ROOT, t
@@ -402,12 +407,17 @@ func (c *RamDepartmentService) PhysicalDeletion(ctx *gin.Context, ids []string) 
 		return rt.ErrorMessage("数据不存在")
 	}
 	idsNew := make([]int64, 0)
+	keys := make([]string, 0)
 	for _, info := range finds {
 		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		idsNew = append(idsNew, info.ID)
+		//
+		keys = append(keys, info.No)
 	}
 	if len(idsNew) > 0 {
 		cn.DeleteByIds(ctx, idsNew)
+		//
+		c.chd.DeleteNos(ctx, keys)
 	}
 	return rt.Ok()
 }
@@ -430,7 +440,7 @@ func (c *RamDepartmentService) Query(ctx *gin.Context, ct modRamDepartment.Query
 		}
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		//自定义查询
-		arg.Db = arg.Db.Order("create_at asc")
+		arg.Db = arg.Db.Order("create_at desc")
 		//自定义查询
 		if strPg.IsNotBlank(ct.Wd) {
 			arg.Db = arg.Db.Where("name like ?", "%"+ct.Wd+"%")
@@ -665,4 +675,57 @@ func (c *RamDepartmentService) ExistCode(ctx *gin.Context, ct model.BaseExistWdC
 		return rt.ErrorMessage("重复，已存在")
 	}
 	return rt.OkMessage("可以使用")
+}
+
+// QueryAll 查询
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *RamDepartmentService) QueryAll(ctx *gin.Context, ct modRamDepartment.QueryCt) (rt rg.Rs[[]modRamDepartment.Vo]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	var query entityRam.RamDepartmentEntity
+	copier.Copy(&query, &ct)
+	slice := make([]modRamDepartment.Vo, 0)
+	rt.Data = slice
+	infos := c.sv.FindAll(ctx, query)
+	if len(infos) > 0 {
+		for _, item := range infos {
+			var vo modRamDepartment.Vo
+			copier.Copy(&vo, &item)
+			slice = append(slice, vo)
+		}
+		rt.Data = slice
+	}
+	return rt.Ok()
+}
+
+// SelectNodeAll 查询
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *RamDepartmentService) SelectNodeAll(ctx *gin.Context, ct modRamDepartment.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	var query entityRam.RamDepartmentEntity
+	copier.Copy(&query, &ct)
+	slice := make([]model.BaseNodeNo, 0)
+	rt.Data = slice
+	infos := c.sv.FindAll(ctx, query)
+	if len(infos) > 0 {
+		for _, item := range infos {
+			var vo modRamDepartment.Vo
+			copier.Copy(&vo, &item)
+			code := model.BaseNodeNo{
+				Value:    item.No,
+				Label:    item.Name,
+				ParentNo: item.ParentNo,
+				Extend:   vo,
+			}
+
+			slice = append(slice, code)
+		}
+		rt.Data = slice
+	}
+	return rt.Ok()
 }

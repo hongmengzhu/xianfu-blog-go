@@ -32,9 +32,11 @@ type DataDictionaryController struct {
 //	@receiver c
 //	@param e
 func (c *DataDictionaryController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/manage/basic/dataDictionary", authPg.GroupManageMiddleware(c.Sp))
+	group := e.Group("/xianfu/manage/basic/data-dictionary", authPg.GroupManageMiddleware(c.Sp))
 	group.POST("/createUpdate", c.CreateUpdate)
 	group.GET("/detail/:id", c.Detail)
+	group.GET("/typeCodePublic/:id", c.TypeCodePublicGet)
+	group.POST("/typeCodePublic", c.TypeCodeList)
 	group.POST("/enable", c.Enable)
 	group.POST("/disable", c.Disable)
 	group.POST("/state", c.State)
@@ -216,4 +218,22 @@ func (c *DataDictionaryController) CodeValueAllPublic(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(200, c.dictSubRep.CodeValueAllPublic(ctx, ct))
+}
+
+func (c *DataDictionaryController) TypeCodeList(ctx *gin.Context) {
+	var ct modBasicDataDictionary.SelectNodeCt
+	if !routerPg.BindJson(ctx, &ct) {
+		return
+	}
+	ctx.JSON(200, c.dictSubRep.TypeCodeList(ctx, ct))
+}
+func (c *DataDictionaryController) TypeCodePublicGet(ctx *gin.Context) {
+	param := ctx.Param("id")
+	if "" == param {
+		ctx.JSON(200, rg.Error[string]("码值类型不能为空"))
+		return
+	}
+	var ct modBasicDataDictionary.SelectNodeCt
+	ct.TypeCode = param
+	ctx.JSON(200, c.dictSubRep.TypeCodeList(ctx, ct))
 }

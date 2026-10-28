@@ -34,21 +34,33 @@ type DepartmentController struct {
 //	@param e
 func (c *DepartmentController) RegisterRoutes(e *gin.Engine) {
 	group := e.Group("/xianfu/manage/ram/department", authPg.GroupManageMiddleware(c.Sp))
+	group.POST("/createUpdate", c.CreateUpdate)
 	group.POST("/create", c.Create)
 	group.POST("/update", c.Update)
 	group.GET("/detail/:id", c.Detail)
 	group.POST("/enable", c.Enable)
 	group.POST("/disable", c.Disable)
-	group.POST("/state", c.State)
 	group.POST("/delete", c.Delete)
 	group.POST("/recovery", c.Recovery)
 	group.POST("/physicalDeletion", c.PhysicalDeletion)
 	group.POST("/query", c.Query)
-	group.POST("/selectPublic", c.SelectPublic)
-	group.POST("/selectNodePublic", c.SelectNodePublic)
+	group.POST("/queryAll", c.QueryAll)
+	group.POST("/selectNodeAll", c.SelectNodeAll)
 	group.POST("/selectNodeAllPublic", c.SelectNodeAllPublic)
 	group.POST("/exportExcel", c.ExportExcel)
 	group.POST("/existName", c.ExistName)
+}
+
+func (c *DepartmentController) CreateUpdate(ctx *gin.Context) {
+	var ct modRamDepartment.CreateUpdateCt
+	if !routerPg.BindJson(ctx, &ct) {
+		return
+	}
+	if ct.ID.ToInt64() > 0 {
+		ctx.JSON(200, c.sv.Update(ctx, ct))
+	} else {
+		ctx.JSON(200, c.sv.Create(ctx, ct))
+	}
 }
 
 // Create 创建
@@ -189,18 +201,20 @@ func (c *DepartmentController) Query(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.Query(ctx, ct))
 }
 
-func (c *DepartmentController) SelectPublic(ctx *gin.Context) {
-	ct := modRamDepartment.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
-	ctx.JSON(200, c.sv.SelectPublic(ctx, ct))
+func (c *DepartmentController) QueryAll(ctx *gin.Context) {
+	var ct modRamDepartment.QueryCt
+	if !routerPg.BindJson(ctx, &ct) {
+		return
+	}
+	ctx.JSON(200, c.sv.QueryAll(ctx, ct))
 }
 
-func (c *DepartmentController) SelectNodePublic(ctx *gin.Context) {
+func (c *DepartmentController) SelectNodeAll(ctx *gin.Context) {
 	var ct modRamDepartment.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
-	ct.State = enumStatePg.ENABLE.IndexPg()
-	ctx.JSON(200, c.sv.SelectNodePublic(ctx, ct))
+	ctx.JSON(200, c.sv.SelectNodeAll(ctx, ct))
 }
 
 func (c *DepartmentController) SelectNodeAllPublic(ctx *gin.Context) {

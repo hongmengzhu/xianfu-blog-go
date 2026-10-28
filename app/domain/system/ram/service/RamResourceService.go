@@ -189,7 +189,9 @@ func (c *RamResourceService) Update(ctx *gin.Context, ct modRamResource2.CreateU
 	}
 	info.No = ""
 	//
-	err = r.Update(ctx, info, info.ID)
+	err = r.Update(ctx, info, info.ID, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
+		arg.Db = arg.Db.Select("parent_no", "parent_id")
+	}))
 	if err != nil {
 		log.Error(ctx, log.TagAppDef, err, "update error")
 		return rt.ErrorMessage(err.Error())
