@@ -21,17 +21,21 @@ type Factory struct {
 
 func (factory *Factory) CreateDB() (*gorm.DB, error) {
 	log.Info(context.Background(), log.TagAppDef, "[init].[Postgresql]===================")
-	log.Debug(context.Background(), log.TagAppDef, "数据库连接地址： enabled:%+v,URL:=>%s", factory.database.Enabled, factory.database.URL)
+	log.Debug(context.Background(), log.TagAppDef, "数据库连接地址", func() []log.Field {
+		return []log.Field{log.Bool("enabled", factory.database.Enabled), log.String("URL", factory.database.URL)}
+	})
 	//fmt.Printf("数据库连接地址： enabled:%+v,URL:=>%s", factory.database.Enabled, factory.database.URL)
 	if !factory.database.Enabled {
-		log.Debug(context.Background(), log.TagAppDef, "未启用数据库： %s", factory.database.Enabled)
+		log.Debug(context.Background(), log.TagAppDef, "未启用数据库", func() []log.Field {
+			return []log.Field{log.Bool("enabled", factory.database.Enabled)}
+		})
 		return nil, nil
 	}
 	db, err := gorm.Open(postgres.Open(factory.database.URL), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
 	if err != nil {
-		log.Error(context.Background(), log.TagAppDef, err, "open gorm postgresql %s error: %v", factory.database.URL, err)
+		log.Error(context.Background(), log.TagAppDef, err, "open gorm postgresql error", log.String("url", factory.database.URL))
 		panic(errors.New(err.Error()))
 		return nil, err
 	}
@@ -86,17 +90,21 @@ func init() {
 
 func newClient(c configPg.Database) (*gorm.DB, error) {
 	log.Info(context.Background(), log.TagAppDef, "[init].[Postgresql]===================")
-	log.Debug(context.Background(), log.TagAppDef, "数据库连接地址： enabled:%+v,URL:=>%s", c.Enabled, c.URL)
+	log.Debug(context.Background(), log.TagAppDef, "数据库连接地址", func() []log.Field {
+		return []log.Field{log.Bool("enabled", c.Enabled), log.String("URL", c.URL)}
+	})
 	//fmt.Printf("数据库连接地址： enabled:%+v,URL:=>%s", c.Enabled, c.URL)
 	if !c.Enabled {
-		log.Debug(context.Background(), log.TagAppDef, "未启用数据库： %s", c.Enabled)
+		log.Debug(context.Background(), log.TagAppDef, "未启用数据库", func() []log.Field {
+			return []log.Field{log.Bool("enabled", c.Enabled)}
+		})
 		return nil, nil
 	}
 	db, err := gorm.Open(postgres.Open(c.URL), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
 	if err != nil {
-		log.Error(context.Background(), log.TagAppDef, err, "open gorm postgresql %s error: %v", c.URL, err)
+		log.Error(context.Background(), log.TagAppDef, err, "open gorm postgresql error", log.String("url", c.URL))
 		panic(errors.New(err.Error()))
 		return nil, err
 	}
