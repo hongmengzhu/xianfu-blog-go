@@ -10,6 +10,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg/holderApiPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/blog/bookmarkTypeOwnerPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/blog/typeReadingPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
@@ -17,6 +18,7 @@ import (
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
+	"gorm.io/gorm"
 )
 
 func init() {
@@ -101,8 +103,10 @@ func (c *BookmarkService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBlogBookmark.
 	return rt.OkData(ret)
 }
 
-// GetMy 获取所有
-func (c *BookmarkService) GetMy(ctx *gin.Context) (rt rg.Rs[[]modApiBlogBookmark.Vo]) {
+// GetMy 获取my
+func (c *BookmarkService) GetMy(ctx *gin.Context, ct modApiBlogBookmark.QueryCt) (rt rg.Rs[[]modApiBlogBookmark.Vo]) {
+	//
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
 	holder := holderApiPg.GetContextAccount(ctx)
 	//
@@ -114,7 +118,15 @@ func (c *BookmarkService) GetMy(ctx *gin.Context) (rt rg.Rs[[]modApiBlogBookmark
 		q.TenantNo = holder.GetTenantNo()
 		q.Ano = holder.GetAno()
 		q.TypeOwner = bookmarkTypeOwnerPg.MY.Code()
-		infos := c.sv.FindAll(ctx, q)
+		infos := c.sv.FindAll(ctx, q, optionsPg.WithCondition(func(db *gorm.DB) *gorm.DB {
+			// 未读完
+			if ("un" + typeReadingPg.COMPLETED.Index()) == ct.TypeReading {
+				db = db.Where("type_reading in ?", []string{typeReadingPg.UNREAD.Index(), typeReadingPg.READING.Index()})
+				//排序
+				db = db.Order("CASE typeReading WHEN 'unread' THEN 1 WHEN 'reading' THEN 2 WHEN 'completed' THEN 3 ELSE 4 END")
+			}
+			return db
+		}))
 		if nil != infos {
 			for _, item := range infos {
 				var vo modApiBlogBookmark.Vo

@@ -40,12 +40,16 @@ func (c *BookmarkApiController) GetAll(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.GetAll(ctx))
 }
 
-// GetMy 获取所有
+// GetMy 获取我的
 func (c *BookmarkApiController) GetMy(ctx *gin.Context) {
-	ctx.JSON(200, c.sv.GetMy(ctx))
+	var ct modApiBlogBookmark.QueryCt
+	if !routerPg.BindJson(ctx, &ct) {
+		return
+	}
+	ctx.JSON(200, c.sv.GetMy(ctx, ct))
 }
 
-// GetOrg 获取所有
+// GetOrg 获取组织
 func (c *BookmarkApiController) GetOrg(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.GetOrg(ctx))
 }
