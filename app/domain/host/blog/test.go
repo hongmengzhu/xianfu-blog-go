@@ -1,42 +1,37 @@
 package blog
 
 import (
-	"github.com/gin-gonic/gin"
+	"net/http"
+
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
+	"github.com/labstack/echo/v4"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(TagController)).Name("BlogHostTagController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(TestController)).Name("BlogHostTestController").Export(gs.As[routerPg.HostRouteRegistrar]())
 }
 
 // TestController test
 type TestController struct {
-	routerPg.RouteRegistrar
 	sv *repositoryBlog.BlogArticleRepository `autowire:"?"`
+}
+
+// Hosts 模块绑定域名
+func (c *TestController) Hosts() []string {
+	return blogHosts
 }
 
 // RegisterRoutes
 //
 //	@Description: 注册路由
 //	@receiver c
-//	@param e
-func (c *TestController) RegisterRoutes(e *gin.Engine) {
-	e.GET("/test/cache", c.Cache)
+//	@param g
+func (c *TestController) RegisterRoutes(g *echo.Group) {
+	g.GET("/test/cache", c.Cache)
 }
 
-func (c *TestController) Cache(ctx *gin.Context) {
-	//err := articleBlogEvent.NewStartInit(c.log).Processor(context.Background())
-	//if err != nil {
-	//	log.Error(ctx, log.TagAppDef,"error:", err)
-	//}
-	// 模版
-	ctx.JSON(200, gin.H{"data": "ok"})
-}
-
-func (c *TestController) FindAllPage(ctx *gin.Context) {
-
-	// 模版
-	ctx.JSON(200, gin.H{"data": "ok"})
+func (c *TestController) Cache(ctx echo.Context) error {
+	return ctx.JSON(http.StatusOK, map[string]any{"data": "ok"})
 }

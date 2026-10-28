@@ -2,57 +2,62 @@ package blog
 
 import (
 	"context"
+	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/core/blog/serviceCore"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/model/modBlogArticle"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/cacheTc"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
+	"github.com/labstack/echo/v4"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(IndexController)).Name("BlogHostIndexController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(IndexController)).Name("BlogHostIndexController").Export(gs.As[routerPg.HostRouteRegistrar]())
 }
 
+// IndexController 首页
 type IndexController struct {
-	routerPg.RouteRegistrar
 	Sp       *authPg.GroupWebMiddlewareSp     `autowire:"?"`
-	ca       *cacheTc.TenantDomainCache       `autowire:"?"`
 	sv       *service.ArticleService          `autowire:"?"`
 	catCache *serviceCore.CoreArticleCategory `autowire:"?"`
+}
+
+// Hosts 模块绑定域名
+func (c *IndexController) Hosts() []string {
+	return blogHosts
 }
 
 // RegisterRoutes
 //
 //	@Description: 注册路由
 //	@receiver c
-//	@param e
-func (c *IndexController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("", authPg.GroupWebMiddleware(c.Sp))
+//	@param g
+func (c *IndexController) RegisterRoutes(g *echo.Group) {
+	group := g.Group("", authPg.GroupWebMiddlewareEcho(c.Sp))
 	group.GET("/", c.Index)
 	group.GET("/page/:page", c.Page)
 }
 
-func (c *IndexController) Index(ctx *gin.Context) {
+func (c *IndexController) Index(ctx echo.Context) error {
 	var ct modBlogArticle.QueryCt
-	ctx.Bind(&ct)
+	if err := ctx.Bind(&ct); nil != err {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
 	//
-	rt := c.sv.Query(ctx, ct)
+	tenantNo := webPg.GetTenantNoEcho(ctx)
+	rt := c.sv.QueryByContext(ctx.Request().Context(), tenantNo, ct)
 	log.Info(context.Background(), log.TagBizDef, "Data", log.Any("Pageable", rt.Data.Pageable))
 	//
-	tenantNo := webPg.GetTenantNo(ctx)
-	tree, _ := c.catCache.FormatTree(ctx, tenantNo)
+	tree, _ := c.catCache.FormatTree(ctx.Request().Context(), tenantNo)
 
-	//fmt.Printf("Data: %+v\n", tree)
 	// 模版
-	templatePg.HTML(ctx, "blog/index",
+	return templatePg.HTMLEcho(ctx, "blog/index",
 		templatePg.WithDataByResult(rt.SuccessIs(), rt.Data),
 		templatePg.WithHtmlObjSet("categorys", tree),
 		templatePg.WithHtmlObjSet("pageUrl", "page"),
@@ -64,7 +69,7 @@ func (c *IndexController) Index(ctx *gin.Context) {
 		}))
 }
 
-func (c *IndexController) Page(ctx *gin.Context) {
+func (c *IndexController) Page(ctx echo.Context) error {
 	param := ctx.Param("page")
 	var ct modBlogArticle.QueryCt
 	ct.PageSize = 20
@@ -73,9 +78,9 @@ func (c *IndexController) Page(ctx *gin.Context) {
 		ct.PageNum = 1
 	}
 	//
-	rt := c.sv.Query(ctx, ct)
+	rt := c.sv.QueryByContext(ctx.Request().Context(), webPg.GetTenantNoEcho(ctx), ct)
 	// 模版
-	templatePg.HTML(ctx, "blog/article_list",
+	return templatePg.HTMLEcho(ctx, "blog/article_list",
 		templatePg.WithDataByResult(rt.SuccessIs(), rt.Data),
 		templatePg.WithHtmlObjSet("pageUrl", "page"),
 		templatePg.WithSitePage(templatePg.SitePage{
