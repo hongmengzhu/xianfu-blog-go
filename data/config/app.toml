@@ -1,7 +1,7 @@
 # echo 统一入口：按访问域名分发到不同模块，未命中域名的路由交给 gin 兜底
 [spring.echo.server]
 # 端口
-addr = ":9982"
+addr = ":9983"
 
 # gin 引擎已由 echo 内部兜底调用，不再独立监听端口；
 # 如需恢复 gin 独立服务（并引入 starter-gin），再配置 spring.gin.server.addr
