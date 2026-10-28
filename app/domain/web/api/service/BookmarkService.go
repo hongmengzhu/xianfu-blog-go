@@ -123,7 +123,7 @@ func (c *BookmarkService) GetMy(ctx *gin.Context, ct modApiBlogBookmark.QueryCt)
 			if ("un" + typeReadingPg.COMPLETED.Index()) == ct.TypeReading {
 				db = db.Where("type_reading in ?", []string{typeReadingPg.UNREAD.Index(), typeReadingPg.READING.Index()})
 				//排序
-				db = db.Order("CASE typeReading WHEN 'unread' THEN 1 WHEN 'reading' THEN 2 WHEN 'completed' THEN 3 ELSE 4 END")
+				db = db.Order("CASE type_reading WHEN 'unread' THEN 1 WHEN 'reading' THEN 2 WHEN 'completed' THEN 3 ELSE 4 END")
 			}
 			return db
 		}))

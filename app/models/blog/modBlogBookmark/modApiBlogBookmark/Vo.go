@@ -18,4 +18,5 @@ type Vo struct {
 	UrlSource     string              `json:"urlSource" label:"来源地址" `
 	OperationTime *time.Time          `json:"operationTime" label:"操作时间" `
 	PageTitle     string              `json:"pageTitle" label:"网页标题" `
+	TypeReading   string              `json:"typeReading" label:"阅读类型" `
 }
