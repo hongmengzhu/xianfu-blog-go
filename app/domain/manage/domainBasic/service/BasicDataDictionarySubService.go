@@ -540,3 +540,47 @@ func (c *BasicDataDictionarySubService) TypeCodeList(ctx *gin.Context, ct modBas
 	}
 	return rt.Ok()
 }
+
+// TypeCodeAllPublic 码值
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *BasicDataDictionarySubService) TypeCodeAllPublic(ctx *gin.Context, ct modBasicDataDictionary.SelectNodeAllCt) (rt rg.Rs[map[string][]model.BaseNodeKeyValue]) {
+	if nil == ct.TypeCodes || len(ct.TypeCodes) == 0 {
+		return rt.ErrorMessage("上级码值[typeCodes]不能为空")
+	}
+	var query entityBasic.BasicDataDictionaryEntity
+	copier.Copy(&query, &ct)
+	//
+	query.State = enumStatePg.ENABLE.Index()
+	//
+	values := make(map[string][]model.BaseNodeKeyValue)
+	rt.Data = values
+	infos := c.sv.FindAll(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
+		arg.Db = arg.Db.Order("sort,create_at asc")
+		arg.Db = arg.Db.Where("type_code in ?", ct.TypeCodes)
+	}))
+	if len(infos) > 0 {
+		for _, item := range infos {
+			var vo modBasicDataDictionary.SelectNodeVo
+			copier.Copy(&vo, &item)
+			//
+			if len(item.Range) > 0 {
+				vo.Range = strutil.SplitAndTrim(item.Range, ",")
+			}
+			//
+			code := model.BaseNodeKeyValue{
+				Value:  item.Code,
+				Label:  item.Name,
+				Extend: vo,
+			}
+			if _, ok := values[item.TypeCode]; !ok {
+				values[item.TypeCode] = make([]model.BaseNodeKeyValue, 0)
+			}
+			values[item.TypeCode] = append(values[item.TypeCode], code)
+		}
+		rt.Data = values
+	}
+	return rt.Ok()
+}

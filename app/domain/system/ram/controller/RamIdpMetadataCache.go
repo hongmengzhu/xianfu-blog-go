@@ -7,7 +7,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/system/ram/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg/controllerPg"
-	modRamIdpMetadataCache2 "github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdpMetadataCache"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdpMetadataCache"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
@@ -41,7 +41,7 @@ func (c *RamIdpMetadataCacheController) RegisterRoutes(e *gin.Engine) {
 }
 
 func (c *RamIdpMetadataCacheController) CreateUpdate(ctx *gin.Context) {
-	var ct modRamIdpMetadataCache2.CreateUpdateCt
+	var ct modRamIdpMetadataCache.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -100,7 +100,7 @@ func (c *RamIdpMetadataCacheController) Disable(ctx *gin.Context) {
 }
 
 func (c *RamIdpMetadataCacheController) Query(ctx *gin.Context) {
-	var ct modRamIdpMetadataCache2.QueryCt
+	var ct modRamIdpMetadataCache.QueryCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -108,7 +108,7 @@ func (c *RamIdpMetadataCacheController) Query(ctx *gin.Context) {
 }
 
 func (c *RamIdpMetadataCacheController) SelectNodeAll(ctx *gin.Context) {
-	var ct modRamIdpMetadataCache2.QueryPublicCt
+	var ct modRamIdpMetadataCache.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -116,7 +116,7 @@ func (c *RamIdpMetadataCacheController) SelectNodeAll(ctx *gin.Context) {
 }
 
 func (c *RamIdpMetadataCacheController) SelectNodeAllPublic(ctx *gin.Context) {
-	var ct modRamIdpMetadataCache2.QueryPublicCt
+	var ct modRamIdpMetadataCache.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}

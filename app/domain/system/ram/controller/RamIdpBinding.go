@@ -7,7 +7,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/system/ram/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg/controllerPg"
-	modRamIdpBinding2 "github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdpBinding"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdpBinding"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
@@ -41,7 +41,7 @@ func (c *RamIdpBindingController) RegisterRoutes(e *gin.Engine) {
 }
 
 func (c *RamIdpBindingController) CreateUpdate(ctx *gin.Context) {
-	var ct modRamIdpBinding2.CreateUpdateCt
+	var ct modRamIdpBinding.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -100,7 +100,7 @@ func (c *RamIdpBindingController) Disable(ctx *gin.Context) {
 }
 
 func (c *RamIdpBindingController) Query(ctx *gin.Context) {
-	var ct modRamIdpBinding2.QueryCt
+	var ct modRamIdpBinding.QueryCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -108,7 +108,7 @@ func (c *RamIdpBindingController) Query(ctx *gin.Context) {
 }
 
 func (c *RamIdpBindingController) SelectNodeAll(ctx *gin.Context) {
-	var ct modRamIdpBinding2.QueryPublicCt
+	var ct modRamIdpBinding.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -116,7 +116,7 @@ func (c *RamIdpBindingController) SelectNodeAll(ctx *gin.Context) {
 }
 
 func (c *RamIdpBindingController) SelectNodeAllPublic(ctx *gin.Context) {
-	var ct modRamIdpBinding2.QueryPublicCt
+	var ct modRamIdpBinding.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}

@@ -4,11 +4,11 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	service2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/system/ram/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/system/ram/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg/controllerPg"
-	modRamResourceGroup2 "github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamResourceGroup"
-	modRamResourceRelation2 "github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamResourceRelation"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamResourceGroup"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamResourceRelation"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
@@ -24,10 +24,10 @@ func init() {
 type ResourceGroupController struct {
 	routerPg.RouteRegistrar
 	controllerPg.SpSystemAuth
-	sv  *service2.RamResourceGroupService              `autowire:"?"`
-	sva *service2.RamResourceGroupAuthorizationService `autowire:"?"`
-	ra  *service2.RamResourceAuthorizationService      `autowire:"?"`
-	rr  *service2.RamResourceRelationService           `autowire:"?"`
+	sv  *service.RamResourceGroupService              `autowire:"?"`
+	sva *service.RamResourceGroupAuthorizationService `autowire:"?"`
+	ra  *service.RamResourceAuthorizationService      `autowire:"?"`
+	rr  *service.RamResourceRelationService           `autowire:"?"`
 }
 
 func (c *ResourceGroupController) RegisterRoutes(e *gin.Engine) {
@@ -51,7 +51,7 @@ func (c *ResourceGroupController) RegisterRoutes(e *gin.Engine) {
 }
 
 func (c *ResourceGroupController) CreateUpdate(ctx *gin.Context) {
-	var ct modRamResourceGroup2.CreateUpdateCt
+	var ct modRamResourceGroup.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -62,7 +62,7 @@ func (c *ResourceGroupController) CreateUpdate(ctx *gin.Context) {
 	}
 }
 func (c *ResourceGroupController) CreateUpdateCategory(ctx *gin.Context) {
-	var ct modRamResourceGroup2.CreateUpdateCt
+	var ct modRamResourceGroup.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -125,7 +125,7 @@ func (c *ResourceGroupController) Disable(ctx *gin.Context) {
 }
 
 func (c *ResourceGroupController) Query(ctx *gin.Context) {
-	var ct modRamResourceGroup2.QueryCt
+	var ct modRamResourceGroup.QueryCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -133,7 +133,7 @@ func (c *ResourceGroupController) Query(ctx *gin.Context) {
 }
 
 func (c *ResourceGroupController) SelectNodeAll(ctx *gin.Context) {
-	var ct modRamResourceGroup2.QueryPublicCt
+	var ct modRamResourceGroup.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -141,7 +141,7 @@ func (c *ResourceGroupController) SelectNodeAll(ctx *gin.Context) {
 }
 
 func (c *ResourceGroupController) SelectNodeAllPublic(ctx *gin.Context) {
-	var ct modRamResourceGroup2.QueryPublicCt
+	var ct modRamResourceGroup.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -150,16 +150,16 @@ func (c *ResourceGroupController) SelectNodeAllPublic(ctx *gin.Context) {
 }
 
 func (c *ResourceGroupController) SelectCategory(ctx *gin.Context) {
-	ct := modRamResourceGroup2.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
+	ct := modRamResourceGroup.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
 	ctx.JSON(200, c.sv.SelectCategory(ctx, ct))
 }
 func (c *ResourceGroupController) QueryAllCategory(ctx *gin.Context) {
-	ct := modRamResourceGroup2.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
+	ct := modRamResourceGroup.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
 	ctx.JSON(200, c.sv.QueryAllCategory(ctx, ct))
 }
 
 func (c *ResourceGroupController) UpdateByResourceGroup(ctx *gin.Context) {
-	var ct modRamResourceRelation2.UpdateByResourceGroupCt
+	var ct modRamResourceRelation.UpdateByResourceGroupCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -167,7 +167,7 @@ func (c *ResourceGroupController) UpdateByResourceGroup(ctx *gin.Context) {
 }
 
 func (c *ResourceGroupController) Selected(ctx *gin.Context) {
-	var ct modRamResourceRelation2.QuerySelectedCt
+	var ct modRamResourceRelation.QuerySelectedCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}

@@ -34,6 +34,7 @@ type RoleController struct {
 //	@param e
 func (c *RoleController) RegisterRoutes(e *gin.Engine) {
 	group := e.Group("/xianfu/manage/ram/role", authPg.GroupManageMiddleware(c.Sp))
+	group.POST("/createUpdate", c.CreateUpdate)
 	group.POST("/create", c.Create)
 	group.POST("/update", c.Update)
 	group.GET("/detail/:id", c.Detail)
@@ -48,6 +49,17 @@ func (c *RoleController) RegisterRoutes(e *gin.Engine) {
 	group.POST("/selectNodeAllPublic", c.SelectNodeAllPublic)
 	group.POST("/selectPublic", c.SelectPublic)
 	group.POST("/existName", c.ExistName)
+}
+func (c *RoleController) CreateUpdate(ctx *gin.Context) {
+	var ct modRamRole.CreateUpdateCt
+	if !routerPg.BindJson(ctx, &ct) {
+		return
+	}
+	if ct.ID.ToInt64() < 1 {
+		ctx.JSON(200, c.sv.Create(ctx, ct))
+	} else {
+		ctx.JSON(200, c.sv.Update(ctx, ct))
+	}
 }
 
 // Create 创建

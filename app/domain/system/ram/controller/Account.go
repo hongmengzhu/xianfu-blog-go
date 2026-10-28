@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	service2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/system/ram/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/system/ram/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg/controllerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamAccount"
@@ -22,8 +22,8 @@ func init() {
 type AccountController struct {
 	routerPg.RouteRegistrar
 	controllerPg.SpSystemAuth
-	sv        *service2.RamAccountService         `autowire:"?"`
-	ap        *service2.RamAccountPasswordService `autowire:"?"`
+	sv        *service.RamAccountService         `autowire:"?"`
+	ap        *service.RamAccountPasswordService `autowire:"?"`
 	appModule appModulePg.AppModule
 }
 

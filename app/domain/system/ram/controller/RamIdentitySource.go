@@ -7,7 +7,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/system/ram/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg/controllerPg"
-	modRamIdentitySource2 "github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdentitySource"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdentitySource"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
@@ -42,7 +42,7 @@ func (c *RamIdentitySourceController) RegisterRoutes(e *gin.Engine) {
 }
 
 func (c *RamIdentitySourceController) CreateUpdate(ctx *gin.Context) {
-	var ct modRamIdentitySource2.CreateUpdateCt
+	var ct modRamIdentitySource.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -101,7 +101,7 @@ func (c *RamIdentitySourceController) Disable(ctx *gin.Context) {
 }
 
 func (c *RamIdentitySourceController) Query(ctx *gin.Context) {
-	var ct modRamIdentitySource2.QueryCt
+	var ct modRamIdentitySource.QueryCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -109,7 +109,7 @@ func (c *RamIdentitySourceController) Query(ctx *gin.Context) {
 }
 
 func (c *RamIdentitySourceController) SelectNodeAll(ctx *gin.Context) {
-	var ct modRamIdentitySource2.QueryPublicCt
+	var ct modRamIdentitySource.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -117,7 +117,7 @@ func (c *RamIdentitySourceController) SelectNodeAll(ctx *gin.Context) {
 }
 
 func (c *RamIdentitySourceController) SelectNodeAllPublic(ctx *gin.Context) {
-	var ct modRamIdentitySource2.QueryPublicCt
+	var ct modRamIdentitySource.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}

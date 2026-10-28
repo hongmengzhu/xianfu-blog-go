@@ -7,7 +7,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/system/ram/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg/controllerPg"
-	modRamGroup2 "github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamGroup"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamGroup"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
@@ -42,7 +42,7 @@ func (c *GroupController) RegisterRoutes(e *gin.Engine) {
 }
 
 func (c *GroupController) CreateUpdate(ctx *gin.Context) {
-	var ct modRamGroup2.CreateUpdateCt
+	var ct modRamGroup.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -105,7 +105,7 @@ func (c *GroupController) Disable(ctx *gin.Context) {
 }
 
 func (c *GroupController) Query(ctx *gin.Context) {
-	var ct modRamGroup2.QueryCt
+	var ct modRamGroup.QueryCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -113,7 +113,7 @@ func (c *GroupController) Query(ctx *gin.Context) {
 }
 
 func (c *GroupController) SelectNodeAll(ctx *gin.Context) {
-	var ct modRamGroup2.QueryPublicCt
+	var ct modRamGroup.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -121,7 +121,7 @@ func (c *GroupController) SelectNodeAll(ctx *gin.Context) {
 }
 
 func (c *GroupController) SelectNodeAllPublic(ctx *gin.Context) {
-	var ct modRamGroup2.QueryPublicCt
+	var ct modRamGroup.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -130,7 +130,7 @@ func (c *GroupController) SelectNodeAllPublic(ctx *gin.Context) {
 }
 
 func (c *GroupController) SelectPublic(ctx *gin.Context) {
-	ct := modRamGroup2.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
+	ct := modRamGroup.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
 	ctx.JSON(200, c.sv.SelectPublic(ctx, ct))
 }
 

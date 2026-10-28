@@ -37,6 +37,7 @@ func (c *DataDictionaryController) RegisterRoutes(e *gin.Engine) {
 	group.GET("/detail/:id", c.Detail)
 	group.GET("/typeCodePublic/:id", c.TypeCodePublicGet)
 	group.POST("/typeCodePublic", c.TypeCodeList)
+	group.POST("/typeCodeAllPublic", c.TypeCodeAllPublic)
 	group.POST("/enable", c.Enable)
 	group.POST("/disable", c.Disable)
 	group.POST("/state", c.State)
@@ -220,6 +221,13 @@ func (c *DataDictionaryController) CodeValueAllPublic(ctx *gin.Context) {
 	ctx.JSON(200, c.dictSubRep.CodeValueAllPublic(ctx, ct))
 }
 
+func (c *DataDictionaryController) TypeCodeAllPublic(ctx *gin.Context) {
+	var ct modBasicDataDictionary.SelectNodeAllCt
+	if !routerPg.BindJson(ctx, &ct) {
+		return
+	}
+	ctx.JSON(200, c.dictSubRep.TypeCodeAllPublic(ctx, ct))
+}
 func (c *DataDictionaryController) TypeCodeList(ctx *gin.Context) {
 	var ct modBasicDataDictionary.SelectNodeCt
 	if !routerPg.BindJson(ctx, &ct) {
