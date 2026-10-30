@@ -36,6 +36,7 @@ import (
 	_ "github.com/hongmengzhu/xianfu-blog-go/app/domain/web/api/service"
 	_ "github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/controller"
 	_ "github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/service"
+	_ "github.com/hongmengzhu/xianfu-blog-go/app/domain/web/bookmark/controller"
 	_ "github.com/hongmengzhu/xianfu-blog-go/app/event/basic/listenerBasic"
 	_ "github.com/hongmengzhu/xianfu-blog-go/app/event/basic/service/eventBasicEvent"
 	_ "github.com/hongmengzhu/xianfu-blog-go/app/event/basic/service/eventBasicRules"

@@ -2,6 +2,11 @@
 # 端口
 addr = ":9981"
 
+[spring.echo.server]
+# 端口
+addr = ":9985"
+enabled = true
+
 # 业务域名（非 server 配置）
 [server]
 # 不带 / 后缀
