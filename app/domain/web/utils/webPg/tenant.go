@@ -3,7 +3,7 @@ package webPg
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constHeaderPg"
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 )
 
 // GetTenantNo
@@ -24,7 +24,7 @@ func GetTenantNo(ctx *gin.Context) string {
 //	@Description: 读取租户编号
 //	@param c
 //	@return string
-func GetTenantNoEcho(c echo.Context) string {
+func GetTenantNoEcho(c *echo.Context) string {
 	if value := c.Get(constHeaderPg.WebTenantNo); nil != value {
 		if no, ok := value.(string); ok {
 			return no

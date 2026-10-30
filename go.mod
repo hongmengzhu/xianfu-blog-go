@@ -19,9 +19,8 @@ require (
 	github.com/go-viper/mapstructure/v2 v2.5.0
 	github.com/goccy/go-json v0.11.2
 	github.com/h2non/filetype v1.1.3
-	github.com/jackc/pgx/v5 v5.11.0
 	github.com/jinzhu/copier v0.4.0
-	github.com/labstack/echo/v4 v4.13.4
+	github.com/labstack/echo/v5 v5.4.2
 	github.com/lestrrat-go/jwx/v4 v4.5.0
 	github.com/markbates/goth v1.82.0
 	github.com/minio/minio-go/v7 v7.3.0
@@ -38,10 +37,10 @@ require (
 	github.com/yuin/goldmark-emoji v1.0.6
 	github.com/yuin/goldmark-highlighting/v2 v2.0.0-20230729083705-37449abec8cc
 	github.com/yuin/goldmark-meta v1.1.0
+	go-spring.org/cloud v0.0.0
 	go-spring.org/log v0.1.4
 	go-spring.org/spring v1.3.4
 	go-spring.org/starter-bigcache v0.0.0-00010101000000-000000000000
-	go-spring.org/starter-echo v0.0.0-00010101000000-000000000000
 	go-spring.org/starter-gin v1.3.4
 	go-spring.org/starter-gorm v0.0.0
 	go-spring.org/starter-gorm-mysql v1.3.4
@@ -104,6 +103,7 @@ require (
 	github.com/gopherjs/gopherjs v1.21.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
+	github.com/jackc/pgx/v5 v5.11.0 // indirect
 	github.com/jackc/puddle/v2 v2.2.3 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
@@ -113,7 +113,6 @@ require (
 	github.com/klauspost/compress v1.20.1 // indirect
 	github.com/klauspost/cpuid/v2 v2.4.0 // indirect
 	github.com/klauspost/crc32 v1.3.0 // indirect
-	github.com/labstack/gommon v0.4.2 // indirect
 	github.com/leodido/go-urn v1.5.0 // indirect
 	github.com/lestrrat-go/backoff/v2 v2.0.8 // indirect
 	github.com/lestrrat-go/blackmagic v1.0.4 // indirect
@@ -128,7 +127,6 @@ require (
 	github.com/markbates/going v1.0.3 // indirect
 	github.com/matoous/go-nanoid/v2 v2.1.0 // indirect
 	github.com/mattermost/xml-roundtrip-validator v0.1.0 // indirect
-	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.24 // indirect
 	github.com/microsoft/go-mssqldb v1.11.2 // indirect
 	github.com/minio/crc64nvme v1.1.1 // indirect
@@ -156,13 +154,10 @@ require (
 	github.com/tinylib/msgp v1.6.5 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.3.2 // indirect
-	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fastjson v1.6.10 // indirect
-	github.com/valyala/fasttemplate v1.2.2 // indirect
 	github.com/xuri/efp v0.0.2 // indirect
 	github.com/xuri/nfp v0.0.2-0.20250530014748-2ddeb826f9a9 // indirect
 	github.com/zeebo/xxh3 v1.1.0 // indirect
-	go-spring.org/cloud v0.0.0 // indirect
 	go-spring.org/gs-mock v0.0.9 // indirect
 	go.mongodb.org/mongo-driver/v2 v2.9.1 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
@@ -179,7 +174,7 @@ require (
 	golang.org/x/sync v0.23.0 // indirect
 	golang.org/x/sys v0.48.0 // indirect
 	golang.org/x/text v0.42.0 // indirect
-	golang.org/x/time v0.14.0 // indirect
+	golang.org/x/time v0.15.0 // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
 	gopkg.in/ini.v1 v1.67.3 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
@@ -198,7 +193,6 @@ replace (
 	go-spring.org/log => ../go-spring/log
 	go-spring.org/spring => ../go-spring/spring
 	go-spring.org/starter-bigcache => ../go-spring/starter/starter-bigcache
-	go-spring.org/starter-echo => ../go-spring/starter/starter-echo
 	go-spring.org/starter-gin => ../go-spring/starter/starter-gin
 	go-spring.org/starter-gorm => ../go-spring/starter/starter-gorm
 	go-spring.org/starter-gorm-mysql => ../go-spring/starter/starter-gorm-mysql

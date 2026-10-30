@@ -7,7 +7,7 @@ import (
 
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constHeaderPg"
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 	"github.com/pangu-2/go-tools/tools/datetimePg"
 )
 
@@ -34,7 +34,10 @@ type echoRenderer struct {
 //	@param data 渲染数据
 //	@param c
 //	@return error
-func (r *echoRenderer) Render(w io.Writer, name string, data any, c echo.Context) error {
+func (r *echoRenderer) Render(c *echo.Context, w io.Writer, name string, data any) error {
+	if viewContext, isMap := data.(map[string]any); isMap {
+		viewContext["reverse"] = c.RouteInfo().Reverse
+	}
 	return r.templ.ExecuteTemplate(w, name, data)
 }
 
@@ -59,7 +62,7 @@ func NewEchoRenderer(pattern string) echo.Renderer {
 //	@param file 模板文件，例如 blog/index
 //	@param opts
 //	@return error
-func HTMLEcho(c echo.Context, file string, opts ...Option) error {
+func HTMLEcho(c *echo.Context, file string, opts ...Option) error {
 	server := configPg.Server{}
 	if v := c.Get(constHeaderPg.WebTemplatePgServer); nil != v {
 		if tmp, ok := v.(configPg.Server); ok {

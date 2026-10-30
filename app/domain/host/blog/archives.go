@@ -5,14 +5,16 @@ import (
 	"time"
 
 	"github.com/hongmengzhu/xianfu-blog-go/app/core/blog/serviceCore"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/host"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/model/modBlogArticle"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
+	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/staterEchoV5"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/typePg"
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 	"github.com/pangu-2/go-tools/tools/datetimePg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/spring/gs"
@@ -24,14 +26,15 @@ func init() {
 
 // ArchivesController 归档
 type ArchivesController struct {
+	staterEchoV5.RouteRegistrar
 	Sp       *authPg.GroupWebMiddlewareSp     `autowire:"?"`
 	sv       *service.ArticleService          `autowire:"?"`
 	catCache *serviceCore.CoreArticleCategory `autowire:"?"`
 }
 
 // Hosts 模块绑定域名
-func (c *ArchivesController) Hosts() []string {
-	return blogHosts
+func (c *ArchivesController) Hosts() string {
+	return host.Host_blog
 }
 
 // RegisterRoutes
@@ -44,7 +47,7 @@ func (c *ArchivesController) RegisterRoutes(g *echo.Group) {
 	group.GET("/archives/date/:code", c.List)
 }
 
-func (c *ArchivesController) List(ctx echo.Context) error {
+func (c *ArchivesController) List(ctx *echo.Context) error {
 	dataIs := false
 	var data any
 	param := ctx.Param("code")

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constHeaderPg"
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 	"go-spring.org/log"
 )
 
@@ -16,7 +16,7 @@ import (
 //	@return echo.MiddlewareFunc
 func GroupWebMiddlewareEcho(m *GroupWebMiddlewareSp) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
+		return func(c *echo.Context) error {
 			val := m.ResolveTenant(c.Request().Host)
 			log.Info(context.Background(), log.TagAppDef, "租户", log.Any("TenantNo", val))
 			c.Set(constHeaderPg.WebTenantNo, val)

@@ -5,13 +5,15 @@ import (
 	"net/http"
 
 	"github.com/hongmengzhu/xianfu-blog-go/app/core/blog/serviceCore"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/host"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/model/modBlogArticle"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
+	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/staterEchoV5"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
@@ -23,14 +25,15 @@ func init() {
 
 // IndexController 首页
 type IndexController struct {
+	staterEchoV5.RouteRegistrar
 	Sp       *authPg.GroupWebMiddlewareSp     `autowire:"?"`
 	sv       *service.ArticleService          `autowire:"?"`
 	catCache *serviceCore.CoreArticleCategory `autowire:"?"`
 }
 
 // Hosts 模块绑定域名
-func (c *IndexController) Hosts() []string {
-	return blogHosts
+func (c *IndexController) Hosts() string {
+	return host.Host_blog
 }
 
 // RegisterRoutes
@@ -44,7 +47,7 @@ func (c *IndexController) RegisterRoutes(g *echo.Group) {
 	group.GET("/page/:page", c.Page)
 }
 
-func (c *IndexController) Index(ctx echo.Context) error {
+func (c *IndexController) Index(ctx *echo.Context) error {
 	var ct modBlogArticle.QueryCt
 	if err := ctx.Bind(&ct); nil != err {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -69,7 +72,7 @@ func (c *IndexController) Index(ctx echo.Context) error {
 		}))
 }
 
-func (c *IndexController) Page(ctx echo.Context) error {
+func (c *IndexController) Page(ctx *echo.Context) error {
 	param := ctx.Param("page")
 	var ct modBlogArticle.QueryCt
 	ct.PageSize = 20

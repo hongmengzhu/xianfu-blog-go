@@ -1,7 +1,7 @@
 package routerPg
 
 import (
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 )
 
 // HostRouteRegistrar 按域名（Host）注册路由的模块接口。
