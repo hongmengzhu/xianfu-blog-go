@@ -1,8 +1,13 @@
-<html>
-<header>
-    <title>Bookmark-nisarg</title>
-</header>
-<body>
-Bookmark-nisarg
-</body>
-</html>
+{{ define "nisarg/bookmark/index.html" }}
+{{template "nisarg/bookmark/header.html" .}}
+{{template "nisarg/bookmark/left-aside.html" .}}
+<div class="app-main">
+    {{template "nisarg/bookmark/topbar.html" .}}
+
+    {{template "nisarg/bookmark/index-main.html" .}}
+
+    {{template "nisarg/bookmark/main-footer.html" .}}
+</div>
+{{template "nisarg/bookmark/footer-mobile.html" .}}
+{{template "nisarg/bookmark/footer-js.html" .}}
+{{end}}
