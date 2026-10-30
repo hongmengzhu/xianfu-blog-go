@@ -5,10 +5,12 @@ import (
 	"io"
 	"path/filepath"
 
+	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constHeaderPg"
 	"github.com/labstack/echo/v5"
 	"github.com/pangu-2/go-tools/tools/datetimePg"
+	"github.com/pangu-2/go-tools/tools/strPg"
 )
 
 // DefaultFuncMap 模板函数集合，gin 与 echo 渲染共用，保证两套入口渲染结果一致。
@@ -78,5 +80,17 @@ func HTMLEcho(c *echo.Context, file string, opts ...Option) error {
 		pg.Template.Theme = "nisarg"
 	}
 	code, name, obj := buildTemplateParam(pg, server, c.Request(), file, opts...)
+	//
+	get, err := echo.ContextGet[*cacheDomainPg.TenantDomainCache](c, constHeaderPg.WebVhostTemplatePgDomain)
+	if nil == err {
+		if getMap, b := get.GetMap(c.Request().Host); b {
+			obj["host"] = getMap
+			//模版
+			if strPg.IsNotBlank(getMap.Theme) {
+				name = themeBy(pg, getMap.Theme, file)
+			}
+		}
+	}
+
 	return c.Render(code, name, obj)
 }

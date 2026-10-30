@@ -10,7 +10,6 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/staterEchoV5"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
 	"github.com/labstack/echo/v5"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -18,19 +17,19 @@ import (
 )
 
 func init() {
-	gs.Provide(new(CategoryController)).Name("BlogHostCategoryController").Export(gs.As[routerPg.HostRouteRegistrar]())
+	gs.Provide(new(CategoryController)).Name("BlogHostCategoryController").Export(gs.As[staterEchoV5.RouteRegistrar]())
 }
 
 // CategoryController 分类
 type CategoryController struct {
 	staterEchoV5.RouteRegistrar
-	Sp       *authPg.GroupWebMiddlewareSp     `autowire:"?"`
-	sv       *service.ArticleService          `autowire:"?"`
-	catCache *serviceCore.CoreArticleCategory `autowire:"?"`
+	Sp       *authPg.GroupWebVhostMiddlewareSp `autowire:"?"`
+	sv       *service.ArticleService           `autowire:"?"`
+	catCache *serviceCore.CoreArticleCategory  `autowire:"?"`
 }
 
 // Hosts 模块绑定域名
-func (c *CategoryController) Hosts() string {
+func (c *CategoryController) Host() string {
 	return host.Host_blog
 }
 
@@ -39,8 +38,8 @@ func (c *CategoryController) Hosts() string {
 //	@Description: 注册路由
 //	@receiver c
 //	@param g
-func (c *CategoryController) RegisterRoutes(g *echo.Group) {
-	group := g.Group("", authPg.GroupWebMiddlewareEcho(c.Sp))
+func (c *CategoryController) RegisterRoutes(g *echo.Echo) {
+	group := g.Group("", authPg.GroupWebVhostMiddlewareEcho(c.Sp))
 	group.GET("/category/:cat", c.List)
 }
 

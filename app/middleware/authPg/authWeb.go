@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/cacheTc"
+	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constHeaderPg"
 	"go-spring.org/log"
@@ -17,9 +17,9 @@ func init() {
 
 // 中间件 服务
 type GroupWebMiddlewareSp struct {
-	domain *cacheTc.TenantDomainCache `autowire:"?"`
-	pg     configPg.Pg                `value:"${pg}"`
-	server configPg.Server            `value:"${server}"`
+	domain *cacheDomainPg.TenantDomainCache `autowire:"?"`
+	pg     configPg.Pg                      `value:"${pg}"`
+	server configPg.Server                  `value:"${server}"`
 }
 
 // ResolveTenant 按访问域名解析租户编号，gin 与 echo 中间件共用。

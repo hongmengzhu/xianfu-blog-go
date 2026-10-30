@@ -1,5 +1,5 @@
 # ================== 可配置参数 ==================
-SCAN_DIR       ?= ./infrastructure,./pkg/sdk,./app
+SCAN_DIR       ?= ./infrastructure,./pkg/sdk,./app,./app/middleware/components/cachePg
 OUTPUT_FILE    ?= auto_import.go
 MODULE_NAME    ?=
 CONCURRENCY    ?= 8

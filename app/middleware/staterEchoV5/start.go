@@ -22,8 +22,8 @@ type RouteRegistrar interface {
 	// Host reports the subdomain this controller answers on, for example
 	// "blog.test" or "bookmark.test".
 	Host() string
-	// Register mounts the controller's routes on that subdomain's engine.
-	Register(e *echo.Echo)
+	// RegisterRoutes mounts the controller's routes on that subdomain's engine.
+	RegisterRoutes(e *echo.Echo)
 }
 
 // Server adapts the virtual-host engine to gs.Server: the container starts it
@@ -74,7 +74,7 @@ func NewServer(regs []RouteRegistrar, cfg Config) (*Server, error) {
 		vh.Static("/attachment", "./data/attachment")
 		//
 		for _, reg := range byHost[host] {
-			reg.Register(vh)
+			reg.RegisterRoutes(vh)
 		}
 		vhosts[host] = vh
 	}

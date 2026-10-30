@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/cacheTc"
+	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/dtoTenantDomain"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityTc"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryTc"
@@ -20,7 +20,7 @@ func init() {
 type TcTenantDomainCacheService struct {
 	sv    *repositoryTc.TcTenantDomainRepository `autowire:"?"`
 	tenDb *repositoryTc.TcTenantRepository       `autowire:"?"`
-	ca    *cacheTc.TenantDomainCache             `autowire:"?"`
+	ca    *cacheDomainPg.TenantDomainCache       `autowire:"?"`
 }
 
 // InitTenantDomain
@@ -58,6 +58,7 @@ func (c *TcTenantDomainCacheService) InitTenantDomain(ctx context.Context) {
 			dto := dtoTenantDomain.Dto{
 				TenantNo: item.TenantNo,
 				Domain:   item.Code,
+				Theme:    item.Theme,
 			}
 			if strPg.IsNotBlank(item.TenantNo) {
 				if info, ok := mapTenant[item.TenantNo]; ok {
@@ -68,6 +69,12 @@ func (c *TcTenantDomainCacheService) InitTenantDomain(ctx context.Context) {
 			}
 			c.ca.DomainData.Store(item.Code, dto)
 		}
+		log.Debug(ctx, log.TagAppDef, "init tenant domain cache", func() []log.Field {
+			return []log.Field{
+				log.Int("count", len(infos)),
+			}
+		})
+		log.Info(ctx, log.TagAppDef, "init tenant domain cache", log.Int("count", len(infos)))
 		infos = nil
 		mapTenant = nil
 	}

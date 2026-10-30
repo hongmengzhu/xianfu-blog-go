@@ -18,7 +18,7 @@
             <AppenderRef ref="console"/>
 <!--            <AppenderRef ref="file"/>-->
         </Root>
-        <Logger name="logger" level="debug" tags="_pg_*_*">
+        <Logger name="logger" level="debug" tags="*">
             <AppenderRef ref="console"/>
 <!--            <AppenderRef ref="file"/>-->
         </Logger>

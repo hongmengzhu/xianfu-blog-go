@@ -1,4 +1,4 @@
-package cacheTc
+package cacheDomainPg
 
 import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/dtoTenantDomain"
@@ -16,8 +16,10 @@ func init() {
 // TenantDomainCache
 // @Description: 域名缓存
 type TenantDomainCache struct {
+	// 域名：域名数据
 	DomainData *mapPg.SafeMap[string, dtoTenantDomain.Dto]
-	Domain     *mapPg.SafeMap[string, string]
+	// 域名：租户编号
+	Domain *mapPg.SafeMap[string, string]
 }
 
 // IsLocalHostExist
@@ -56,4 +58,12 @@ func (c *TenantDomainCache) IsServerHostExist(host string, server configPg.Serve
 		return true
 	}
 	return false
+}
+
+// GetMap
+//
+//	@Description: 指定域名
+func (c *TenantDomainCache) GetMap(host string) (dtoTenantDomain.Dto, bool) {
+	dto, exist := c.DomainData.Load(host)
+	return dto, exist
 }

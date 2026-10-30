@@ -24,4 +24,8 @@ const (
 	// web 模板 Pg 存储
 	WebTemplatePg       = "web-template-pg"
 	WebTemplatePgServer = "web-template-pg.server"
+	// vhost 存储
+	WebVhostTemplatePg       = "web-vhost-template-pg"
+	WebVhostTemplatePgServer = "web-vhost-template-pg.server"
+	WebVhostTemplatePgDomain = "web-vhost-template-pg.domain"
 )

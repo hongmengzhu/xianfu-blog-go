@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	cacheDiplPg2 "github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheDiplPg"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/cacheTc"
+	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheDomainPg"
 	holderApiPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg/holderApiPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constContextPg"
@@ -21,9 +21,9 @@ func init() {
 
 // 中间件 服务
 type GroupApiMiddlewareSp struct {
-	domain *cacheTc.TenantDomainCache `autowire:"?"`
-	pg     configPg.Pg                `value:"${pg}"`
-	server configPg.Server            `value:"${server}"`
+	domain *cacheDomainPg.TenantDomainCache `autowire:"?"`
+	pg     configPg.Pg                      `value:"${pg}"`
+	server configPg.Server                  `value:"${server}"`
 }
 
 // 权限验证 中间件

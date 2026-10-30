@@ -23,7 +23,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/api/service"
 	cacheDiplPg "github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheDiplPg"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/cacheTc"
+	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/dtoTenantDomain"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbManagerPg"
@@ -56,10 +56,10 @@ const (
 
 // apiTestStack go-spring 注入的测试对象。
 type apiTestStack struct {
-	Bookmark *BookmarkApiController         `autowire:"?"`
-	Category *BookmarkCategoryApiController `autowire:"?"`
-	Manager  *dbManagerPg.Manager           `autowire:"?"`
-	Domain   *cacheTc.TenantDomainCache     `autowire:"?"`
+	Bookmark *BookmarkApiController           `autowire:"?"`
+	Category *BookmarkCategoryApiController   `autowire:"?"`
+	Manager  *dbManagerPg.Manager             `autowire:"?"`
+	Domain   *cacheDomainPg.TenantDomainCache `autowire:"?"`
 }
 
 // rsEnvelope 响应外层结构，data 保留原始 JSON 以便按各接口类型解码。

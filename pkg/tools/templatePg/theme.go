@@ -22,6 +22,19 @@ func themeByPg(pg configPg.Pg, file string) string {
 	return pg.Template.Theme + "/" + file + pg.Template.Suffix
 }
 
+// Theme
+//
+//	@Description: 获取主题文件名称
+//	@param themeName
+//	@param file
+//	@return string
+func themeBy(pg configPg.Pg, theme, file string) string {
+	if strPg.IsBlank(theme) {
+		return "nisarg/" + file + ".html"
+	}
+	return theme + "/" + file + pg.Template.Suffix
+}
+
 // buildTemplateParam 组装模板参数（与 Web 框架无关），返回状态码、模板名与渲染数据。
 //
 //	@Description: 组装模板参数

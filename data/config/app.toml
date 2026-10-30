@@ -1,8 +1,3 @@
-# echo 统一入口：按访问域名分发到不同模块，未命中域名的路由交给 gin 兜底
-[spring.echo.server]
-# 端口
-addr = ":9983"
-
 # gin 引擎已由 echo 内部兜底调用，不再独立监听端口；
 # 如需恢复 gin 独立服务（并引入 starter-gin），再配置 spring.gin.server.addr
 [spring.gin.server]
@@ -173,6 +168,11 @@ theme = "nisarg"
 # 后缀 例如 .html
 suffix = ".html"
 
+[pg.template.vhost.blog]
+theme = "blog"
+[pg.template.vhost.bookmark]
+theme = "bookmark"
+
 [pg.auth.loginEncrypt]
 # 默认加密
 default = true
@@ -180,7 +180,11 @@ default = true
 # 根日志配置
 [logger.root]
 type = "Logger"
-level = "debug"
+level = "DEBUG"
+# 根日志配置
+[logging.logging.root]
+type = "ConsoleLogger"
+level = "DEBUG"
 
 [logger.root.appenderRef]
 ref = "console"

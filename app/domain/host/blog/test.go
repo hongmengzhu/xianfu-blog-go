@@ -6,13 +6,12 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/host"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/staterEchoV5"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/labstack/echo/v5"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(TestController)).Name("BlogHostTestController").Export(gs.As[routerPg.HostRouteRegistrar]())
+	gs.Provide(new(TestController)).Name("BlogHostTestController").Export(gs.As[staterEchoV5.RouteRegistrar]())
 }
 
 // TestController test
@@ -22,7 +21,7 @@ type TestController struct {
 }
 
 // Hosts 模块绑定域名
-func (c *TestController) Hosts() string {
+func (c *TestController) Host() string {
 	return host.Host_blog
 }
 
@@ -31,7 +30,7 @@ func (c *TestController) Hosts() string {
 //	@Description: 注册路由
 //	@receiver c
 //	@param g
-func (c *TestController) RegisterRoutes(g *echo.Group) {
+func (c *TestController) RegisterRoutes(g *echo.Echo) {
 	g.GET("/test/cache", c.Cache)
 }
 
