@@ -20,6 +20,8 @@
 .codex
 .cursor
 .qoder
+.gocache
+.tmp-build
 data/logs/
 data/attachment/
 data/data/attachment/
