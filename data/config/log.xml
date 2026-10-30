@@ -1,3 +1,8 @@
+<!--
+  说明：go-spring 的日志系统只加载 data/config 下的 *.properties/*.yaml/*.yml/*.toml/*.json，
+  不会解析本 XML 文件。实际生效的日志配置在 data/config/app.toml 的 [logging.*] 段；
+  本文件仅作历史留档，修改这里不会改变运行时日志级别。
+-->
 <Configuration>
     <Properties>
         <Property name="bufferCap">1KB</Property>

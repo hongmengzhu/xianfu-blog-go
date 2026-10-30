@@ -32,6 +32,11 @@ func (c *TcTenantDomainCacheService) InitTenantDomain(ctx context.Context) {
 		State: enumStatePg.ENABLE.Index(),
 	}
 	infos := c.sv.FindAll(ctx, query)
+	log.Debug(ctx, log.TagAppDef, "init tenant domain cache.findAll", func() []log.Field {
+		return []log.Field{
+			log.Int("count", len(infos)),
+		}
+	})
 	if len(infos) > 0 {
 		idsTenantNo := make([]string, 0)
 		mapTenant := make(map[string]*entityTc.TcTenantEntity)

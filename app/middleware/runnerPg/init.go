@@ -4,6 +4,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/runnerPg/data"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/runnerPg/table"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbManagerPg"
 	"go-spring.org/spring/gs"
 )
 
@@ -11,6 +12,11 @@ func init() {
 	// 发布者 监听
 	gs.Provide(event.New()).Export(gs.As[event.Bus]())
 	gs.Provide(new(Publisher)).Export(gs.As[gs.Runner]())
+
+	// gorm SQL 日志级别（database.log-level），放在最前面，
+	// 保证后续 Runner（建表、初始化数据）执行的 SQL 也能按配置输出。
+	gs.Provide(new(dbManagerPg.GormSQLLog)).Export(gs.As[gs.Runner]())
+
 	//初始化 表
 	gs.Provide(new(table.AInitTable)).Export(gs.As[gs.Runner]())
 

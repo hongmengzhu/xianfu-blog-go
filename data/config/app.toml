@@ -23,6 +23,9 @@ path = "data/config/governance.toml"
 enabled = true
 # 数据库类型
 driver = "postgres"
+# gorm SQL 日志级别：silent / error / warn / info（info 即 debug，逐条输出 SQL）。
+# 留空则不覆盖框架默认（只打印慢查询与错误）；输出走日志系统，需根 logger 为 DEBUG 才可见。
+log-level = "debug"
 
 # 数据库
 [spring.gorm.postgres.instances.primary]
@@ -177,30 +180,33 @@ theme = "bookmark"
 # 默认加密
 default = true
 
-# 根日志配置
-[logger.root]
+# ================== 日志配置 ==================
+# go-spring 只读取 logging.* 前缀下的配置（前缀在加载时会被剥离），
+# 因此 logger/appender 必须写成 logging.logger.* 和 logging.appender.* 这两类键；
+# 写成顶层的 logger.root / appender.console 不会被加载，级别会退回框架默认的 INFO。
+# 根日志器：DEBUG 级别，同时输出到控制台和文件
+[logging.logger.root]
 type = "Logger"
 level = "DEBUG"
-# 根日志配置
-[logging.logging.root]
-type = "ConsoleLogger"
-level = "DEBUG"
 
-[logger.root.appenderRef]
+[[logging.logger.root.appenderRef]]
 ref = "console"
 
-# 定义文件输出器
-[appender.file]
+[[logging.logger.root.appenderRef]]
+ref = "file"
+
+# 控制台输出器
+[logging.appender.console]
+type = "ConsoleAppender"
+
+[logging.appender.console.layout]
+type = "TextLayout"
+
+# 文件输出器
+[logging.appender.file]
 type = "FileAppender"
 dir = "./data/logs"
 file = "app.log"
 
-[appender.file.layout]
+[logging.appender.file.layout]
 type = "JSONLayout"
-
-# 定义控制台输出器
-[appender.console]
-type = "ConsoleAppender"
-
-[appender.console.layout]
-type = "TextLayout"

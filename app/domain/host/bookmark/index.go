@@ -72,10 +72,7 @@ func (c *IndexController) Page(ctx *echo.Context) error {
 	param := ctx.Param("page")
 	var ct modBlogArticle.QueryCt
 	ct.PageSize = 20
-	ct.PageNum = strPg.ToInt64(param)
-	if ct.PageNum < 1 {
-		ct.PageNum = 1
-	}
+	ct.PageNum = max(strPg.ToInt64(param), 1)
 	//
 	rt := c.sv.QueryByContext(ctx.Request().Context(), webPg.GetTenantNoEcho(ctx), ct)
 	// 模版

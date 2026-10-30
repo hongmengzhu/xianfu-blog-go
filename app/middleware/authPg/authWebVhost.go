@@ -7,6 +7,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constHeaderPg"
 	"github.com/labstack/echo/v5"
+	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
 )
@@ -32,6 +33,16 @@ func (m *GroupWebVhostMiddlewareSp) ResolveTenant(host string) string {
 	val := "-1"
 	// 获取租户
 	load, b := m.Domain.Domain.Load(host)
+	//getMap, b2 := m.Domain.GetMap(host)
+	//log.Debug(context.Background(), log.TagAppDef, "ResolveTenant", func() []log.Field {
+	//	return []log.Field{
+	//		log.Any("host", host),
+	//		log.Any("bool", b),
+	//		log.Any("data", load),
+	//		log.Any("getMap", getMap),
+	//		log.Any("b2", b2),
+	//	}
+	//})
 	if b {
 		val = load
 	}
@@ -55,13 +66,17 @@ func (m *GroupWebVhostMiddlewareSp) ResolveTenant(host string) string {
 func GroupWebVhostMiddlewareEcho(m *GroupWebVhostMiddlewareSp) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c *echo.Context) error {
-			val := m.ResolveTenant(c.Request().Host)
-			log.Info(context.Background(), log.TagAppDef, "租户", log.Any("host", c.Request().Host), log.Any("TenantNo", val))
-			log.Info(context.Background(), log.TagAppDef, "xxxx", log.Any("Domain", m.Domain))
-			c.Set(constHeaderPg.WebTenantNo, val)
-			c.Set(constHeaderPg.WebVhostTemplatePg, m.pg)
-			c.Set(constHeaderPg.WebVhostTemplatePgServer, m.server)
-			c.Set(constHeaderPg.WebVhostTemplatePgDomain, m.Domain)
+			if strPg.IsNotBlank(c.Request().Host) {
+				val := m.ResolveTenant(c.Request().Host)
+				log.Info(context.Background(), log.TagAppDef, "租户", log.Any("host", c.Request().Host), log.Any("TenantNo", val))
+				c.Set(constHeaderPg.WebTenantNo, val)
+				c.Set(constHeaderPg.WebVhostTemplatePg, m.pg)
+				c.Set(constHeaderPg.WebVhostTemplatePgServer, m.server)
+				c.Set(constHeaderPg.WebVhostTemplatePgDomain, m.Domain)
+				if get, b := m.Domain.GetMap(c.Request().Host); b {
+					c.Set(constHeaderPg.WebVhostTemplatePgDomainData, get)
+				}
+			}
 			return next(c)
 		}
 	}
