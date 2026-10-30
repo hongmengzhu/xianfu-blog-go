@@ -3,10 +3,10 @@ package model
 import "encoding/json"
 
 type BaseQueryCt struct {
-	PageNum  int64    `json:"pageNum"  form:"pageNum"`
-	PageSize int64    `json:"pageSize"  form:"pageSize"`
-	Wd       string   `json:"wd"  form:"wd"`
-	OrderBy  []string `json:"orderBy"  form:"orderBy" label:"排序"`
+	PageNum  int64    `json:"pageNum"  form:"pageNum" query:"pageNum"`
+	PageSize int64    `json:"pageSize"  form:"pageSize" query:"pageSize"`
+	Wd       string   `json:"wd"  form:"wd" query:"wd"`
+	OrderBy  []string `json:"orderBy"  form:"orderBy" query:"orderBy" label:"排序"`
 }
 
 func (c BaseQueryCt) ToJsonString() (string, error) {

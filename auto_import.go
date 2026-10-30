@@ -6,6 +6,8 @@ import (
 	_ "github.com/hongmengzhu/xianfu-blog-go/app/core/blog/serviceCore"
 	_ "github.com/hongmengzhu/xianfu-blog-go/app/core/cache/cacheRam"
 	_ "github.com/hongmengzhu/xianfu-blog-go/app/domain"
+	_ "github.com/hongmengzhu/xianfu-blog-go/app/domain/host/blog"
+	_ "github.com/hongmengzhu/xianfu-blog-go/app/domain/host/bookmark"
 	_ "github.com/hongmengzhu/xianfu-blog-go/app/domain/manage/domainApi/controller"
 	_ "github.com/hongmengzhu/xianfu-blog-go/app/domain/manage/domainApi/service"
 	_ "github.com/hongmengzhu/xianfu-blog-go/app/domain/manage/domainBasic/controller"

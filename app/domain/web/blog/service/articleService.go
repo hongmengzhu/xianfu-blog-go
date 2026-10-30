@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"encoding/json"
 	"strings"
 
@@ -51,6 +52,17 @@ type ArticleService struct {
 //	@receiver c
 //	@param id
 func (c *ArticleService) Detail(ctx *gin.Context, id string) (rt rg.Rs[modBlogArticle2.DetailVo]) {
+	return c.DetailByContext(ctx, webPg.GetTenantNo(ctx), id)
+}
+
+// DetailByContext 详情（与 Web 框架无关的核心实现，echo 等入口复用）
+//
+//	@Description:
+//	@receiver c
+//	@param ctx
+//	@param tenantNo 租户编号
+//	@param id
+func (c *ArticleService) DetailByContext(ctx context.Context, tenantNo string, id string) (rt rg.Rs[modBlogArticle2.DetailVo]) {
 	if strPg.IsBlank(id) {
 		return rt.ErrorMessage("id错误")
 	}
@@ -59,7 +71,7 @@ func (c *ArticleService) Detail(ctx *gin.Context, id string) (rt rg.Rs[modBlogAr
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
-	no := webPg.GetTenantNo(ctx)
+	no := tenantNo
 	if strPg.IsNotBlank(no) && find.TenantNo != no {
 		return rt.ErrorMessage("数据不存在")
 	}
@@ -221,9 +233,19 @@ func (c *ArticleService) Detail(ctx *gin.Context, id string) (rt rg.Rs[modBlogAr
 //	@receiver c
 //	@param ct
 func (c *ArticleService) Query(ctx *gin.Context, ct modBlogArticle2.QueryCt) (rt rg.Rs[pagePg.Paginator[modBlogArticle2.Vo]]) {
+	return c.QueryByContext(ctx, webPg.GetTenantNo(ctx), ct)
+}
+
+// QueryByContext 列表查询（与 Web 框架无关的核心实现，echo 等入口复用）
+//
+//	@Description:
+//	@receiver c
+//	@param ctx
+//	@param tenantNo 租户编号
+//	@param ct
+func (c *ArticleService) QueryByContext(ctx context.Context, tenantNo string, ct modBlogArticle2.QueryCt) (rt rg.Rs[pagePg.Paginator[modBlogArticle2.Vo]]) {
 	var query entityBlog.BlogArticleEntity
 	copier.Copy(&query, &ct)
-	tenantNo := webPg.GetTenantNo(ctx)
 	if strPg.IsNotBlank(tenantNo) {
 		query.TenantNo = tenantNo
 	}

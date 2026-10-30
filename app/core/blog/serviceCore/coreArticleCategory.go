@@ -1,9 +1,8 @@
 package serviceCore
 
 import (
+	"context"
 	"fmt"
-
-	"github.com/gin-gonic/gin"
 	"github.com/goccy/go-json"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticleCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
@@ -31,7 +30,7 @@ type CoreArticleCategory struct {
 //	@param tenantNo
 //	@return []*entityBlog.BlogArticleCategoryEntity
 //	@return bool
-func (c *CoreArticleCategory) GetAllByKeysRetMap(ctx *gin.Context, keys []string, tenantNo string) (map[string]*modBlogArticleCategory.Cache, bool) {
+func (c *CoreArticleCategory) GetAllByKeysRetMap(ctx context.Context, keys []string, tenantNo string) (map[string]*modBlogArticleCategory.Cache, bool) {
 	data := make(map[string]*modBlogArticleCategory.Cache, 0)
 	tmps := make([]string, 0)
 	for _, item := range keys {
@@ -74,7 +73,7 @@ func (c *CoreArticleCategory) GetAllByKeysRetMap(ctx *gin.Context, keys []string
 //	@param tenantNo
 //	@return []*entityBlog.BlogArticleCategoryEntity
 //	@return bool
-func (c *CoreArticleCategory) GetAllByCache(ctx *gin.Context, tenantNo string) ([]*modBlogArticleCategory.Cache, bool) {
+func (c *CoreArticleCategory) GetAllByCache(ctx context.Context, tenantNo string) ([]*modBlogArticleCategory.Cache, bool) {
 	data := make([]*modBlogArticleCategory.Cache, 0)
 	// 原来是把集合 key 交给 Lua（SMEMBERS + MGET）；现在由 GetAllBySetKey 在进程内完成同样的两步。
 	setKey := blogKeyPg.ArticleCategoryTenantNoKeys(tenantNo)
@@ -113,7 +112,7 @@ func (c *CoreArticleCategory) GetAllByCache(ctx *gin.Context, tenantNo string) (
 //	@param tenantNo
 //	@return []model.BaseNodeTree
 //	@return bool
-func (c *CoreArticleCategory) FormatTree(ctx *gin.Context, tenantNo string) ([]model.BaseNodeTree, bool) {
+func (c *CoreArticleCategory) FormatTree(ctx context.Context, tenantNo string) ([]model.BaseNodeTree, bool) {
 	cache, b := c.GetAllByCache(ctx, tenantNo)
 	if b {
 		tree := c.ConvertToTree(cache)

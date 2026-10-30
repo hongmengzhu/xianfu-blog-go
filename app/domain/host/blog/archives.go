@@ -4,49 +4,52 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/core/blog/serviceCore"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/model/modBlogArticle"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/cacheTc"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/typePg"
+	"github.com/labstack/echo/v4"
 	"github.com/pangu-2/go-tools/tools/datetimePg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(ArchivesController)).Name("BlogHostArchivesController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(ArchivesController)).Name("BlogHostArchivesController").Export(gs.As[routerPg.HostRouteRegistrar]())
 }
 
 // ArchivesController 归档
 type ArchivesController struct {
-	routerPg.RouteRegistrar
 	Sp       *authPg.GroupWebMiddlewareSp     `autowire:"?"`
-	ca       *cacheTc.TenantDomainCache       `autowire:"?"`
 	sv       *service.ArticleService          `autowire:"?"`
 	catCache *serviceCore.CoreArticleCategory `autowire:"?"`
+}
+
+// Hosts 模块绑定域名
+func (c *ArchivesController) Hosts() []string {
+	return blogHosts
 }
 
 // RegisterRoutes
 //
 //	@Description: 注册路由
 //	@receiver c
-//	@param e
-func (c *ArchivesController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("", authPg.GroupWebMiddleware(c.Sp))
+//	@param g
+func (c *ArchivesController) RegisterRoutes(g *echo.Group) {
+	group := g.Group("", authPg.GroupWebMiddlewareEcho(c.Sp))
 	group.GET("/archives/date/:code", c.List)
 }
 
-func (c *ArchivesController) List(ctx *gin.Context) {
+func (c *ArchivesController) List(ctx echo.Context) error {
 	dataIs := false
 	var data any
 	param := ctx.Param("code")
 	param = strings.TrimSpace(param)
+	tenantNo := webPg.GetTenantNoEcho(ctx)
 	if strPg.IsNotBlank(param) {
 		flexible, b := datetimePg.IsValidYearMonthFlexible(param)
 		if b {
@@ -56,8 +59,7 @@ func (c *ArchivesController) List(ctx *gin.Context) {
 			ct.CreateAtStart = new(typePg.Time(firstDay))
 			ct.CreateAtEnd = new(typePg.Time(monthEnd))
 			//
-			//
-			rt := c.sv.Query(ctx, ct)
+			rt := c.sv.QueryByContext(ctx.Request().Context(), tenantNo, ct)
 			if rt.SuccessIs() {
 				dataIs = true
 				data = rt.Data
@@ -65,10 +67,9 @@ func (c *ArchivesController) List(ctx *gin.Context) {
 		}
 	}
 	//
-	tenantNo := webPg.GetTenantNo(ctx)
-	tree, _ := c.catCache.FormatTree(ctx, tenantNo)
+	tree, _ := c.catCache.FormatTree(ctx.Request().Context(), tenantNo)
 	// 模版
-	templatePg.HTML(ctx, "blog/archive",
+	return templatePg.HTMLEcho(ctx, "blog/archive",
 		templatePg.WithDataByResult(dataIs, data),
 		templatePg.WithHtmlObjSet("categorys", tree),
 		templatePg.WithHtmlObjSet("subTitle", param),

@@ -19,7 +19,9 @@ require (
 	github.com/go-viper/mapstructure/v2 v2.5.0
 	github.com/goccy/go-json v0.11.2
 	github.com/h2non/filetype v1.1.3
+	github.com/jackc/pgx/v5 v5.11.0
 	github.com/jinzhu/copier v0.4.0
+	github.com/labstack/echo/v4 v4.13.4
 	github.com/lestrrat-go/jwx/v4 v4.5.0
 	github.com/markbates/goth v1.82.0
 	github.com/minio/minio-go/v7 v7.3.0
@@ -39,6 +41,7 @@ require (
 	go-spring.org/log v0.1.4
 	go-spring.org/spring v1.3.4
 	go-spring.org/starter-bigcache v0.0.0-00010101000000-000000000000
+	go-spring.org/starter-echo v0.0.0-00010101000000-000000000000
 	go-spring.org/starter-gin v1.3.4
 	go-spring.org/starter-gorm v0.0.0
 	go-spring.org/starter-gorm-mysql v1.3.4
@@ -101,7 +104,6 @@ require (
 	github.com/gopherjs/gopherjs v1.21.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
-	github.com/jackc/pgx/v5 v5.11.0 // indirect
 	github.com/jackc/puddle/v2 v2.2.3 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
@@ -111,7 +113,6 @@ require (
 	github.com/klauspost/compress v1.20.1 // indirect
 	github.com/klauspost/cpuid/v2 v2.4.0 // indirect
 	github.com/klauspost/crc32 v1.3.0 // indirect
-	github.com/labstack/echo/v4 v4.13.4 // indirect
 	github.com/labstack/gommon v0.4.2 // indirect
 	github.com/leodido/go-urn v1.5.0 // indirect
 	github.com/lestrrat-go/backoff/v2 v2.0.8 // indirect
@@ -163,7 +164,6 @@ require (
 	github.com/zeebo/xxh3 v1.1.0 // indirect
 	go-spring.org/cloud v0.0.0 // indirect
 	go-spring.org/gs-mock v0.0.9 // indirect
-	go-spring.org/starter-echo v0.0.0-00010101000000-000000000000 // indirect
 	go.mongodb.org/mongo-driver/v2 v2.9.1 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/otel v1.47.0 // indirect
