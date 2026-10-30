@@ -65,19 +65,26 @@ func NewEchoRenderer(pattern string) echo.Renderer {
 //	@param opts
 //	@return error
 func HTMLEcho(c *echo.Context, file string, opts ...Option) error {
+	// echo 的虚拟主机中间件写入的是 WebVhostTemplatePg* 这组键，
+	// 而 gin 中间件写入的是 WebTemplatePg*。这里优先读 vhost 键，
+	// 再回落到 gin 键，避免取不到配置时主题后缀为空、模板名缺 .html。
 	server := configPg.Server{}
-	if v := c.Get(constHeaderPg.WebTemplatePgServer); nil != v {
-		if tmp, ok := v.(configPg.Server); ok {
-			server = tmp
-		}
+	if v, err := echo.ContextGet[configPg.Server](c, constHeaderPg.WebVhostTemplatePgServer); nil == err {
+		server = v
+	} else if v, err := echo.ContextGet[configPg.Server](c, constHeaderPg.WebTemplatePgServer); nil == err {
+		server = v
 	}
 	pg := configPg.Pg{}
-	if v := c.Get(constHeaderPg.WebTemplatePg); nil != v {
-		if tmp, ok := v.(configPg.Pg); ok {
-			pg = tmp
-		}
+	if v, err := echo.ContextGet[configPg.Pg](c, constHeaderPg.WebVhostTemplatePg); nil == err {
+		pg = v
+	} else if v, err := echo.ContextGet[configPg.Pg](c, constHeaderPg.WebTemplatePg); nil == err {
+		pg = v
 	} else {
 		pg.Template.Theme = "nisarg"
+	}
+	// 模板名 = 主题 + 文件 + 后缀；后缀缺失时补默认值，保证模板名可命中。
+	if strPg.IsBlank(pg.Template.Suffix) {
+		pg.Template.Suffix = ".html"
 	}
 	code, name, obj := buildTemplateParam(pg, server, c.Request(), file, opts...)
 	//
