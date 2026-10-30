@@ -65,6 +65,8 @@ func NewServer(regs []RouteRegistrar, cfg Config) (*Server, error) {
 	for _, host := range names {
 		vh := echo.New()
 		vh.Use(middleware.Recover(), middleware.RequestID())
+		// 错误处理器：保留 echo 默认响应，同时把原始错误写进日志
+		vh.HTTPErrorHandler = newHTTPErrorHandler()
 		// 模板渲染器，命名规则与 gin LoadHTMLGlob 保持一致
 		if renderer := templatePg.NewEchoRenderer("data/templates/**/**/*"); nil != renderer {
 			vh.Renderer = renderer
@@ -84,6 +86,7 @@ func NewServer(regs []RouteRegistrar, cfg Config) (*Server, error) {
 	// a bare http://127.0.0.1:2016/ then lists the subdomains to try.
 	handler := echo.NewVirtualHostHandler(vhosts)
 	handler.Use(middleware.Recover(), middleware.RequestID())
+	handler.HTTPErrorHandler = newHTTPErrorHandler()
 	handler.GET("/", func(c *echo.Context) error {
 		return c.JSON(http.StatusOK, map[string]any{
 			"service": "echo5",
@@ -115,6 +118,48 @@ func (s *Server) Addr() string { return s.addr }
 
 // Hosts reports the registered subdomains in lexical order.
 func (s *Server) Hosts() []string { return s.hosts }
+
+// newHTTPErrorHandler 创建带日志的错误处理器。
+// echo v5 的 DefaultHTTPErrorHandler 只负责写响应、不写日志，一旦 handler
+// 返回普通 error（模板渲染失败、数据库/服务层错误等），客户端只会看到
+// {"message":"Internal Server Error"}，日志里却什么都没有。这里在不改变
+// 默认响应的前提下补一条日志：5xx 记 error，4xx 记 debug。
+func newHTTPErrorHandler() echo.HTTPErrorHandler {
+	return func(c *echo.Context, err error) {
+		logRequestError(c, err)
+		// 响应行为与默认处理器保持一致（不向客户端暴露错误详情）
+		echo.DefaultHTTPErrorHandler(false)(c, err)
+	}
+}
+
+// logRequestError 记录一次失败请求的原始错误及请求上下文。
+func logRequestError(c *echo.Context, err error) {
+	code := echo.StatusCode(err)
+	if code == 0 {
+		code = http.StatusInternalServerError
+	}
+	ctx := context.Background()
+	fields := make([]log.Field, 0, 6)
+	fields = append(fields, log.Any("status", code))
+	if req := c.Request(); nil != req {
+		// 带上请求上下文，便于链路追踪
+		ctx = req.Context()
+		fields = append(fields,
+			log.String("method", req.Method),
+			log.String("path", req.URL.Path),
+			log.String("host", req.Host),
+		)
+	}
+	if rid := c.Response().Header().Get(echo.HeaderXRequestID); "" != rid {
+		fields = append(fields, log.String("requestId", rid))
+	}
+	// 4xx 属于预期内的客户端错误，只记 debug，避免刷屏
+	if code < http.StatusInternalServerError {
+		log.Debug(ctx, log.TagAppDef, "echo5 request error", func() []log.Field { return fields })
+		return
+	}
+	log.Error(ctx, log.TagAppDef, err, "echo5 request failed", fields...)
+}
 
 // hostNormalizer strips the port from the request's Host before echo's
 // virtual-host dispatch, so both "Host: blog.test" and "Host:
