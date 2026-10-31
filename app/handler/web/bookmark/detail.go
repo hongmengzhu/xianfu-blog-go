@@ -1,15 +1,11 @@
 package bookmark
 
 import (
-	"context"
-
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/core/cache/cacheBlog"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/core/cache/cacheBookmark"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBookmark/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
-	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheDomainPg"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticleWeb"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
 	"go-spring.org/log"
@@ -22,10 +18,9 @@ func init() {
 
 type DetailController struct {
 	routerPg.RouteRegistrar
-	Sp       *authPg.GroupWebMiddlewareSp        `autowire:"?"`
-	ca       *cacheDomainPg.TenantDomainCache    `autowire:"?"`
-	sv       *service.BlogArticleWebService      `autowire:"?"`
-	catCache *cacheBlog.CacheBlogArticleCategory `autowire:"?"`
+	Sp       *authPg.GroupWebMiddlewareSp         `autowire:"?"`
+	sv       *service.BmBookmarkWebService        `autowire:"?"`
+	catCache *cacheBookmark.CacheBookmarkCategory `autowire:"?"`
 }
 
 // RegisterRoutes
@@ -39,25 +34,26 @@ func (c *DetailController) RegisterRoutes(e *gin.Engine) {
 }
 
 func (c *DetailController) DetailCode(ctx *gin.Context) {
-	var ct modBlogArticleWeb.QueryCt
-	ctx.Bind(&ct)
 	param := ctx.Param("code")
 	log.Info(ctx, log.TagBizDef, "Param", log.Any("code", param))
-	//
-	rt := c.sv.Query(ctx, ct)
-	log.Info(context.Background(), log.TagBizDef, "Data", log.Any("Pageable", rt.Data.Pageable))
+	dataIs := false
+	var data any
+	rt := c.sv.Detail(ctx, param)
+	if rt.SuccessIs() {
+		dataIs = true
+		data = rt.Data
+	}
 	//
 	tenantNo := webPg.GetTenantNo(ctx)
 	tree, _ := c.catCache.FormatTree(ctx, tenantNo)
-
-	//fmt.Printf("Data: %+v\n", tree)
+	//fmt.Printf("Data: %+v\n", data)
 	// 模版
 	templatePg.HTML(ctx, "bookmark/detail",
-		templatePg.WithDataByResult(rt.SuccessIs(), rt.Data),
-		templatePg.WithHtmlObjSet("categorys", tree),
-		templatePg.WithHtmlObjSet("pageUrl", "page"),
+		templatePg.WithDataByResult(dataIs, data),
+		templatePg.WithHtmlObjSet("pageCategory", tree),
+		templatePg.WithHtmlObjSet("pageUrl", "article"),
 		templatePg.WithSitePage(templatePg.SitePage{
-			Title:       "博客",
+			Title:       "详情",
 			Description: "博客",
 			Keywords:    "博客",
 			SiteName:    "博客",

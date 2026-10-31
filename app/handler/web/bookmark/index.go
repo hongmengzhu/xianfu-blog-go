@@ -5,10 +5,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/core/cache/cacheBookmark"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBookmark/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticleWeb"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkWeb"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -23,7 +23,7 @@ func init() {
 type IndexController struct {
 	routerPg.RouteRegistrar
 	Sp       *authPg.GroupWebMiddlewareSp         `autowire:"?"`
-	sv       *service.BlogArticleWebService       `autowire:"?"`
+	sv       *service.BmBookmarkWebService        `autowire:"?"`
 	catCache *cacheBookmark.CacheBookmarkCategory `autowire:"?"`
 }
 
@@ -39,7 +39,7 @@ func (c *IndexController) RegisterRoutes(e *gin.Engine) {
 }
 
 func (c *IndexController) Index(ctx *gin.Context) {
-	var ct modBlogArticleWeb.QueryCt
+	var ct modBmBookmarkWeb.QueryCt
 	ctx.Bind(&ct)
 	//
 	rt := c.sv.Query(ctx, ct)
@@ -52,7 +52,8 @@ func (c *IndexController) Index(ctx *gin.Context) {
 	// 模版
 	templatePg.HTML(ctx, "bookmark/index",
 		templatePg.WithDataByResult(rt.SuccessIs(), rt.Data),
-		templatePg.WithHtmlObjSet("categorys", tree),
+		// 页面 分类
+		templatePg.WithHtmlObjSet("pageCategory", tree),
 		templatePg.WithHtmlObjSet("pageUrl", "page"),
 		templatePg.WithSitePage(templatePg.SitePage{
 			Title:       "博客",
@@ -64,16 +65,13 @@ func (c *IndexController) Index(ctx *gin.Context) {
 
 func (c *IndexController) Page(ctx *gin.Context) {
 	param := ctx.Param("page")
-	var ct modBlogArticleWeb.QueryCt
+	var ct modBmBookmarkWeb.QueryCt
 	ct.PageSize = 20
-	ct.PageNum = strPg.ToInt64(param)
-	if ct.PageNum < 1 {
-		ct.PageNum = 1
-	}
+	ct.PageNum = max(strPg.ToInt64(param), 1)
 	//
 	rt := c.sv.Query(ctx, ct)
 	// 模版
-	templatePg.HTML(ctx, "blog/article_list",
+	templatePg.HTML(ctx, "bookmark/index_page",
 		templatePg.WithDataByResult(rt.SuccessIs(), rt.Data),
 		templatePg.WithHtmlObjSet("pageUrl", "page"),
 		templatePg.WithSitePage(templatePg.SitePage{
