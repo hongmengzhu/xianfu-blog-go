@@ -3,8 +3,8 @@ package listenerBasic
 import (
 	"context"
 
-	"github.com/hongmengzhu/xianfu-blog-go/app/event/basic/model/modEventBasicEvent"
 	"github.com/hongmengzhu/xianfu-blog-go/app/event/basic/service/eventBasicEvent"
+	modEventBasicEvent2 "github.com/hongmengzhu/xianfu-blog-go/app/models/event/basic/modEventBasicEvent"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
@@ -24,7 +24,7 @@ func (c *EventCacheListener) Register(bus event.Bus) {
 	log.Info(context.Background(), log.TagAppDef, "[init].listener.[基础.模型事件.缓存]===================")
 	// 创建适配器
 	//模型事件
-	event.Subscribe(bus, func(ctx context.Context, e modEventBasicEvent.EventDto) error {
+	event.Subscribe(bus, func(ctx context.Context, e modEventBasicEvent2.EventDto) error {
 		log.Info(ctx, log.TagAppDef, "listener.[基础.模型事件.缓存]1===================")
 		err := eventBasicEvent.NewEventMakeCache(c.sp, e).Processor(context.Background())
 		if nil != err {
@@ -33,7 +33,7 @@ func (c *EventCacheListener) Register(bus event.Bus) {
 		return nil
 	})
 	//模型事件字段
-	event.Subscribe(bus, func(ctx context.Context, e modEventBasicEvent.FieldDto) error {
+	event.Subscribe(bus, func(ctx context.Context, e modEventBasicEvent2.FieldDto) error {
 		log.Info(ctx, log.TagAppDef, "listener.[基础.模型事件字段.缓存]2===================")
 		err := eventBasicEvent.NewEventFieldMakeCache(c.sp, e).Processor(context.Background())
 		if nil != err {

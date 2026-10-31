@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/event/basic/model/modEventBasicTags"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogTopic"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/event/basic/modEventBasicTags"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"

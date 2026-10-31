@@ -1,8 +1,9 @@
-package serviceCore
+package cacheBlog
 
 import (
 	"context"
 	"fmt"
+
 	"github.com/goccy/go-json"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticleCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
@@ -14,10 +15,10 @@ import (
 )
 
 func init() {
-	gs.Provide(new(CoreArticleCategory))
+	gs.Provide(new(CacheBlogArticleCategory))
 }
 
-type CoreArticleCategory struct {
+type CacheBlogArticleCategory struct {
 	sv  *repositoryBlog.BlogArticleCategoryRepository `autowire:"?"`
 	rdt *bigCachePg.BatchString                       `autowire:"?"`
 }
@@ -30,7 +31,7 @@ type CoreArticleCategory struct {
 //	@param tenantNo
 //	@return []*entityBlog.BlogArticleCategoryEntity
 //	@return bool
-func (c *CoreArticleCategory) GetAllByKeysRetMap(ctx context.Context, keys []string, tenantNo string) (map[string]*modBlogArticleCategory.Cache, bool) {
+func (c *CacheBlogArticleCategory) GetAllByKeysRetMap(ctx context.Context, keys []string, tenantNo string) (map[string]*modBlogArticleCategory.Cache, bool) {
 	data := make(map[string]*modBlogArticleCategory.Cache, 0)
 	tmps := make([]string, 0)
 	for _, item := range keys {
@@ -73,7 +74,7 @@ func (c *CoreArticleCategory) GetAllByKeysRetMap(ctx context.Context, keys []str
 //	@param tenantNo
 //	@return []*entityBlog.BlogArticleCategoryEntity
 //	@return bool
-func (c *CoreArticleCategory) GetAllByCache(ctx context.Context, tenantNo string) ([]*modBlogArticleCategory.Cache, bool) {
+func (c *CacheBlogArticleCategory) GetAllByCache(ctx context.Context, tenantNo string) ([]*modBlogArticleCategory.Cache, bool) {
 	data := make([]*modBlogArticleCategory.Cache, 0)
 	// 原来是把集合 key 交给 Lua（SMEMBERS + MGET）；现在由 GetAllBySetKey 在进程内完成同样的两步。
 	setKey := blogKeyPg.ArticleCategoryTenantNoKeys(tenantNo)
@@ -112,7 +113,7 @@ func (c *CoreArticleCategory) GetAllByCache(ctx context.Context, tenantNo string
 //	@param tenantNo
 //	@return []model.BaseNodeTree
 //	@return bool
-func (c *CoreArticleCategory) FormatTree(ctx context.Context, tenantNo string) ([]model.BaseNodeTree, bool) {
+func (c *CacheBlogArticleCategory) FormatTree(ctx context.Context, tenantNo string) ([]model.BaseNodeTree, bool) {
 	cache, b := c.GetAllByCache(ctx, tenantNo)
 	if b {
 		tree := c.ConvertToTree(cache)
@@ -124,7 +125,7 @@ func (c *CoreArticleCategory) FormatTree(ctx context.Context, tenantNo string) (
 // ConvertToTree 将 数组转换为 BaseNodeTree 树形结构
 //
 //	[]BaseNodeTree: 树形结构的根节点列表
-func (c *CoreArticleCategory) ConvertToTree(entities []*modBlogArticleCategory.Cache) []model.BaseNodeTree {
+func (c *CacheBlogArticleCategory) ConvertToTree(entities []*modBlogArticleCategory.Cache) []model.BaseNodeTree {
 	// 初始化节点Map和根节点列表
 	nodeMap := make(map[string]*model.BaseNodeTree)
 	rootNodes := make([]model.BaseNodeTree, 0)

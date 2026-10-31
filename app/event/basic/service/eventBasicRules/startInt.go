@@ -3,7 +3,7 @@ package eventBasicRules
 import (
 	"context"
 
-	"github.com/hongmengzhu/xianfu-blog-go/app/event/basic/model/modEventBasicRules"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/event/basic/modEventBasicRules"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
 	"go-spring.org/log"
 )

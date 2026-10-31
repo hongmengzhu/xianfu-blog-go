@@ -3,7 +3,7 @@ package articleBlogEvent
 import (
 	"context"
 
-	"github.com/hongmengzhu/xianfu-blog-go/app/event/blog/model/modEventBlogArticleCategory"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/cache/blog/modEventBlogArticleCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
 	"go-spring.org/log"
 )

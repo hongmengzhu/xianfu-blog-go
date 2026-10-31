@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hongmengzhu/xianfu-blog-go/app/core/blog/serviceCore"
+	"github.com/hongmengzhu/xianfu-blog-go/app/core/cache/cacheBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/handler/vhost"
@@ -26,9 +26,9 @@ func init() {
 // ArchivesController 归档
 type ArchivesController struct {
 	staterEchoV5.RouteRegistrar
-	Sp       *authPg.GroupWebVhostMiddlewareSp `autowire:"?"`
-	sv       *service.BlogArticleWebService    `autowire:"?"`
-	catCache *serviceCore.CoreArticleCategory  `autowire:"?"`
+	Sp       *authPg.GroupWebVhostMiddlewareSp   `autowire:"?"`
+	sv       *service.BlogArticleWebService      `autowire:"?"`
+	catCache *cacheBlog.CacheBlogArticleCategory `autowire:"?"`
 }
 
 // Hosts 模块绑定域名

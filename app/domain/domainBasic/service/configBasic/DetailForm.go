@@ -5,9 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/goccy/go-json"
-	"github.com/hongmengzhu/xianfu-blog-go/app/core/basic/model/modCacheBasicEvent"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicConfigEvent"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicConfigList"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/cache/basic/modCacheBasicEvent"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/bigCachePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/yesNoPg/yesNoIntPg"

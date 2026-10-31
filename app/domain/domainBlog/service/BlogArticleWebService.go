@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/core/blog/serviceCore"
+	"github.com/hongmengzhu/xianfu-blog-go/app/core/cache/cacheBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service/blogArticle"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/markdownPg"
@@ -43,7 +43,7 @@ type BlogArticleWebService struct {
 	sp        *blogArticle.Sp                                 `autowire:"?"`
 	tagsRelat *repositoryBasic.BasicTagsRelationRepository    `autowire:"?"`
 	rdu       *bigCachePg.BatchString                         `autowire:"?"`
-	catCore   *serviceCore.CoreArticleCategory                `autowire:"?"`
+	catCore   *cacheBlog.CacheBlogArticleCategory             `autowire:"?"`
 }
 
 // Detail 详情

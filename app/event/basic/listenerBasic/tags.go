@@ -3,8 +3,8 @@ package listenerBasic
 import (
 	"context"
 
-	"github.com/hongmengzhu/xianfu-blog-go/app/event/basic/model/modEventBasicTags"
 	"github.com/hongmengzhu/xianfu-blog-go/app/event/basic/service/tagsBasicEvent"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/event/basic/modEventBasicTags"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"

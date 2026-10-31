@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/hongmengzhu/xianfu-blog-go/app/event/basic/model/modEventBasicTags"
+	modEventBasicTags2 "github.com/hongmengzhu/xianfu-blog-go/app/models/event/basic/modEventBasicTags"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/enumCommonPg/typeSysPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
@@ -18,10 +18,10 @@ import (
 type SaveByCategory struct {
 	sp *Sp
 
-	dto modEventBasicTags.TagsRelation
+	dto modEventBasicTags2.TagsRelation
 }
 
-func NewSaveByCategory(sp *Sp, dto modEventBasicTags.TagsRelation) *SaveByCategory {
+func NewSaveByCategory(sp *Sp, dto modEventBasicTags2.TagsRelation) *SaveByCategory {
 	return &SaveByCategory{
 		sp:  sp,
 		dto: dto,
@@ -132,7 +132,7 @@ func (c *SaveByCategory) Processor() error {
 
 // 缓存更新
 func (t *SaveByCategory) cache(categoryRoot []string) {
-	dto := modEventBasicTags.TagsCacheDto{CategoryRoot: categoryRoot}
+	dto := modEventBasicTags2.TagsCacheDto{CategoryRoot: categoryRoot}
 	//缓存更新
 	err := NewCachePush(t.sp, dto).Processor(context.Background())
 	if err != nil {

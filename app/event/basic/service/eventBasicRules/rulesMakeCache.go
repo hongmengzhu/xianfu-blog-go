@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/goccy/go-json"
-	"github.com/hongmengzhu/xianfu-blog-go/app/core/basic/model/modCacheBasicRules"
-	"github.com/hongmengzhu/xianfu-blog-go/app/event/basic/model/modEventBasicRules"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/cache/basic/modCacheBasicRules"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/event/basic/modEventBasicRules"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/basic/key/basicEventKey"

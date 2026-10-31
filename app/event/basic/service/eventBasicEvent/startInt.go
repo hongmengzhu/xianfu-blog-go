@@ -3,7 +3,7 @@ package eventBasicEvent
 import (
 	"context"
 
-	"github.com/hongmengzhu/xianfu-blog-go/app/event/basic/model/modEventBasicEvent"
+	modEventBasicEvent2 "github.com/hongmengzhu/xianfu-blog-go/app/models/event/basic/modEventBasicEvent"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
 	"go-spring.org/log"
 )
@@ -25,7 +25,7 @@ func (c *StartInit) Processor(ctx context.Context) error {
 		if c.Bus == nil {
 			log.Error(ctx, log.TagAppDef, nil, "c.Bus 不存在～～～～～～～～～～～～")
 		}
-		err := c.Bus.Publish(context.Background(), modEventBasicEvent.EventDto{
+		err := c.Bus.Publish(context.Background(), modEventBasicEvent2.EventDto{
 			IsAll: true,
 		})
 		if err != nil {
@@ -34,7 +34,7 @@ func (c *StartInit) Processor(ctx context.Context) error {
 		}
 	}
 	{
-		err := c.Bus.Publish(context.Background(), modEventBasicEvent.FieldDto{
+		err := c.Bus.Publish(context.Background(), modEventBasicEvent2.FieldDto{
 			IsAll: true,
 		})
 		if err != nil {
