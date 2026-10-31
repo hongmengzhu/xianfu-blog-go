@@ -1,21 +1,34 @@
 package service
 
 import (
+	"io"
+	"os"
+
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service/ramAccount"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamAccount"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/passwordTypePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/enumCommonPg/appModulePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/yesNoPg/yesNoIntPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/sdk-common-cache/cacheRamDepartmentPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/sdk-common-cache/cacheRamGroupPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/sdk-common-cache/cacheRamLevelPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/sdk-common-cache/cacheRamPositionPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/sdk-common-cache/cacheRamPostPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/sdk-common-cache/cacheRamRolePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/sdk-common-cache/cacheRamTeamPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbMakePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
 	"github.com/pangu-2/go-tools/tools/dbPg/pagePg"
-	"github.com/pangu-2/go-tools/tools/slicePg"
+	"github.com/pangu-2/go-tools/tools/filePg"
 	"github.com/pangu-2/go-tools/tools/strPg"
+	"github.com/pangu-2/go-tools/tools/userPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
@@ -37,7 +50,15 @@ type RamAccountService struct {
 	groupDb    *repositoryRam.RamGroupRepository                `autowire:"?"`
 	positionDb *repositoryRam.RamPositionRepository             `autowire:"?"`
 	postDb     *repositoryRam.RamPostRepository                 `autowire:"?"`
-	sp         *ramAccount.Sp                                   `autowire:"?"`
+	// 缓存
+	depCache      *cacheRamDepartmentPg.Cache `autowire:"?"`
+	roleCache     *cacheRamRolePg.Cache       `autowire:"?"`
+	levelCache    *cacheRamLevelPg.Cache      `autowire:"?"`
+	groupCache    *cacheRamGroupPg.Cache      `autowire:"?"`
+	teamCache     *cacheRamTeamPg.Cache       `autowire:"?"`
+	positionCache *cacheRamPositionPg.Cache   `autowire:"?"`
+	postCache     *cacheRamPostPg.Cache       `autowire:"?"`
+	sp            *ramAccount.Sp              `autowire:"?"`
 }
 
 func NewRamAccountService() *RamAccountService {
@@ -224,10 +245,6 @@ func (c *RamAccountService) Query(ctx *gin.Context, ct modRamAccount.QueryCt, tp
 	rt.Data.Data = slice
 	r := c.sv
 	depDb := c.dep
-	roleDb := c.role
-	groupDb := c.groupDb
-	levelDb := c.levelDb
-	teamDb := c.team
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
 		if ct.PageSize < 1 {
 			ct.PageSize = 20
@@ -256,10 +273,10 @@ func (c *RamAccountService) Query(ctx *gin.Context, ct modRamAccount.QueryCt, tp
 		}
 		//角色
 		if nil != ct.Roles && len(ct.Roles) > 0 {
-			depInfo, result := roleDb.FindAllByNoIn(ctx, ct.Roles)
-			if result {
+			mapRoleCt := c.roleCache.GetMapByNo(ctx, ct.Roles)
+			if len(mapRoleCt) > 0 {
 				sqlDb := r.DbModel()
-				for _, obj := range depInfo {
+				for _, obj := range mapRoleCt {
 					cond, args := dbMakePg.MakeJsonOsContainsCond(sqlDb, "roles", obj.No)
 					sqlDb = sqlDb.Or(cond, args...)
 				}
@@ -272,10 +289,10 @@ func (c *RamAccountService) Query(ctx *gin.Context, ct modRamAccount.QueryCt, tp
 		//级别
 		{
 			if nil != ct.Levels && len(ct.Levels) > 0 {
-				depInfo, result := levelDb.FindAllByNoIn(ctx, ct.Levels)
-				if result {
+				mapLevelCt := c.levelCache.GetMapByNo(ctx, ct.Levels)
+				if len(mapLevelCt) > 0 {
 					sqlDb := r.DbModel()
-					for _, obj := range depInfo {
+					for _, obj := range mapLevelCt {
 						cond, args := dbMakePg.MakeJsonOsContainsCond(sqlDb, "levels", obj.No)
 						sqlDb = sqlDb.Or(cond, args...)
 					}
@@ -289,10 +306,10 @@ func (c *RamAccountService) Query(ctx *gin.Context, ct modRamAccount.QueryCt, tp
 		//组
 		{
 			if nil != ct.Groups && len(ct.Groups) > 0 {
-				depInfo, result := groupDb.FindAllByNoIn(ctx, ct.Groups)
-				if result {
+				mapGroupCt := c.groupCache.GetMapByNo(ctx, ct.Groups)
+				if len(mapGroupCt) > 0 {
 					sqlDb := r.DbModel()
-					for _, obj := range depInfo {
+					for _, obj := range mapGroupCt {
 						cond, args := dbMakePg.MakeJsonOsContainsCond(sqlDb, "groups", obj.No)
 						sqlDb = sqlDb.Or(cond, args...)
 					}
@@ -303,10 +320,10 @@ func (c *RamAccountService) Query(ctx *gin.Context, ct modRamAccount.QueryCt, tp
 		//团队
 		{
 			if nil != ct.Teams && len(ct.Teams) > 0 {
-				depInfo, result := teamDb.FindAllByNoIn(ctx, ct.Teams)
-				if result {
+				mapTeamCt := c.teamCache.GetMapByNo(ctx, ct.Teams)
+				if len(mapTeamCt) > 0 {
 					sqlDb := r.DbModel()
-					for _, obj := range depInfo {
+					for _, obj := range mapTeamCt {
 						cond, args := dbMakePg.MakeJsonOsContainsCond(sqlDb, "teams", obj.No)
 						sqlDb = sqlDb.Or(cond, args...)
 					}
@@ -425,78 +442,43 @@ func (c *RamAccountService) Query(ctx *gin.Context, ct modRamAccount.QueryCt, tp
 		//部门
 		{
 			if len(idsDep) > 0 {
-				infos, result := depDb.FindAllByNoIn(ctx, idsDep)
-				if result {
-					mapDep = slicePg.ToMap(infos, func(t *entityRam.RamDepartmentEntity) (string, *entityRam.RamDepartmentEntity) {
-						return t.No, t
-					})
-				}
+				mapDep = c.depCache.GetMapByNo(ctx, idsDep)
 			}
 		}
 		//角色
 		{
 			if len(idsRole) > 0 {
-				infos, result := roleDb.FindAllByNoIn(ctx, idsRole)
-				if result {
-					mapRole = slicePg.ToMap(infos, func(t *entityRam.RamRoleEntity) (string, *entityRam.RamRoleEntity) {
-						return t.No, t
-					})
-				}
+				mapRole = c.roleCache.GetMapByNo(ctx, idsRole)
 			}
 		}
 		//级别
 		{
 			if len(idsLevel) > 0 {
-				infos, result := levelDb.FindAllByNoIn(ctx, idsLevel)
-				if result {
-					mapLevel = slicePg.ToMap(infos, func(t *entityRam.RamLevelEntity) (string, *entityRam.RamLevelEntity) {
-						return t.No, t
-					})
-				}
+				mapLevel = c.levelCache.GetMapByNo(ctx, idsLevel)
 			}
 		}
 		//分组
 		{
 			if len(idsGroup) > 0 {
-				infos, result := groupDb.FindAllByNoIn(ctx, idsGroup)
-				if result {
-					mapGroup = slicePg.ToMap(infos, func(t *entityRam.RamGroupEntity) (string, *entityRam.RamGroupEntity) {
-						return t.No, t
-					})
-				}
+				mapGroup = c.groupCache.GetMapByNo(ctx, idsGroup)
 			}
 		}
 		//分组
 		{
 			if len(idsTeam) > 0 {
-				infos, result := teamDb.FindAllByNoIn(ctx, idsTeam)
-				if result {
-					mapTeam = slicePg.ToMap(infos, func(t *entityRam.RamTeamEntity) (string, *entityRam.RamTeamEntity) {
-						return t.No, t
-					})
-				}
+				mapTeam = c.teamCache.GetMapByNo(ctx, idsTeam)
 			}
 		}
 		//职位
 		{
 			if len(idsPosition) > 0 {
-				infos, result := c.positionDb.FindAllByNoIn(ctx, idsPosition)
-				if result {
-					mapPosition = slicePg.ToMap(infos, func(t *entityRam.RamPositionEntity) (string, *entityRam.RamPositionEntity) {
-						return t.No, t
-					})
-				}
+				mapPosition = c.positionCache.GetMapByNo(ctx, idsPosition)
 			}
 		}
 		//职位
 		{
 			if len(idsPost) > 0 {
-				infos, result := c.postDb.FindAllByNoIn(ctx, idsPost)
-				if result {
-					mapPost = slicePg.ToMap(infos, func(t *entityRam.RamPostEntity) (string, *entityRam.RamPostEntity) {
-						return t.No, t
-					})
-				}
+				mapPost = c.postCache.GetMapByNo(ctx, idsPost)
 			}
 		}
 		//字段赋值
@@ -712,4 +694,102 @@ func (c *RamAccountService) ExistRealName(ctx *gin.Context, ct model.BaseExistWd
 		return rt.ErrorMessage("重复，已存在")
 	}
 	return rt.OkMessage("可以使用")
+}
+
+// ResetPassword
+//
+//	@Description: 重置密码
+//	@receiver c
+//	@param ctx
+//	@return rt
+func (c *RamAccountService) ResetPassword(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	if !c.sv.Config().Domain.System {
+		return rt.ErrorMessage("系统管理模块已禁用，不允许操作")
+	}
+	if strPg.IsBlank(ct.Id) {
+		return rt.ErrorMessage("ID不能为空")
+	}
+	fileTxt := "./" + constsPg.SYS_DIR + "/system.reset.txt"
+	exists, _ := filePg.PathExists(fileTxt)
+	if !exists {
+		return rt.ErrorMessage("文件不存在")
+	}
+	dirName := "./" + constsPg.SYS_DIR
+	// 使用 os.Mkdir 创建目录
+	err := os.Mkdir(dirName, 0755)
+	if err != nil {
+		if !os.IsExist(err) {
+			log.Error(ctx, log.TagAppDef, err, "创建目录失败:")
+		}
+	}
+	// 打开文件（如果不存在则创建，如果存在则截断）
+	//file, err := os.OpenFile(fileTxt, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0755)
+	//if err != nil {
+	//	log.Error(ctx, log.TagAppDef, "无法打开文件: %v", err)
+	//}
+	//defer file.Close()
+	//
+	//// 写入字符串
+	//_, err = file.WriteString("Hello, World!\n")
+	//if err != nil {
+	//	log.Error(ctx, log.TagAppDef, "写入文件失败: %v", err)
+	//}
+	// 打开文件
+	file, err := os.Open(fileTxt)
+	if err != nil {
+		log.Error(ctx, log.TagAppDef, err, "无法打开文件")
+		return rt.ErrorMessage("无法打开文件")
+	}
+	defer file.Close()
+
+	// 获取文件大小
+	fileInfo, err := file.Stat()
+	if err != nil {
+		log.Error(ctx, log.TagAppDef, err, "获取文件信息失败")
+		return rt.ErrorMessage("获取文件信息失败")
+	}
+
+	// 分配足够的缓冲区
+	buffer := make([]byte, fileInfo.Size())
+
+	// 读取整个文件
+	_, err = io.ReadFull(file, buffer)
+	if err != nil {
+		log.Error(ctx, log.TagAppDef, err, "读取文件失败")
+		return rt.ErrorMessage("读取文件失败")
+	}
+
+	// 转换为字符串并打印
+	content := string(buffer)
+	if strPg.IsBlank(content) {
+		return rt.ErrorMessage("文件内容为空")
+	}
+	if content != ct.Id {
+		return rt.ErrorMessage("参数对比失败")
+	}
+	passwdStr := strPg.GetNanoid(20)
+	r := c.sv
+	info, b := r.FindById(ctx, 1)
+	if !b {
+		return rt.ErrorMessage("数据不存在")
+	}
+	r2 := c.aAuth
+	passwd, result := r2.FindByTypePasswordANo(ctx, info.No)
+	if !result {
+		return rt.ErrorMessage("数据不存在")
+	}
+	entity := entityRam.RamAccountAuthorizationEntity{}
+	entity.ExtraData = strPg.GetNanoid(8)
+	entity.Value = userPg.PasswordSalt(passwdStr, entity.ExtraData)
+	if nil == passwd {
+		entity.Ano = info.No
+		entity.TenantNo = info.TenantNo
+		entity.Type = passwordTypePg.Password.String()
+		r2.Create(ctx, &entity)
+	} else {
+		r2.Update(ctx, entity, passwd.ID)
+	}
+
+	return rt.OkMessage("重置成功")
 }
