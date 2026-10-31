@@ -78,10 +78,12 @@ func (c *RamMenuService) Create(ctx *gin.Context, ct modRamMenu.CreateUpdateCt) 
 		if !typeAttrPg.Category.IsEqual(parent.TypeAttr) {
 			return rt.ErrorMessage("上级属性为分类属性时,才能有下级")
 		}
+		info.TypeAttr = typeAttrPg.CategoryLast.Index()
 	} else {
-		if !typeAttrPg.Category.IsEqual(ct.TypeAttr) {
-			return rt.ErrorMessage("顶级属性为分类属性")
-		}
+		info.TypeAttr = typeAttrPg.Category.Index()
+		//if !typeAttrPg.Category.IsEqual(info.TypeAttr) {
+		//	return rt.ErrorMessage("顶级属性为分类属性")
+		//}
 	}
 	info.TypeSys = typeSysPg.General.Index()
 	info.ParentId = ct.ParentId
@@ -180,10 +182,12 @@ func (c *RamMenuService) Update(ctx *gin.Context, ct modRamMenu.CreateUpdateCt) 
 		if !typeAttrPg.Category.IsEqual(parent.TypeAttr) {
 			return rt.ErrorMessage("上级属性为分类属性时,才能有下级")
 		}
+		info.TypeAttr = typeAttrPg.CategoryLast.Index()
 	} else {
-		if !typeAttrPg.Category.IsEqual(ct.TypeAttr) {
-			return rt.ErrorMessage("顶级属性为分类属性")
-		}
+		//if !typeAttrPg.Category.IsEqual(ct.TypeAttr) {
+		//	return rt.ErrorMessage("顶级属性为分类属性")
+		//}
+		info.TypeAttr = typeAttrPg.Category.Index()
 	}
 
 	//
@@ -274,7 +278,7 @@ func (c *RamMenuService) CacheOverride(ctx *gin.Context) {
 	//
 	for _, val := range maps {
 		for _, item := range val {
-			r.Update(ctx, entityRam.RamMenuEntity{IdLink: item.IdLink}, item.ID)
+			r.Update(ctx, entityRam.RamMenuEntity{IdLink: item.IdLink, NoLink: item.NoLink}, item.ID)
 		}
 	}
 	maps = nil
@@ -557,6 +561,59 @@ func (c *RamMenuService) QueryPublic(ctx *gin.Context, ct modRamMenu.QueryCt) (r
 //	@receiver c
 //	@param ct
 func (c *RamMenuService) SelectNodePublic(ctx *gin.Context, ct modRamMenu.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	var query entityRam.RamMenuEntity
+	copier.Copy(&query, &ct)
+	slice := make([]model.BaseNodeNo, 0)
+	rt.Data = slice
+	infos := c.sv.FindAll(ctx, query)
+	if len(infos) > 0 {
+		for _, item := range infos {
+			var vo modRamMenu.Vo
+			copier.Copy(&vo, &item)
+			code := model.BaseNodeNo{
+				Value:    item.No,
+				Label:    item.Name,
+				ParentNo: item.ParentNo,
+				Extend:   vo,
+			}
+
+			slice = append(slice, code)
+		}
+		rt.Data = slice
+	}
+	return rt.Ok()
+}
+
+// QueryAll 查询
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *RamMenuService) QueryAll(ctx *gin.Context, ct modRamMenu.QueryCt) (rt rg.Rs[[]modRamMenu.Vo]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	var query entityRam.RamMenuEntity
+	copier.Copy(&query, &ct)
+	slice := make([]modRamMenu.Vo, 0)
+	rt.Data = slice
+	infos := c.sv.FindAll(ctx, query)
+	if len(infos) > 0 {
+		for _, item := range infos {
+			var vo modRamMenu.Vo
+			copier.Copy(&vo, &item)
+			slice = append(slice, vo)
+		}
+		rt.Data = slice
+	}
+	return rt.Ok()
+}
+
+// SelectNodeAll 查询
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *RamMenuService) SelectNodeAll(ctx *gin.Context, ct modRamMenu.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamMenuEntity
 	copier.Copy(&query, &ct)

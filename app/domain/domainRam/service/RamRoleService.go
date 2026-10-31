@@ -9,6 +9,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/automatedPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/sdk-common-cache/cacheRamRolePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -30,6 +31,8 @@ func init() {
 // @Description:
 type RamRoleService struct {
 	sv *repositoryRam.RamRoleRepository `autowire:"?"`
+
+	chd *cacheRamRolePg.Cache `autowire:"?"`
 }
 
 // Create 新增
@@ -42,6 +45,9 @@ func (c *RamRoleService) Create(ctx *gin.Context, ct modRamRole.CreateUpdateCt) 
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityRam.RamRoleEntity
 	copier.Copy(&info, &ct)
+	//
+	info.ID = 0
+	//
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
 	}
@@ -58,7 +64,7 @@ func (c *RamRoleService) Create(ctx *gin.Context, ct modRamRole.CreateUpdateCt) 
 		//不是自动
 		_, result := r.FindByCode(ctx, info.Code, optionsPg.WithCtx(ctx))
 		if result {
-			return rt.ErrorMessage("标志已存在")
+			return rt.ErrorMessage("码值已存在")
 		}
 	}
 	holder := holderPg.GetContextAccount(ctx)
@@ -96,9 +102,9 @@ func (c *RamRoleService) Update(ctx *gin.Context, ct modRamRole.CreateUpdateCt) 
 	if strPg.IsBlank(ct.Code) {
 		info.Code = ""
 	} else {
-		_, result := r.FindByCodeAndIdNot(ctx, info.Code, ct.ID.ToString())
+		_, result := r.FindByCodeAndIdNot(ctx, info.Code, ct.ID.ToString(), optionsPg.WithCtx(ctx))
 		if result {
-			return rt.ErrorMessage("标志已存在")
+			return rt.ErrorMessage("码值已存在")
 		}
 	}
 	find, b := r.FindById(ctx, ct.ID.ToInt64())
@@ -208,6 +214,8 @@ func (c *RamRoleService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.
 			log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
 		repository.DeleteByIdsString(ctx, ids)
+		//
+		c.chd.DeleteNos(ctx, ids)
 	} else {
 		for _, info := range finds {
 			enum := enumStatePg.State(info.State)
@@ -261,12 +269,17 @@ func (c *RamRoleService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg
 		return rt.ErrorMessage("数据不存在")
 	}
 	idsNew := make([]int64, 0)
+	keys := make([]string, 0)
 	for _, info := range finds {
 		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		idsNew = append(idsNew, info.ID)
+		//
+		keys = append(keys, info.No)
 	}
 	if len(idsNew) > 0 {
 		cn.DeleteByIds(ctx, idsNew)
+		//
+		c.chd.DeleteNos(ctx, keys)
 	}
 	return rt.Ok()
 }
@@ -321,6 +334,38 @@ func (c *RamRoleService) Query(ctx *gin.Context, ct modRamRole.QueryCt) (rt rg.R
 //	@receiver c
 //	@param ct
 func (c *RamRoleService) SelectNodePublic(ctx *gin.Context, ct modRamRole.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	var query entityRam.RamRoleEntity
+	copier.Copy(&query, &ct)
+	slice := make([]model.BaseNodeNo, 0)
+	rt.Data = slice
+	infos := c.sv.FindAll(ctx, query, func(db *gorm.DB) *gorm.DB {
+		db.Order("name asc")
+		return db
+	})
+	if len(infos) > 0 {
+		for _, item := range infos {
+			var vo modRamRole.Vo
+			copier.Copy(&vo, &item)
+			code := model.BaseNodeNo{
+				Value:  item.No,
+				Label:  item.Name,
+				Extend: vo,
+			}
+
+			slice = append(slice, code)
+		}
+		rt.Data = slice
+	}
+	return rt.Ok()
+}
+
+// SelectNodeAll 查询
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *RamRoleService) SelectNodeAll(ctx *gin.Context, ct modRamRole.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamRoleEntity
 	copier.Copy(&query, &ct)

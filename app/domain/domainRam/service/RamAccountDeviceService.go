@@ -98,7 +98,7 @@ func (c *RamAccountDeviceService) Update(ctx *gin.Context, ct modRamAccountDevic
 	if strPg.IsBlank(ct.Code) {
 		info.Code = ""
 	} else {
-		_, result := r.FindByCodeAndIdNot(ctx, info.Code, ct.ID.ToString())
+		_, result := r.FindByCodeAndIdNot(ctx, info.Code, ct.ID.ToString(), optionsPg.WithCtx(ctx))
 		if result {
 			return rt.ErrorMessage("标志已存在")
 		}

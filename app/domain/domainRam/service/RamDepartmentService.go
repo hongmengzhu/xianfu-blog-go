@@ -191,7 +191,7 @@ func (c *RamDepartmentService) Update(ctx *gin.Context, ct modRamDepartment.Crea
 	}
 	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	//更改上级后，相关子集修改
-	if strPg.IsNotBlank(ct.ParentNo) {
+	if strPg.IsNotBlank(ct.ParentNo) && nil != childData {
 		maps := slicePg.ToMapArray(childData, func(t *entityRam.RamDepartmentEntity) (string, *entityRam.RamDepartmentEntity) {
 			if len(t.ParentId) == 0 {
 				return constNodePg.ROOT, t
@@ -309,7 +309,7 @@ func (c *RamDepartmentService) State(ctx *gin.Context, ids []string, state enumS
 		return rt.ErrorMessage("id错误")
 	}
 	ctxR := c.sv
-	finds, b := ctxR.FindAllByIdStringIn(ctx, ids)
+	finds, b := ctxR.FindAllByIdStringIn(ctx, ids, optionsPg.WithCtx(ctx))
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
@@ -353,6 +353,8 @@ func (c *RamDepartmentService) LogicalDeletion(ctx *gin.Context, ids []string) (
 			log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
 		repository.DeleteByIdsString(ctx, ids)
+		//
+		c.chd.DeleteNos(ctx, ids)
 	} else {
 		for _, info := range finds {
 			enum := enumStatePg.State(info.State)
@@ -542,6 +544,59 @@ func (c *RamDepartmentService) SelectNodePublic(ctx *gin.Context, ct modRamDepar
 	return rt.Ok()
 }
 
+// QueryAll 查询
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *RamDepartmentService) QueryAll(ctx *gin.Context, ct modRamDepartment.QueryCt) (rt rg.Rs[[]modRamDepartment.Vo]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	var query entityRam.RamDepartmentEntity
+	copier.Copy(&query, &ct)
+	slice := make([]modRamDepartment.Vo, 0)
+	rt.Data = slice
+	infos := c.sv.FindAll(ctx, query)
+	if len(infos) > 0 {
+		for _, item := range infos {
+			var vo modRamDepartment.Vo
+			copier.Copy(&vo, &item)
+			slice = append(slice, vo)
+		}
+		rt.Data = slice
+	}
+	return rt.Ok()
+}
+
+// SelectNodeAll 查询
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *RamDepartmentService) SelectNodeAll(ctx *gin.Context, ct modRamDepartment.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	var query entityRam.RamDepartmentEntity
+	copier.Copy(&query, &ct)
+	slice := make([]model.BaseNodeNo, 0)
+	rt.Data = slice
+	infos := c.sv.FindAll(ctx, query)
+	if len(infos) > 0 {
+		for _, item := range infos {
+			var vo modRamDepartment.Vo
+			copier.Copy(&vo, &item)
+			code := model.BaseNodeNo{
+				Value:    item.No,
+				Label:    item.Name,
+				ParentNo: item.ParentNo,
+				Extend:   vo,
+			}
+
+			slice = append(slice, code)
+		}
+		rt.Data = slice
+	}
+	return rt.Ok()
+}
+
 // SelectNodeAllPublic 查询
 //
 //	@Description:
@@ -675,57 +730,4 @@ func (c *RamDepartmentService) ExistCode(ctx *gin.Context, ct model.BaseExistWdC
 		return rt.ErrorMessage("重复，已存在")
 	}
 	return rt.OkMessage("可以使用")
-}
-
-// QueryAll 查询
-//
-//	@Description:
-//	@receiver c
-//	@param ct
-func (c *RamDepartmentService) QueryAll(ctx *gin.Context, ct modRamDepartment.QueryCt) (rt rg.Rs[[]modRamDepartment.Vo]) {
-	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam.RamDepartmentEntity
-	copier.Copy(&query, &ct)
-	slice := make([]modRamDepartment.Vo, 0)
-	rt.Data = slice
-	infos := c.sv.FindAll(ctx, query)
-	if len(infos) > 0 {
-		for _, item := range infos {
-			var vo modRamDepartment.Vo
-			copier.Copy(&vo, &item)
-			slice = append(slice, vo)
-		}
-		rt.Data = slice
-	}
-	return rt.Ok()
-}
-
-// SelectNodeAll 查询
-//
-//	@Description:
-//	@receiver c
-//	@param ct
-func (c *RamDepartmentService) SelectNodeAll(ctx *gin.Context, ct modRamDepartment.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
-	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam.RamDepartmentEntity
-	copier.Copy(&query, &ct)
-	slice := make([]model.BaseNodeNo, 0)
-	rt.Data = slice
-	infos := c.sv.FindAll(ctx, query)
-	if len(infos) > 0 {
-		for _, item := range infos {
-			var vo modRamDepartment.Vo
-			copier.Copy(&vo, &item)
-			code := model.BaseNodeNo{
-				Value:    item.No,
-				Label:    item.Name,
-				ParentNo: item.ParentNo,
-				Extend:   vo,
-			}
-
-			slice = append(slice, code)
-		}
-		rt.Data = slice
-	}
-	return rt.Ok()
 }

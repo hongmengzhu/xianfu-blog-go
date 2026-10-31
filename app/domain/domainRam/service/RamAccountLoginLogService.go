@@ -76,7 +76,7 @@ func (c *RamAccountLoginLogService) Query(ctx *gin.Context, ct modRamAccountLogi
 		//if strPg.IsNotBlank(ct.Wd) {
 		//	arg.Db.Where("ip like ?", "%"+ct.Wd+"%")
 		//}
-	}), optionsPg.WithCtx(ctx))
+	}))
 	if nil != err {
 		return rt.Ok()
 	}

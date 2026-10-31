@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
-	holderPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/typeDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -29,13 +29,13 @@ func NewRamAccountMiddlewareService() *RamAccountMiddlewareService {
 	return new(RamAccountMiddlewareService)
 }
 
-// FindByLoginNo
+// FindByLoginNoTenant
 //
 //	@Description: 登录信息
 //	@receiver c
 //	@param jwt
 //	@return rt
-func (c *RamAccountMiddlewareService) FindByLoginNo(ctx *gin.Context, no, tenantNo string) (rt rg.Rs[holderPg2.HolderPg]) {
+func (c *RamAccountMiddlewareService) FindByLoginNoTenant(ctx *gin.Context, no, tenantNo string) (rt rg.Rs[holderPg.HolderPg]) {
 	log.Debug(ctx, log.TagAppDef, "jwt=%+v", func() []log.Field {
 		return []log.Field{log.String("no", no)}
 	})
@@ -58,10 +58,10 @@ func (c *RamAccountMiddlewareService) FindByLoginNo(ctx *gin.Context, no, tenant
 	rule.Owner = false
 	rule.MultiOwner = false
 	//
-	var accountHolder2 holderPg2.AccountHolder
+	var accountHolder2 holderPg.AccountHolder
 	copier.Copy(&accountHolder2, &info)
 	//
-	accountHolder2.Os = holderPg2.NewAccountHolderOs()
+	accountHolder2.Os = holderPg.NewAccountHolderOs()
 	accountHolder2.Os.Departments = info.Os.Data().Departments
 	accountHolder2.Os.Roles = info.Os.Data().Roles
 	accountHolder2.Os.Orgs = info.Os.Data().Orgs
@@ -75,6 +75,55 @@ func (c *RamAccountMiddlewareService) FindByLoginNo(ctx *gin.Context, no, tenant
 	}
 	pg.HolderData = accountHolder2
 	pg.TypeDomain = typeDomainPg.Manage.Code()
+	pg.Rule = &rule
+	rt.Data = pg
+	return rt.Ok()
+}
+
+// FindByLoginNo
+//
+//	@Description: 登录信息
+//	@receiver c
+//	@param jwt
+//	@return rt
+func (c *RamAccountMiddlewareService) FindByLoginNo(ctx *gin.Context, no string) (rt rg.Rs[holderPg.HolderPg]) {
+	log.Debug(ctx, log.TagAppDef, "no", func() []log.Field {
+		return []log.Field{log.String("no", no)}
+	})
+	if strPg.IsBlank(no) {
+		return rt.ErrorMessage("账号登陆失败")
+	}
+	info, b := c.sv.FindByNo(ctx, no)
+	if !b {
+		return rt.ErrorMessage("账号不存在")
+	}
+	pg := rt.Data
+	rule := multiTenantPg.NewMultiRuleDefaultBySystem()
+	//
+	rule.Tenant = true
+	rule.Merchant = false
+	rule.Org = false
+	rule.Owner = false
+	rule.MultiOwner = false
+	//
+	var accountHolder2 holderPg.AccountHolder
+	copier.Copy(&accountHolder2, &info)
+	//
+	accountHolder2.Os = holderPg.NewAccountHolderOs()
+	accountHolder2.Os.Departments = info.Os.Data().Departments
+	accountHolder2.Os.Roles = info.Os.Data().Roles
+	accountHolder2.Os.Orgs = info.Os.Data().Orgs
+	accountHolder2.Os.Tenants = info.Os.Data().Tenants
+	accountHolder2.Os.Teams = info.Os.Data().Teams
+	accountHolder2.Os.Shops = info.Os.Data().Shops
+	accountHolder2.Os.Stores = info.Os.Data().Stores
+	//
+	pg.MultiTenant = multiTenantPg.MultiTenantPg{
+		//TenantNo: accountHolder2.Os.Tenants,
+		TenantNo: []string{info.TenantNo},
+	}
+	pg.HolderData = accountHolder2
+	pg.TypeDomain = typeDomainPg.System.Code()
 	pg.Rule = &rule
 	rt.Data = pg
 	return rt.Ok()

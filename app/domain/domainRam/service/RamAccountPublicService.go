@@ -2,11 +2,13 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/hongmengzhu/xianfu-blog-go/app/core/cache/cacheRam"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modPublic"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamAccount"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
-	holderPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg/pg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/passwordTypePg"
 	"github.com/pangu-2/go-tools/tools/numberPg"
 	"go-spring.org/log"
@@ -25,8 +27,10 @@ func init() {
 // RamAccountPublicService 账户公共动作
 // @Description:
 type RamAccountPublicService struct {
-	sv    *repositoryRam.RamAccountRepository              `autowire:"?"`
-	aAuth *repositoryRam.RamAccountAuthorizationRepository `autowire:"?"`
+	sv                   *repositoryRam.RamAccountRepository              `autowire:"?"`
+	aAuth                *repositoryRam.RamAccountAuthorizationRepository `autowire:"?"`
+	authLogin            pg.Auth                                          `value:"${pg.auth}"`
+	cacheSessionPubPrive *cacheRam.CacheSessionPubPrive                   `autowire:"?" `
 }
 
 func NewRamAccountPublicService() *RamAccountPublicService {
@@ -34,7 +38,7 @@ func NewRamAccountPublicService() *RamAccountPublicService {
 }
 
 // Public 登陆用户信息
-func (c *RamAccountPublicService) Public(ctx *gin.Context, holder holderPg2.HolderPg) (rt rg.Rs[modPublic.InfoPublicVo]) {
+func (c *RamAccountPublicService) Public(ctx *gin.Context, holder holderPg.HolderPg) (rt rg.Rs[modPublic.InfoPublicVo]) {
 	log.Info(ctx, log.TagAppDef, "holder", log.Any("holder", holder))
 	//log.Info(ctx, log.TagAppDef,"HolderData=%+v", holder.HolderData)
 	if nil == holder.HolderData {
@@ -58,7 +62,7 @@ func (c *RamAccountPublicService) Public(ctx *gin.Context, holder holderPg2.Hold
 }
 
 // InfoPublic 登陆用户信息
-func (c *RamAccountPublicService) InfoPublic(ctx *gin.Context, holder holderPg2.HolderPg) (rt rg.Rs[modRamAccount.AccountPub]) {
+func (c *RamAccountPublicService) InfoPublic(ctx *gin.Context, holder holderPg.HolderPg) (rt rg.Rs[modRamAccount.AccountPub]) {
 	log.Info(ctx, log.TagAppDef, "holder", log.Any("holder", holder))
 	//log.Info(ctx, log.TagAppDef,"HolderData=%+v", holder.HolderData)
 	if nil == holder.HolderData {
@@ -90,7 +94,17 @@ func (c *RamAccountPublicService) UpdatePassword(ctx *gin.Context, ct modPublic.
 	if "" == ct.PasswordNew {
 		return rt.ErrorMessage("密码不能为空")
 	}
-	holder := holderPg2.GetContextAccount(ctx)
+	pwd := ct.PasswordNew
+	//解密密码
+	if logingEn, ok := c.authLogin.LoginEncrypt["default"]; ok && logingEn {
+		login := c.cacheSessionPubPrive.DecodeByLoginSystem(ctx, pwd)
+		if login.ErrorIs() {
+			return rt.ErrorMessage(login.Message)
+		}
+		pwd = login.Data
+	}
+
+	holder := holderPg.GetContextAccount(ctx)
 	account := holder.GetAccount()
 	r := c.sv
 	info, b := r.FindById(ctx, account.ID)
@@ -104,7 +118,7 @@ func (c *RamAccountPublicService) UpdatePassword(ctx *gin.Context, ct modPublic.
 	}
 	entity := entityRam.RamAccountAuthorizationEntity{}
 	entity.ExtraData = strPg.GetNanoid(8)
-	entity.Value = userPg.PasswordSalt(ct.PasswordNew, entity.ExtraData)
+	entity.Value = userPg.PasswordSalt(pwd, entity.ExtraData)
 	if nil == passwd {
 		entity.Ano = info.No
 		entity.TenantNo = info.TenantNo

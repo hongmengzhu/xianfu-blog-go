@@ -78,7 +78,71 @@ func (c *RamIdentitySourceCallbackService) Update(ctx *gin.Context, ct modRamIde
 	return rt.Ok()
 }
 
+// CreateUpdate 新增更新
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+//	@return rt
+func (c *RamIdentitySourceCallbackService) CreateUpdate(ctx *gin.Context, ct modRamIdentitySourceCallback.CreateUpdateCt) (rt rg.Rs[string]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	//
+	holder := holderPg.GetContextAccount(ctx)
+	//
+	var info entityRam.RamIdentitySourceCallbackEntity
+	copier.Copy(&info, &ct)
+	//
+	r := c.sv
+	//是否是更新
+	isUpdate := false
+	b := false
+	//
+	find := &entityRam.RamIdentitySourceCallbackEntity{}
+	//
+	if "" == ct.Name {
+		return rt.ErrorMessage("名称不能为空")
+	}
+	if ct.ID.ToInt64() > 0 {
+		isUpdate = true
+		///
+		find, b = r.FindById(ctx, ct.ID.ToInt64())
+		if !b {
+			return rt.ErrorMessage("数据不存在")
+		}
+	}
+	if strPg.IsBlank(info.No) {
+		info.No = noPg.No()
+	}
+	if isUpdate {
+		info.ID = 0
+	} else {
+		info.TenantNo = holder.GetTenantNo()
+		info.State = enumStatePg.ENABLE.Index()
+	}
+
+	log.Info(ctx, log.TagAppDef, "update", log.Any("info", info))
+	if isUpdate {
+		err := r.Update(ctx, info, find.ID)
+		if err != nil {
+			log.Error(ctx, log.TagAppDef, err, "update error")
+			return rt.ErrorMessage(err.Error())
+		}
+	} else {
+		err, _ := r.Create(ctx, &info)
+		if err != nil {
+			return rt.ErrorMessage("保存失败 " + err.Error())
+		}
+		log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
+	}
+
+	return rt.Ok()
+}
+
 // Detail 详情
+//
+//	@Description:
+//	@receiver c
+//	@param id
 func (c *RamIdentitySourceCallbackService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamIdentitySourceCallback.Vo]) {
 	if id < 1 {
 		return rt.ErrorMessage("id错误")
@@ -93,18 +157,30 @@ func (c *RamIdentitySourceCallbackService) Detail(ctx *gin.Context, id int64) (r
 }
 
 // Enable 启用
+//
+//	@Description:
+//	@receiver c
+//	@param ct
 func (c *RamIdentitySourceCallbackService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.ENABLE)
 }
 
 // Disable 禁用
+//
+//	@Description:
+//	@receiver c
+//	@param ct
 func (c *RamIdentitySourceCallbackService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.GetType(enumStatePg.DISABLE))
 }
 
 // State 状态 启用/禁用
+//
+//	@Description:
+//	@receiver c
+//	@param ct
 func (c *RamIdentitySourceCallbackService) State(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
@@ -131,6 +207,10 @@ func (c *RamIdentitySourceCallbackService) StateEnableDisable(ctx *gin.Context, 
 }
 
 // LogicalDeletion 逻辑删除
+//
+//	@Description:
+//	@receiver c
+//	@param ct
 func (c *RamIdentitySourceCallbackService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
@@ -158,6 +238,10 @@ func (c *RamIdentitySourceCallbackService) LogicalDeletion(ctx *gin.Context, ids
 }
 
 // LogicalRecovery 逻辑删除恢复
+//
+//	@Description:
+//	@receiver c
+//	@param ct
 func (c *RamIdentitySourceCallbackService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
@@ -178,6 +262,10 @@ func (c *RamIdentitySourceCallbackService) LogicalRecovery(ctx *gin.Context, ids
 }
 
 // PhysicalDeletion 物理删除
+//
+//	@Description:
+//	@receiver c
+//	@param ct
 func (c *RamIdentitySourceCallbackService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
@@ -200,6 +288,10 @@ func (c *RamIdentitySourceCallbackService) PhysicalDeletion(ctx *gin.Context, id
 }
 
 // Query 查询
+//
+//	@Description:
+//	@receiver c
+//	@param ct
 func (c *RamIdentitySourceCallbackService) Query(ctx *gin.Context, ct modRamIdentitySourceCallback.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdentitySourceCallback.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamIdentitySourceCallbackEntity
@@ -213,6 +305,7 @@ func (c *RamIdentitySourceCallbackService) Query(ctx *gin.Context, ct modRamIden
 		}
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		arg.Db = arg.Db.Order("create_at desc")
+		//自定义查询
 		if strPg.IsNotBlank(ct.Wd) {
 			arg.Db = arg.Db.Where("name like ?", "%"+ct.Wd+"%")
 		}
@@ -270,4 +363,60 @@ func (c *RamIdentitySourceCallbackService) ExistName(ctx *gin.Context, ct model.
 		return rt.ErrorMessage("重复，已存在")
 	}
 	return rt.OkMessage("可以使用")
+}
+
+// SelectNodeAll 查询
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *RamIdentitySourceCallbackService) SelectNodeAll(ctx *gin.Context, ct modRamIdentitySourceCallback.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	var query entityRam.RamIdentitySourceCallbackEntity
+	copier.Copy(&query, &ct)
+	slice := make([]model.BaseNodeNo, 0)
+	rt.Data = slice
+	infos := c.sv.FindAll(ctx, query)
+	if len(infos) > 0 {
+		for _, item := range infos {
+			var vo modRamIdentitySourceCallback.Vo
+			copier.Copy(&vo, &item)
+			code := model.BaseNodeNo{
+				Value:  item.No,
+				Label:  item.Name,
+				Extend: vo,
+			}
+			slice = append(slice, code)
+		}
+		rt.Data = slice
+	}
+	return rt.Ok()
+}
+
+// SelectNodeAllPublic 查询
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *RamIdentitySourceCallbackService) SelectNodeAllPublic(ctx *gin.Context, ct modRamIdentitySourceCallback.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	var query entityRam.RamIdentitySourceCallbackEntity
+	copier.Copy(&query, &ct)
+	slice := make([]model.BaseNodeNo, 0)
+	rt.Data = slice
+	infos := c.sv.FindAll(ctx, query)
+	if len(infos) > 0 {
+		for _, item := range infos {
+			var vo modRamIdentitySourceCallback.Vo
+			copier.Copy(&vo, &item)
+			code := model.BaseNodeNo{
+				Value:  item.No,
+				Label:  item.Name,
+				Extend: vo,
+			}
+			slice = append(slice, code)
+		}
+		rt.Data = slice
+	}
+	return rt.Ok()
 }

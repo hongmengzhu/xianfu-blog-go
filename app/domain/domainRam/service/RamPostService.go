@@ -9,6 +9,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/automatedPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/sdk-common-cache/cacheRamPostPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -29,6 +30,8 @@ func init() {
 // @Description:
 type RamPostService struct {
 	sv *repositoryRam.RamPostRepository `autowire:"?"`
+
+	chd *cacheRamPostPg.Cache `autowire:"?"`
 }
 
 // Create 新增
@@ -37,7 +40,7 @@ type RamPostService struct {
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *RamPostService) Create(ctx *gin.Context, ct modRamPost.CreateCt) (rt rg.Rs[string]) {
+func (c *RamPostService) Create(ctx *gin.Context, ct modRamPost.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityRam.RamPostEntity
 	copier.Copy(&info, &ct)
@@ -95,7 +98,7 @@ func (c *RamPostService) Update(ctx *gin.Context, ct modRamPost.CreateUpdateCt) 
 	if strPg.IsBlank(ct.Code) {
 		info.Code = ""
 	} else {
-		_, result := r.FindByCodeAndIdNot(ctx, info.Code, ct.ID.ToString())
+		_, result := r.FindByCodeAndIdNot(ctx, info.Code, ct.ID.ToString(), optionsPg.WithCtx(ctx))
 		if result {
 			return rt.ErrorMessage("标志已存在")
 		}
@@ -207,6 +210,8 @@ func (c *RamPostService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.
 			log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
 		repository.DeleteByIdsString(ctx, ids)
+		//
+		c.chd.DeleteNos(ctx, ids)
 	} else {
 		for _, info := range finds {
 			enum := enumStatePg.State(info.State)
@@ -260,12 +265,17 @@ func (c *RamPostService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg
 		return rt.ErrorMessage("数据不存在")
 	}
 	idsNew := make([]int64, 0)
+	keys := make([]string, 0)
 	for _, info := range finds {
 		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		idsNew = append(idsNew, info.ID)
+		//
+		keys = append(keys, info.No)
 	}
 	if len(idsNew) > 0 {
 		cn.DeleteByIds(ctx, idsNew)
+		//
+		c.chd.DeleteNos(ctx, keys)
 	}
 	return rt.Ok()
 }
@@ -320,6 +330,35 @@ func (c *RamPostService) Query(ctx *gin.Context, ct modRamPost.QueryCt) (rt rg.R
 //	@receiver c
 //	@param ct
 func (c *RamPostService) SelectNodePublic(ctx *gin.Context, ct modRamPost.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	var query entityRam.RamPostEntity
+	copier.Copy(&query, &ct)
+	slice := make([]model.BaseNodeNo, 0)
+	rt.Data = slice
+	infos := c.sv.FindAll(ctx, query)
+	if len(infos) > 0 {
+		for _, item := range infos {
+			var vo modRamPost.Vo
+			copier.Copy(&vo, &item)
+			code := model.BaseNodeNo{
+				Value:  item.No,
+				Label:  item.Name,
+				Extend: vo,
+			}
+
+			slice = append(slice, code)
+		}
+		rt.Data = slice
+	}
+	return rt.Ok()
+}
+
+// SelectNodeAll 查询
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *RamPostService) SelectNodeAll(ctx *gin.Context, ct modRamPost.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamPostEntity
 	copier.Copy(&query, &ct)

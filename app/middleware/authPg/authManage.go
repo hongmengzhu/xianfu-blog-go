@@ -100,7 +100,7 @@ func GroupManageMiddleware(m *GroupManageMiddlewareSp) gin.HandlerFunc {
 				return
 			}
 			//获取登录信息
-			rt := m.sv.FindByLoginNo(c, loginNo, tenantNo)
+			rt := m.sv.FindByLoginNoTenant(c, loginNo, tenantNo)
 			if rt.ErrorIs() {
 				c.JSON(200, rt)
 				c.Abort()

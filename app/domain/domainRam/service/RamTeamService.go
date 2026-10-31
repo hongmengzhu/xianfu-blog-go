@@ -9,6 +9,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/automatedPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/sdk-common-cache/cacheRamTeamPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -29,6 +30,8 @@ func init() {
 // @Description:
 type RamTeamService struct {
 	sv *repositoryRam.RamTeamRepository `autowire:"?"`
+
+	chd *cacheRamTeamPg.Cache `autowire:"?"`
 }
 
 // Create 新增
@@ -112,6 +115,89 @@ func (c *RamTeamService) Update(ctx *gin.Context, ct modRamTeam.CreateUpdateCt) 
 		log.Error(ctx, log.TagAppDef, err, "update error")
 		return rt.ErrorMessage(err.Error())
 	}
+	return rt.Ok()
+}
+
+// CreateUpdate 新增更新
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+//	@return rt
+func (c *RamTeamService) CreateUpdate(ctx *gin.Context, ct modRamTeam.CreateUpdateCt) (rt rg.Rs[string]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	//
+	holder := holderPg.GetContextAccount(ctx)
+	//
+	var info entityRam.RamTeamEntity
+	copier.Copy(&info, &ct)
+	//
+	r := c.sv
+	//是否是更新
+	isUpdate := false
+	b := false
+	id := "0"
+	//
+	find := &entityRam.RamTeamEntity{}
+	//
+	if "" == ct.Name {
+		return rt.ErrorMessage("名称不能为空")
+	}
+	if ct.ID.ToInt64() > 0 {
+		id = ct.ID.ToString()
+		isUpdate = true
+		///
+		find, b = r.FindById(ctx, ct.ID.ToInt64())
+		if !b {
+			return rt.ErrorMessage("数据不存在")
+		}
+	}
+	if strPg.IsBlank(ct.Code) {
+		info.Code = automatedPg.CREATE_CODE
+	} else {
+		_, result := r.FindByCodeAndIdNot(ctx, info.Code, id, optionsPg.WithCtx(ctx))
+		if result {
+			return rt.ErrorMessage("码值已存在")
+		}
+	}
+	//判断是否是自动,不是自动
+	if !automatedPg.IsCreateCode(info.Code) {
+		//判断格式是否满足要求
+		if !automatedPg.FormatVerify(info.Code) {
+			return rt.ErrorMessage("标志格式不能为空")
+		}
+		//不是自动
+		_, result := r.FindByCodeAndIdNot(ctx, info.Code, id, optionsPg.WithCtx(ctx))
+		if result {
+			return rt.ErrorMessage("码值已存在")
+		}
+	} else {
+		info.Code = noPg.No()
+	}
+	if isUpdate {
+		info.ID = 0
+		info.No = ""
+	} else {
+		info.TenantNo = holder.GetTenantNo()
+		info.No = noPg.No()
+		info.State = enumStatePg.ENABLE.Index()
+	}
+
+	log.Info(ctx, log.TagAppDef, "update", log.Any("info", info))
+	if isUpdate {
+		err := r.Update(ctx, info, find.ID)
+		if err != nil {
+			log.Error(ctx, log.TagAppDef, err, "update error")
+			return rt.ErrorMessage(err.Error())
+		}
+	} else {
+		err, _ := r.Create(ctx, &info)
+		if err != nil {
+			return rt.ErrorMessage("保存失败 " + err.Error())
+		}
+		log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
+	}
+
 	return rt.Ok()
 }
 
@@ -207,6 +293,8 @@ func (c *RamTeamService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.
 			log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
 		repository.DeleteByIdsString(ctx, ids)
+		//
+		c.chd.DeleteNos(ctx, ids)
 	} else {
 		for _, info := range finds {
 			enum := enumStatePg.State(info.State)
@@ -260,12 +348,17 @@ func (c *RamTeamService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg
 		return rt.ErrorMessage("数据不存在")
 	}
 	idsNew := make([]int64, 0)
+	keys := make([]string, 0)
 	for _, info := range finds {
 		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		idsNew = append(idsNew, info.ID)
+		//
+		keys = append(keys, info.No)
 	}
 	if len(idsNew) > 0 {
 		cn.DeleteByIds(ctx, idsNew)
+		//
+		c.chd.DeleteNos(ctx, keys)
 	}
 	return rt.Ok()
 }
@@ -336,6 +429,34 @@ func (c *RamTeamService) SelectNodePublic(ctx *gin.Context, ct modRamTeam.QueryP
 				Extend: vo,
 			}
 
+			slice = append(slice, code)
+		}
+		rt.Data = slice
+	}
+	return rt.Ok()
+}
+
+// SelectNodeAll 查询
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *RamTeamService) SelectNodeAll(ctx *gin.Context, ct modRamTeam.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	var query entityRam.RamTeamEntity
+	copier.Copy(&query, &ct)
+	slice := make([]model.BaseNodeNo, 0)
+	rt.Data = slice
+	infos := c.sv.FindAll(ctx, query)
+	if len(infos) > 0 {
+		for _, item := range infos {
+			var vo modRamTeam.Vo
+			copier.Copy(&vo, &item)
+			code := model.BaseNodeNo{
+				Value:  item.No,
+				Label:  item.Name,
+				Extend: vo,
+			}
 			slice = append(slice, code)
 		}
 		rt.Data = slice
