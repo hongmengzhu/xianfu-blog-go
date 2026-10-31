@@ -57,7 +57,7 @@ func (c *TenantDomainController) RegisterRoutes(e *gin.Engine) {
 //	@receiver c
 //	@param ctx
 func (c *TenantDomainController) Create(ctx *gin.Context) {
-	var ct modTcTenantDomain.CreateCt
+	var ct modTcTenantDomain.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -70,11 +70,11 @@ func (c *TenantDomainController) Create(ctx *gin.Context) {
 //	@receiver c
 //	@param ctx
 func (c *TenantDomainController) Update(ctx *gin.Context) {
-	var ct modTcTenantDomain.UpdateCt
+	var ct modTcTenantDomain.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.Update(ctx, ct))
+	ctx.JSON(200, c.sv.UpdateByTenant(ctx, ct))
 }
 
 // Delete 逻辑删除

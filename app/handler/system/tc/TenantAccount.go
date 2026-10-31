@@ -2,10 +2,10 @@ package tc
 
 import (
 	"github.com/gin-gonic/gin"
-	service2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/system/tc/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainTc/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg/controllerPg"
-	modRamAccount "github.com/hongmengzhu/xianfu-blog-go/app/models/tc/modTcAccount"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/modTcAccount"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/enumCommonPg/appModulePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
@@ -25,8 +25,8 @@ func init() {
 type TenantAccountController struct {
 	routerPg.RouteRegistrar
 	controllerPg.SpSystemAuth
-	sv        *service2.TcTenantAccountService         `autowire:"?"`
-	ap        *service2.TcTenantAccountPasswordService `autowire:"?"`
+	sv        *service.TcTenantAccountService         `autowire:"?"`
+	ap        *service.TcTenantAccountPasswordService `autowire:"?"`
 	appModule appModulePg.AppModule
 }
 
@@ -170,7 +170,7 @@ func (c *TenantAccountController) PhysicalDeletion(ctx *gin.Context) {
 //	@receiver c
 //	@param ctx
 func (c *TenantAccountController) UpdatePassword(ctx *gin.Context) {
-	var ct modRamAccount.PasswordCt
+	var ct modTcAccount.PasswordCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -183,7 +183,7 @@ func (c *TenantAccountController) UpdatePassword(ctx *gin.Context) {
 //	@receiver c
 //	@param ctx
 func (c *TenantAccountController) Query(ctx *gin.Context) {
-	var ct modRamAccount.QueryCt
+	var ct modTcAccount.QueryCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -196,7 +196,7 @@ func (c *TenantAccountController) Query(ctx *gin.Context) {
 //	@receiver c
 //	@param ctx
 func (c *TenantAccountController) Create(ctx *gin.Context) {
-	var ct modRamAccount.CreateCt
+	var ct modTcAccount.CreateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -209,7 +209,7 @@ func (c *TenantAccountController) Create(ctx *gin.Context) {
 //	@receiver c
 //	@param ctx
 func (c *TenantAccountController) CreateAccount(ctx *gin.Context) {
-	var ct modRamAccount.CreateAccountCt
+	var ct modTcAccount.CreateAccountCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -222,7 +222,7 @@ func (c *TenantAccountController) CreateAccount(ctx *gin.Context) {
 //	@receiver c
 //	@param ctx
 func (c *TenantAccountController) Update(ctx *gin.Context) {
-	var ct modRamAccount.UpdateCt
+	var ct modTcAccount.UpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -235,7 +235,7 @@ func (c *TenantAccountController) Update(ctx *gin.Context) {
 //	@receiver c
 //	@param ctx
 func (c *TenantAccountController) UpdateAccount(ctx *gin.Context) {
-	var ct modRamAccount.UpdateAccountCt
+	var ct modTcAccount.UpdateAccountCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}

@@ -2,7 +2,7 @@ package tc
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/system/tc/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainTc/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/modTcTenant"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"

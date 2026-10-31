@@ -40,7 +40,7 @@ type TcTenantService struct {
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *TcTenantService) Create(ctx *gin.Context, ct modTcTenant.CreateCt) (rt rg.Rs[string]) {
+func (c *TcTenantService) Create(ctx *gin.Context, ct modTcTenant.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
@@ -102,7 +102,7 @@ func (c *TcTenantService) Create(ctx *gin.Context, ct modTcTenant.CreateCt) (rt 
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *TcTenantService) Update(ctx *gin.Context, ct modTcTenant.UpdateCt) (rt rg.Rs[string]) {
+func (c *TcTenantService) Update(ctx *gin.Context, ct modTcTenant.CreateUpdateCt) (rt rg.Rs[string]) {
 	if ct.ID < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -132,7 +132,7 @@ func (c *TcTenantService) Update(ctx *gin.Context, ct modTcTenant.UpdateCt) (rt 
 		}
 		// 判断创始人是否已经绑定过租户
 		{
-			_, result := r.FindByFounder(ctx, ct.Founder)
+			_, result := r.FindByFounderAndNotIdString(ctx, ct.Founder, ct.ID.ToString())
 			if result {
 				return rt.ErrorMessage("该帐户已绑定租户")
 			}
@@ -309,6 +309,73 @@ func (c *TcTenantService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt r
 func (c *TcTenantService) Query(ctx *gin.Context, ct modTcTenant.QueryCt) (rt rg.Rs[pagePg.Paginator[modTcTenant.Vo]]) {
 	var query entityTc.TcTenantEntity
 	copier.Copy(&query, &ct)
+	slice := make([]modTcTenant.Vo, 0)
+	rt.Data.Data = slice
+	r := c.sv
+	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
+		if ct.PageSize < 1 {
+			ct.PageSize = 20
+		}
+		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
+		arg.Db = arg.Db.Order("create_at desc")
+		//自定义查询
+		if strPg.IsNotBlank(ct.Wd) {
+			arg.Db = arg.Db.Where("name like ?", "%"+ct.Wd+"%")
+		}
+	}))
+	if nil != err {
+		return rt.Ok()
+	}
+
+	if page.Total > 0 && page.Data != nil && len(page.Data) > 0 {
+		pg := pagePg.NewPaginatorByPageable[modTcTenant.Vo](page.Pageable)
+		mapAccount := make(map[string]*entityRam.RamAccountEntity)
+		idsFounder := make([]string, 0)
+		for _, item := range page.Data {
+			if strPg.IsNotBlank(item.Founder) {
+				idsFounder = append(idsFounder, item.Founder)
+			}
+		}
+		if len(idsFounder) > 0 {
+			info, result := c.acc.FindAllByNoIn(ctx, idsFounder)
+			if result {
+				for _, item := range info {
+					mapAccount[item.No] = item
+				}
+			}
+		}
+		//字段赋值
+		for _, item := range page.Data {
+			var vo modTcTenant.Vo
+			copier.Copy(&vo, &item)
+			vo.Ext = make(map[string]interface{})
+			//
+			if strPg.IsNotBlank(item.Founder) {
+				if info, ok := mapAccount[item.Founder]; ok {
+					vo.FounderName = info.Name
+					vo.Ext["founderPhone"] = info.Phone
+					vo.Ext["founderRealName"] = info.RealName
+				}
+			}
+			//
+			slice = append(slice, vo)
+		}
+		pg.Data = slice
+		pg.Pageable = page.Pageable
+		rt.Data = pg
+		return rt.Ok()
+	}
+	return rt.Ok()
+}
+
+// QueryByTenant 查询
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *TcTenantService) QueryByTenant(ctx *gin.Context, ct modTcTenant.QueryCt) (rt rg.Rs[pagePg.Paginator[modTcTenant.Vo]]) {
+	var query entityTc.TcTenantEntity
+	copier.Copy(&query, &ct)
 	//
 	holder := holderPg.GetContextAccount(ctx)
 	query.No = holder.GetTenantNo()
@@ -380,6 +447,27 @@ func (c *TcTenantService) Query(ctx *gin.Context, ct modTcTenant.QueryCt) (rt rg
 func (c *TcTenantService) SelectNodePublic(ctx *gin.Context, ct modTcTenant.QueryCt) (rt rg.Rs[[]model.BaseNode]) {
 	var query entityTc.TcTenantEntity
 	copier.Copy(&query, &ct)
+	slice := make([]model.BaseNode, 0)
+	rt.Data = slice
+	infos := c.sv.FindAll(ctx, query)
+	if len(infos) > 0 {
+
+		for _, item := range infos {
+			slice = append(slice, model.BaseNode{Key: numberPg.Int64ToString(item.ID), Label: item.Name})
+		}
+		rt.Data = slice
+	}
+	return rt.Ok()
+}
+
+// SelectNodeTenantPublic 查询
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *TcTenantService) SelectNodeTenantPublic(ctx *gin.Context, ct modTcTenant.QueryCt) (rt rg.Rs[[]model.BaseNode]) {
+	var query entityTc.TcTenantEntity
+	copier.Copy(&query, &ct)
 	//
 	holder := holderPg.GetContextAccount(ctx)
 	query.No = holder.GetTenantNo()
@@ -430,6 +518,28 @@ func (c *TcTenantService) SelectNodeAllPublic(ctx *gin.Context, ct modTcTenant.Q
 //	@receiver c
 //	@param ct
 func (c *TcTenantService) SelectPublic(ctx *gin.Context, ct modTcTenant.QueryCt) (rt rg.Rs[[]modTcTenant.Vo]) {
+	var query entityTc.TcTenantEntity
+	copier.Copy(&query, &ct)
+	rt.Data = []modTcTenant.Vo{}
+	infos := c.sv.FindAll(ctx, query)
+	if len(infos) > 0 {
+		slice := make([]modTcTenant.Vo, 0)
+		for _, item := range infos {
+			var vo modTcTenant.Vo
+			copier.Copy(&vo, &item)
+			slice = append(slice, vo)
+		}
+		rt.Data = slice
+	}
+	return rt.Ok()
+}
+
+// TenantSelectPublic 查询
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *TcTenantService) TenantSelectPublic(ctx *gin.Context, ct modTcTenant.QueryCt) (rt rg.Rs[[]modTcTenant.Vo]) {
 	var query entityTc.TcTenantEntity
 	copier.Copy(&query, &ct)
 	//

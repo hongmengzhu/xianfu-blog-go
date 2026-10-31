@@ -48,7 +48,7 @@ func (c *TenantController) RegisterRoutes(e *gin.Engine) {
 //	@receiver c
 //	@param ctx
 func (c *TenantController) Create(ctx *gin.Context) {
-	var ct modTcTenant.CreateCt
+	var ct modTcTenant.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -61,7 +61,7 @@ func (c *TenantController) Create(ctx *gin.Context) {
 //	@receiver c
 //	@param ctx
 func (c *TenantController) Update(ctx *gin.Context) {
-	var ct modTcTenant.UpdateCt
+	var ct modTcTenant.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -175,7 +175,7 @@ func (c *TenantController) Query(ctx *gin.Context) {
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.Query(ctx, ct))
+	ctx.JSON(200, c.sv.QueryByTenant(ctx, ct))
 }
 
 // SelectNodePublic 选择节点公开
@@ -185,7 +185,7 @@ func (c *TenantController) Query(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantController) SelectNodePublic(ctx *gin.Context) {
 	ct := modTcTenant.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
-	ctx.JSON(200, c.sv.SelectNodePublic(ctx, ct))
+	ctx.JSON(200, c.sv.SelectNodeTenantPublic(ctx, ct))
 }
 
 // SelectNodeAllPublic 选择所有节点公开
@@ -205,7 +205,7 @@ func (c *TenantController) SelectNodeAllPublic(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantController) SelectPublic(ctx *gin.Context) {
 	ct := modTcTenant.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
-	ctx.JSON(200, c.sv.SelectPublic(ctx, ct))
+	ctx.JSON(200, c.sv.TenantSelectPublic(ctx, ct))
 }
 
 // ExistName 查重

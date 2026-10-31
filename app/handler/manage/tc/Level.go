@@ -47,7 +47,7 @@ func (c *LevelController) RegisterRoutes(e *gin.Engine) {
 //	@receiver c
 //	@param ctx
 func (c *LevelController) Create(ctx *gin.Context) {
-	var ct modTcLevel.CreateCt
+	var ct modTcLevel.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -60,7 +60,7 @@ func (c *LevelController) Create(ctx *gin.Context) {
 //	@receiver c
 //	@param ctx
 func (c *LevelController) Update(ctx *gin.Context) {
-	var ct modTcLevel.UpdateCt
+	var ct modTcLevel.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}

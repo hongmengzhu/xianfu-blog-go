@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	tcAccount2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/system/tc/service/tcAccount"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainTc/service/tcAccount"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/modTcAccount"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityTc"
@@ -40,7 +40,7 @@ type TcTenantAccountService struct {
 	positionDb *repositoryRam.RamPositionRepository             `autowire:"?"`
 	postDb     *repositoryRam.RamPostRepository                 `autowire:"?"`
 	tenDb      *repositoryTc.TcTenantRepository                 `autowire:"?"`
-	sp         *tcAccount2.Sp                                   `autowire:"?"`
+	sp         *tcAccount.Sp                                    `autowire:"?"`
 }
 
 func NewTcTenantAccountService() *TcTenantAccountService {
@@ -53,7 +53,7 @@ func NewTcTenantAccountService() *TcTenantAccountService {
 //	@receiver c
 //	@param id
 func (c *TcTenantAccountService) Detail(ctx *gin.Context, id string, tp appModulePg.AppModule) (rt rg.Rs[modTcAccount.DetailVo]) {
-	detail := tcAccount2.NewDetail(c.sp, tp)
+	detail := tcAccount.NewDetail(c.sp, tp)
 	return detail.Process(ctx, id)
 }
 
@@ -644,7 +644,7 @@ func (c *TcTenantAccountService) Query(ctx *gin.Context, ct modTcAccount.QueryCt
 //	@receiver c
 //	@param ct
 func (c *TcTenantAccountService) Create(ctx *gin.Context, ct modTcAccount.CreateCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
-	return tcAccount2.NewCreate(c.sp, ctx).Process(ctx, ct, tp)
+	return tcAccount.NewCreate(c.sp, ctx).Process(ctx, ct, tp)
 }
 
 // CreateAccount 创建
@@ -653,7 +653,7 @@ func (c *TcTenantAccountService) Create(ctx *gin.Context, ct modTcAccount.Create
 //	@receiver c
 //	@param ct
 func (c *TcTenantAccountService) CreateAccount(ctx *gin.Context, ct modTcAccount.CreateAccountCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
-	return tcAccount2.NewCreate(c.sp, ctx).CreateAccount(ctx, ct, tp)
+	return tcAccount.NewCreate(c.sp, ctx).CreateAccount(ctx, ct, tp)
 }
 
 // Update 更新
@@ -662,7 +662,7 @@ func (c *TcTenantAccountService) CreateAccount(ctx *gin.Context, ct modTcAccount
 //	@receiver c
 //	@param ct
 func (c *TcTenantAccountService) Update(ctx *gin.Context, ct modTcAccount.UpdateCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
-	return tcAccount2.NewUpdate(c.sp, ctx).Process(ctx, ct, tp)
+	return tcAccount.NewUpdate(c.sp, ctx).Process(ctx, ct, tp)
 }
 
 // UpdateAccount 更新
@@ -671,7 +671,7 @@ func (c *TcTenantAccountService) Update(ctx *gin.Context, ct modTcAccount.Update
 //	@receiver c
 //	@param ct
 func (c *TcTenantAccountService) UpdateAccount(ctx *gin.Context, ct modTcAccount.UpdateAccountCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
-	return tcAccount2.NewUpdate(c.sp, ctx).UpdateAccount(ctx, ct, tp)
+	return tcAccount.NewUpdate(c.sp, ctx).UpdateAccount(ctx, ct, tp)
 }
 
 // ExistAccount 查重

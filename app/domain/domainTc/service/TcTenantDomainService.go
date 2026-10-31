@@ -32,10 +32,9 @@ func init() {
 // TcTenantDomainService 租户
 // @Description:
 type TcTenantDomainService struct {
-	sv *repositoryTc.TcTenantDomainRepository `autowire:"?"`
-
-	acc *repositoryRam.RamAccountRepository `autowire:"?"`
-	ten *repositoryTc.TcTenantRepository    `autowire:"?"`
+	sv  *repositoryTc.TcTenantDomainRepository `autowire:"?"`
+	acc *repositoryRam.RamAccountRepository    `autowire:"?"`
+	ten *repositoryTc.TcTenantRepository       `autowire:"?"`
 }
 
 // Create 新增
@@ -44,7 +43,7 @@ type TcTenantDomainService struct {
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *TcTenantDomainService) Create(ctx *gin.Context, ct modTcTenantDomain.CreateCt) (rt rg.Rs[string]) {
+func (c *TcTenantDomainService) Create(ctx *gin.Context, ct modTcTenantDomain.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
 	var info entityTc.TcTenantDomainEntity
@@ -104,7 +103,61 @@ func (c *TcTenantDomainService) Create(ctx *gin.Context, ct modTcTenantDomain.Cr
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *TcTenantDomainService) Update(ctx *gin.Context, ct modTcTenantDomain.UpdateCt) (rt rg.Rs[string]) {
+func (c *TcTenantDomainService) Update(ctx *gin.Context, ct modTcTenantDomain.CreateUpdateCt) (rt rg.Rs[string]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	//
+	var info entityTc.TcTenantDomainEntity
+	copier.Copy(&info, &ct)
+	//
+	if ct.ID < 1 {
+		return rt.ErrorMessage("id错误")
+	}
+	if "" == ct.Name {
+		return rt.ErrorMessage("名称不能为空")
+	}
+	if "" == ct.Code {
+		return rt.ErrorMessage("编号/标记不能为空")
+	}
+	if strPg.IsBlank(ct.TenantNo) {
+		return rt.ErrorMessage("租户编号不能为空")
+	}
+	//
+	ten, result := c.ten.FindByNo(ctx, ct.TenantNo)
+	if !result {
+		return rt.ErrorMessage("租户 不存在")
+	}
+	r := c.sv
+	{
+		_, result := r.FindByCodeAndIdNot(ctx, ct.Code, ct.ID.ToString(), optionsPg.WithCtx(ctx))
+		if result {
+			return rt.ErrorMessage("编号已存在")
+		}
+	}
+	_, b := r.FindById(ctx, ct.ID.ToInt64())
+	if !b {
+		return rt.ErrorMessage("数据不存在")
+	}
+
+	//编号，不参与更新
+	info.No = ""
+	info.TenantNo = ten.No
+	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
+	err := r.Update(ctx, info, info.ID)
+	if err != nil {
+		return rt.ErrorMessage("更新失败:" + err.Error())
+	}
+	// 设置默认
+	c.setDefaulted(ctx, ten.No, info.ID)
+	return rt.Ok()
+}
+
+// UpdateByTenant 更新
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+//	@return rt
+func (c *TcTenantDomainService) UpdateByTenant(ctx *gin.Context, ct modTcTenantDomain.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
 	var info entityTc.TcTenantDomainEntity
