@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/core/cache/cacheBlog"
+	"github.com/hongmengzhu/xianfu-blog-go/app/core/cache/cacheBookmark"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
@@ -22,9 +22,9 @@ func init() {
 
 type IndexController struct {
 	routerPg.RouteRegistrar
-	Sp       *authPg.GroupWebMiddlewareSp        `autowire:"?"`
-	sv       *service.BlogArticleWebService      `autowire:"?"`
-	catCache *cacheBlog.CacheBlogArticleCategory `autowire:"?"`
+	Sp       *authPg.GroupWebMiddlewareSp         `autowire:"?"`
+	sv       *service.BlogArticleWebService       `autowire:"?"`
+	catCache *cacheBookmark.CacheBookmarkCategory `autowire:"?"`
 }
 
 // RegisterRoutes
