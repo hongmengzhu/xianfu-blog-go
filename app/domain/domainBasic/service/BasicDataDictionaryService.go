@@ -238,6 +238,7 @@ func (c *BasicDataDictionaryService) PhysicalDeletion(ctx *gin.Context, ids []st
 //	@receiver c
 //	@param ct
 func (c *BasicDataDictionaryService) Query(ctx *gin.Context, ct modBasicDataDictionary.QueryCt) (rt rg.Rs[pagePg.Paginator[modBasicDataDictionary.Vo]]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityBasic.BasicDataDictionaryEntity
 	copier.Copy(&query, &ct)
 	r := c.sv
@@ -249,7 +250,9 @@ func (c *BasicDataDictionaryService) Query(ctx *gin.Context, ct modBasicDataDict
 		}
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		//自定义查询
-		arg.Db = arg.Db.Order("create_at desc").Where("type_code is null or type_code=''")
+		arg.Db = arg.Db.Order("create_at desc")
+		arg.Db = arg.Db.Where("(type_code is null or type_code='')")
+		//自定义查询
 		if strPg.IsNotBlank(ct.Wd) {
 			arg.Db = arg.Db.Where("name like ?", "%"+ct.Wd+"%").
 				Or("code like ?", "%"+ct.Wd+"%").
@@ -312,30 +315,33 @@ func (c *BasicDataDictionaryService) SelectNodeAllPublic(ctx *gin.Context, ct mo
 	//
 	slice := make([]model.BaseNode, 0)
 	rt.Data = slice
-	infos := c.sv.FindAll(ctx, query, optionsPg.WithCondition(func(db *gorm.DB) *gorm.DB {
-		db = db.Order("sort,create_at asc")
-		db = db.Where("type_code is null or type_code = '' ")
-		return db
-	}))
-	if len(infos) > 0 {
-		for _, item := range infos {
-			var vo modBasicDataDictionary.SelectNodeVo
-			copier.Copy(&vo, &item)
-			//
-			code := model.BaseNode{
-				Key:    item.Code,
-				Id:     item.Code,
-				No:     item.Code,
-				Label:  item.Name,
-				Extend: vo,
+	if strPg.IsNotBlank(ct.TypeCode) {
+		infos := c.sv.FindAll(ctx, query, optionsPg.WithCondition(func(db *gorm.DB) *gorm.DB {
+			db = db.Order("sort,create_at asc")
+			db = db.Where("type_code is null or type_code = '' ")
+			return db
+		}))
+		if len(infos) > 0 {
+			for _, item := range infos {
+				var vo modBasicDataDictionary.SelectNodeVo
+				copier.Copy(&vo, &item)
+				//
+				code := model.BaseNode{
+					Key:    item.Code,
+					Id:     item.Code,
+					No:     item.Code,
+					Label:  item.Name,
+					Extend: vo,
+				}
+				if len(item.Range) > 0 {
+					vo.Range = strutil.SplitAndTrim(item.Range, ",")
+				}
+				slice = append(slice, code)
 			}
-			if len(item.Range) > 0 {
-				vo.Range = strutil.SplitAndTrim(item.Range, ",")
-			}
-			slice = append(slice, code)
+			rt.Data = slice
 		}
-		rt.Data = slice
 	}
+
 	return rt.Ok()
 }
 

@@ -439,8 +439,9 @@ func (c *BasicCountryService) Query(ctx *gin.Context, ct modBasicCountry.QueryCt
 			ct.PageSize = 20
 		}
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
-		//排序
-		arg.Db = arg.Db.Order("create_at asc")
+		//自定义查询
+		arg.Db = arg.Db.Order("create_at desc")
+		//自定义查询
 		if strPg.IsNotBlank(ct.Wd) {
 			arg.Db = arg.Db.Where("name like ?", "%"+ct.Wd+"%").Or("name_fl like ?", "%"+ct.Wd+"%").Or("iso3 like ?", "%"+ct.Wd+"%")
 		}
@@ -565,12 +566,41 @@ func (c *BasicCountryService) SelectPublicCountryCode(ctx *gin.Context, ct modBa
 	if len(infos) > 0 {
 		for _, item := range infos {
 			vo := model.BaseSelectVo[string]{
-				Label:  item.Name + " +" + item.CountryCode,
+				Label:  item.Name + " + " + item.CountryCode,
 				Name:   item.Name,
 				Value:  item.CountryCode,
 				Extend: item,
 			}
 			slice = append(slice, vo)
+		}
+		rt.Data = slice
+	}
+	return rt.Ok()
+}
+
+// SelectNodePublicCountryCode 查询
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *BasicCountryService) SelectNodePublicCountryCode(ctx *gin.Context, ct modBasicCountry.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	var query entityBasic.BasicCountryEntity
+	copier.Copy(&query, &ct)
+	//
+	query.State = enumStatePg.ENABLE.Index()
+	query.PhoneUse = yesNoIntPg.Yes.Index()
+	//
+	slice := make([]model.BaseNodeNo, 0)
+	rt.Data = slice
+	infos := c.sv.FindAll(ctx, query)
+	if len(infos) > 0 {
+		for _, item := range infos {
+			code := model.BaseNodeNo{
+				Value: item.CountryCode,
+				Label: "+" + item.CountryCode + "  " + item.Name,
+			}
+			slice = append(slice, code)
 		}
 		rt.Data = slice
 	}

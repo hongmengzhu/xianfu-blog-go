@@ -39,7 +39,7 @@ type BasicModuleService struct {
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *BasicModuleService) Create(ctx *gin.Context, ct modBasicModule.CreateCt) (rt rg.Rs[string]) {
+func (c *BasicModuleService) Create(ctx *gin.Context, ct modBasicModule.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityBasic.BasicModuleEntity
 	err := copier.Copy(&info, &ct)
@@ -443,7 +443,7 @@ func (c *BasicModuleService) Query(ctx *gin.Context, ct modBasicModule.QueryCt) 
 		}
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		//自定义查询
-		arg.Db = arg.Db.Order("create_at asc")
+		arg.Db = arg.Db.Order("create_at desc")
 		if strPg.IsNotBlank(ct.Wd) {
 			arg.Db = arg.Db.Where("name like ?", "%"+ct.Wd+"%").
 				Or("code like ?", "%"+ct.Wd+"%").
@@ -488,7 +488,7 @@ func (c *BasicModuleService) QueryPublic(ctx *gin.Context, ct modBasicModule.Que
 		}
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		//自定义查询
-		arg.Db = arg.Db.Order("create_at asc")
+		arg.Db = arg.Db.Order("create_at desc")
 		if strPg.IsNotBlank(ct.Wd) {
 			arg.Db = arg.Db.Where("name like ?", "%"+ct.Wd+"%").
 				Or("code like ?", "%"+ct.Wd+"%").

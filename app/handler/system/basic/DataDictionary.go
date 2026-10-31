@@ -2,7 +2,7 @@ package basic
 
 import (
 	"github.com/gin-gonic/gin"
-	service2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/system/basic/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBasic/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicDataDictionary"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
@@ -19,9 +19,9 @@ func init() {
 
 type DataDictionaryController struct {
 	routerPg.RouteRegistrar
-	Sp         *authPg.GroupSystemMiddlewareSp         `autowire:"?"`
-	sv         *service2.BasicDataDictionaryService    `autowire:"?"`
-	dictSubRep *service2.BasicDataDictionarySubService `autowire:"?"`
+	Sp         *authPg.GroupSystemMiddlewareSp              `autowire:"?"`
+	sv         *service.BasicDataDictionaryService          `autowire:"?"`
+	dictSubRep *service.BasicDataDictionarySubSystemService `autowire:"?"`
 }
 
 func (c *DataDictionaryController) RegisterRoutes(e *gin.Engine) {

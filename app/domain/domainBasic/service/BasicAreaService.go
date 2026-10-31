@@ -433,8 +433,9 @@ func (c *BasicAreaService) Query(ctx *gin.Context, ct modBasicArea.QueryCt) (rt 
 			ct.PageSize = 20
 		}
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
-		//排序
-		arg.Db = arg.Db.Order("create_at asc")
+		//自定义查询
+		arg.Db = arg.Db.Order("create_at desc")
+		//自定义查询
 		if strPg.IsNotBlank(ct.Wd) {
 			arg.Db = arg.Db.Where("name like ?", "%"+ct.Wd+"%")
 		}
@@ -521,6 +522,29 @@ func (c *BasicAreaService) SelectNodeAllPublic(ctx *gin.Context, ct modBasicArea
 //	@receiver c
 //	@param ct
 func (c *BasicAreaService) SelectPublic(ctx *gin.Context, ct modBasicArea.QueryPublicCt) (rt rg.Rs[[]modBasicArea.Vo]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	var query entityBasic.BasicAreaEntity
+	copier.Copy(&query, &ct)
+	slice := make([]modBasicArea.Vo, 0)
+	rt.Data = slice
+	infos := c.sv.FindAll(ctx, query)
+	if len(infos) > 0 {
+		for _, item := range infos {
+			var vo modBasicArea.Vo
+			copier.Copy(&vo, &item)
+			slice = append(slice, vo)
+		}
+		rt.Data = slice
+	}
+	return rt.Ok()
+}
+
+// QueryAll 查询
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *BasicAreaService) QueryAll(ctx *gin.Context, ct modBasicArea.QueryPublicCt) (rt rg.Rs[[]modBasicArea.Vo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityBasic.BasicAreaEntity
 	copier.Copy(&query, &ct)

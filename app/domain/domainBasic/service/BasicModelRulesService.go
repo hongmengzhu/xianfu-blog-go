@@ -221,7 +221,7 @@ func (c *BasicModelRulesService) Query(ctx *gin.Context, ct modBasicModelRules.Q
 		}
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		//自定义查询
-		arg.Db = arg.Db.Order("create_at asc")
+		arg.Db = arg.Db.Order("create_at desc")
 		if strPg.IsNotBlank(ct.Wd) {
 			arg.Db = arg.Db.Where("name like ?", "%"+ct.Wd+"%").
 				Or("description like ?", "%"+ct.Wd+"%")

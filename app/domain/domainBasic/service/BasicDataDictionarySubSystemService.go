@@ -23,12 +23,12 @@ import (
 )
 
 func init() {
-	gs.Provide(new(BasicDataDictionarySubService))
+	gs.Provide(new(BasicDataDictionarySubSystemService))
 }
 
-// BasicDataDictionarySubService 数据字典
+// BasicDataDictionarySubSystemService 数据字典
 // @Description:
-type BasicDataDictionarySubService struct {
+type BasicDataDictionarySubSystemService struct {
 	sv *repositoryBasic.BasicDataDictionaryRepository `autowire:"?"`
 }
 
@@ -38,7 +38,7 @@ type BasicDataDictionarySubService struct {
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *BasicDataDictionarySubService) CreateUpdate(ctx *gin.Context, ct modBasicDataDictionary.CreateUpdateSubCt) (rt rg.Rs[string]) {
+func (c *BasicDataDictionarySubSystemService) CreateUpdate(ctx *gin.Context, ct modBasicDataDictionary.CreateUpdateSubCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
@@ -103,7 +103,7 @@ func (c *BasicDataDictionarySubService) CreateUpdate(ctx *gin.Context, ct modBas
 //	@Description:
 //	@receiver c
 //	@param id
-func (c *BasicDataDictionarySubService) Detail(ctx *gin.Context, id string) (rt rg.Rs[modBasicDataDictionary.Vo]) {
+func (c *BasicDataDictionarySubSystemService) Detail(ctx *gin.Context, id string) (rt rg.Rs[modBasicDataDictionary.Vo]) {
 	if strPg.IsBlank(id) {
 		return rt.ErrorMessage("id 错误")
 	}
@@ -123,7 +123,7 @@ func (c *BasicDataDictionarySubService) Detail(ctx *gin.Context, id string) (rt 
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BasicDataDictionarySubService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
+func (c *BasicDataDictionarySubSystemService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
 	return c.State(ctx, ct.Ids, enumStatePg.ENABLE)
 }
 
@@ -132,7 +132,7 @@ func (c *BasicDataDictionarySubService) Enable(ctx *gin.Context, ct model.BaseId
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BasicDataDictionarySubService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
+func (c *BasicDataDictionarySubSystemService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
 	return c.State(ctx, ct.Ids, enumStatePg.GetType(enumStatePg.DISABLE))
 }
 
@@ -141,7 +141,7 @@ func (c *BasicDataDictionarySubService) Disable(ctx *gin.Context, ct model.BaseI
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BasicDataDictionarySubService) State(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
+func (c *BasicDataDictionarySubSystemService) State(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -163,7 +163,7 @@ func (c *BasicDataDictionarySubService) State(ctx *gin.Context, ids []string, st
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BasicDataDictionarySubService) StateEnableDisable(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
+func (c *BasicDataDictionarySubSystemService) StateEnableDisable(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
 	if !state.IsEnableDisable() {
 		return rt.ErrorMessage("状态错误")
 	}
@@ -175,7 +175,7 @@ func (c *BasicDataDictionarySubService) StateEnableDisable(ctx *gin.Context, ids
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BasicDataDictionarySubService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+func (c *BasicDataDictionarySubSystemService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -207,7 +207,7 @@ func (c *BasicDataDictionarySubService) LogicalDeletion(ctx *gin.Context, ids []
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BasicDataDictionarySubService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+func (c *BasicDataDictionarySubSystemService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -231,7 +231,7 @@ func (c *BasicDataDictionarySubService) LogicalRecovery(ctx *gin.Context, ids []
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BasicDataDictionarySubService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+func (c *BasicDataDictionarySubSystemService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -252,7 +252,7 @@ func (c *BasicDataDictionarySubService) PhysicalDeletion(ctx *gin.Context, ids [
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BasicDataDictionarySubService) Query(ctx *gin.Context, ct modBasicDataDictionary.QueryDictCt) (rt rg.Rs[pagePg.Paginator[modBasicDataDictionary.VoData]]) {
+func (c *BasicDataDictionarySubSystemService) Query(ctx *gin.Context, ct modBasicDataDictionary.QueryDictCt) (rt rg.Rs[pagePg.Paginator[modBasicDataDictionary.VoData]]) {
 	var query entityBasic.BasicDataDictionaryEntity
 	copier.Copy(&query, &ct)
 	r := c.sv
@@ -321,7 +321,7 @@ func (c *BasicDataDictionarySubService) Query(ctx *gin.Context, ct modBasicDataD
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BasicDataDictionarySubService) SelectNodeAllPublic(ctx *gin.Context, ct modBasicDataDictionary.SelectNodeCt) (rt rg.Rs[[]model.BaseNode]) {
+func (c *BasicDataDictionarySubSystemService) SelectNodeAllPublic(ctx *gin.Context, ct modBasicDataDictionary.SelectNodeCt) (rt rg.Rs[[]model.BaseNode]) {
 	var query entityBasic.BasicDataDictionaryEntity
 	copier.Copy(&query, &ct)
 	//
@@ -357,7 +357,7 @@ func (c *BasicDataDictionarySubService) SelectNodeAllPublic(ctx *gin.Context, ct
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BasicDataDictionarySubService) TypeCodeList(ctx *gin.Context, ct modBasicDataDictionary.SelectNodeCt) (rt rg.Rs[[]model.BaseNodeKeyValue]) {
+func (c *BasicDataDictionarySubSystemService) TypeCodeList(ctx *gin.Context, ct modBasicDataDictionary.SelectNodeCt) (rt rg.Rs[[]model.BaseNodeKeyValue]) {
 	if strPg.IsBlank(ct.TypeCode) {
 		return rt.ErrorMessage("上级码值[typeCode]不能为空")
 	}
@@ -395,7 +395,7 @@ func (c *BasicDataDictionarySubService) TypeCodeList(ctx *gin.Context, ct modBas
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BasicDataDictionarySubService) TypeCodeAllPublic(ctx *gin.Context, ct modBasicDataDictionary.SelectNodeAllCt) (rt rg.Rs[map[string][]model.BaseNodeKeyValue]) {
+func (c *BasicDataDictionarySubSystemService) TypeCodeAllPublic(ctx *gin.Context, ct modBasicDataDictionary.SelectNodeAllCt) (rt rg.Rs[map[string][]model.BaseNodeKeyValue]) {
 	if nil == ct.TypeCodes || len(ct.TypeCodes) == 0 {
 		return rt.ErrorMessage("上级码值[typeCodes]不能为空")
 	}
@@ -439,7 +439,7 @@ func (c *BasicDataDictionarySubService) TypeCodeAllPublic(ctx *gin.Context, ct m
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BasicDataDictionarySubService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
+func (c *BasicDataDictionarySubSystemService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
 	if "" == ct.Wd {
 		return rt.ErrorMessage("关键词不能为空")
 	}
@@ -456,7 +456,7 @@ func (c *BasicDataDictionarySubService) ExistName(ctx *gin.Context, ct model.Bas
 //	@receiver c
 //	@param ctx
 //	@param ct
-func (c *BasicDataDictionarySubService) ExistCode(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
+func (c *BasicDataDictionarySubSystemService) ExistCode(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
 	if "" == ct.Wd {
 		return rt.ErrorMessage("关键词不能为空")
 	}
@@ -476,7 +476,7 @@ func (c *BasicDataDictionarySubService) ExistCode(ctx *gin.Context, ct model.Bas
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BasicDataDictionarySubService) ExistValue(ctx *gin.Context, ct modBasicDataDictionary.ExistValue) (rt rg.Rs[string]) {
+func (c *BasicDataDictionarySubSystemService) ExistValue(ctx *gin.Context, ct modBasicDataDictionary.ExistValue) (rt rg.Rs[string]) {
 	if "" == ct.Wd {
 		return rt.ErrorMessage("关键词不能为空")
 	}

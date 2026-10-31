@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"path"
 	"strings"
+	"time"
 
 	"github.com/duke-git/lancet/v2/strutil"
 	"github.com/gin-gonic/gin"
@@ -317,6 +318,7 @@ func (c *BasicAttachmentService) Query(ctx *gin.Context, ct modBasicAttachment.Q
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		//排序
 		arg.Db = arg.Db.Order("create_at DESC")
+		//自定义查询
 		if strPg.IsNotBlank(ct.Wd) {
 			arg.Db = arg.Db.Where("name like ?", "%"+ct.Wd+"%").Where("source_name like ?", "%"+ct.Wd+"%")
 		}
@@ -494,6 +496,76 @@ func (c *BasicAttachmentService) UpdateByFileOwner(ctx *gin.Context, ct modBasic
 		clear(data)
 		clear(mapAtt)
 		clear(mapOwnerNew)
+	}
+	return rt.Ok()
+}
+
+func (c *BasicAttachmentService) UpdateDetail(ctx *gin.Context, ct modBasicAttachment.DetailByFileOwnerCt) (rt rg.Rs[[]modBasicAttachment.Vo]) {
+	if strPg.IsBlank(ct.FileOwner) {
+		return rt.ErrorMessage("所有者key不能为空")
+	}
+	list := make([]modBasicAttachment.Vo, 0)
+	entity := entityBasic.BasicAttachmentEntity{}
+	entity.FileOwner = ct.FileOwner
+	infos := c.sv.FindAll(ctx, entity)
+	if infos != nil && len(infos) > 0 {
+		for _, item := range infos {
+			var vo modBasicAttachment.Vo
+			copier.Copy(&vo, &item)
+			vo.Url = item.Domain + item.File
+			list = append(list, vo)
+		}
+	}
+	return rt.OkData(list)
+}
+
+// UpdateAddByFileOwner 添加拥有着
+func (c *BasicAttachmentService) UpdateAddByFileOwner(ctx *gin.Context, ct modBasicAttachment.AddByFileOwnerCt) (rt rg.Rs[string]) {
+	fileOwner := strings.TrimSpace(ct.FileOwner)
+	if strPg.IsBlank(fileOwner) {
+		return rt.ErrorMessage("所有者key不能为空")
+	}
+	if nil == ct.Nos || len(ct.Nos) < 1 {
+		return rt.ErrorMessage("没有选择任何数据")
+	}
+	ids := make([]string, 0)
+	for _, id := range ct.Nos {
+		if strPg.IsNotBlank(id) {
+			ids = append(ids, strings.TrimSpace(id))
+		}
+	}
+	if len(ids) < 1 {
+		return rt.ErrorMessage("没有选择任何数据")
+	}
+	list := make([]entityBasic.BasicAttachmentEntity, 0)
+	infos := c.sv.FindAllOption(ctx, optionsPg.WithOption(func(db *optionsPg.OptionParams) {
+		db.Db.Where("file_owner in ?", ids)
+	}))
+	if infos != nil && len(infos) > 0 {
+		now := time.Now()
+		for _, item := range infos {
+			var vo entityBasic.BasicAttachmentEntity
+			copier.Copy(&vo, &item)
+			vo.Url = item.Domain + item.File
+			vo.FileOwnerCopy = item.FileOwner
+			vo.FileOwner = fileOwner
+			vo.No = noPg.No()
+			vo.ID = 0
+			vo.CreateAt = &now
+			vo.UpdateAt = &now
+			if strPg.IsNotBlank(ct.FileOwnerSub) {
+				vo.FileOwnerSub = strings.TrimSpace(ct.FileOwnerSub)
+			} else {
+				vo.FileOwnerSub = "main"
+			}
+			vo.TypeData = "copy"
+			//
+			list = append(list, vo)
+		}
+		err, _ := c.sv.CreateBatch(ctx, list)
+		if err != nil {
+			return rt.ErrorMessage("保存失败")
+		}
 	}
 	return rt.Ok()
 }
