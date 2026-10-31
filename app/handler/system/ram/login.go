@@ -2,10 +2,11 @@ package ram
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/system/ram/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLogin"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/typeDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
+	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
 )
 
@@ -29,7 +30,7 @@ func (c *LoginController) Login(ctx *gin.Context) {
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.Login(ctx, ct, typeDomainPg.System, typeDomainPg.System.Code()))
+	ctx.JSON(200, c.sv.LoginBySystem(ctx, ct, typeDomainPg.System, typeDomainPg.System.Code()))
 }
 
 func (c *LoginController) RefreshToken(ctx *gin.Context) {
@@ -37,5 +38,5 @@ func (c *LoginController) RefreshToken(ctx *gin.Context) {
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.RefreshToken(ctx, ct))
+	ctx.JSON(200, rg.Ok[string](""))
 }
