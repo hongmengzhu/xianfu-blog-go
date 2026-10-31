@@ -8,11 +8,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/core/blog/serviceCore"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service/blogArticle"
-	modBlogArticle2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/model/modBlogArticleWeb"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/utils/webPg"
-	markdownPg2 "github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/markdownPg"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/utils/webPg"
+	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/markdownPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicTagsRelation"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticleCategory"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticleWeb"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
@@ -51,7 +51,7 @@ type BlogArticleWebService struct {
 //	@Description:
 //	@receiver c
 //	@param id
-func (c *BlogArticleWebService) Detail(ctx *gin.Context, id string) (rt rg.Rs[modBlogArticle2.DetailVo]) {
+func (c *BlogArticleWebService) Detail(ctx *gin.Context, id string) (rt rg.Rs[modBlogArticleWeb.DetailVo]) {
 	return c.DetailByContext(ctx, webPg.GetTenantNo(ctx), id)
 }
 
@@ -62,7 +62,7 @@ func (c *BlogArticleWebService) Detail(ctx *gin.Context, id string) (rt rg.Rs[mo
 //	@param ctx
 //	@param tenantNo 租户编号
 //	@param id
-func (c *BlogArticleWebService) DetailByContext(ctx context.Context, tenantNo string, id string) (rt rg.Rs[modBlogArticle2.DetailVo]) {
+func (c *BlogArticleWebService) DetailByContext(ctx context.Context, tenantNo string, id string) (rt rg.Rs[modBlogArticleWeb.DetailVo]) {
 	if strPg.IsBlank(id) {
 		return rt.ErrorMessage("id错误")
 	}
@@ -75,7 +75,7 @@ func (c *BlogArticleWebService) DetailByContext(ctx context.Context, tenantNo st
 	if strPg.IsNotBlank(no) && find.TenantNo != no {
 		return rt.ErrorMessage("数据不存在")
 	}
-	var stat modBlogArticle2.StatisticsVo
+	var stat modBlogArticleWeb.StatisticsVo
 	//统计
 	if strPg.IsNotBlank(find.No) {
 		{
@@ -86,7 +86,7 @@ func (c *BlogArticleWebService) DetailByContext(ctx context.Context, tenantNo st
 		}
 	}
 	log.Info(ctx, log.TagAppDef, "find=%+v", log.Any("find", find))
-	var info modBlogArticle2.DetailVo
+	var info modBlogArticleWeb.DetailVo
 	copier.Copy(&info, find)
 	//
 	info.Statistics = stat
@@ -219,7 +219,7 @@ func (c *BlogArticleWebService) DetailByContext(ctx context.Context, tenantNo st
 	}
 
 	if strPg.IsNotBlank(find.Content) {
-		raw := markdownPg2.Markdown([]byte(find.Content))
+		raw := markdownPg.Markdown([]byte(find.Content))
 		info.ContentConv = raw.String()
 	}
 	//log.Info(context.Background(), log.TagAppDef, "info:%+v", info)
@@ -232,7 +232,7 @@ func (c *BlogArticleWebService) DetailByContext(ctx context.Context, tenantNo st
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogArticleWebService) Query(ctx *gin.Context, ct modBlogArticle2.QueryCt) (rt rg.Rs[pagePg.Paginator[modBlogArticle2.Vo]]) {
+func (c *BlogArticleWebService) Query(ctx *gin.Context, ct modBlogArticleWeb.QueryCt) (rt rg.Rs[pagePg.Paginator[modBlogArticleWeb.Vo]]) {
 	return c.QueryByContext(ctx, webPg.GetTenantNo(ctx), ct)
 }
 
@@ -243,7 +243,7 @@ func (c *BlogArticleWebService) Query(ctx *gin.Context, ct modBlogArticle2.Query
 //	@param ctx
 //	@param tenantNo 租户编号
 //	@param ct
-func (c *BlogArticleWebService) QueryByContext(ctx context.Context, tenantNo string, ct modBlogArticle2.QueryCt) (rt rg.Rs[pagePg.Paginator[modBlogArticle2.Vo]]) {
+func (c *BlogArticleWebService) QueryByContext(ctx context.Context, tenantNo string, ct modBlogArticleWeb.QueryCt) (rt rg.Rs[pagePg.Paginator[modBlogArticleWeb.Vo]]) {
 	var query entityBlog.BlogArticleEntity
 	copier.Copy(&query, &ct)
 	if strPg.IsNotBlank(tenantNo) {
@@ -253,7 +253,7 @@ func (c *BlogArticleWebService) QueryByContext(ctx context.Context, tenantNo str
 	query.State = enumStatePg.ENABLE.Index()
 	//审批通过
 	query.PlatformApproved = enumApprovedPg.ApprovedStateApproved.Index()
-	slice := make([]modBlogArticle2.Vo, 0)
+	slice := make([]modBlogArticleWeb.Vo, 0)
 	rt.Data.Data = slice
 	r := c.sv
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
@@ -298,7 +298,7 @@ func (c *BlogArticleWebService) QueryByContext(ctx context.Context, tenantNo str
 
 	if page.Total > 0 && page.Data != nil && len(page.Data) > 0 {
 		ImgDefault := "/assets/imgs/shop/product-1-1.jpg"
-		pg := pagePg.NewPaginatorByPageable[modBlogArticle2.Vo](page.Pageable)
+		pg := pagePg.NewPaginatorByPageable[modBlogArticleWeb.Vo](page.Pageable)
 		mapCategory := make(map[string]*modBlogArticleCategory.Cache)
 		mapStat := make(map[string]*entityBlog.BlogArticleStatisticsEntity)
 		idsCategory := make([]string, 0)
@@ -421,7 +421,7 @@ func (c *BlogArticleWebService) QueryByContext(ctx context.Context, tenantNo str
 		}
 		//字段赋值
 		for _, item := range page.Data {
-			var vo modBlogArticle2.Vo
+			var vo modBlogArticleWeb.Vo
 			copier.Copy(&vo, &item)
 			vo.Tags = make([]string, 0)
 			vo.TagsStyle = make([]modBasicTagsRelation.AllVo, 0)
@@ -465,8 +465,8 @@ func (c *BlogArticleWebService) QueryByContext(ctx context.Context, tenantNo str
 			}
 			if strPg.IsNotBlank(item.Content) {
 				// 截取前1000个有效文字（图片不计，代码段完整）
-				truncated := markdownPg2.TruncateMarkdown(item.Content, 1000)
-				raw := markdownPg2.Markdown([]byte(truncated))
+				truncated := markdownPg.TruncateMarkdown(item.Content, 1000)
+				raw := markdownPg.Markdown([]byte(truncated))
 				vo.ContentConv = raw.String()
 			}
 			// 栏目

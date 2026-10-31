@@ -5,9 +5,9 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/system/ram/service"
-	authTokenPg2 "github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/authTokenPg"
-	cacheAuthPubPrivPg2 "github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheAuthPubPrivPg"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/authTokenPg"
+	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheAuthPubPrivPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constContextPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constHeaderPg"
@@ -38,14 +38,14 @@ func GroupSystemMiddleware(m *GroupSystemMiddlewareSp) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader(constHeaderPg.HeaderAuthorization_system)
 		if strPg.IsNotBlank(token) {
-			get, b := cacheAuthPubPrivPg2.Get(cacheAuthPubPrivPg2.KeySystem())
+			get, b := cacheAuthPubPrivPg.Get(cacheAuthPubPrivPg.KeySystem())
 			if !b {
 				c.JSON(200, rg.Error[string]("密钥不存在"))
 				c.Abort()
 				return
 			}
-			token = strings.Replace(token, authTokenPg2.AuthScheme+" ", "", -1)
-			t, r := authTokenPg2.VerifyByPublicKey(get.Public, token)
+			token = strings.Replace(token, authTokenPg.AuthScheme+" ", "", -1)
+			t, r := authTokenPg.VerifyByPublicKey(get.Public, token)
 			if r.ErrorIs() {
 				log.Debug(context.Background(), log.TagAppDef, "JWT", func() []log.Field {
 					return []log.Field{
