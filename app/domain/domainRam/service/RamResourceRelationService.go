@@ -9,6 +9,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
+	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
 
@@ -259,11 +260,17 @@ func (c *RamResourceRelationService) Query(ctx *gin.Context, ct modRamResourceRe
 	copier.Copy(&query, &ct)
 	//
 	slice := make([]modRamResourceRelation.Vo, 0)
-	//
+	rt.Data.Data = slice
 	page, err := c.sv.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
+		if ct.PageSize < 1 {
+			ct.PageSize = 20
+		}
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
-	}), optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
 		arg.Db = arg.Db.Order("create_at desc")
+		//自定义查询
+		if strPg.IsNotBlank(ct.Wd) {
+			arg.Db = arg.Db.Where("name like ?", "%"+ct.Wd+"%")
+		}
 	}))
 	if nil != err {
 		return rt.Ok()

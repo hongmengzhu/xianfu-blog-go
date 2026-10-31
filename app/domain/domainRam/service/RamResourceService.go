@@ -38,7 +38,7 @@ type RamResourceService struct {
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *RamResourceService) Create(ctx *gin.Context, ct modRamResource.CreateCt) (rt rg.Rs[string]) {
+func (c *RamResourceService) Create(ctx *gin.Context, ct modRamResource.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityRam.RamResourceEntity
 	err2 := copier.Copy(&info, &ct)
@@ -527,6 +527,36 @@ func (c *RamResourceService) QueryPublic(ctx *gin.Context, ct modRamResource.Que
 	return rt.Ok()
 }
 
+// SelectNodeAll 查询
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *RamResourceService) SelectNodeAll(ctx *gin.Context, ct modRamResource.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	var query entityRam.RamResourceEntity
+	copier.Copy(&query, &ct)
+	slice := make([]model.BaseNodeNo, 0)
+	rt.Data = slice
+	infos := c.sv.FindAll(ctx, query)
+	if len(infos) > 0 {
+		for _, item := range infos {
+			var vo modRamResource.Vo
+			copier.Copy(&vo, &item)
+			code := model.BaseNodeNo{
+				Value:    item.No,
+				Label:    item.Name,
+				ParentNo: item.ParentNo,
+				Extend:   vo,
+			}
+
+			slice = append(slice, code)
+		}
+		rt.Data = slice
+	}
+	return rt.Ok()
+}
+
 // SelectNodePublic 查询
 //
 //	@Description:
@@ -615,18 +645,26 @@ func (c *RamResourceService) SelectPublic(ctx *gin.Context, ct modRamResource.Qu
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamResourceService) SelectCategoryPublic(ctx *gin.Context, ct modRamResource.QueryCt) (rt rg.Rs[[]modRamResource.Vo]) {
+func (c *RamResourceService) SelectCategoryPublic(ctx *gin.Context, ct modRamResource.QueryCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamResourceEntity
 	copier.Copy(&query, &ct)
-	slice := make([]modRamResource.Vo, 0)
+	slice := make([]model.BaseNodeNo, 0)
 	rt.Data = slice
 	infos, result := c.sv.FindByParentNoRoot(ctx)
 	if result {
 		for _, item := range infos {
 			var vo modRamResource.Vo
 			copier.Copy(&vo, &item)
-			slice = append(slice, vo)
+			//
+			code := model.BaseNodeNo{
+				Value:    item.No,
+				Label:    item.Name,
+				ParentNo: item.ParentNo,
+				Extend:   vo,
+			}
+			//
+			slice = append(slice, code)
 		}
 		rt.Data = slice
 	}

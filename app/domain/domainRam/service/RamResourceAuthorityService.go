@@ -79,7 +79,9 @@ func (c *RamResourceAuthorityService) CreatByGroup(ctx *gin.Context, ct modRamRe
 	ids := make([]string, 0)
 	for _, id := range ct.Ids {
 		id = strings.TrimSpace(id)
-		ids = append(ids, id)
+		if strPg.IsNotBlank(id) {
+			ids = append(ids, id)
+		}
 	}
 	if len(ids) < 1 {
 		return rt.ErrorMessage("请选择数据")
@@ -88,7 +90,7 @@ func (c *RamResourceAuthorityService) CreatByGroup(ctx *gin.Context, ct modRamRe
 	if !result {
 		return rt.ErrorMessage("资源组不存在")
 	}
-	resourceData, r := c.resDb.FindAllByIdStringIn(ctx, ids)
+	resourceData, r := c.resDb.FindAllByNoIn(ctx, ids)
 	if !r {
 		return rt.ErrorMessage("资源数据不存在")
 	}
@@ -327,7 +329,7 @@ func (c *RamResourceAuthorityService) Query(ctx *gin.Context, ct modRamResourceA
 			ct.PageSize = 20
 		}
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
-		arg.Db = arg.Db.Order("create_at asc")
+		arg.Db = arg.Db.Order("create_at desc")
 		//自定义查询
 		if strPg.IsNotBlank(ct.Wd) {
 			arg.Db = arg.Db.Where("name like ?", "%"+ct.Wd+"%")
