@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBookmark/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogBookmark"
+	modBmBookmark2 "github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmark"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
@@ -53,7 +53,7 @@ func (c *BookmarkController) RegisterRoutes(e *gin.Engine) {
 //	@receiver c
 //	@param ctx
 func (c *BookmarkController) CreateUpdate(ctx *gin.Context) {
-	var ct modBlogBookmark.CreateUpdateCt
+	var ct modBmBookmark2.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -167,7 +167,7 @@ func (c *BookmarkController) State(ctx *gin.Context) {
 //	@receiver c
 //	@param ctx
 func (c *BookmarkController) Query(ctx *gin.Context) {
-	var ct modBlogBookmark.QueryCt
+	var ct modBmBookmark2.QueryCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -175,17 +175,17 @@ func (c *BookmarkController) Query(ctx *gin.Context) {
 }
 
 func (c *BookmarkController) SelectNodePublic(ctx *gin.Context) {
-	ct := modBlogBookmark.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
+	ct := modBmBookmark2.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
 	ctx.JSON(200, c.sv.SelectNodePublic(ctx, ct))
 }
 
 func (c *BookmarkController) SelectNodeAllPublic(ctx *gin.Context) {
-	ct := modBlogBookmark.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
+	ct := modBmBookmark2.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
 	ctx.JSON(200, c.sv.SelectNodeAllPublic(ctx, ct))
 }
 
 func (c *BookmarkController) QueryAll(ctx *gin.Context) {
-	ct := modBlogBookmark.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
+	ct := modBmBookmark2.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
 	ctx.JSON(200, c.sv.QueryAll(ctx, ct))
 }
 

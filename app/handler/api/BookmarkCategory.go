@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBookmark/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogBookmarkCategory/modApiBlogBookmarkCategory"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkCategory/modApiBmBookmarkCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"go-spring.org/spring/gs"
@@ -55,7 +55,7 @@ func (c *BookmarkCategoryApiController) GetOrg(ctx *gin.Context) {
 //	@receiver c
 //	@param ctx
 func (c *BookmarkCategoryApiController) CreateUpdate(ctx *gin.Context) {
-	var ct modApiBlogBookmarkCategory.CreateUpdateCt
+	var ct modApiBmBookmarkCategory.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}

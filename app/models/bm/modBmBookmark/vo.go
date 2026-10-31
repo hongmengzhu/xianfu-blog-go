@@ -1,4 +1,4 @@
-package modBlogBookmark
+package modBmBookmark
 
 import (
 	"time"

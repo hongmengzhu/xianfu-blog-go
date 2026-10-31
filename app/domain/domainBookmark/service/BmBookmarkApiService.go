@@ -4,10 +4,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogBookmark/modApiBlogBookmark"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogBookmarkCategory/modApiBlogBookmarkCategory"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
+	modApiBmBookmark2 "github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmark/modApiBmBookmark"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkCategory/modApiBmBookmarkCategory"
+	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBm"
+	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg/holderApiPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/blog/bookmarkTypeOwnerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/blog/typeReadingPg"
@@ -26,23 +26,23 @@ func init() {
 }
 
 type BmBookmarkApiService struct {
-	sv     *repositoryBlog.BlogBookmarkRepository         `autowire:"?"`
-	catDb  *repositoryBlog.BlogBookmarkCategoryRepository `autowire:"?"`
-	catSer *BmBookmarkCategoryApiService                  `autowire:"?"`
+	sv     *repositoryBm.BmBookmarkRepository         `autowire:"?"`
+	catDb  *repositoryBm.BmBookmarkCategoryRepository `autowire:"?"`
+	catSer *BmBookmarkCategoryApiService              `autowire:"?"`
 }
 
 // GetAll 获取所有
-func (c *BmBookmarkApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBlogBookmark.VoAll]) {
+func (c *BmBookmarkApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBmBookmark2.VoAll]) {
 	//
 	holder := holderApiPg.GetContextAccount(ctx)
 	//
-	ret := modApiBlogBookmark.VoAll{}
-	ret.My = make([]modApiBlogBookmark.Vo, 0)
-	ret.Team = make([]modApiBlogBookmark.Vo, 0)
-	ret.Org = make([]modApiBlogBookmark.Vo, 0)
-	ret.MyCategory = make([]modApiBlogBookmarkCategory.Vo, 0)
-	ret.TeamCategory = make([]modApiBlogBookmarkCategory.Vo, 0)
-	ret.OrgCategory = make([]modApiBlogBookmarkCategory.Vo, 0)
+	ret := modApiBmBookmark2.VoAll{}
+	ret.My = make([]modApiBmBookmark2.Vo, 0)
+	ret.Team = make([]modApiBmBookmark2.Vo, 0)
+	ret.Org = make([]modApiBmBookmark2.Vo, 0)
+	ret.MyCategory = make([]modApiBmBookmarkCategory.Vo, 0)
+	ret.TeamCategory = make([]modApiBmBookmarkCategory.Vo, 0)
+	ret.OrgCategory = make([]modApiBmBookmarkCategory.Vo, 0)
 	//
 	all := c.catSer.GetAll(ctx)
 	if all.SuccessIs() {
@@ -52,7 +52,7 @@ func (c *BmBookmarkApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBlogBook
 	}
 	//
 	{
-		q := entityBlog.BlogBookmarkEntity{}
+		q := entityBm.BmBookmarkEntity{}
 		q.State = enumStatePg.ENABLE.Index()
 		q.TenantNo = holder.GetTenantNo()
 		q.Ano = holder.GetAno()
@@ -60,7 +60,7 @@ func (c *BmBookmarkApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBlogBook
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, item := range infos {
-				var vo modApiBlogBookmark.Vo
+				var vo modApiBmBookmark2.Vo
 				copier.Copy(&vo, &item)
 				//
 				ret.My = append(ret.My, vo)
@@ -69,14 +69,14 @@ func (c *BmBookmarkApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBlogBook
 	}
 	//
 	{
-		q := entityBlog.BlogBookmarkEntity{}
+		q := entityBm.BmBookmarkEntity{}
 		q.State = enumStatePg.ENABLE.Index()
 		q.TenantNo = holder.GetTenantNo()
 		q.TypeOwner = bookmarkTypeOwnerPg.TEAM.Code()
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, item := range infos {
-				var vo modApiBlogBookmark.Vo
+				var vo modApiBmBookmark2.Vo
 				copier.Copy(&vo, &item)
 				//
 				ret.Team = append(ret.Team, vo)
@@ -85,14 +85,14 @@ func (c *BmBookmarkApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBlogBook
 	}
 	//
 	{
-		q := entityBlog.BlogBookmarkEntity{}
+		q := entityBm.BmBookmarkEntity{}
 		q.State = enumStatePg.ENABLE.Index()
 		q.TenantNo = holder.GetTenantNo()
 		q.TypeOwner = bookmarkTypeOwnerPg.ORG.Code()
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, item := range infos {
-				var vo modApiBlogBookmark.Vo
+				var vo modApiBmBookmark2.Vo
 				copier.Copy(&vo, &item)
 				//
 				ret.Org = append(ret.Org, vo)
@@ -104,16 +104,16 @@ func (c *BmBookmarkApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBlogBook
 }
 
 // GetMy 获取my
-func (c *BmBookmarkApiService) GetMy(ctx *gin.Context, ct modApiBlogBookmark.QueryCt) (rt rg.Rs[[]modApiBlogBookmark.Vo]) {
+func (c *BmBookmarkApiService) GetMy(ctx *gin.Context, ct modApiBmBookmark2.QueryCt) (rt rg.Rs[[]modApiBmBookmark2.Vo]) {
 	//
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
 	holder := holderApiPg.GetContextAccount(ctx)
 	//
-	data := make([]modApiBlogBookmark.Vo, 0)
+	data := make([]modApiBmBookmark2.Vo, 0)
 	//
 	{
-		q := entityBlog.BlogBookmarkEntity{}
+		q := entityBm.BmBookmarkEntity{}
 		q.State = enumStatePg.ENABLE.Index()
 		q.TenantNo = holder.GetTenantNo()
 		q.Ano = holder.GetAno()
@@ -129,7 +129,7 @@ func (c *BmBookmarkApiService) GetMy(ctx *gin.Context, ct modApiBlogBookmark.Que
 		}))
 		if nil != infos {
 			for _, item := range infos {
-				var vo modApiBlogBookmark.Vo
+				var vo modApiBmBookmark2.Vo
 				copier.Copy(&vo, &item)
 				//
 				data = append(data, vo)
@@ -141,15 +141,15 @@ func (c *BmBookmarkApiService) GetMy(ctx *gin.Context, ct modApiBlogBookmark.Que
 }
 
 // GetOrg 获取
-func (c *BmBookmarkApiService) GetOrg(ctx *gin.Context, ct modApiBlogBookmark.QueryCt) (rt rg.Rs[[]modApiBlogBookmark.Vo]) {
+func (c *BmBookmarkApiService) GetOrg(ctx *gin.Context, ct modApiBmBookmark2.QueryCt) (rt rg.Rs[[]modApiBmBookmark2.Vo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
 	holder := holderApiPg.GetContextAccount(ctx)
 	//
-	data := make([]modApiBlogBookmark.Vo, 0)
+	data := make([]modApiBmBookmark2.Vo, 0)
 	//
 	{
-		q := entityBlog.BlogBookmarkEntity{}
+		q := entityBm.BmBookmarkEntity{}
 		q.State = enumStatePg.ENABLE.Index()
 		q.TenantNo = holder.GetTenantNo()
 		q.Ano = holder.GetAno()
@@ -165,7 +165,7 @@ func (c *BmBookmarkApiService) GetOrg(ctx *gin.Context, ct modApiBlogBookmark.Qu
 		}))
 		if nil != infos {
 			for _, item := range infos {
-				var vo modApiBlogBookmark.Vo
+				var vo modApiBmBookmark2.Vo
 				copier.Copy(&vo, &item)
 				//
 				data = append(data, vo)
@@ -177,9 +177,9 @@ func (c *BmBookmarkApiService) GetOrg(ctx *gin.Context, ct modApiBlogBookmark.Qu
 }
 
 // Create 创建
-func (c *BmBookmarkApiService) Create(ctx *gin.Context, ct modApiBlogBookmark.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *BmBookmarkApiService) Create(ctx *gin.Context, ct modApiBmBookmark2.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var info entityBlog.BlogBookmarkEntity
+	var info entityBm.BmBookmarkEntity
 	err := copier.Copy(&info, &ct)
 	if err != nil {
 		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
@@ -202,7 +202,7 @@ func (c *BmBookmarkApiService) Create(ctx *gin.Context, ct modApiBlogBookmark.Cr
 }
 
 // Update 创建
-func (c *BmBookmarkApiService) Update(ctx *gin.Context, ct modApiBlogBookmark.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *BmBookmarkApiService) Update(ctx *gin.Context, ct modApiBmBookmark2.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if ct.ID.ToInt64() <= 0 {
 		return rt.ErrorMessage("ID不能为空")
@@ -211,7 +211,7 @@ func (c *BmBookmarkApiService) Update(ctx *gin.Context, ct modApiBlogBookmark.Cr
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
-	var info entityBlog.BlogBookmarkEntity
+	var info entityBm.BmBookmarkEntity
 	err := copier.Copy(&info, &ct)
 	if err != nil {
 		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
@@ -256,7 +256,7 @@ func (c *BmBookmarkApiService) LogicalDeletion(ctx *gin.Context, ids []string) (
 		for _, info := range finds {
 			enum := enumStatePg.State(info.State)
 			if ok, reverse := enum.ReverseEnableDisable(); ok {
-				repository.Update(ctx, entityBlog.BlogBookmarkEntity{State: reverse.IndexInt8()}, info.ID)
+				repository.Update(ctx, entityBm.BmBookmarkEntity{State: reverse.IndexInt8()}, info.ID)
 			}
 		}
 	}

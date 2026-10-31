@@ -1,11 +1,11 @@
-package entityBlog
+package entityBm
 
 import (
 	"time"
 )
 
-// BlogBookmarkCategoryEntity -
-type BlogBookmarkCategoryEntity struct {
+// BmBookmarkCategoryEntity -
+type BmBookmarkCategoryEntity struct {
 	ID          int64      `gorm:"column:id;primaryKey;autoIncrement:true" json:"id" comment:"" `
 	No          string     `gorm:"column:no;type:varchar(80);default:;comment:编号代号" json:"no" comment:"编号代号" `
 	Code        string     `gorm:"column:code;type:varchar(80);comment:标志" json:"code" comment:"标志" `
@@ -29,10 +29,10 @@ type BlogBookmarkCategoryEntity struct {
 	TeamNo      string     `gorm:"column:team_no;type:varchar(80);index;default:;comment:团队编号" json:"team_no" comment:"团队编号" `
 }
 
-func (*BlogBookmarkCategoryEntity) TableName() string {
-	return "blog_bookmark_category"
+func (*BmBookmarkCategoryEntity) TableName() string {
+	return "bm_bookmark_category"
 }
 
-func (*BlogBookmarkCategoryEntity) TableComment() string {
+func (*BmBookmarkCategoryEntity) TableComment() string {
 	return "书签分类"
 }

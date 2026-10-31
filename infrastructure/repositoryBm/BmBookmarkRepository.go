@@ -1,10 +1,10 @@
-package repositoryBlog
+package repositoryBm
 
 import (
 	"context"
 	"errors"
 
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
+	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/support"
 	"go-spring.org/log"
@@ -13,16 +13,16 @@ import (
 )
 
 func init() {
-	gs.Provide(new(BlogBookmarkRepository))
+	gs.Provide(new(BmBookmarkRepository))
 
-	gs.Provide(new(support.BaseService[BlogBookmarkRepository]))
+	gs.Provide(new(support.BaseService[BmBookmarkRepository]))
 }
 
-type BlogBookmarkRepository struct {
-	repositoryPg.BaseRepository[entityBlog.BlogBookmarkEntity, int64]
+type BmBookmarkRepository struct {
+	repositoryPg.BaseRepository[entityBm.BmBookmarkEntity, int64]
 }
 
-func (c *BlogBookmarkRepository) FindAllByUrlSourceMd5(ctx context.Context, code string) (infos []*entityBlog.BlogBookmarkEntity, result bool) {
+func (c *BmBookmarkRepository) FindAllByUrlSourceMd5(ctx context.Context, code string) (infos []*entityBm.BmBookmarkEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("url_source_md5 = ?", code).Find(&infos)
 	if tx.Error != nil {
 		// record not found 跳过日志
@@ -37,7 +37,7 @@ func (c *BlogBookmarkRepository) FindAllByUrlSourceMd5(ctx context.Context, code
 	return infos, true
 }
 
-func (c *BlogBookmarkRepository) FindAllByUrlSourceMd5In(ctx context.Context, code []string) (infos []*entityBlog.BlogBookmarkEntity, result bool) {
+func (c *BmBookmarkRepository) FindAllByUrlSourceMd5In(ctx context.Context, code []string) (infos []*entityBm.BmBookmarkEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("url_source_md5 in ?", code).Find(&infos)
 	if tx.Error != nil {
 		// record not found 跳过日志

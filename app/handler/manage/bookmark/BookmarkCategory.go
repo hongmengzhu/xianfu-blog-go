@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBookmark/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogBookmarkCategory"
+	modBmBookmarkCategory2 "github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
@@ -55,7 +55,7 @@ func (c *BookmarkCategoryController) RegisterRoutes(e *gin.Engine) {
 //	@receiver c
 //	@param ctx
 func (c *BookmarkCategoryController) Create(ctx *gin.Context) {
-	var ct modBlogBookmarkCategory.CreateCt
+	var ct modBmBookmarkCategory2.CreateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -68,7 +68,7 @@ func (c *BookmarkCategoryController) Create(ctx *gin.Context) {
 //	@receiver c
 //	@param ctx
 func (c *BookmarkCategoryController) Update(ctx *gin.Context) {
-	var ct modBlogBookmarkCategory.UpdateCt
+	var ct modBmBookmarkCategory2.UpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -178,7 +178,7 @@ func (c *BookmarkCategoryController) State(ctx *gin.Context) {
 //	@receiver c
 //	@param ctx
 func (c *BookmarkCategoryController) Query(ctx *gin.Context) {
-	var ct modBlogBookmarkCategory.QueryCt
+	var ct modBmBookmarkCategory2.QueryCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -186,7 +186,7 @@ func (c *BookmarkCategoryController) Query(ctx *gin.Context) {
 }
 
 func (c *BookmarkCategoryController) SelectNodeAll(ctx *gin.Context) {
-	var ct modBlogBookmarkCategory.QueryPublicCt
+	var ct modBmBookmarkCategory2.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -195,7 +195,7 @@ func (c *BookmarkCategoryController) SelectNodeAll(ctx *gin.Context) {
 }
 
 func (c *BookmarkCategoryController) SelectNodeAllPublic(ctx *gin.Context) {
-	var ct modBlogBookmarkCategory.QueryPublicCt
+	var ct modBmBookmarkCategory2.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -204,7 +204,7 @@ func (c *BookmarkCategoryController) SelectNodeAllPublic(ctx *gin.Context) {
 }
 
 func (c *BookmarkCategoryController) QueryAll(ctx *gin.Context) {
-	var ct modBlogBookmarkCategory.QueryPublicCt
+	var ct modBmBookmarkCategory2.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}

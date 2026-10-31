@@ -2,9 +2,9 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogBookmarkCategory/modApiBlogBookmarkCategory"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
+	modApiBmBookmarkCategory2 "github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkCategory/modApiBmBookmarkCategory"
+	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBm"
+	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg/holderApiPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/automatedPg"
@@ -28,21 +28,21 @@ func init() {
 }
 
 type BmBookmarkCategoryApiService struct {
-	sv *repositoryBlog.BlogBookmarkCategoryRepository `autowire:"?"`
+	sv *repositoryBm.BmBookmarkCategoryRepository `autowire:"?"`
 }
 
 // GetAll 获取所有
-func (c *BmBookmarkCategoryApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBlogBookmarkCategory.VoAll]) {
+func (c *BmBookmarkCategoryApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBmBookmarkCategory2.VoAll]) {
 	//
 	holder := holderApiPg.GetContextAccount(ctx)
 	//
-	vo := modApiBlogBookmarkCategory.VoAll{}
-	vo.My = make([]modApiBlogBookmarkCategory.Vo, 0)
-	vo.Team = make([]modApiBlogBookmarkCategory.Vo, 0)
-	vo.Org = make([]modApiBlogBookmarkCategory.Vo, 0)
+	vo := modApiBmBookmarkCategory2.VoAll{}
+	vo.My = make([]modApiBmBookmarkCategory2.Vo, 0)
+	vo.Team = make([]modApiBmBookmarkCategory2.Vo, 0)
+	vo.Org = make([]modApiBmBookmarkCategory2.Vo, 0)
 	//
 	{
-		q := entityBlog.BlogBookmarkCategoryEntity{}
+		q := entityBm.BmBookmarkCategoryEntity{}
 		q.State = enumStatePg.ENABLE.Index()
 		q.TenantNo = holder.GetTenantNo()
 		q.Ano = holder.GetAno()
@@ -50,7 +50,7 @@ func (c *BmBookmarkCategoryApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApi
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, info := range infos {
-				vo.My = append(vo.My, modApiBlogBookmarkCategory.Vo{
+				vo.My = append(vo.My, modApiBmBookmarkCategory2.Vo{
 					ID:       typePg.Int64String(info.ID),
 					Name:     info.Name,
 					NameFl:   info.NameFl,
@@ -64,14 +64,14 @@ func (c *BmBookmarkCategoryApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApi
 	}
 	//
 	{
-		q := entityBlog.BlogBookmarkCategoryEntity{}
+		q := entityBm.BmBookmarkCategoryEntity{}
 		q.State = enumStatePg.ENABLE.Index()
 		q.TenantNo = holder.GetTenantNo()
 		q.TypeOwner = bookmarkTypeOwnerPg.TEAM.Code()
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, info := range infos {
-				vo.Team = append(vo.Team, modApiBlogBookmarkCategory.Vo{
+				vo.Team = append(vo.Team, modApiBmBookmarkCategory2.Vo{
 					ID:       typePg.Int64String(info.ID),
 					Name:     info.Name,
 					NameFl:   info.NameFl,
@@ -85,14 +85,14 @@ func (c *BmBookmarkCategoryApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApi
 	}
 	//
 	{
-		q := entityBlog.BlogBookmarkCategoryEntity{}
+		q := entityBm.BmBookmarkCategoryEntity{}
 		q.State = enumStatePg.ENABLE.Index()
 		q.TenantNo = holder.GetTenantNo()
 		q.TypeOwner = bookmarkTypeOwnerPg.ORG.Code()
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, info := range infos {
-				vo.Org = append(vo.Org, modApiBlogBookmarkCategory.Vo{
+				vo.Org = append(vo.Org, modApiBmBookmarkCategory2.Vo{
 					ID:       typePg.Int64String(info.ID),
 					Name:     info.Name,
 					NameFl:   info.NameFl,
@@ -109,14 +109,14 @@ func (c *BmBookmarkCategoryApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApi
 }
 
 // GetMy 获取我的
-func (c *BmBookmarkCategoryApiService) GetMy(ctx *gin.Context) (rt rg.Rs[[]modApiBlogBookmarkCategory.Vo]) {
+func (c *BmBookmarkCategoryApiService) GetMy(ctx *gin.Context) (rt rg.Rs[[]modApiBmBookmarkCategory2.Vo]) {
 	//
 	holder := holderApiPg.GetContextAccount(ctx)
 	//
-	data := make([]modApiBlogBookmarkCategory.Vo, 0)
+	data := make([]modApiBmBookmarkCategory2.Vo, 0)
 	//
 	{
-		q := entityBlog.BlogBookmarkCategoryEntity{}
+		q := entityBm.BmBookmarkCategoryEntity{}
 		q.State = enumStatePg.ENABLE.Index()
 		q.TenantNo = holder.GetTenantNo()
 		q.Ano = holder.GetAno()
@@ -124,7 +124,7 @@ func (c *BmBookmarkCategoryApiService) GetMy(ctx *gin.Context) (rt rg.Rs[[]modAp
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, info := range infos {
-				data = append(data, modApiBlogBookmarkCategory.Vo{
+				data = append(data, modApiBmBookmarkCategory2.Vo{
 					ID:       typePg.Int64String(info.ID),
 					Name:     info.Name,
 					NameFl:   info.NameFl,
@@ -141,14 +141,14 @@ func (c *BmBookmarkCategoryApiService) GetMy(ctx *gin.Context) (rt rg.Rs[[]modAp
 }
 
 // GetOrg 获取所有
-func (c *BmBookmarkCategoryApiService) GetOrg(ctx *gin.Context) (rt rg.Rs[[]modApiBlogBookmarkCategory.Vo]) {
+func (c *BmBookmarkCategoryApiService) GetOrg(ctx *gin.Context) (rt rg.Rs[[]modApiBmBookmarkCategory2.Vo]) {
 	//
 	holder := holderApiPg.GetContextAccount(ctx)
 	//
-	data := make([]modApiBlogBookmarkCategory.Vo, 0)
+	data := make([]modApiBmBookmarkCategory2.Vo, 0)
 	//
 	{
-		q := entityBlog.BlogBookmarkCategoryEntity{}
+		q := entityBm.BmBookmarkCategoryEntity{}
 		q.State = enumStatePg.ENABLE.Index()
 		q.TenantNo = holder.GetTenantNo()
 		q.Ano = holder.GetAno()
@@ -156,7 +156,7 @@ func (c *BmBookmarkCategoryApiService) GetOrg(ctx *gin.Context) (rt rg.Rs[[]modA
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, info := range infos {
-				data = append(data, modApiBlogBookmarkCategory.Vo{
+				data = append(data, modApiBmBookmarkCategory2.Vo{
 					ID:       typePg.Int64String(info.ID),
 					Name:     info.Name,
 					NameFl:   info.NameFl,
@@ -178,19 +178,19 @@ func (c *BmBookmarkCategoryApiService) GetOrg(ctx *gin.Context) (rt rg.Rs[[]modA
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *BmBookmarkCategoryApiService) CreateUpdate(ctx *gin.Context, ct modApiBlogBookmarkCategory.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *BmBookmarkCategoryApiService) CreateUpdate(ctx *gin.Context, ct modApiBmBookmarkCategory2.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
 	}
 	isUpdate := ct.ID > 0
-	var info entityBlog.BlogBookmarkCategoryEntity
+	var info entityBm.BmBookmarkCategoryEntity
 	err := copier.Copy(&info, &ct)
 	if err != nil {
 		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 	}
 	r := c.sv
-	parent := &entityBlog.BlogBookmarkCategoryEntity{}
+	parent := &entityBm.BmBookmarkCategoryEntity{}
 	if isUpdate {
 		//更新
 		if strPg.IsBlank(info.Code) {
@@ -206,7 +206,7 @@ func (c *BmBookmarkCategoryApiService) CreateUpdate(ctx *gin.Context, ct modApiB
 			return rt.ErrorMessage("数据不存在")
 		}
 		//上级
-		var childData []*entityBlog.BlogBookmarkCategoryEntity
+		var childData []*entityBm.BmBookmarkCategoryEntity
 		if strPg.IsNotBlank(ct.ParentNo) {
 			result := false
 			parent, result = r.FindByNo(ctx, ct.ParentNo, optionsPg.WithCtx(ctx))
@@ -253,7 +253,7 @@ func (c *BmBookmarkCategoryApiService) CreateUpdate(ctx *gin.Context, ct modApiB
 		log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 		//更改上级后，相关子集修改
 		if strPg.IsNotBlank(ct.ParentNo) && nil != childData {
-			maps := slicePg.ToMapArray(childData, func(t *entityBlog.BlogBookmarkCategoryEntity) (string, *entityBlog.BlogBookmarkCategoryEntity) {
+			maps := slicePg.ToMapArray(childData, func(t *entityBm.BmBookmarkCategoryEntity) (string, *entityBm.BmBookmarkCategoryEntity) {
 				if strPg.IsBlank(t.ParentNo) {
 					return constNodePg.ROOT, t
 				}
@@ -273,7 +273,7 @@ func (c *BmBookmarkCategoryApiService) CreateUpdate(ctx *gin.Context, ct modApiB
 					if item.ID == find.ID {
 						continue
 					}
-					r.Update(ctx, entityBlog.BlogBookmarkCategoryEntity{IdLink: item.IdLink,
+					r.Update(ctx, entityBm.BmBookmarkCategoryEntity{IdLink: item.IdLink,
 						NoLink: item.NoLink},
 						item.ID)
 				}
@@ -340,7 +340,7 @@ func (c *BmBookmarkCategoryApiService) CreateUpdate(ctx *gin.Context, ct modApiB
 //	@Description:
 //	@receiver c
 //	@param id
-func (c *BmBookmarkCategoryApiService) childParentIdLink(maps map[string][]*entityBlog.BlogBookmarkCategoryEntity, parent *entityBlog.BlogBookmarkCategoryEntity) {
+func (c *BmBookmarkCategoryApiService) childParentIdLink(maps map[string][]*entityBm.BmBookmarkCategoryEntity, parent *entityBm.BmBookmarkCategoryEntity) {
 	key := parent.ParentNo
 	if strPg.IsBlank(parent.ParentNo) {
 		key = constNodePg.ROOT
@@ -375,7 +375,7 @@ func (c *BmBookmarkCategoryApiService) LogicalDeletion(ctx *gin.Context, ids []s
 		for _, info := range finds {
 			enum := enumStatePg.State(info.State)
 			if ok, reverse := enum.ReverseEnableDisable(); ok {
-				repository.Update(ctx, entityBlog.BlogBookmarkCategoryEntity{State: reverse.IndexInt8()}, info.ID)
+				repository.Update(ctx, entityBm.BmBookmarkCategoryEntity{State: reverse.IndexInt8()}, info.ID)
 			}
 		}
 	}

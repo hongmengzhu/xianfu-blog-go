@@ -1,4 +1,4 @@
-package modApiBlogBookmark
+package modApiBmBookmark
 
 import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"

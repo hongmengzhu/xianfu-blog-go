@@ -1,4 +1,4 @@
-package modApiBlogBookmarkCategory
+package modApiBmBookmarkCategory
 
 type VoAll struct {
 	My   []Vo `json:"my"`

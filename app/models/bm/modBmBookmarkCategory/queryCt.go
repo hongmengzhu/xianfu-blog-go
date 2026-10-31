@@ -1,4 +1,4 @@
-package modBlogBookmarkCategory
+package modBmBookmarkCategory
 
 import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"

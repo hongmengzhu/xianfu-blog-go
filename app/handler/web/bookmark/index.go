@@ -8,7 +8,6 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
-	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticleWeb"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
@@ -24,7 +23,6 @@ func init() {
 type IndexController struct {
 	routerPg.RouteRegistrar
 	Sp       *authPg.GroupWebMiddlewareSp        `autowire:"?"`
-	ca       *cacheDomainPg.TenantDomainCache    `autowire:"?"`
 	sv       *service.BlogArticleWebService      `autowire:"?"`
 	catCache *cacheBlog.CacheBlogArticleCategory `autowire:"?"`
 }

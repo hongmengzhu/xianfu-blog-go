@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBookmark/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogBookmark/modApiBlogBookmark"
+	modApiBmBookmark2 "github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmark/modApiBmBookmark"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"go-spring.org/spring/gs"
@@ -42,7 +42,7 @@ func (c *BookmarkApiController) GetAll(ctx *gin.Context) {
 
 // GetMy 获取我的
 func (c *BookmarkApiController) GetMy(ctx *gin.Context) {
-	var ct modApiBlogBookmark.QueryCt
+	var ct modApiBmBookmark2.QueryCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -51,7 +51,7 @@ func (c *BookmarkApiController) GetMy(ctx *gin.Context) {
 
 // GetOrg 获取组织
 func (c *BookmarkApiController) GetOrg(ctx *gin.Context) {
-	var ct modApiBlogBookmark.QueryCt
+	var ct modApiBmBookmark2.QueryCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -64,7 +64,7 @@ func (c *BookmarkApiController) GetOrg(ctx *gin.Context) {
 //	@receiver c
 //	@param ctx
 func (c *BookmarkApiController) Create(ctx *gin.Context) {
-	var ct modApiBlogBookmark.CreateUpdateCt
+	var ct modApiBmBookmark2.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -77,7 +77,7 @@ func (c *BookmarkApiController) Create(ctx *gin.Context) {
 //	@receiver c
 //	@param ctx
 func (c *BookmarkApiController) Update(ctx *gin.Context) {
-	var ct modApiBlogBookmark.CreateUpdateCt
+	var ct modApiBmBookmark2.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}

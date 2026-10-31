@@ -8,6 +8,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityApi"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
+	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBm"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityTc"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
@@ -57,8 +58,8 @@ func (b *AInitTable) Run(ctx context.Context) error {
 		entityData = append(entityData, &entityBlog.BlogArticleEntity{})
 		entityData = append(entityData, &entityBlog.BlogArticleCategoryEntity{})
 		entityData = append(entityData, &entityBlog.BlogArticleStatisticsEntity{})
-		entityData = append(entityData, &entityBlog.BlogBookmarkEntity{})
-		entityData = append(entityData, &entityBlog.BlogBookmarkCategoryEntity{})
+		entityData = append(entityData, &entityBm.BmBookmarkEntity{})
+		entityData = append(entityData, &entityBm.BmBookmarkCategoryEntity{})
 		entityData = append(entityData, &entityBlog.BlogCollectEntity{})
 		entityData = append(entityData, &entityBlog.BlogCollectCategoryEntity{})
 		entityData = append(entityData, &entityBlog.BlogTopicEntity{})
