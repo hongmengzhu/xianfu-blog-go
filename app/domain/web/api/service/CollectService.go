@@ -6,7 +6,7 @@ import (
 
 	"github.com/duke-git/lancet/v2/strutil"
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/manage/domainBlog/service/blogCollect"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service/blogCollect"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogCollect/modApiBlogCollect"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"

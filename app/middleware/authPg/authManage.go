@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/manage/domainRam/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	authTokenPg2 "github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/authTokenPg"
 	cacheAuthPubPrivPg2 "github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheAuthPubPrivPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"

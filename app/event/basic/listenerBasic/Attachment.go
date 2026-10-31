@@ -3,7 +3,7 @@ package listenerBasic
 import (
 	"context"
 
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/manage/domainBasic/service/attachment"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBasic/service/attachment"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"

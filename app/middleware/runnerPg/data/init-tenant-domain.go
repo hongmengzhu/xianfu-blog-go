@@ -3,7 +3,7 @@ package data
 import (
 	"context"
 
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/manage/domainTc/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainTc/service"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
 	"go-spring.org/log"
 	_ "go-spring.org/spring/gs"

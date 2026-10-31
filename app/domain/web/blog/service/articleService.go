@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/core/blog/serviceCore"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/manage/domainBlog/service/blogArticle"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service/blogArticle"
 	modBlogArticle2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/model/modBlogArticle"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/utils/webPg"
 	markdownPg2 "github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/markdownPg"

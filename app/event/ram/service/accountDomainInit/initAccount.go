@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/manage/domainRam/utilsRam"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/utilsRam"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/dataFilePg"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityTc"
