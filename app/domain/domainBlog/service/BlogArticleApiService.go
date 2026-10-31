@@ -15,10 +15,10 @@ import (
 )
 
 func init() {
-	gs.Provide(new(ArticleService))
+	gs.Provide(new(BlogArticleApiService))
 }
 
-type ArticleService struct {
+type BlogArticleApiService struct {
 	sv    *repositoryBlog.BlogArticleRepository           `autowire:"?"`
 	catDb *repositoryBlog.BlogArticleCategoryRepository   `autowire:"?"`
 	sata  *repositoryBlog.BlogArticleStatisticsRepository `autowire:"?"`
@@ -29,7 +29,7 @@ type ArticleService struct {
 //
 //	@Description: 推送文章连接
 //	@receiver c
-func (c *ArticleService) Push(ctx *gin.Context, ct modApiBlogArticle.PushCt) (rt rg.Rs[string]) {
+func (c *BlogArticleApiService) Push(ctx *gin.Context, ct modApiBlogArticle.PushCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if strPg.IsBlank(ct.CategoryNo) {
 		return rt.ErrorMessage("请选择分类")

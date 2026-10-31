@@ -1,4 +1,4 @@
-package modBlogArticle
+package modBlogArticleWeb
 
 import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"

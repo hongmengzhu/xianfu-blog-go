@@ -5,11 +5,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/core/blog/serviceCore"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/model/modBlogArticle"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/service"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/utils/webPg"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheDomainPg"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticleWeb"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -25,7 +25,7 @@ type IndexController struct {
 	routerPg.RouteRegistrar
 	Sp       *authPg.GroupWebMiddlewareSp     `autowire:"?"`
 	ca       *cacheDomainPg.TenantDomainCache `autowire:"?"`
-	sv       *service.ArticleService          `autowire:"?"`
+	sv       *service.BlogArticleWebService   `autowire:"?"`
 	catCache *serviceCore.CoreArticleCategory `autowire:"?"`
 }
 
@@ -41,7 +41,7 @@ func (c *IndexController) RegisterRoutes(e *gin.Engine) {
 }
 
 func (c *IndexController) Index(ctx *gin.Context) {
-	var ct modBlogArticle.QueryCt
+	var ct modBlogArticleWeb.QueryCt
 	ctx.Bind(&ct)
 	//
 	rt := c.sv.Query(ctx, ct)
@@ -66,7 +66,7 @@ func (c *IndexController) Index(ctx *gin.Context) {
 
 func (c *IndexController) Page(ctx *gin.Context) {
 	param := ctx.Param("page")
-	var ct modBlogArticle.QueryCt
+	var ct modBlogArticleWeb.QueryCt
 	ct.PageSize = 20
 	ct.PageNum = strPg.ToInt64(param)
 	if ct.PageNum < 1 {

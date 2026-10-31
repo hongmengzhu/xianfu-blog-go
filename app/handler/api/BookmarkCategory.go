@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/api/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBookmark/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogBookmarkCategory/modApiBlogBookmarkCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
@@ -16,8 +16,8 @@ func init() {
 
 type BookmarkCategoryApiController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupApiMiddlewareSp     `autowire:"?"`
-	sv *service.BookmarkCategoryService `autowire:"?"`
+	Sp *authPg.GroupApiMiddlewareSp          `autowire:"?"`
+	sv *service.BmBookmarkCategoryApiService `autowire:"?"`
 }
 
 // RegisterRoutes

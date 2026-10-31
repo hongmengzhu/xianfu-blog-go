@@ -1,4 +1,4 @@
-package modBlogArticle
+package modBlogArticleWeb
 
 import (
 	"html/template"

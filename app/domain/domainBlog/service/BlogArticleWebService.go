@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/core/blog/serviceCore"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service/blogArticle"
-	modBlogArticle2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/model/modBlogArticle"
+	modBlogArticle2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/model/modBlogArticleWeb"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/utils/webPg"
 	markdownPg2 "github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/markdownPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicTagsRelation"
@@ -33,10 +33,10 @@ import (
 )
 
 func init() {
-	gs.Provide(new(ArticleService))
+	gs.Provide(new(BlogArticleWebService))
 }
 
-type ArticleService struct {
+type BlogArticleWebService struct {
 	sv        *repositoryBlog.BlogArticleRepository           `autowire:"?"`
 	statDb    *repositoryBlog.BlogArticleStatisticsRepository `autowire:"?"`
 	catDb     *repositoryBlog.BlogArticleCategoryRepository   `autowire:"?"`
@@ -51,7 +51,7 @@ type ArticleService struct {
 //	@Description:
 //	@receiver c
 //	@param id
-func (c *ArticleService) Detail(ctx *gin.Context, id string) (rt rg.Rs[modBlogArticle2.DetailVo]) {
+func (c *BlogArticleWebService) Detail(ctx *gin.Context, id string) (rt rg.Rs[modBlogArticle2.DetailVo]) {
 	return c.DetailByContext(ctx, webPg.GetTenantNo(ctx), id)
 }
 
@@ -62,7 +62,7 @@ func (c *ArticleService) Detail(ctx *gin.Context, id string) (rt rg.Rs[modBlogAr
 //	@param ctx
 //	@param tenantNo 租户编号
 //	@param id
-func (c *ArticleService) DetailByContext(ctx context.Context, tenantNo string, id string) (rt rg.Rs[modBlogArticle2.DetailVo]) {
+func (c *BlogArticleWebService) DetailByContext(ctx context.Context, tenantNo string, id string) (rt rg.Rs[modBlogArticle2.DetailVo]) {
 	if strPg.IsBlank(id) {
 		return rt.ErrorMessage("id错误")
 	}
@@ -232,7 +232,7 @@ func (c *ArticleService) DetailByContext(ctx context.Context, tenantNo string, i
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *ArticleService) Query(ctx *gin.Context, ct modBlogArticle2.QueryCt) (rt rg.Rs[pagePg.Paginator[modBlogArticle2.Vo]]) {
+func (c *BlogArticleWebService) Query(ctx *gin.Context, ct modBlogArticle2.QueryCt) (rt rg.Rs[pagePg.Paginator[modBlogArticle2.Vo]]) {
 	return c.QueryByContext(ctx, webPg.GetTenantNo(ctx), ct)
 }
 
@@ -243,7 +243,7 @@ func (c *ArticleService) Query(ctx *gin.Context, ct modBlogArticle2.QueryCt) (rt
 //	@param ctx
 //	@param tenantNo 租户编号
 //	@param ct
-func (c *ArticleService) QueryByContext(ctx context.Context, tenantNo string, ct modBlogArticle2.QueryCt) (rt rg.Rs[pagePg.Paginator[modBlogArticle2.Vo]]) {
+func (c *BlogArticleWebService) QueryByContext(ctx context.Context, tenantNo string, ct modBlogArticle2.QueryCt) (rt rg.Rs[pagePg.Paginator[modBlogArticle2.Vo]]) {
 	var query entityBlog.BlogArticleEntity
 	copier.Copy(&query, &ct)
 	if strPg.IsNotBlank(tenantNo) {

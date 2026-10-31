@@ -26,10 +26,10 @@ import (
 )
 
 func init() {
-	gs.Provide(new(CollectService))
+	gs.Provide(new(BlogCollectApiService))
 }
 
-type CollectService struct {
+type BlogCollectApiService struct {
 	sv    *repositoryBlog.BlogCollectRepository         `autowire:"?"`
 	catDb *repositoryBlog.BlogCollectCategoryRepository `autowire:"?"`
 	sp    *blogCollect.Sp                               `autowire:"?"`
@@ -39,7 +39,7 @@ type CollectService struct {
 //
 //	@Description: 推送文章连接
 //	@receiver c
-func (c *CollectService) Push(ctx *gin.Context, ct modApiBlogCollect.PushCt) (rt rg.Rs[string]) {
+func (c *BlogCollectApiService) Push(ctx *gin.Context, ct modApiBlogCollect.PushCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 
 	if strPg.IsBlank(ct.Title) {
@@ -135,7 +135,7 @@ func (c *CollectService) Push(ctx *gin.Context, ct modApiBlogCollect.PushCt) (rt
 //
 //	@Description: 推送文章连接
 //	@receiver c
-func (c *CollectService) PushAll(ctx *gin.Context, ct modApiBlogCollect.PushAll) (rt rg.Rs[string]) {
+func (c *BlogCollectApiService) PushAll(ctx *gin.Context, ct modApiBlogCollect.PushAll) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if nil == ct.Data || len(ct.Data) <= 0 {
 		return rt.ErrorMessage("数据不能为空")

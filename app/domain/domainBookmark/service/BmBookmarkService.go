@@ -22,12 +22,12 @@ import (
 )
 
 func init() {
-	gs.Provide(new(BlogBookmarkService))
+	gs.Provide(new(BmBookmarkService))
 }
 
-// BlogBookmarkService 书签
+// BmBookmarkService 书签
 // @Description:
-type BlogBookmarkService struct {
+type BmBookmarkService struct {
 	sv    *repositoryBlog.BlogBookmarkRepository         `autowire:"?"`
 	catDb *repositoryBlog.BlogBookmarkCategoryRepository `autowire:"?"`
 }
@@ -38,7 +38,7 @@ type BlogBookmarkService struct {
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *BlogBookmarkService) Create(ctx *gin.Context, ct modBlogBookmark.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *BmBookmarkService) Create(ctx *gin.Context, ct modBlogBookmark.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityBlog.BlogBookmarkEntity
 	err := copier.Copy(&info, &ct)
@@ -69,7 +69,7 @@ func (c *BlogBookmarkService) Create(ctx *gin.Context, ct modBlogBookmark.Create
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *BlogBookmarkService) Update(ctx *gin.Context, ct modBlogBookmark.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *BmBookmarkService) Update(ctx *gin.Context, ct modBlogBookmark.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityBlog.BlogBookmarkEntity
 	err := copier.Copy(&info, &ct)
@@ -103,7 +103,7 @@ func (c *BlogBookmarkService) Update(ctx *gin.Context, ct modBlogBookmark.Create
 //	@Description:
 //	@receiver c
 //	@param id
-func (c *BlogBookmarkService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modBlogBookmark.DetailVo]) {
+func (c *BmBookmarkService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modBlogBookmark.DetailVo]) {
 	if id < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -147,7 +147,7 @@ func (c *BlogBookmarkService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modBl
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
+func (c *BmBookmarkService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
 	return c.State(ctx, ct.Ids, enumStatePg.ENABLE)
 }
 
@@ -156,7 +156,7 @@ func (c *BlogBookmarkService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
+func (c *BmBookmarkService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
 	return c.State(ctx, ct.Ids, enumStatePg.GetType(enumStatePg.DISABLE))
 }
 
@@ -165,7 +165,7 @@ func (c *BlogBookmarkService) Disable(ctx *gin.Context, ct model.BaseIdsCt[strin
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkService) State(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
+func (c *BmBookmarkService) State(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -187,7 +187,7 @@ func (c *BlogBookmarkService) State(ctx *gin.Context, ids []string, state enumSt
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkService) StateEnableDisable(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
+func (c *BmBookmarkService) StateEnableDisable(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
 	if !state.IsEnableDisable() {
 		return rt.ErrorMessage("状态错误")
 	}
@@ -199,7 +199,7 @@ func (c *BlogBookmarkService) StateEnableDisable(ctx *gin.Context, ids []string,
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+func (c *BmBookmarkService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -229,7 +229,7 @@ func (c *BlogBookmarkService) LogicalDeletion(ctx *gin.Context, ids []string) (r
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+func (c *BmBookmarkService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -252,7 +252,7 @@ func (c *BlogBookmarkService) LogicalRecovery(ctx *gin.Context, ids []string) (r
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+func (c *BmBookmarkService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -277,7 +277,7 @@ func (c *BlogBookmarkService) PhysicalDeletion(ctx *gin.Context, ids []string) (
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkService) Query(ctx *gin.Context, ct modBlogBookmark.QueryCt) (rt rg.Rs[pagePg.Paginator[modBlogBookmark.Vo]]) {
+func (c *BmBookmarkService) Query(ctx *gin.Context, ct modBlogBookmark.QueryCt) (rt rg.Rs[pagePg.Paginator[modBlogBookmark.Vo]]) {
 	var query entityBlog.BlogBookmarkEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modBlogBookmark.Vo, 0)
@@ -369,7 +369,7 @@ func (c *BlogBookmarkService) Query(ctx *gin.Context, ct modBlogBookmark.QueryCt
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkService) QueryAll(ctx *gin.Context, ct modBlogBookmark.QueryCt) (rt rg.Rs[[]modBlogBookmark.Vo]) {
+func (c *BmBookmarkService) QueryAll(ctx *gin.Context, ct modBlogBookmark.QueryCt) (rt rg.Rs[[]modBlogBookmark.Vo]) {
 	var query entityBlog.BlogBookmarkEntity
 	copier.Copy(&query, &ct)
 	rt.Data = []modBlogBookmark.Vo{}
@@ -391,7 +391,7 @@ func (c *BlogBookmarkService) QueryAll(ctx *gin.Context, ct modBlogBookmark.Quer
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkService) SelectNodePublic(ctx *gin.Context, ct modBlogBookmark.QueryCt) (rt rg.Rs[[]model.BaseNode]) {
+func (c *BmBookmarkService) SelectNodePublic(ctx *gin.Context, ct modBlogBookmark.QueryCt) (rt rg.Rs[[]model.BaseNode]) {
 	var query entityBlog.BlogBookmarkEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNode, 0)
@@ -411,7 +411,7 @@ func (c *BlogBookmarkService) SelectNodePublic(ctx *gin.Context, ct modBlogBookm
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkService) SelectNodeAllPublic(ctx *gin.Context, ct modBlogBookmark.QueryCt) (rt rg.Rs[[]model.BaseNode]) {
+func (c *BmBookmarkService) SelectNodeAllPublic(ctx *gin.Context, ct modBlogBookmark.QueryCt) (rt rg.Rs[[]model.BaseNode]) {
 	var query entityBlog.BlogBookmarkEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNode, 0)
@@ -433,7 +433,7 @@ func (c *BlogBookmarkService) SelectNodeAllPublic(ctx *gin.Context, ct modBlogBo
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
+func (c *BmBookmarkService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
 	if "" == ct.Wd {
 		return rt.ErrorMessage("查询内容不能为空")
 	}
@@ -453,7 +453,7 @@ func (c *BlogBookmarkService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkService) ExistNo(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
+func (c *BmBookmarkService) ExistNo(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
 	if "" == ct.Wd {
 		return rt.ErrorMessage("查询内容不能为空")
 	}

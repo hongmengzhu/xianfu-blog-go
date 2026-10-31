@@ -4,12 +4,12 @@ import (
 	"net/http"
 
 	"github.com/hongmengzhu/xianfu-blog-go/app/core/blog/serviceCore"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/model/modBlogArticle"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/service"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/utils/webPg"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/handler/vhost"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/staterEchoV5"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticleWeb"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
 	"github.com/labstack/echo/v5"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -24,7 +24,7 @@ func init() {
 type IndexController struct {
 	staterEchoV5.RouteRegistrar
 	Sp       *authPg.GroupWebVhostMiddlewareSp `autowire:"?"`
-	sv       *service.ArticleService           `autowire:"?"`
+	sv       *service.BlogArticleWebService    `autowire:"?"`
 	catCache *serviceCore.CoreArticleCategory  `autowire:"?"`
 }
 
@@ -45,7 +45,7 @@ func (c *IndexController) RegisterRoutes(g *echo.Echo) {
 }
 
 func (c *IndexController) Index(ctx *echo.Context) error {
-	var ct modBlogArticle.QueryCt
+	var ct modBlogArticleWeb.QueryCt
 	if err := ctx.Bind(&ct); nil != err {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -70,7 +70,7 @@ func (c *IndexController) Index(ctx *echo.Context) error {
 
 func (c *IndexController) Page(ctx *echo.Context) error {
 	param := ctx.Param("page")
-	var ct modBlogArticle.QueryCt
+	var ct modBlogArticleWeb.QueryCt
 	ct.PageSize = 20
 	ct.PageNum = max(strPg.ToInt64(param), 1)
 	//

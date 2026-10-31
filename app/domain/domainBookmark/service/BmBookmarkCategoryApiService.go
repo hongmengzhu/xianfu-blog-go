@@ -24,15 +24,15 @@ import (
 )
 
 func init() {
-	gs.Provide(new(BookmarkCategoryService))
+	gs.Provide(new(BmBookmarkCategoryApiService))
 }
 
-type BookmarkCategoryService struct {
+type BmBookmarkCategoryApiService struct {
 	sv *repositoryBlog.BlogBookmarkCategoryRepository `autowire:"?"`
 }
 
 // GetAll 获取所有
-func (c *BookmarkCategoryService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBlogBookmarkCategory.VoAll]) {
+func (c *BmBookmarkCategoryApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBlogBookmarkCategory.VoAll]) {
 	//
 	holder := holderApiPg.GetContextAccount(ctx)
 	//
@@ -109,7 +109,7 @@ func (c *BookmarkCategoryService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBlogB
 }
 
 // GetMy 获取我的
-func (c *BookmarkCategoryService) GetMy(ctx *gin.Context) (rt rg.Rs[[]modApiBlogBookmarkCategory.Vo]) {
+func (c *BmBookmarkCategoryApiService) GetMy(ctx *gin.Context) (rt rg.Rs[[]modApiBlogBookmarkCategory.Vo]) {
 	//
 	holder := holderApiPg.GetContextAccount(ctx)
 	//
@@ -141,7 +141,7 @@ func (c *BookmarkCategoryService) GetMy(ctx *gin.Context) (rt rg.Rs[[]modApiBlog
 }
 
 // GetOrg 获取所有
-func (c *BookmarkCategoryService) GetOrg(ctx *gin.Context) (rt rg.Rs[[]modApiBlogBookmarkCategory.Vo]) {
+func (c *BmBookmarkCategoryApiService) GetOrg(ctx *gin.Context) (rt rg.Rs[[]modApiBlogBookmarkCategory.Vo]) {
 	//
 	holder := holderApiPg.GetContextAccount(ctx)
 	//
@@ -178,7 +178,7 @@ func (c *BookmarkCategoryService) GetOrg(ctx *gin.Context) (rt rg.Rs[[]modApiBlo
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *BookmarkCategoryService) CreateUpdate(ctx *gin.Context, ct modApiBlogBookmarkCategory.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *BmBookmarkCategoryApiService) CreateUpdate(ctx *gin.Context, ct modApiBlogBookmarkCategory.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
@@ -340,7 +340,7 @@ func (c *BookmarkCategoryService) CreateUpdate(ctx *gin.Context, ct modApiBlogBo
 //	@Description:
 //	@receiver c
 //	@param id
-func (c *BookmarkCategoryService) childParentIdLink(maps map[string][]*entityBlog.BlogBookmarkCategoryEntity, parent *entityBlog.BlogBookmarkCategoryEntity) {
+func (c *BmBookmarkCategoryApiService) childParentIdLink(maps map[string][]*entityBlog.BlogBookmarkCategoryEntity, parent *entityBlog.BlogBookmarkCategoryEntity) {
 	key := parent.ParentNo
 	if strPg.IsBlank(parent.ParentNo) {
 		key = constNodePg.ROOT
@@ -357,7 +357,7 @@ func (c *BookmarkCategoryService) childParentIdLink(maps map[string][]*entityBlo
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BookmarkCategoryService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+func (c *BmBookmarkCategoryApiService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}

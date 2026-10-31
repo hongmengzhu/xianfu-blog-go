@@ -5,11 +5,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/core/blog/serviceCore"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/model/modBlogArticle"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/service"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/utils/webPg"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheDomainPg"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticleWeb"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -24,7 +24,7 @@ type TagController struct {
 	routerPg.RouteRegistrar
 	Sp       *authPg.GroupWebMiddlewareSp     `autowire:"?"`
 	ca       *cacheDomainPg.TenantDomainCache `autowire:"?"`
-	sv       *service.ArticleService          `autowire:"?"`
+	sv       *service.BlogArticleWebService   `autowire:"?"`
 	catCache *serviceCore.CoreArticleCategory `autowire:"?"`
 }
 
@@ -44,7 +44,7 @@ func (c *TagController) List(ctx *gin.Context) {
 	param := ctx.Param("tag")
 	param = strings.TrimSpace(param)
 	if strPg.IsNotBlank(param) {
-		var ct modBlogArticle.QueryCt
+		var ct modBlogArticleWeb.QueryCt
 		ct.TagsQuery = make([]string, 0)
 		ct.TagsQuery = append(ct.TagsQuery, param)
 		//

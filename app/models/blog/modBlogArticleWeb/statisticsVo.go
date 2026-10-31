@@ -1,4 +1,4 @@
-package modBlogArticle
+package modBlogArticleWeb
 
 type StatisticsVo struct {
 	Comment        int64  `json:"comment" label:"评论" `

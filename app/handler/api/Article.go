@@ -2,15 +2,15 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/api/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticle/modApiBlogArticle"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 )
 
 type ArticleController struct {
-	Sp *authPg.GroupApiMiddlewareSp `autowire:"?"`
-	sv *service.ArticleService      `autowire:"?"`
+	Sp *authPg.GroupApiMiddlewareSp   `autowire:"?"`
+	sv *service.BlogArticleApiService `autowire:"?"`
 }
 
 // Push 推送

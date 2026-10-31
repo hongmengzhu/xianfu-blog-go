@@ -22,17 +22,17 @@ import (
 )
 
 func init() {
-	gs.Provide(new(BookmarkService))
+	gs.Provide(new(BmBookmarkApiService))
 }
 
-type BookmarkService struct {
+type BmBookmarkApiService struct {
 	sv     *repositoryBlog.BlogBookmarkRepository         `autowire:"?"`
 	catDb  *repositoryBlog.BlogBookmarkCategoryRepository `autowire:"?"`
-	catSer *BookmarkCategoryService                       `autowire:"?"`
+	catSer *BmBookmarkCategoryApiService                  `autowire:"?"`
 }
 
 // GetAll 获取所有
-func (c *BookmarkService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBlogBookmark.VoAll]) {
+func (c *BmBookmarkApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBlogBookmark.VoAll]) {
 	//
 	holder := holderApiPg.GetContextAccount(ctx)
 	//
@@ -104,7 +104,7 @@ func (c *BookmarkService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBlogBookmark.
 }
 
 // GetMy 获取my
-func (c *BookmarkService) GetMy(ctx *gin.Context, ct modApiBlogBookmark.QueryCt) (rt rg.Rs[[]modApiBlogBookmark.Vo]) {
+func (c *BmBookmarkApiService) GetMy(ctx *gin.Context, ct modApiBlogBookmark.QueryCt) (rt rg.Rs[[]modApiBlogBookmark.Vo]) {
 	//
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
@@ -141,7 +141,7 @@ func (c *BookmarkService) GetMy(ctx *gin.Context, ct modApiBlogBookmark.QueryCt)
 }
 
 // GetOrg 获取
-func (c *BookmarkService) GetOrg(ctx *gin.Context, ct modApiBlogBookmark.QueryCt) (rt rg.Rs[[]modApiBlogBookmark.Vo]) {
+func (c *BmBookmarkApiService) GetOrg(ctx *gin.Context, ct modApiBlogBookmark.QueryCt) (rt rg.Rs[[]modApiBlogBookmark.Vo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
 	holder := holderApiPg.GetContextAccount(ctx)
@@ -177,7 +177,7 @@ func (c *BookmarkService) GetOrg(ctx *gin.Context, ct modApiBlogBookmark.QueryCt
 }
 
 // Create 创建
-func (c *BookmarkService) Create(ctx *gin.Context, ct modApiBlogBookmark.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *BmBookmarkApiService) Create(ctx *gin.Context, ct modApiBlogBookmark.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityBlog.BlogBookmarkEntity
 	err := copier.Copy(&info, &ct)
@@ -202,7 +202,7 @@ func (c *BookmarkService) Create(ctx *gin.Context, ct modApiBlogBookmark.CreateU
 }
 
 // Update 创建
-func (c *BookmarkService) Update(ctx *gin.Context, ct modApiBlogBookmark.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *BmBookmarkApiService) Update(ctx *gin.Context, ct modApiBlogBookmark.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if ct.ID.ToInt64() <= 0 {
 		return rt.ErrorMessage("ID不能为空")
@@ -238,7 +238,7 @@ func (c *BookmarkService) Update(ctx *gin.Context, ct modApiBlogBookmark.CreateU
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BookmarkService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+func (c *BmBookmarkApiService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}

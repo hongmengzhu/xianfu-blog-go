@@ -23,12 +23,12 @@ import (
 )
 
 func init() {
-	gs.Provide(new(BlogBookmarkCategoryService))
+	gs.Provide(new(BmBookmarkCategoryService))
 }
 
-// BlogBookmarkCategoryService 书签分类
+// BmBookmarkCategoryService 书签分类
 // @Description:
-type BlogBookmarkCategoryService struct {
+type BmBookmarkCategoryService struct {
 	sv *repositoryBlog.BlogBookmarkCategoryRepository `autowire:"?"`
 }
 
@@ -38,7 +38,7 @@ type BlogBookmarkCategoryService struct {
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *BlogBookmarkCategoryService) Create(ctx *gin.Context, ct modBlogBookmarkCategory.CreateCt) (rt rg.Rs[string]) {
+func (c *BmBookmarkCategoryService) Create(ctx *gin.Context, ct modBlogBookmarkCategory.CreateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityBlog.BlogBookmarkCategoryEntity
 	err := copier.Copy(&info, &ct)
@@ -109,7 +109,7 @@ func (c *BlogBookmarkCategoryService) Create(ctx *gin.Context, ct modBlogBookmar
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *BlogBookmarkCategoryService) Update(ctx *gin.Context, ct modBlogBookmarkCategory.UpdateCt) (rt rg.Rs[string]) {
+func (c *BmBookmarkCategoryService) Update(ctx *gin.Context, ct modBlogBookmarkCategory.UpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityBlog.BlogBookmarkCategoryEntity
 	err := copier.Copy(&info, &ct)
@@ -223,7 +223,7 @@ func (c *BlogBookmarkCategoryService) Update(ctx *gin.Context, ct modBlogBookmar
 //	@Description:
 //	@receiver c
 //	@param id
-func (c *BlogBookmarkCategoryService) childParentIdLink(maps map[string][]*entityBlog.BlogBookmarkCategoryEntity, parent *entityBlog.BlogBookmarkCategoryEntity) {
+func (c *BmBookmarkCategoryService) childParentIdLink(maps map[string][]*entityBlog.BlogBookmarkCategoryEntity, parent *entityBlog.BlogBookmarkCategoryEntity) {
 	key := parent.ParentNo
 	if strPg.IsBlank(parent.ParentNo) {
 		key = constNodePg.ROOT
@@ -240,7 +240,7 @@ func (c *BlogBookmarkCategoryService) childParentIdLink(maps map[string][]*entit
 //	@Description:
 //	@receiver c
 //	@param id
-func (c *BlogBookmarkCategoryService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modBlogBookmarkCategory.Vo]) {
+func (c *BmBookmarkCategoryService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modBlogBookmarkCategory.Vo]) {
 	if id < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -258,7 +258,7 @@ func (c *BlogBookmarkCategoryService) Detail(ctx *gin.Context, id int64) (rt rg.
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkCategoryService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
+func (c *BmBookmarkCategoryService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
 	return c.State(ctx, ct.Ids, enumStatePg.ENABLE)
 }
 
@@ -267,7 +267,7 @@ func (c *BlogBookmarkCategoryService) Enable(ctx *gin.Context, ct model.BaseIdsC
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkCategoryService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
+func (c *BmBookmarkCategoryService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
 	return c.State(ctx, ct.Ids, enumStatePg.GetType(enumStatePg.DISABLE))
 }
 
@@ -276,7 +276,7 @@ func (c *BlogBookmarkCategoryService) Disable(ctx *gin.Context, ct model.BaseIds
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkCategoryService) State(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
+func (c *BmBookmarkCategoryService) State(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -298,7 +298,7 @@ func (c *BlogBookmarkCategoryService) State(ctx *gin.Context, ids []string, stat
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkCategoryService) StateEnableDisable(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
+func (c *BmBookmarkCategoryService) StateEnableDisable(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
 	if !state.IsEnableDisable() {
 		return rt.ErrorMessage("状态错误")
 	}
@@ -310,7 +310,7 @@ func (c *BlogBookmarkCategoryService) StateEnableDisable(ctx *gin.Context, ids [
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkCategoryService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+func (c *BmBookmarkCategoryService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
@@ -341,7 +341,7 @@ func (c *BlogBookmarkCategoryService) LogicalDeletion(ctx *gin.Context, ids []st
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkCategoryService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+func (c *BmBookmarkCategoryService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
@@ -365,7 +365,7 @@ func (c *BlogBookmarkCategoryService) LogicalRecovery(ctx *gin.Context, ids []st
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkCategoryService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+func (c *BmBookmarkCategoryService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
@@ -391,7 +391,7 @@ func (c *BlogBookmarkCategoryService) PhysicalDeletion(ctx *gin.Context, ids []s
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkCategoryService) Query(ctx *gin.Context, ct modBlogBookmarkCategory.QueryCt) (rt rg.Rs[pagePg.Paginator[modBlogBookmarkCategory.Vo]]) {
+func (c *BmBookmarkCategoryService) Query(ctx *gin.Context, ct modBlogBookmarkCategory.QueryCt) (rt rg.Rs[pagePg.Paginator[modBlogBookmarkCategory.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityBlog.BlogBookmarkCategoryEntity
 	copier.Copy(&query, &ct)
@@ -432,7 +432,7 @@ func (c *BlogBookmarkCategoryService) Query(ctx *gin.Context, ct modBlogBookmark
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkCategoryService) QueryAll(ctx *gin.Context, ct modBlogBookmarkCategory.QueryPublicCt) (rt rg.Rs[[]modBlogBookmarkCategory.Vo]) {
+func (c *BmBookmarkCategoryService) QueryAll(ctx *gin.Context, ct modBlogBookmarkCategory.QueryPublicCt) (rt rg.Rs[[]modBlogBookmarkCategory.Vo]) {
 	var query entityBlog.BlogBookmarkCategoryEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modBlogBookmarkCategory.Vo, 0)
@@ -454,7 +454,7 @@ func (c *BlogBookmarkCategoryService) QueryAll(ctx *gin.Context, ct modBlogBookm
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkCategoryService) SelectNodeAll(ctx *gin.Context, ct modBlogBookmarkCategory.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *BmBookmarkCategoryService) SelectNodeAll(ctx *gin.Context, ct modBlogBookmarkCategory.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	var query entityBlog.BlogBookmarkCategoryEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
@@ -482,7 +482,7 @@ func (c *BlogBookmarkCategoryService) SelectNodeAll(ctx *gin.Context, ct modBlog
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkCategoryService) SelectNodeAllPublic(ctx *gin.Context, ct modBlogBookmarkCategory.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *BmBookmarkCategoryService) SelectNodeAllPublic(ctx *gin.Context, ct modBlogBookmarkCategory.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	var query entityBlog.BlogBookmarkCategoryEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
@@ -510,7 +510,7 @@ func (c *BlogBookmarkCategoryService) SelectNodeAllPublic(ctx *gin.Context, ct m
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkCategoryService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
+func (c *BmBookmarkCategoryService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
 	if "" == ct.Wd {
 		return rt.ErrorMessage("关键词不能为空")
 	}
@@ -530,7 +530,7 @@ func (c *BlogBookmarkCategoryService) ExistName(ctx *gin.Context, ct model.BaseE
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BlogBookmarkCategoryService) ExistNo(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
+func (c *BmBookmarkCategoryService) ExistNo(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
 	if "" == ct.Wd {
 		return rt.ErrorMessage("关键词不能为空")
 	}

@@ -5,10 +5,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/core/blog/serviceCore"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/model/modBlogArticle"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/service"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/utils/webPg"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticleWeb"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
 	"go-spring.org/log"
@@ -22,7 +22,7 @@ func init() {
 type ArticleController struct {
 	routerPg.RouteRegistrar
 	Sp       *authPg.GroupWebMiddlewareSp     `autowire:"?"`
-	sv       *service.ArticleService          `autowire:"?"`
+	sv       *service.BlogArticleWebService   `autowire:"?"`
 	catCache *serviceCore.CoreArticleCategory `autowire:"?"`
 }
 
@@ -64,7 +64,7 @@ func (c *ArticleController) Detail(ctx *gin.Context) {
 }
 
 func (c *ArticleController) List(ctx *gin.Context) {
-	var ct modBlogArticle.QueryCt
+	var ct modBlogArticleWeb.QueryCt
 	ctx.Bind(&ct)
 	//
 	rt := c.sv.Query(ctx, ct)

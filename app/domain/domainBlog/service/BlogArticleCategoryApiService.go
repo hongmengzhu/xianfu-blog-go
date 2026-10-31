@@ -12,10 +12,10 @@ import (
 )
 
 func init() {
-	gs.Provide(new(ArticleCategoryService))
+	gs.Provide(new(BlogArticleCategoryApiService))
 }
 
-type ArticleCategoryService struct {
+type BlogArticleCategoryApiService struct {
 	sv *repositoryBlog.BlogArticleCategoryRepository `autowire:"?"`
 }
 
@@ -24,7 +24,7 @@ type ArticleCategoryService struct {
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *ArticleCategoryService) SelectNodeAllPublic(ctx *gin.Context, ct modApiBlogArticleCategory.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *BlogArticleCategoryApiService) SelectNodeAllPublic(ctx *gin.Context, ct modApiBlogArticleCategory.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	var query entityBlog.BlogArticleCategoryEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)

@@ -5,12 +5,12 @@ import (
 	"time"
 
 	"github.com/hongmengzhu/xianfu-blog-go/app/core/blog/serviceCore"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/model/modBlogArticle"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/blog/service"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/utils/webPg"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/handler/vhost"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/staterEchoV5"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticleWeb"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/typePg"
 	"github.com/labstack/echo/v5"
@@ -27,7 +27,7 @@ func init() {
 type ArchivesController struct {
 	staterEchoV5.RouteRegistrar
 	Sp       *authPg.GroupWebVhostMiddlewareSp `autowire:"?"`
-	sv       *service.ArticleService           `autowire:"?"`
+	sv       *service.BlogArticleWebService    `autowire:"?"`
 	catCache *serviceCore.CoreArticleCategory  `autowire:"?"`
 }
 
@@ -57,7 +57,7 @@ func (c *ArchivesController) List(ctx *echo.Context) error {
 		if b {
 			firstDay := time.Date(flexible.Year(), flexible.Month(), 1, 0, 0, 0, 0, flexible.Location())
 			monthEnd := firstDay.AddDate(0, 1, 0).Add(-1 * time.Second)
-			var ct modBlogArticle.QueryCt
+			var ct modBlogArticleWeb.QueryCt
 			ct.CreateAtStart = new(typePg.Time(firstDay))
 			ct.CreateAtEnd = new(typePg.Time(monthEnd))
 			//

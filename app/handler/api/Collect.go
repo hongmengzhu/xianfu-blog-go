@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/api/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogCollect/modApiBlogCollect"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
@@ -15,8 +15,8 @@ func init() {
 
 type CollectController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupApiMiddlewareSp `autowire:"?"`
-	sv *service.CollectService      `autowire:"?"`
+	Sp *authPg.GroupApiMiddlewareSp   `autowire:"?"`
+	sv *service.BlogCollectApiService `autowire:"?"`
 }
 
 // RegisterRoutes

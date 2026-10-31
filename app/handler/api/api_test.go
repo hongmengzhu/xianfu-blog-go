@@ -21,8 +21,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/web/api/service"
-	cacheDiplPg "github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheDiplPg"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBookmark/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheDiplPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/dtoTenantDomain"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
@@ -112,7 +112,7 @@ func init() {
 	// main.go 中手工 Provide 的 Bean，测试入口需自行注册；
 	// BookmarkService 全项目仅靠 autowire 注入，没有 init 注册。
 	gs.Provide(new(dbManagerPg.Manager))
-	gs.Provide(new(service.BookmarkService))
+	gs.Provide(new(service.BmBookmarkApiService))
 }
 
 // runAPIStack 启动独立的测试应用：临时 sqlite 库 + 真实路由 + 鉴权中间件。
