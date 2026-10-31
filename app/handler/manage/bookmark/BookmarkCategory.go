@@ -2,7 +2,7 @@ package bookmark
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBookmark/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogBookmarkCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
@@ -21,8 +21,8 @@ func init() {
 // @Description:
 type BookmarkCategoryController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupManageMiddlewareSp      `autowire:"?"`
-	sv *service.BlogBookmarkCategoryService `autowire:"?"`
+	Sp *authPg.GroupManageMiddlewareSp    `autowire:"?"`
+	sv *service.BmBookmarkCategoryService `autowire:"?"`
 }
 
 // RegisterRoutes 注册路由

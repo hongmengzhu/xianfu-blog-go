@@ -56,7 +56,7 @@ func (c *PositionController) RegisterRoutes(e *gin.Engine) {
 //	@receiver c
 //	@param ctx
 func (c *PositionController) Create(ctx *gin.Context) {
-	var ct modRamPosition.CreateCt
+	var ct modRamPosition.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}

@@ -56,7 +56,7 @@ func (c *ResourceController) RegisterRoutes(e *gin.Engine) {
 //	@receiver c
 //	@param ctx
 func (c *ResourceController) Create(ctx *gin.Context) {
-	var ct modRamResource.CreateCt
+	var ct modRamResource.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}

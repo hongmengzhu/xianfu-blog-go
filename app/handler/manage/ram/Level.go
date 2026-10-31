@@ -56,7 +56,7 @@ func (c *LevelController) RegisterRoutes(e *gin.Engine) {
 //	@receiver c
 //	@param ctx
 func (c *LevelController) Create(ctx *gin.Context) {
-	var ct modRamLevel.CreateCt
+	var ct modRamLevel.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}

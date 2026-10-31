@@ -56,7 +56,7 @@ func (c *GroupController) RegisterRoutes(e *gin.Engine) {
 //	@receiver c
 //	@param ctx
 func (c *GroupController) Create(ctx *gin.Context) {
-	var ct modRamGroup.CreateCt
+	var ct modRamGroup.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}

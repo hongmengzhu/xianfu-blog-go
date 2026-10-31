@@ -53,7 +53,7 @@ func (c *ModuleController) RegisterRoutes(e *gin.Engine) {
 //	@receiver c
 //	@param ctx
 func (c *ModuleController) Create(ctx *gin.Context) {
-	var ct modBasicModule.CreateCt
+	var ct modBasicModule.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
