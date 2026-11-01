@@ -95,7 +95,7 @@ func (c *BmBookmarkWebService) DetailByContext(ctx context.Context, tenantNo str
 	info.Where = make([]string, 0)
 	info.AttachmentsMap = make(map[string]string)
 	mapTagsOnly := make(map[string]bool)
-	//附件图
+	// 附件图
 	tagsData := make(map[string]modBasicTagsRelation.AllVo)
 	if strPg.IsNotBlank(find.Attachments) {
 		var imagesMap map[string]string
@@ -107,7 +107,7 @@ func (c *BmBookmarkWebService) DetailByContext(ctx context.Context, tenantNo str
 	if strPg.IsNotBlank(find.CategoryNo) {
 		catNo = append(catNo, find.CategoryNo)
 	}
-	//if nil != find.Categorys.Data() {
+	// if nil != find.Categorys.Data() {
 	//	tmp := find.Categorys.Data()
 	//	if len(tmp) > 0 {
 	//		for _, tag := range tmp {
@@ -116,15 +116,15 @@ func (c *BmBookmarkWebService) DetailByContext(ctx context.Context, tenantNo str
 	//			}
 	//		}
 	//	}
-	//}
+	// }
 	if len(catNo) > 0 {
 		{
-			//cat, result := c.catDb.FindAllByNoIn(catNo)
-			//if result {
+			// cat, result := c.catDb.FindAllByNoIn(catNo)
+			// if result {
 			//	for _, item := range cat {
 			//		info.CategoryObj = append(info.CategoryObj, item)
 			//	}
-			//}
+			// }
 			tmp, b := c.catCore.GetAllByKeysRetMap(ctx, catNo, find.TenantNo)
 			if b {
 				for _, item := range tmp {
@@ -133,19 +133,19 @@ func (c *BmBookmarkWebService) DetailByContext(ctx context.Context, tenantNo str
 			}
 		}
 	}
-	//标签
+	// 标签
 	if nil != find.Tags.Data() {
 		tmp := find.Tags.Data()
 		if len(tmp) > 0 {
 			for _, tag := range tmp {
-				//重复过滤掉
+				// 重复过滤掉
 				if _, ok := mapTagsOnly[tag]; ok {
 					continue
 				}
 				mapTagsOnly[tag] = false
 				tags = append(tags, tag)
-				//标签
-				//info.Tags = append(info.Tags, tag)
+				// 标签
+				// info.Tags = append(info.Tags, tag)
 			}
 		}
 		if len(tags) > 0 {
@@ -219,8 +219,8 @@ func (c *BmBookmarkWebService) DetailByContext(ctx context.Context, tenantNo str
 		raw := markdownPg.Markdown([]byte(find.Content))
 		info.ContentConv = raw.String()
 	}
-	//log.Info(context.Background(), log.TagAppDef, "info:%+v", info)
-	//log.Info(context.Background(), log.TagAppDef, "info.create:%+v", datetimePg.Format(info.CreateAt, "2006"))
+	// log.Info(context.Background(), log.TagAppDef, "info:%+v", info)
+	// log.Info(context.Background(), log.TagAppDef, "info.create:%+v", datetimePg.Format(info.CreateAt, "2006"))
 	return rt.OkData(info)
 }
 
@@ -246,9 +246,9 @@ func (c *BmBookmarkWebService) QueryByContext(ctx context.Context, tenantNo stri
 	if strPg.IsNotBlank(tenantNo) {
 		query.TenantNo = tenantNo
 	}
-	//启用
+	// 启用
 	query.State = enumStatePg.ENABLE.Index()
-	//审批通过
+	// 审批通过
 	query.PlatformApproved = enumApprovedPg.ApprovedStateApproved.Index()
 	slice := make([]modBmBookmarkWeb.Vo, 0)
 	rt.Data.Data = slice
@@ -258,9 +258,9 @@ func (c *BmBookmarkWebService) QueryByContext(ctx context.Context, tenantNo stri
 			ct.PageSize = 20
 		}
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
-		//自定义查询
+		// 自定义查询
 		arg.Db = arg.Db.Order("create_at desc")
-		//自定义查询
+		// 自定义查询
 		if "" != ct.Wd {
 			arg.Db = arg.Db.Where("name like ?", "%"+ct.Wd+"%")
 		}
@@ -268,7 +268,7 @@ func (c *BmBookmarkWebService) QueryByContext(ctx context.Context, tenantNo stri
 		if nil != ct.CreateAtStart && nil != ct.CreateAtEnd {
 			arg.Db = arg.Db.Where("create_at between ? and ?", ct.CreateAtStart, ct.CreateAtEnd)
 		}
-		//标签
+		// 标签
 		if nil != ct.TagsQuery && len(ct.TagsQuery) > 0 {
 			for _, tag := range ct.TagsQuery {
 				if strPg.IsNotBlank(tag) {
@@ -276,10 +276,10 @@ func (c *BmBookmarkWebService) QueryByContext(ctx context.Context, tenantNo stri
 				}
 			}
 		}
-		//多分类
+		// 多分类
 		if nil != ct.CategoryQuery && len(ct.CategoryQuery) > 0 {
 			for _, tag := range ct.CategoryQuery {
-				//获取缓存，得到 编号
+				// 获取缓存，得到 编号
 				get, b := c.rdu.Get(ctx, blogKeyPg.ArticleCategoryTenantNoAndNoByCode(tenantNo, tag))
 				if b {
 					arg.Db = arg.Db.Where("categorys @> ?", "[\""+get+"\"]")
@@ -306,60 +306,80 @@ func (c *BmBookmarkWebService) QueryByContext(ctx context.Context, tenantNo stri
 	if nil != err {
 		return rt.Ok()
 	}
-
 	if page.Total > 0 && page.Data != nil && len(page.Data) > 0 {
-		ImgDefault := "/assets/imgs/shop/product-1-1.jpg"
 		pg := pagePg.NewPaginatorByPageable[modBmBookmarkWeb.Vo](page.Pageable)
+		convert := c.DataConvert(ctx, tenantNo, page.Data)
+		if convert.SuccessIs() {
+			pg.Data = convert.Data
+		}
+		pg.Pageable = page.Pageable
+		rt.Data = pg
+		return rt.Ok()
+	}
+	return rt.Ok()
+}
+
+// DataConvert 列表查询（与 Web 框架无关的核心实现，echo 等入口复用）
+//
+//	@Description:
+//	@receiver c
+//	@param ctx
+//	@param tenantNo 租户编号
+//	@param ct
+func (c *BmBookmarkWebService) DataConvert(ctx context.Context, tenantNo string, data []*entityBm.BmBookmarkEntity) (rt rg.Rs[[]modBmBookmarkWeb.Vo]) {
+	if data != nil && len(data) > 0 {
+		slice := make([]modBmBookmarkWeb.Vo, 0)
+		ImgDefault := "/assets/imgs/shop/product-1-1.jpg"
 		mapCategory := make(map[string]*modBmBookmarkCategory.Cache)
 		idsCategory := make([]string, 0)
 		idsNo := make([]string, 0)
 		tags := make([]string, 0)
 		mapTagsOnly := make(map[string]bool)
-		//标签
+		// 标签
 		tagsData := make(map[string]modBasicTagsRelation.AllVo)
-		for _, item := range page.Data {
+		for _, item := range data {
 			if strPg.IsNotBlank(item.CategoryNo) {
 				idsCategory = append(idsCategory, item.CategoryNo)
 			}
-			//if item.Categorys.Data() != nil && len(item.Categorys.Data()) > 0 {
+			// if item.Categorys.Data() != nil && len(item.Categorys.Data()) > 0 {
 			//	for _, obj := range item.Categorys.Data() {
 			//		idsCategory = append(idsCategory, obj)
 			//	}
-			//}
+			// }
 			if strPg.IsNotBlank(item.No) {
 				idsNo = append(idsNo, item.No)
 			}
-			//标签
+			// 标签
 			if nil != item.Tags.Data() {
 				if len(item.Tags.Data()) > 0 {
 					for _, tag := range item.Tags.Data() {
-						//重复过滤掉
+						// 重复过滤掉
 						if _, ok := mapTagsOnly[tag]; ok {
 							continue
 						}
 						mapTagsOnly[tag] = false
 						tags = append(tags, tag)
-						//标签
+						// 标签
 					}
 				}
 			}
 		}
-		//分类
+		// 分类
 		{
 			if len(idsCategory) > 0 {
 				tmp, b := c.catCore.GetAllByKeysRetMap(ctx, idsCategory, tenantNo)
 				if b {
 					mapCategory = tmp
 				}
-				//tmp, result := c.catDb.FindAllByNoIn(ctx, idsCategory)
-				//if result {
+				// tmp, result := c.catDb.FindAllByNoIn(ctx, idsCategory)
+				// if result {
 				//	for _, item := range tmp {
 				//		mapCategory[item.No] = item
 				//	}
-				//}
+				// }
 			}
 		}
-		//标签
+		// 标签
 		{
 			if len(tags) > 0 {
 				infos, result := c.tagsRelat.FindAllByTagNoInAndCategoryRoot(ctx, tags, constTags.ArticleInfo.String())
@@ -418,13 +438,13 @@ func (c *BmBookmarkWebService) QueryByContext(ctx context.Context, tenantNo stri
 				}
 			}
 		}
-		//字段赋值
-		for _, item := range page.Data {
+		// 字段赋值
+		for _, item := range data {
 			var vo modBmBookmarkWeb.Vo
 			copier.Copy(&vo, &item)
 			vo.Tags = make([]string, 0)
 			vo.TagsStyle = make([]modBasicTagsRelation.AllVo, 0)
-			//vo.Categorys = make([]string, 0)
+			// vo.Categorys = make([]string, 0)
 			vo.CategoryObj = make([]*modBmBookmarkCategory.Cache, 0)
 			//
 			if strPg.IsNotBlank(item.Attachments) {
@@ -439,12 +459,12 @@ func (c *BmBookmarkWebService) QueryByContext(ctx context.Context, tenantNo stri
 			if _, ok := vo.AttachmentsMap[attachmentTypePg.AttachmentMain.String()]; !ok {
 				vo.AttachmentsMap[attachmentTypePg.AttachmentMain.String()] = ImgDefault
 			}
-			//分类
+			// 分类
 			if obj, ok := mapCategory[item.CategoryNo]; ok {
 				vo.CategoryName = obj.Name
 				vo.CategoryNo = obj.No
 			}
-			//标签
+			// 标签
 			if nil != item.Tags.Data() {
 				if len(item.Tags.Data()) > 0 {
 					for _, tag := range item.Tags.Data() {
@@ -461,7 +481,7 @@ func (c *BmBookmarkWebService) QueryByContext(ctx context.Context, tenantNo stri
 				vo.ContentConv = raw.String()
 			}
 			// 栏目
-			//if nil != item.Categorys.Data() {
+			// if nil != item.Categorys.Data() {
 			//	if len(item.Categorys.Data()) > 0 {
 			//		for _, obj := range item.Categorys.Data() {
 			//			vo.Categorys = append(vo.Categorys, obj)
@@ -470,20 +490,42 @@ func (c *BmBookmarkWebService) QueryByContext(ctx context.Context, tenantNo stri
 			//			}
 			//		}
 			//	}
-			//}
-			//if strPg.IsNotBlank(item.CategoryNo) && !slices.Contains(vo.Categorys, item.CategoryNo) {
+			// }
+			// if strPg.IsNotBlank(item.CategoryNo) && !slices.Contains(vo.Categorys, item.CategoryNo) {
 			//	vo.Categorys = append(vo.Categorys, item.CategoryNo)
 			//	if obj2, ok := mapCategory[item.CategoryNo]; ok {
 			//		vo.CategoryObj = append(vo.CategoryObj, obj2)
 			//	}
-			//}
+			// }
 			//
 			slice = append(slice, vo)
 		}
-		pg.Data = slice
-		pg.Pageable = page.Pageable
-		rt.Data = pg
-		return rt.Ok()
+		return rt.OkData(slice)
 	}
 	return rt.Ok()
+}
+
+// QueryListBYCategory 根据分类查询列表
+func (c *BmBookmarkWebService) QueryListBYCategory(ctx context.Context, tenantNo string, categories []string, limitPerCat int) (rt rg.Rs[map[string][]modBmBookmarkWeb.Vo]) {
+	sub := c.sv.DbModel().Select("*, ROW_NUMBER() OVER (PARTITION BY category_no ORDER BY created_at DESC) AS rn").
+		Where("category_no IN ?", categories).Where("tenant_no = ?", tenantNo)
+	var list []*entityBm.BmBookmarkEntity
+	err := c.sv.DbModel().Table("(?) AS t", sub).
+		Where("t.rn <= ?", limitPerCat).
+		Scan(&list).Error
+	if err != nil {
+		return rt.Ok()
+	}
+	listMap := make(map[string][]modBmBookmarkWeb.Vo)
+	for _, item := range categories {
+		listMap[item] = make([]modBmBookmarkWeb.Vo, 0)
+	}
+	tmp := c.DataConvert(ctx, tenantNo, list)
+	if tmp.SuccessIs() {
+		for _, item := range tmp.Data {
+			listMap[item.CategoryNo] = append(listMap[item.CategoryNo], item)
+		}
+	}
+
+	return rt.OkData(listMap)
 }
