@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"slices"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -285,6 +286,20 @@ func (c *BmBookmarkWebService) QueryByContext(ctx context.Context, tenantNo stri
 				} else {
 					arg.Db = arg.Db.Where("categorys @> ?", "[\""+tag+"\"]")
 				}
+			}
+		}
+		//
+		if nil != ct.CategoryNoInQuery && len(ct.CategoryNoInQuery) > 0 {
+			idsCat := make([]string, 0)
+			for _, item := range ct.CategoryNoInQuery {
+				if strPg.IsNotBlank(item) && !slices.Contains(idsCat, item) {
+					idsCat = append(idsCat, item)
+				}
+			}
+			if len(idsCat) > 0 {
+				arg.Db = arg.Db.Where("category_no in ?", idsCat)
+			} else {
+				arg.Db = arg.Db.Where("category_no =?", "-1")
 			}
 		}
 	}))

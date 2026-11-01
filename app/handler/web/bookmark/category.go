@@ -4,14 +4,14 @@ import (
 	"context"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/core/cache/cacheBlog"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/core/cache/cacheBookmark"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBookmark/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
-	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheDomainPg"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticleWeb"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkWeb"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
+	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
 )
@@ -22,10 +22,9 @@ func init() {
 
 type CategoryController struct {
 	routerPg.RouteRegistrar
-	Sp       *authPg.GroupWebMiddlewareSp        `autowire:"?"`
-	ca       *cacheDomainPg.TenantDomainCache    `autowire:"?"`
-	sv       *service.BlogArticleWebService      `autowire:"?"`
-	catCache *cacheBlog.CacheBlogArticleCategory `autowire:"?"`
+	Sp       *authPg.GroupWebMiddlewareSp         `autowire:"?"`
+	sv       *service.BmBookmarkWebService        `autowire:"?"`
+	catCache *cacheBookmark.CacheBookmarkCategory `autowire:"?"`
 }
 
 // RegisterRoutes
@@ -39,33 +38,40 @@ func (c *CategoryController) RegisterRoutes(e *gin.Engine) {
 	group.GET("/bookmark/category/:code", c.Code)
 }
 
+// Code
 func (c *CategoryController) Code(ctx *gin.Context) {
-	var ct modBlogArticleWeb.QueryCt
-	ctx.Bind(&ct)
+	var ct modBmBookmarkWeb.QueryCt
 	param := ctx.Param("code")
-	log.Info(ctx, log.TagBizDef, "Param", log.Any("code", param))
 	//
-	rt := c.sv.Query(ctx, ct)
-	log.Info(context.Background(), log.TagBizDef, "Data", log.Any("Pageable", rt.Data.Pageable))
-	//
+	htmlOption := make([]templatePg.Option, 0)
 	tenantNo := webPg.GetTenantNo(ctx)
+	//
 	tree, _ := c.catCache.FormatTree(ctx, tenantNo)
-
-	//fmt.Printf("Data: %+v\n", tree)
+	htmlOption = append(htmlOption, templatePg.WithHtmlObjSet("pageCategory", tree))
+	htmlOption = append(htmlOption, templatePg.WithHtmlObjSet("pageUrl", "page"))
+	htmlOption = append(htmlOption, templatePg.WithSitePage(templatePg.SitePage{
+		Title:       "博客",
+		Description: "博客",
+		Keywords:    "博客",
+		SiteName:    "博客",
+	}))
+	//
+	log.Info(ctx, log.TagBizDef, "Param", log.Any("code", param))
+	if strPg.IsNotBlank(param) {
+		key, b := c.catCache.GetByKey(ctx, param, tenantNo)
+		if b {
+			//
+			ct.CategoryNo = key.No
+			rt := c.sv.Query(ctx, ct)
+			log.Info(context.Background(), log.TagBizDef, "Data", log.Any("Pageable", rt.Data.Pageable))
+			htmlOption = append(htmlOption, templatePg.WithDataByResult(rt.SuccessIs(), rt.Data))
+		}
+	}
 	// 模版
-	templatePg.HTML(ctx, "bookmark/category-code",
-		templatePg.WithDataByResult(rt.SuccessIs(), rt.Data),
-		templatePg.WithHtmlObjSet("categorys", tree),
-		templatePg.WithHtmlObjSet("pageUrl", "page"),
-		templatePg.WithSitePage(templatePg.SitePage{
-			Title:       "博客",
-			Description: "博客",
-			Keywords:    "博客",
-			SiteName:    "博客",
-		}))
+	templatePg.HTML(ctx, "bookmark/category-code", htmlOption...)
 }
 func (c *CategoryController) List(ctx *gin.Context) {
-	var ct modBlogArticleWeb.QueryCt
+	var ct modBmBookmarkWeb.QueryCt
 	ctx.Bind(&ct)
 	//
 	rt := c.sv.Query(ctx, ct)

@@ -66,6 +66,43 @@ func (c *CacheBookmarkCategory) GetAllByKeysRetMap(ctx context.Context, keys []s
 	return data, false
 }
 
+// GetByKey
+//
+//	@Description: 获取所有缓存
+//	@receiver c
+//	@param ctx
+//	@param tenantNo
+//	@return []*entityBlog.BlogArticleCategoryEntity
+//	@return bool
+func (c *CacheBookmarkCategory) GetByKey(ctx context.Context, keys string, tenantNo string) (*modBmBookmarkCategory.Cache, bool) {
+	tmps := make([]string, 0)
+	if strPg.IsBlank(keys) {
+		return nil, false
+	}
+	tmps = append(tmps, keys)
+	result, b := c.rdt.GetAllByKeys(ctx, tmps)
+	//fmt.Printf("获取缓存结果: %v\n", keys)
+	//fmt.Printf("获取缓存结果: %v\n", result)
+	if b {
+		for _, item := range result {
+			// 解析值（JSON 字符串）
+			valueStr, ok := item.(string)
+			if !ok {
+				fmt.Printf("键 %s 的值格式错误\n", item)
+				continue
+			}
+			// 可选：将 JSON 字符串解析为结构体
+			var category modBmBookmarkCategory.Cache
+			if err := json.Unmarshal([]byte(valueStr), &category); err != nil {
+				fmt.Printf("解析键 JSON 失败: %v\n", err)
+				continue
+			}
+			return &category, true
+		}
+	}
+	return nil, false
+}
+
 // GetAllByCache
 //
 //	@Description: 获取所有缓存
