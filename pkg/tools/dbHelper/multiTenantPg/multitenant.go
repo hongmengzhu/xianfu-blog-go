@@ -3,7 +3,7 @@ package multiTenantPg
 import (
 	"strings"
 
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/holderPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 )
 

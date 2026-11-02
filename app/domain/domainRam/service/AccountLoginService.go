@@ -8,10 +8,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/core/cache/cacheRam"
-	authTokenPg "github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/authTokenPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modPublic"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLogin"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg/pg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constHeaderPg"
@@ -21,6 +19,8 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	authTokenPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/authTokenPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/ram/model/modRamAccount"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
 	"github.com/jinzhu/copier"
@@ -258,10 +258,10 @@ func (c *AccountLoginService) MakeToken(ctx *gin.Context,
 	tp typeDomainPg.TypeDomain,
 	client clientPg.Client,
 	makeRefresh bool,
-) (rt rg.Rs[authTokenPg.ResultAccessRefresh]) {
-	token := authTokenPg.ResultAccessRefresh{}
+) (rt rg.Rs[authTokenPg2.ResultAccessRefresh]) {
+	token := authTokenPg2.ResultAccessRefresh{}
 	//
-	privatePubKey := authTokenPg.Result{}
+	privatePubKey := authTokenPg2.Result{}
 	// 获取 密钥对
 	key := c.cacheSessionPubPrive.PaseKeyAccessToken(ctx, tp, client, account.TenantNo, nil)
 	if strPg.IsNotBlank(key.Public) {
@@ -269,7 +269,7 @@ func (c *AccountLoginService) MakeToken(ctx *gin.Context,
 		privatePubKey.PublicKey = key.Public
 	}
 	//生成 令牌
-	param := authTokenPg.Param{
+	param := authTokenPg2.Param{
 		UniqueId:    strPg.GenerateNumberId22(),
 		MultiTenant: mult,
 		LoginNo:     account.No,
@@ -279,7 +279,7 @@ func (c *AccountLoginService) MakeToken(ctx *gin.Context,
 		Result:      privatePubKey,
 		TenantNo:    account.TenantNo,
 	}
-	ret := authTokenPg.MakePaseToken(param, c.pg.Jwt.System)
+	ret := authTokenPg2.MakePaseToken(param, c.pg.Jwt.System)
 	if ret.ErrorIs() {
 		return rt.ErrorMessage(ret.Message)
 	}
@@ -289,7 +289,7 @@ func (c *AccountLoginService) MakeToken(ctx *gin.Context,
 	if makeRefresh {
 		{
 			//
-			privatePubKey2 := authTokenPg.Result{}
+			privatePubKey2 := authTokenPg2.Result{}
 			// 获取 密钥对
 			key2 := c.cacheSessionPubPrive.PaseKeyRefreshToken(ctx, tp, client, account.TenantNo, nil)
 			if strPg.IsNotBlank(key2.Public) {
@@ -297,7 +297,7 @@ func (c *AccountLoginService) MakeToken(ctx *gin.Context,
 				privatePubKey2.PublicKey = key2.Public
 			}
 			//生成 令牌
-			param = authTokenPg.Param{
+			param = authTokenPg2.Param{
 				UniqueId:    strPg.GenerateNumberId22(),
 				MultiTenant: mult,
 				LoginNo:     account.No,
@@ -307,7 +307,7 @@ func (c *AccountLoginService) MakeToken(ctx *gin.Context,
 				Result:      privatePubKey2,
 				TenantNo:    account.TenantNo,
 			}
-			ret2 := authTokenPg.MakePaseToken(param, c.pg.Jwt.System)
+			ret2 := authTokenPg2.MakePaseToken(param, c.pg.Jwt.System)
 			if ret2.ErrorIs() {
 				return rt.ErrorMessage(ret.Message)
 			}
@@ -331,12 +331,12 @@ func (c *AccountLoginService) RefreshToken(ctx *gin.Context, ct modRamLogin.Toke
 	token := ctx.GetHeader("Authorization")
 	if strPg.IsNotBlank(token) {
 		tokenRefresh := ctx.GetHeader("Authorization-Refresh")
-		token = strings.Replace(token, authTokenPg.AuthScheme+" ", "", -1)
+		token = strings.Replace(token, authTokenPg2.AuthScheme+" ", "", -1)
 		if strPg.IsNotBlank(token) {
 			var accessPayload map[string]interface{}
 			var refreshPayload map[string]interface{}
 			{
-				unverified, b := authTokenPg.ParseUnverified(token)
+				unverified, b := authTokenPg2.ParseUnverified(token)
 				if b {
 					// 解析为map便于查看
 					if err := json.Unmarshal(unverified, &accessPayload); err != nil {
@@ -346,7 +346,7 @@ func (c *AccountLoginService) RefreshToken(ctx *gin.Context, ct modRamLogin.Toke
 			}
 			{
 				if strPg.IsNotBlank(tokenRefresh) {
-					unverified2, b := authTokenPg.ParseUnverified(tokenRefresh)
+					unverified2, b := authTokenPg2.ParseUnverified(tokenRefresh)
 					if b {
 						// 解析为map便于查看
 						if err := json.Unmarshal(unverified2, &refreshPayload); err != nil {
@@ -360,18 +360,18 @@ func (c *AccountLoginService) RefreshToken(ctx *gin.Context, ct modRamLogin.Toke
 			loginNoAcc := ""
 			loginNoRef := ""
 			{
-				if get, ok := accessPayload[authTokenPg.TenantNo]; ok {
+				if get, ok := accessPayload[authTokenPg2.TenantNo]; ok {
 					tenantNoAcc = get.(string)
 				}
-				if get, ok := accessPayload[authTokenPg.Subject]; ok {
+				if get, ok := accessPayload[authTokenPg2.Subject]; ok {
 					loginNoAcc = get.(string)
 				}
 			}
 			{
-				if get, ok := refreshPayload[authTokenPg.TenantNo]; ok {
+				if get, ok := refreshPayload[authTokenPg2.TenantNo]; ok {
 					tenantNoRef = get.(string)
 				}
-				if get, ok := refreshPayload[authTokenPg.Subject]; ok {
+				if get, ok := refreshPayload[authTokenPg2.Subject]; ok {
 					loginNoRef = get.(string)
 				}
 			}

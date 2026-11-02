@@ -3,7 +3,7 @@ package model
 import (
 	"encoding/json"
 
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/interfaces"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/interfaces"
 )
 
 type BaseQueryByIdNotIdVdo[ID any] struct {

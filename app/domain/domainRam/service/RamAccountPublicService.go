@@ -5,11 +5,11 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/core/cache/cacheRam"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modPublic"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamAccount"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg/pg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/passwordTypePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	holderPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/holderPg"
 	"github.com/pangu-2/go-tools/tools/numberPg"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
@@ -38,7 +38,7 @@ func NewRamAccountPublicService() *RamAccountPublicService {
 }
 
 // Public 登陆用户信息
-func (c *RamAccountPublicService) Public(ctx *gin.Context, holder holderPg.HolderPg) (rt rg.Rs[modPublic.InfoPublicVo]) {
+func (c *RamAccountPublicService) Public(ctx *gin.Context, holder holderPg2.HolderPg) (rt rg.Rs[modPublic.InfoPublicVo]) {
 	log.Info(ctx, log.TagAppDef, "holder", log.Any("holder", holder))
 	//log.Info(ctx, log.TagAppDef,"HolderData=%+v", holder.HolderData)
 	if nil == holder.HolderData {
@@ -62,7 +62,7 @@ func (c *RamAccountPublicService) Public(ctx *gin.Context, holder holderPg.Holde
 }
 
 // InfoPublic 登陆用户信息
-func (c *RamAccountPublicService) InfoPublic(ctx *gin.Context, holder holderPg.HolderPg) (rt rg.Rs[modRamAccount.AccountPub]) {
+func (c *RamAccountPublicService) InfoPublic(ctx *gin.Context, holder holderPg2.HolderPg) (rt rg.Rs[modRamAccount.AccountPub]) {
 	log.Info(ctx, log.TagAppDef, "holder", log.Any("holder", holder))
 	//log.Info(ctx, log.TagAppDef,"HolderData=%+v", holder.HolderData)
 	if nil == holder.HolderData {
@@ -104,7 +104,7 @@ func (c *RamAccountPublicService) UpdatePassword(ctx *gin.Context, ct modPublic.
 		pwd = login.Data
 	}
 
-	holder := holderPg.GetContextAccount(ctx)
+	holder := holderPg2.GetContextAccount(ctx)
 	account := holder.GetAccount()
 	r := c.sv
 	info, b := r.FindById(ctx, account.ID)

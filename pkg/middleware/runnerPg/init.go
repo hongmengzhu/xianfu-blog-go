@@ -1,0 +1,61 @@
+package runnerPg
+
+import (
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
+	data2 "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/runnerPg/data"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/runnerPg/table"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbManagerPg"
+	"go-spring.org/spring/gs"
+)
+
+func init() {
+	// 发布者 监听
+	gs.Provide(event.New()).Export(gs.As[event.Bus]())
+	gs.Provide(new(Publisher)).Export(gs.As[gs.Runner]())
+
+	// gorm SQL 日志级别（database.log-level），放在最前面，
+	// 保证后续 Runner（建表、初始化数据）执行的 SQL 也能按配置输出。
+	gs.Provide(new(dbManagerPg.GormSQLLog)).Export(gs.As[gs.Runner]())
+
+	//初始化 表
+	gs.Provide(new(table.AInitTable)).Export(gs.As[gs.Runner]())
+
+	//初始化租户域名
+	gs.Provide(new(data2.InitTenantDomain)).Export(gs.As[gs.Runner]())
+	//初始化 基础数据
+	gs.Provide(new(data2.IBasicData)).Export(gs.As[gs.Runner]())
+	//
+
+	//
+	//附件 上传
+	//gs.Provide(new(listenerBasic.AttachmentListener)).Export(gs.As[gs.Runner]())
+	//gs.Provide(new(listenerBasic.TagsListener)).Export(gs.As[gs.Runner]())
+	//gs.Provide(new(listenerBasic.EventCacheListener)).Export(gs.As[gs.Runner]())
+	//gs.Provide(new(listenerBasic.RulesCacheListener)).Export(gs.As[gs.Runner]())
+	//文章 分类 换成
+	//gs.Provide(new(listennerBlog.ArticleCategoryCacheListener)).Export(gs.As[gs.Runner]())
+
+	// ram相关
+	//gs.Provide(new(listenerRam.RamListener)).Export(gs.As[gs.Runner]())
+	//
+	// 初始化会话密钥
+	gs.Provide(new(data2.InitSessionPubPrive)).Export(gs.As[gs.Runner]())
+	// 基础
+	gs.Provide(new(data2.ZInitCacheBasic)).Export(gs.As[gs.Runner]())
+	///////////////////////////////////
+	// 初始化-博客缓存
+	gs.Provide(new(data2.ZInitCacheBlog)).Export(gs.As[gs.Runner]())
+
+	// 初始化-书签缓存
+	gs.Provide(new(data2.ZInitCacheBm)).Export(gs.As[gs.Runner]())
+
+	/////////////////////////////////////
+	// 初始化标签缓存
+	gs.Provide(new(data2.ZInitTagsCache)).Export(gs.As[gs.Runner]())
+	//超管账号初始化
+	gs.Provide(new(data2.ZInitAccountAdmin)).Export(gs.As[gs.Runner]())
+	//初始化Dipl缓存
+	gs.Provide(new(data2.ZInitDiplCache)).Export(gs.As[gs.Runner]())
+	//显示服务启动信息
+	gs.Provide(new(data2.ZzBootstrap)).Export(gs.As[gs.Runner]())
+}

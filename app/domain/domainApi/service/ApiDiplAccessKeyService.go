@@ -5,12 +5,12 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	cacheDiplPg2 "github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheDiplPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/api/modApiDiplAccessKey"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityApi"
 	repositoryApi2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryApi"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/cachePg/cacheDiplPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
@@ -66,8 +66,8 @@ func (c *ApiDiplAccessKeyService) MakeNewRecord(ctx *gin.Context, ct model.BaseI
 		return rt.ErrorMessage("保存失败")
 	}
 	//加入缓存
-	sha := cacheDiplPg2.HashSha(save.Key, save.Secret)
-	obj := cacheDiplPg2.DiplCo{
+	sha := cacheDiplPg.HashSha(save.Key, save.Secret)
+	obj := cacheDiplPg.DiplCo{
 		HashSha:  sha,
 		No:       save.DiplNo,
 		TenantNo: save.TenantNo,
@@ -75,7 +75,7 @@ func (c *ApiDiplAccessKeyService) MakeNewRecord(ctx *gin.Context, ct model.BaseI
 		Secret:   save.Secret,
 		Ano:      save.Ano,
 	}
-	cacheDiplPg2.Set(save.Key, obj)
+	cacheDiplPg.Set(save.Key, obj)
 	return rt.Ok()
 }
 
@@ -239,7 +239,7 @@ func (c *ApiDiplAccessKeyService) PhysicalDeletion(ctx *gin.Context, ids []strin
 		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		idsNew = append(idsNew, info.ID)
 		//删除缓存
-		cacheDiplPg2.Remove(info.Key)
+		cacheDiplPg.Remove(info.Key)
 	}
 	if len(idsNew) > 0 {
 		cn.DeleteByIds(ctx, idsNew)
@@ -282,7 +282,7 @@ func (c *ApiDiplAccessKeyService) Query(ctx *gin.Context, ct modApiDiplAccessKey
 			var vo modApiDiplAccessKey.Vo
 			copier.Copy(&vo, &item)
 			//
-			vo.Hash = item.Key + ":" + cacheDiplPg2.HashSha(item.Key, item.Secret)
+			vo.Hash = item.Key + ":" + cacheDiplPg.HashSha(item.Key, item.Secret)
 			//
 			slice = append(slice, vo)
 		}
@@ -318,7 +318,7 @@ func (c *ApiDiplAccessKeyService) SelectPublic(ctx *gin.Context, ct modApiDiplAc
 			var vo modApiDiplAccessKey.Vo
 			copier.Copy(&vo, &item)
 			//
-			vo.Hash = item.Key + ":" + cacheDiplPg2.HashSha(item.Key, item.Secret)
+			vo.Hash = item.Key + ":" + cacheDiplPg.HashSha(item.Key, item.Secret)
 			//log.Debug(ctx, log.TagAppDef, "vo.Hash=%+v", vo.Hash)
 			//
 			slice = append(slice, vo)

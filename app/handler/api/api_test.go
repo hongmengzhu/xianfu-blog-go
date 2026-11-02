@@ -22,10 +22,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBookmark/service"
-	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheDiplPg"
-	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/dtoTenantDomain"
 	entityBm2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
+	cacheDiplPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/cachePg/cacheDiplPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/cachePg/cacheDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbManagerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/mapPg"
 	"go-spring.org/spring/gs"
@@ -144,7 +144,7 @@ func runAPIStack(t *testing.T, fn func(t *testing.T, ts *apiTestStack, engine *g
 		if ts.Domain.DomainData == nil {
 			ts.Domain.DomainData = &mapPg.SafeMap[string, dtoTenantDomain.Dto]{}
 		}
-		cacheDiplPg.Set(testDiplKey, cacheDiplPg.DiplCo{
+		cacheDiplPg2.Set(testDiplKey, cacheDiplPg2.DiplCo{
 			Key: testDiplKey, Secret: testDiplSecret,
 			TenantNo: testTenantNo, Ano: testAno, Name: "测试应用", No: "test-dipl",
 		})
@@ -602,7 +602,7 @@ func seedCategoryFixtures(t *testing.T, db *gorm.DB) categoryFixtures {
 // ---- HTTP 请求辅助 ----
 
 func testAuthHeader() string {
-	return testDiplKey + ":" + cacheDiplPg.HashSha(testDiplKey, testDiplSecret)
+	return testDiplKey + ":" + cacheDiplPg2.HashSha(testDiplKey, testDiplSecret)
 }
 
 func postJSON(t *testing.T, engine *gin.Engine, path, body, auth string) rsEnvelope {

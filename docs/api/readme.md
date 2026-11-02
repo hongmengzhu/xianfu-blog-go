@@ -29,7 +29,7 @@
 
 ### 鉴权
 
-两个控制器的路由组都挂载了 `authPg.GroupApiMiddleware`（`app/middleware/authPg/authApi.go`），必须携带：
+两个控制器的路由组都挂载了 `authPg.GroupApiMiddleware`（`../../pkg/middleware`），必须携带：
 
 ```
 Authorization: <key>:<hash>
@@ -95,7 +95,7 @@ Authorization: 85227155478337338126:3f1c9a0e...e7
 {"code": "500", "message": "名称不能为空", "data": ""}
 ```
 
-> 若后续在 `app/middleware/validatorPg` 初始化时补一行 `validate.SetTagName("validate")`，字段级提示才会以 `messageData` 形式出现；届时本文档与单元测试需同步更新。
+> 若后续在 `../../pkg/middleware` 初始化时补一行 `validate.SetTagName("validate")`，字段级提示才会以 `messageData` 形式出现；届时本文档与单元测试需同步更新。
 
 ### 类型约定
 

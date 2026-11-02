@@ -10,7 +10,6 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/core/cache/cacheBookmark"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service/blogArticle"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/utils/webPg"
-	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/markdownPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicTagsRelation"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkWeb"
@@ -22,6 +21,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
 	repositoryBm2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBm"
+	markdownPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/markdownPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/blog/key/blogKeyPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
@@ -216,7 +216,7 @@ func (c *BmBookmarkWebService) DetailByContext(ctx context.Context, tenantNo str
 	}
 
 	if strPg.IsNotBlank(find.Content) {
-		raw := markdownPg.Markdown([]byte(find.Content))
+		raw := markdownPg2.Markdown([]byte(find.Content))
 		info.ContentConv = raw.String()
 	}
 	// log.Info(context.Background(), log.TagAppDef, "info:%+v", info)
@@ -476,8 +476,8 @@ func (c *BmBookmarkWebService) DataConvert(ctx context.Context, tenantNo string,
 			}
 			if strPg.IsNotBlank(item.Content) {
 				// 截取前1000个有效文字（图片不计，代码段完整）
-				truncated := markdownPg.TruncateMarkdown(item.Content, 1000)
-				raw := markdownPg.Markdown([]byte(truncated))
+				truncated := markdownPg2.TruncateMarkdown(item.Content, 1000)
+				raw := markdownPg2.Markdown([]byte(truncated))
 				vo.ContentConv = raw.String()
 			}
 			// 栏目

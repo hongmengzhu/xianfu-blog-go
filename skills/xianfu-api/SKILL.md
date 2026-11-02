@@ -57,7 +57,7 @@ app/{layer}/{module}/
 
 ### 步骤 1：创建 Entity（数据库实体）
 
-路径：`infrastructure/entityXxx/XxxEntity.go`
+路径：`../../pkg/infrastructure`
 
 ```go
 package entityXxx
@@ -97,7 +97,7 @@ func (*XxxEntity) TableComment() string {
 
 ### 步骤 2：创建 Repository（数据访问层）
 
-路径：`infrastructure/repositoryXxx/XxxRepository.go`
+路径：`../../pkg/infrastructure`
 
 ```go
 package repositoryXxx

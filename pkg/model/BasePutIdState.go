@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/interfaces"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/interfaces"
 )
 
 // BasePutIdState 基础 状态更新

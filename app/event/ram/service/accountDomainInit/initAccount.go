@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/utilsRam"
-	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/dataFilePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/authorizationTypePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/typeDomainPg"
@@ -13,6 +12,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	entityRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityTc"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/dataFilePg"
 	"github.com/pangu-2/go-tools/tools/cryptPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
