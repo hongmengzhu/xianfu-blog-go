@@ -10,8 +10,8 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/identityPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/sexPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/appModulePg"
-	entityRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/holderPg"
+	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
 	"go-spring.org/log"
 
@@ -27,7 +27,7 @@ type Create struct {
 	sp  *Sp `autowire:"?"`
 	ctx *gin.Context
 	//
-	entity *entityRam2.RamAccountEntity
+	entity *entityRam.RamAccountEntity
 }
 
 // NewCreate
@@ -47,7 +47,7 @@ func NewCreate(
 	return &Create{
 		sp:     sp,
 		ctx:    ctx,
-		entity: &entityRam2.RamAccountEntity{},
+		entity: &entityRam.RamAccountEntity{},
 	}
 }
 
@@ -98,7 +98,7 @@ func (c *Create) accountCreateSimple(ctx *gin.Context, ct modRamAccount.CreateUp
 		c.entity.Sex = sexPg.MALE.String()
 	}
 	//
-	os := entityRam2.RamAccountJsonOs{
+	os := entityRam.RamAccountJsonOs{
 		Departments: make([]string, 0),
 		Groups:      make([]string, 0),
 		Levels:      make([]string, 0),
@@ -132,7 +132,7 @@ func (c *Create) accountCreateSimple(ctx *gin.Context, ct modRamAccount.CreateUp
 	if err != nil {
 		return rt.ErrorMessage("创建用户失败")
 	}
-	authorizationEntity := entityRam2.RamAccountAuthorizationEntity{
+	authorizationEntity := entityRam.RamAccountAuthorizationEntity{
 		Ano:      c.entity.No,
 		Type:     authorizationTypePg.PASSWORD.String(),
 		TenantNo: c.entity.TenantNo,
@@ -175,7 +175,7 @@ func (c *Create) createAll(ctx *gin.Context, ct modRamAccount.CreateUpdateCt, tp
 	}
 	var dataCt modRamAccount.CreateUpdateCt
 	copier.Copy(&dataCt, &ct)
-	var entity entityRam2.RamAccountEntity
+	var entity entityRam.RamAccountEntity
 	//赋值 数据
 	copier.Copy(&entity, &dataCt)
 	//

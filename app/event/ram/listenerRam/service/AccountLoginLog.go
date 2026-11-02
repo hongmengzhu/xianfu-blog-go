@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constHeaderPg"
-	entityRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/ram/model/modRamAccount"
 	"go-spring.org/log"
@@ -46,12 +46,12 @@ func (c *AccountLoginLog) Processor(ctx context.Context, data modRamAccount.Logi
 	now := time.Now()
 	//登录时间
 	{
-		save := entityRam2.RamAccountEntity{LoginTime: &now}
+		save := entityRam.RamAccountEntity{LoginTime: &now}
 		c.acc.Update(ctx, save, acc.ID)
 	}
 	//会话信息
 	{
-		session := entityRam2.RamAccountSessionEntity{
+		session := entityRam.RamAccountSessionEntity{
 			Ano:         acc.No,
 			AppNo:       data.AppNo,
 			Client:      data.Client,
@@ -67,7 +67,7 @@ func (c *AccountLoginLog) Processor(ctx context.Context, data modRamAccount.Logi
 		}
 	}
 	//登录日志
-	save := entityRam2.RamAccountLoginLogEntity{
+	save := entityRam.RamAccountLoginLogEntity{
 		AppNo:       data.AppNo,
 		Ano:         acc.No,
 		Client:      data.Client,

@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constContextPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/holderPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbManagerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"

@@ -5,10 +5,10 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBasic/service/configModel"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicConfigModel"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
-	repositoryBasic2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/holderPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
 	"github.com/pangu-2/go-tools/tools/dbPg/pagePg"
@@ -23,10 +23,10 @@ func init() {
 }
 
 type BasicConfigModelService struct {
-	sv        *repositoryBasic2.BasicConfigModelRepository       `autowire:"?"`
-	repoField *repositoryBasic2.BasicConfigModelFieldsRepository `autowire:"?"`
-	repoRule  *repositoryBasic2.BasicConfigModelRulesRepository  `autowire:"?"`
-	sp        *configModel.Sp                                    `autowire:"?"`
+	sv        *repositoryBasic.BasicConfigModelRepository       `autowire:"?"`
+	repoField *repositoryBasic.BasicConfigModelFieldsRepository `autowire:"?"`
+	repoRule  *repositoryBasic.BasicConfigModelRulesRepository  `autowire:"?"`
+	sp        *configModel.Sp                                   `autowire:"?"`
 }
 
 func (c *BasicConfigModelService) CreateUpdate(ctx *gin.Context, ct modBasicConfigModel.CreateUpdateCt) (rt rg.Rs[string]) {

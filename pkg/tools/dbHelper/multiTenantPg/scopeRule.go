@@ -1,15 +1,13 @@
 package multiTenantPg
 
-import (
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/interfaces"
-)
+import "github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg/holderIfPg"
 
 // 解析关键字
 const RuleParamTenant = "Tenant;"
 const RuleParamMerchant = "Merchant;"
 const RuleParamStore = "Store;"
 
-var _ interfaces.IHolderRule = (*MultiRule)(nil)
+var _ holderIfPg.IHolderRule = (*MultiRule)(nil)
 
 // 多租户规则
 type MultiRule struct {

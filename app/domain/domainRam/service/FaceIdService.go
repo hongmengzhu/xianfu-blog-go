@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/faceid"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/idpPg/faceid"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/log"

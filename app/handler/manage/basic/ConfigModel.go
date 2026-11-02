@@ -7,9 +7,9 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBasic/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicConfigModel"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
 )

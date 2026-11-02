@@ -1,9 +1,10 @@
 package modRamPosition
 
 import (
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/typePg"
 	"time"
+
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/typePg"
 )
 
 type QueryCt struct {

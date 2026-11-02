@@ -8,10 +8,10 @@ import (
 	"runtime"
 
 	"github.com/gin-gonic/gin"
-	_ "github.com/hongmengzhu/xianfu-blog-go/app/middleware"
 	"github.com/hongmengzhu/xianfu-blog-go/cmd"
-	_ "github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/bigCachePg"
+	_ "github.com/hongmengzhu/xianfu-blog-go/pkg/core/cachePg/bigCachePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	_ "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbManagerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
 	"github.com/pangu-2/go-tools/tools/datetimePg"

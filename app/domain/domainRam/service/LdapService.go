@@ -11,9 +11,9 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/clientPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
-	entityRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/ldap"
+	ldap2 "github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/idpPg/ldap"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -37,7 +37,7 @@ type LdapService struct {
 }
 
 // buildLdapConfig 从认证源配置构建 LDAP 连接配置
-func (s *LdapService) buildLdapConfig(source *entityRam2.RamIdentitySourceEntity) (*ldap.LdapConfig, error) {
+func (s *LdapService) buildLdapConfig(source *entityRam.RamIdentitySourceEntity) (*ldap2.LdapConfig, error) {
 	var baseCfg idpBaseConfig
 	if strPg.IsNotBlank(source.BaseConfig) {
 		if err := json.Unmarshal([]byte(source.BaseConfig), &baseCfg); err != nil {
@@ -70,7 +70,7 @@ func (s *LdapService) buildLdapConfig(source *entityRam2.RamIdentitySourceEntity
 		}
 	}
 
-	return &ldap.LdapConfig{
+	return &ldap2.LdapConfig{
 		Host:                baseCfg.HostUrl,
 		Port:                ldapExtra.Port,
 		EnableSsl:           ldapExtra.EnableSsl,
@@ -95,7 +95,7 @@ func (s *LdapService) TestConnection(ctx *gin.Context, ct modRamLdap.LdapTestCt)
 		return rt.ErrorMessage("配置解析失败: " + err.Error())
 	}
 
-	conn, err := ldap.GetLdapConn(cfg)
+	conn, err := ldap2.GetLdapConn(cfg)
 	if err != nil {
 		return rt.OkData(modRamLdap.LdapTestVo{
 			Connected: false,
@@ -138,7 +138,7 @@ func (s *LdapService) SearchUsers(ctx *gin.Context, ct modRamLdap.LdapSearchCt) 
 		cfg.Filter = ct.Filter
 	}
 
-	conn, err := ldap.GetLdapConn(cfg)
+	conn, err := ldap2.GetLdapConn(cfg)
 	if err != nil {
 		return rt.ErrorMessage("LDAP 连接失败: " + err.Error())
 	}
@@ -177,13 +177,13 @@ func (s *LdapService) SyncUsers(ctx *gin.Context, ct modRamLdap.LdapSyncCt) (rt 
 		return rt.ErrorMessage("配置解析失败: " + err.Error())
 	}
 
-	conn, err := ldap.GetLdapConn(cfg)
+	conn, err := ldap2.GetLdapConn(cfg)
 	if err != nil {
 		return rt.ErrorMessage("LDAP 连接失败: " + err.Error())
 	}
 	defer conn.Close()
 
-	syncResult, err := ldap.SyncUsers(conn, cfg)
+	syncResult, err := ldap2.SyncUsers(conn, cfg)
 	if err != nil {
 		return rt.ErrorMessage("同步失败: " + err.Error())
 	}
@@ -211,7 +211,7 @@ func (s *LdapService) Login(ctx *gin.Context, ct modRamLdap.LdapLoginCt) (rt rg.
 		return rt.ErrorMessage("配置解析失败: " + err.Error())
 	}
 
-	conn, err := ldap.GetLdapConn(cfg)
+	conn, err := ldap2.GetLdapConn(cfg)
 	if err != nil {
 		return rt.ErrorMessage("LDAP 连接失败: " + err.Error())
 	}
@@ -243,7 +243,7 @@ func (s *LdapService) Login(ctx *gin.Context, ct modRamLdap.LdapLoginCt) (rt rg.
 
 		// 更新 binding 登录时间
 		now := time.Now()
-		s.daoBinding.Update(ctx, entityRam2.RamIdpBindingEntity{
+		s.daoBinding.Update(ctx, entityRam.RamIdpBindingEntity{
 			LastLoginTime: &now,
 		}, binding.ID)
 
@@ -268,9 +268,9 @@ func (s *LdapService) Login(ctx *gin.Context, ct modRamLdap.LdapLoginCt) (rt rg.
 // createAccountFromLdap 从 LDAP 用户创建本地账号
 func (s *LdapService) createAccountFromLdap(
 	ctx *gin.Context,
-	source *entityRam2.RamIdentitySourceEntity,
-	ldapUser *ldap.LdapUser,
-) (*entityRam2.RamAccountEntity, error) {
+	source *entityRam.RamIdentitySourceEntity,
+	ldapUser *ldap2.LdapUser,
+) (*entityRam.RamAccountEntity, error) {
 	now := time.Now()
 	accountNo := noPg.No()
 
@@ -282,7 +282,7 @@ func (s *LdapService) createAccountFromLdap(
 		username = ldapUser.GetLdapUuid()
 	}
 
-	account := &entityRam2.RamAccountEntity{
+	account := &entityRam.RamAccountEntity{
 		No:           accountNo,
 		TenantNo:     source.TenantNo,
 		OrgNo:        source.OrgNo,
@@ -310,7 +310,7 @@ func (s *LdapService) createAccountFromLdap(
 
 	// 创建绑定记录
 	bindingNo := noPg.No()
-	binding := &entityRam2.RamIdpBindingEntity{
+	binding := &entityRam.RamIdpBindingEntity{
 		No:            bindingNo,
 		TenantNo:      source.TenantNo,
 		OrgNo:         source.OrgNo,
@@ -341,9 +341,9 @@ func (s *LdapService) createAccountFromLdap(
 // loginSuccess LDAP 登录成功
 func (s *LdapService) loginSuccess(
 	ctx *gin.Context,
-	account *entityRam2.RamAccountEntity,
-	source *entityRam2.RamIdentitySourceEntity,
-	ldapUser *ldap.LdapUser,
+	account *entityRam.RamAccountEntity,
+	source *entityRam.RamIdentitySourceEntity,
+	ldapUser *ldap2.LdapUser,
 	isSignup bool,
 ) (rt rg.Rs[modRamLogin.IdpLoginSuccess]) {
 	mult := multiTenantPg.MultiTenantPg{
@@ -357,7 +357,7 @@ func (s *LdapService) loginSuccess(
 
 	// 写入审计日志
 	now := time.Now()
-	logEntity := &entityRam2.RamAccountSessionLogEntity{
+	logEntity := &entityRam.RamAccountSessionLogEntity{
 		No:            noPg.No(),
 		TenantNo:      account.TenantNo,
 		OrgNo:         account.OrgNo,

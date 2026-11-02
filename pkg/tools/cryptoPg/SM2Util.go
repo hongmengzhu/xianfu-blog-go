@@ -5,7 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"github.com/tjfoc/gmsm/sm2"
 	"github.com/tjfoc/gmsm/x509"

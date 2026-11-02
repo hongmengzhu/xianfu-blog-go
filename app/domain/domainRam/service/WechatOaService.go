@@ -15,7 +15,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamWechat"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/idp"
+	idp2 "github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/idpPg/idp"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/log"
@@ -94,7 +94,7 @@ func (s *WechatOaService) GetQRCode(ctx *gin.Context, sourceNo string) (rt rg.Rs
 	sceneStr := sourceNo + "_" + randomString(16)
 
 	// 调用微信 API 创建二维码
-	qrResult, err := idp.WechatOaCreateQRCode(cfg.ClientId2, cfg.ClientSecret2, sceneStr)
+	qrResult, err := idp2.WechatOaCreateQRCode(cfg.ClientId2, cfg.ClientSecret2, sceneStr)
 	if err != nil {
 		log.Error(ctx, log.TagAppDef, err, "创建公众号二维码失败")
 		return rt.ErrorMessage("创建二维码失败: " + err.Error())
@@ -102,7 +102,7 @@ func (s *WechatOaService) GetQRCode(ctx *gin.Context, sourceNo string) (rt rg.Rs
 
 	vo := modRamWechat.QRCodeVo{
 		Ticket:        qrResult.Ticket,
-		QRUrl:         idp.WechatOaQRCodeShowURL(qrResult.Ticket),
+		QRUrl:         idp2.WechatOaQRCodeShowURL(qrResult.Ticket),
 		ExpireSeconds: qrResult.ExpireSeconds,
 	}
 	return rt.OkData(vo)
@@ -194,15 +194,15 @@ func (s *WechatOaService) HandleEvent(ctx *gin.Context, bodyBytes []byte, source
 	log.Info(ctx, log.TagAppDef, "微信扫码事件: ", log.Any("ticket", eventData.Ticket), log.Any("unionId", eventData.FromUserName), log.Any("event", event))
 
 	// 同时写入 idp 包的全局缓存（兼容已有的 wechat.go GetUserInfo 逻辑）
-	idp.Lock.Lock()
-	if idp.WechatCacheMap == nil {
-		idp.WechatCacheMap = make(map[string]idp.WechatCacheMapValue)
+	idp2.Lock.Lock()
+	if idp2.WechatCacheMap == nil {
+		idp2.WechatCacheMap = make(map[string]idp2.WechatCacheMapValue)
 	}
-	idp.WechatCacheMap[eventData.Ticket] = idp.WechatCacheMapValue{
+	idp2.WechatCacheMap[eventData.Ticket] = idp2.WechatCacheMapValue{
 		IsScanned:     true,
 		WechatUnionId: eventData.FromUserName,
 	}
-	idp.Lock.Unlock()
+	idp2.Lock.Unlock()
 
 	return rt.OkData("")
 }

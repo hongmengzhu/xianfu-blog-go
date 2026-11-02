@@ -9,7 +9,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constContextPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constHeaderPg"
-	authTokenPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/authTokenPg"
+	authTokenPg "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/authTokenPg"
 	cacheAuthPubPrivPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/cachePg/cacheAuthPubPrivPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -44,8 +44,8 @@ func GroupSystemMiddleware(m *GroupSystemMiddlewareSp) gin.HandlerFunc {
 				c.Abort()
 				return
 			}
-			token = strings.Replace(token, authTokenPg2.AuthScheme+" ", "", -1)
-			t, r := authTokenPg2.VerifyByPublicKey(get.Public, token)
+			token = strings.Replace(token, authTokenPg.AuthScheme+" ", "", -1)
+			t, r := authTokenPg.VerifyByPublicKey(get.Public, token)
 			if r.ErrorIs() {
 				log.Debug(context.Background(), log.TagAppDef, "JWT", func() []log.Field {
 					return []log.Field{

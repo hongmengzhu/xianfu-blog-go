@@ -1,15 +1,16 @@
 package modRamIdpBinding
 
 import (
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/typePg"
 	"time"
+
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/typePg"
 )
 
 type QueryCt struct {
 	model.BaseQueryCt
 	ID          typePg.Uint64String `json:"id" label:"" `
-	Description string              `json:"description" label:"描述" `   // 描述
+	Description string              `json:"description" label:"描述" ` // 描述
 	Idp         string              `json:"idp" label:"身份提供商" `
 	OpenId      string              `json:"openId" label:"OpenID" `
 	UnionId     string              `json:"unionId" label:"UnionID" `

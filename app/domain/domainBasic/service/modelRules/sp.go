@@ -1,7 +1,7 @@
 package modelRules
 
 import (
-	repositoryBasic2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
 	"go-spring.org/spring/gs"
 )
 
@@ -10,9 +10,9 @@ func init() {
 }
 
 type Sp struct {
-	repModel       *repositoryBasic2.BasicConfigModelRepository       `autowire:"?"`
-	repModelFields *repositoryBasic2.BasicConfigModelFieldsRepository `autowire:"?"`
-	repEvent       *repositoryBasic2.BasicConfigEventRepository       `autowire:"?"`
-	repEventFields *repositoryBasic2.BasicConfigEventFieldsRepository `autowire:"?"`
-	repRules       *repositoryBasic2.BasicModelRulesRepository        `autowire:"?"`
+	repModel       *repositoryBasic.BasicConfigModelRepository       `autowire:"?"`
+	repModelFields *repositoryBasic.BasicConfigModelFieldsRepository `autowire:"?"`
+	repEvent       *repositoryBasic.BasicConfigEventRepository       `autowire:"?"`
+	repEventFields *repositoryBasic.BasicConfigEventFieldsRepository `autowire:"?"`
+	repRules       *repositoryBasic.BasicModelRulesRepository        `autowire:"?"`
 }

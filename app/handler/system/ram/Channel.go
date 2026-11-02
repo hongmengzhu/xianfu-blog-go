@@ -7,9 +7,9 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamChannel"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg/controllerPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 
 	"github.com/pangu-2/go-tools/tools/strPg"

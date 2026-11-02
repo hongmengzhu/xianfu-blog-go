@@ -7,7 +7,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicModelRules"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/yesNoPg/yesNoIntPg"
-	entityBasic2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
 	"github.com/jinzhu/copier"
 	"github.com/pangu-2/go-tools/tools/noPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -20,9 +20,9 @@ type CreateUpdate struct {
 	Sp *Sp `autowire:"?"`
 
 	ct       modBasicModelRules.CreateUpdateCt
-	model    *entityBasic2.BasicConfigModelEntity
-	event    *entityBasic2.BasicConfigEventEntity
-	fields   []*entityBasic2.BasicModelRulesEntity
+	model    *entityBasic.BasicConfigModelEntity
+	event    *entityBasic.BasicConfigEventEntity
+	fields   []*entityBasic.BasicModelRulesEntity
 	isUpdate bool
 }
 
@@ -32,9 +32,9 @@ func NewCreateUpdate(sp *Sp,
 		Sp:       sp,
 		isUpdate: isUpdate,
 		ct:       ct,
-		fields:   make([]*entityBasic2.BasicModelRulesEntity, 0),
-		model:    &entityBasic2.BasicConfigModelEntity{},
-		event:    &entityBasic2.BasicConfigEventEntity{},
+		fields:   make([]*entityBasic.BasicModelRulesEntity, 0),
+		model:    &entityBasic.BasicConfigModelEntity{},
+		event:    &entityBasic.BasicConfigEventEntity{},
 	}
 }
 func (c *CreateUpdate) Process(ctx *gin.Context) (rt rg.Rs[string]) {
@@ -70,7 +70,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		return rt.ErrorMessage(ct.Name + " 验证模式类型不能为空")
 	}
 	//
-	obj := entityBasic2.BasicModelRulesEntity{}
+	obj := entityBasic.BasicModelRulesEntity{}
 	err := copier.Copy(&obj, &ct)
 	if err != nil {
 		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))

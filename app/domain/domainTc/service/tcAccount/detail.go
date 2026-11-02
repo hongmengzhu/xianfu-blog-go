@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/modTcAccount"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/appModulePg"
-	entityRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityTc"
 	"github.com/jinzhu/copier"
 	"github.com/pangu-2/go-tools/tools/numberPg"
@@ -44,11 +44,11 @@ func (c *Detail) Process(ctx *gin.Context, id string) (rt rg.Rs[modTcAccount.Det
 	var info modTcAccount.DetailVo
 	copier.Copy(&info, &find)
 	//
-	mapDep := make(map[string]*entityRam2.RamDepartmentEntity)
-	mapRole := make(map[string]*entityRam2.RamRoleEntity)
-	mapLevel := make(map[string]*entityRam2.RamLevelEntity)
-	mapGroup := make(map[string]*entityRam2.RamGroupEntity)
-	mapTeam := make(map[string]*entityRam2.RamTeamEntity)
+	mapDep := make(map[string]*entityRam.RamDepartmentEntity)
+	mapRole := make(map[string]*entityRam.RamRoleEntity)
+	mapLevel := make(map[string]*entityRam.RamLevelEntity)
+	mapGroup := make(map[string]*entityRam.RamGroupEntity)
+	mapTeam := make(map[string]*entityRam.RamTeamEntity)
 	mapTenant := make(map[string]*entityTc.TcTenantEntity)
 	idsDep := make([]string, 0)
 	idsRole := make([]string, 0)
@@ -112,7 +112,7 @@ func (c *Detail) Process(ctx *gin.Context, id string) (rt rg.Rs[modTcAccount.Det
 		if len(idsDep) > 0 {
 			infos, result := c.sp.depDb.FindAllByNoIn(ctx, idsDep)
 			if result {
-				mapDep = slicePg.ToMap(infos, func(t *entityRam2.RamDepartmentEntity) (string, *entityRam2.RamDepartmentEntity) {
+				mapDep = slicePg.ToMap(infos, func(t *entityRam.RamDepartmentEntity) (string, *entityRam.RamDepartmentEntity) {
 					return t.No, t
 				})
 			}
@@ -123,7 +123,7 @@ func (c *Detail) Process(ctx *gin.Context, id string) (rt rg.Rs[modTcAccount.Det
 		if len(idsRole) > 0 {
 			infos, result := c.sp.roleDb.FindAllByNoIn(ctx, idsRole)
 			if result {
-				mapRole = slicePg.ToMap(infos, func(t *entityRam2.RamRoleEntity) (string, *entityRam2.RamRoleEntity) {
+				mapRole = slicePg.ToMap(infos, func(t *entityRam.RamRoleEntity) (string, *entityRam.RamRoleEntity) {
 					return t.No, t
 				})
 			}
@@ -134,7 +134,7 @@ func (c *Detail) Process(ctx *gin.Context, id string) (rt rg.Rs[modTcAccount.Det
 		if len(idsLevel) > 0 {
 			infos, result := c.sp.levelDb.FindAllByNoIn(ctx, idsLevel)
 			if result {
-				mapLevel = slicePg.ToMap(infos, func(t *entityRam2.RamLevelEntity) (string, *entityRam2.RamLevelEntity) {
+				mapLevel = slicePg.ToMap(infos, func(t *entityRam.RamLevelEntity) (string, *entityRam.RamLevelEntity) {
 					return t.No, t
 				})
 			}
@@ -145,7 +145,7 @@ func (c *Detail) Process(ctx *gin.Context, id string) (rt rg.Rs[modTcAccount.Det
 		if len(idsGroup) > 0 {
 			infos, result := c.sp.groupDb.FindAllByNoIn(ctx, idsGroup)
 			if result {
-				mapGroup = slicePg.ToMap(infos, func(t *entityRam2.RamGroupEntity) (string, *entityRam2.RamGroupEntity) {
+				mapGroup = slicePg.ToMap(infos, func(t *entityRam.RamGroupEntity) (string, *entityRam.RamGroupEntity) {
 					return t.No, t
 				})
 			}
@@ -156,7 +156,7 @@ func (c *Detail) Process(ctx *gin.Context, id string) (rt rg.Rs[modTcAccount.Det
 		if len(idsTeam) > 0 {
 			infos, result := c.sp.teamDb.FindAllByNoIn(ctx, idsTeam)
 			if result {
-				mapTeam = slicePg.ToMap(infos, func(t *entityRam2.RamTeamEntity) (string, *entityRam2.RamTeamEntity) {
+				mapTeam = slicePg.ToMap(infos, func(t *entityRam.RamTeamEntity) (string, *entityRam.RamTeamEntity) {
 					return t.No, t
 				})
 			}

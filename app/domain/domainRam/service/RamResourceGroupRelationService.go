@@ -4,9 +4,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamResourceGroupRelation"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamResourceRelation"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
 

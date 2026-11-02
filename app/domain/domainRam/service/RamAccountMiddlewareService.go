@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
 	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
-	holderPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/holderPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"
@@ -35,7 +35,7 @@ func NewRamAccountMiddlewareService() *RamAccountMiddlewareService {
 //	@receiver c
 //	@param jwt
 //	@return rt
-func (c *RamAccountMiddlewareService) FindByLoginNoTenant(ctx *gin.Context, no, tenantNo string) (rt rg.Rs[holderPg2.HolderPg]) {
+func (c *RamAccountMiddlewareService) FindByLoginNoTenant(ctx *gin.Context, no, tenantNo string) (rt rg.Rs[holderPg.HolderPg]) {
 	log.Debug(ctx, log.TagAppDef, "jwt=%+v", func() []log.Field {
 		return []log.Field{log.String("no", no)}
 	})
@@ -58,10 +58,10 @@ func (c *RamAccountMiddlewareService) FindByLoginNoTenant(ctx *gin.Context, no, 
 	rule.Owner = false
 	rule.MultiOwner = false
 	//
-	var accountHolder2 holderPg2.AccountHolder
+	var accountHolder2 holderPg.AccountHolder
 	copier.Copy(&accountHolder2, &info)
 	//
-	accountHolder2.Os = holderPg2.NewAccountHolderOs()
+	accountHolder2.Os = holderPg.NewAccountHolderOs()
 	accountHolder2.Os.Departments = info.Os.Data().Departments
 	accountHolder2.Os.Roles = info.Os.Data().Roles
 	accountHolder2.Os.Orgs = info.Os.Data().Orgs
@@ -86,7 +86,7 @@ func (c *RamAccountMiddlewareService) FindByLoginNoTenant(ctx *gin.Context, no, 
 //	@receiver c
 //	@param jwt
 //	@return rt
-func (c *RamAccountMiddlewareService) FindByLoginNo(ctx *gin.Context, no string) (rt rg.Rs[holderPg2.HolderPg]) {
+func (c *RamAccountMiddlewareService) FindByLoginNo(ctx *gin.Context, no string) (rt rg.Rs[holderPg.HolderPg]) {
 	log.Debug(ctx, log.TagAppDef, "no", func() []log.Field {
 		return []log.Field{log.String("no", no)}
 	})
@@ -106,10 +106,10 @@ func (c *RamAccountMiddlewareService) FindByLoginNo(ctx *gin.Context, no string)
 	rule.Owner = false
 	rule.MultiOwner = false
 	//
-	var accountHolder2 holderPg2.AccountHolder
+	var accountHolder2 holderPg.AccountHolder
 	copier.Copy(&accountHolder2, &info)
 	//
-	accountHolder2.Os = holderPg2.NewAccountHolderOs()
+	accountHolder2.Os = holderPg.NewAccountHolderOs()
 	accountHolder2.Os.Departments = info.Os.Data().Departments
 	accountHolder2.Os.Roles = info.Os.Data().Roles
 	accountHolder2.Os.Orgs = info.Os.Data().Orgs

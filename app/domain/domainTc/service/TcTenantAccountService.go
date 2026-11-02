@@ -7,11 +7,11 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/appModulePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/yesNoPg/yesNoIntPg"
-	entityRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
+	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityTc"
 	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryTc"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbMakePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
@@ -95,7 +95,7 @@ func (c *TcTenantAccountService) State(ctx *gin.Context, ids []string, state enu
 			continue
 		}
 		if info.State != state.IndexInt8() {
-			r.Update(ctx, entityRam2.RamAccountEntity{State: state.IndexInt8()}, info.ID)
+			r.Update(ctx, entityRam.RamAccountEntity{State: state.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -151,7 +151,7 @@ func (c *TcTenantAccountService) LogicalDeletion(ctx *gin.Context, ids []string,
 			enum := enumStatePg.State(info.State)
 			// 有效 停用，反转 为对应的 取消 弃置
 			if ok, reverse := enum.ReverseEnableDisable(); ok {
-				r.Update(ctx, entityRam2.RamAccountEntity{State: reverse.IndexInt8()}, info.ID)
+				r.Update(ctx, entityRam.RamAccountEntity{State: reverse.IndexInt8()}, info.ID)
 			}
 		}
 	}
@@ -181,7 +181,7 @@ func (c *TcTenantAccountService) LogicalRecovery(ctx *gin.Context, ids []string,
 		enum := enumStatePg.State(info.State)
 		//  取消 弃置 批量删除，反转 为对应的 有效 停用 停用
 		if ok, reverse := enum.ReverseCancelLayAside(); ok {
-			r.Update(ctx, entityRam2.RamAccountEntity{State: reverse.IndexInt8()}, info.ID)
+			r.Update(ctx, entityRam.RamAccountEntity{State: reverse.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -221,7 +221,7 @@ func (c *TcTenantAccountService) PhysicalDeletion(ctx *gin.Context, ids []string
 //	@receiver c
 //	@param ct
 func (c *TcTenantAccountService) Query(ctx *gin.Context, ct modTcAccount.QueryCt, tp appModulePg.AppModule) (rt rg.Rs[pagePg.Paginator[modTcAccount.Vo]]) {
-	var query entityRam2.RamAccountEntity
+	var query entityRam.RamAccountEntity
 	copier.Copy(&query, &ct)
 	// 创始人
 	query.Founder = enumStatePg.ENABLE.Index()
@@ -361,13 +361,13 @@ func (c *TcTenantAccountService) Query(ctx *gin.Context, ct modTcAccount.QueryCt
 	if page.Total > 0 && page.Data != nil && len(page.Data) > 0 {
 		pg := pagePg.NewPaginatorByPageable[modTcAccount.Vo](page.Pageable)
 		//
-		mapDep := make(map[string]*entityRam2.RamDepartmentEntity)
-		mapRole := make(map[string]*entityRam2.RamRoleEntity)
-		mapLevel := make(map[string]*entityRam2.RamLevelEntity)
-		mapGroup := make(map[string]*entityRam2.RamGroupEntity)
-		mapTeam := make(map[string]*entityRam2.RamTeamEntity)
-		mapPosition := make(map[string]*entityRam2.RamPositionEntity)
-		mapPost := make(map[string]*entityRam2.RamPostEntity)
+		mapDep := make(map[string]*entityRam.RamDepartmentEntity)
+		mapRole := make(map[string]*entityRam.RamRoleEntity)
+		mapLevel := make(map[string]*entityRam.RamLevelEntity)
+		mapGroup := make(map[string]*entityRam.RamGroupEntity)
+		mapTeam := make(map[string]*entityRam.RamTeamEntity)
+		mapPosition := make(map[string]*entityRam.RamPositionEntity)
+		mapPost := make(map[string]*entityRam.RamPostEntity)
 		mapTenant := make(map[string]*entityTc.TcTenantEntity)
 		idsDep := make([]string, 0)
 		idsRole := make([]string, 0)
@@ -444,7 +444,7 @@ func (c *TcTenantAccountService) Query(ctx *gin.Context, ct modTcAccount.QueryCt
 			if len(idsDep) > 0 {
 				infos, result := depDb.FindAllByNoIn(ctx, idsDep)
 				if result {
-					mapDep = slicePg.ToMap(infos, func(t *entityRam2.RamDepartmentEntity) (string, *entityRam2.RamDepartmentEntity) {
+					mapDep = slicePg.ToMap(infos, func(t *entityRam.RamDepartmentEntity) (string, *entityRam.RamDepartmentEntity) {
 						return t.No, t
 					})
 				}
@@ -455,7 +455,7 @@ func (c *TcTenantAccountService) Query(ctx *gin.Context, ct modTcAccount.QueryCt
 			if len(idsRole) > 0 {
 				infos, result := roleDb.FindAllByNoIn(ctx, idsRole)
 				if result {
-					mapRole = slicePg.ToMap(infos, func(t *entityRam2.RamRoleEntity) (string, *entityRam2.RamRoleEntity) {
+					mapRole = slicePg.ToMap(infos, func(t *entityRam.RamRoleEntity) (string, *entityRam.RamRoleEntity) {
 						return t.No, t
 					})
 				}
@@ -466,7 +466,7 @@ func (c *TcTenantAccountService) Query(ctx *gin.Context, ct modTcAccount.QueryCt
 			if len(idsLevel) > 0 {
 				infos, result := levelDb.FindAllByNoIn(ctx, idsLevel)
 				if result {
-					mapLevel = slicePg.ToMap(infos, func(t *entityRam2.RamLevelEntity) (string, *entityRam2.RamLevelEntity) {
+					mapLevel = slicePg.ToMap(infos, func(t *entityRam.RamLevelEntity) (string, *entityRam.RamLevelEntity) {
 						return t.No, t
 					})
 				}
@@ -477,7 +477,7 @@ func (c *TcTenantAccountService) Query(ctx *gin.Context, ct modTcAccount.QueryCt
 			if len(idsGroup) > 0 {
 				infos, result := groupDb.FindAllByNoIn(ctx, idsGroup)
 				if result {
-					mapGroup = slicePg.ToMap(infos, func(t *entityRam2.RamGroupEntity) (string, *entityRam2.RamGroupEntity) {
+					mapGroup = slicePg.ToMap(infos, func(t *entityRam.RamGroupEntity) (string, *entityRam.RamGroupEntity) {
 						return t.No, t
 					})
 				}
@@ -488,7 +488,7 @@ func (c *TcTenantAccountService) Query(ctx *gin.Context, ct modTcAccount.QueryCt
 			if len(idsTeam) > 0 {
 				infos, result := teamDb.FindAllByNoIn(ctx, idsTeam)
 				if result {
-					mapTeam = slicePg.ToMap(infos, func(t *entityRam2.RamTeamEntity) (string, *entityRam2.RamTeamEntity) {
+					mapTeam = slicePg.ToMap(infos, func(t *entityRam.RamTeamEntity) (string, *entityRam.RamTeamEntity) {
 						return t.No, t
 					})
 				}
@@ -499,7 +499,7 @@ func (c *TcTenantAccountService) Query(ctx *gin.Context, ct modTcAccount.QueryCt
 			if len(idsPosition) > 0 {
 				infos, result := c.positionDb.FindAllByNoIn(ctx, idsPosition)
 				if result {
-					mapPosition = slicePg.ToMap(infos, func(t *entityRam2.RamPositionEntity) (string, *entityRam2.RamPositionEntity) {
+					mapPosition = slicePg.ToMap(infos, func(t *entityRam.RamPositionEntity) (string, *entityRam.RamPositionEntity) {
 						return t.No, t
 					})
 				}
@@ -510,7 +510,7 @@ func (c *TcTenantAccountService) Query(ctx *gin.Context, ct modTcAccount.QueryCt
 			if len(idsPost) > 0 {
 				infos, result := c.postDb.FindAllByNoIn(ctx, idsPost)
 				if result {
-					mapPost = slicePg.ToMap(infos, func(t *entityRam2.RamPostEntity) (string, *entityRam2.RamPostEntity) {
+					mapPost = slicePg.ToMap(infos, func(t *entityRam.RamPostEntity) (string, *entityRam.RamPostEntity) {
 						return t.No, t
 					})
 				}

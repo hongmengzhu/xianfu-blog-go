@@ -9,7 +9,7 @@ import (
 	modRamCas2 "github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamCas"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
-	pkgcas "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/cas"
+	pkgcas "github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/idpPg/cas"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"

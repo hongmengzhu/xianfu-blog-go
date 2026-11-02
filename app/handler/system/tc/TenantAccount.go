@@ -6,10 +6,10 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/modTcAccount"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/appModulePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg/controllerPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
 )

@@ -7,8 +7,8 @@ import (
 	"path"
 	"strings"
 
-	_ "github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/attachmentPg/types"
-	modAttachment2 "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/attachmentPg/modAttachment"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/attachmentPg/modAttachment"
+	_ "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/attachmentPg/types"
 	"github.com/minio/minio-go/v7"
 	"github.com/pangu-2/go-tools/tools/cryptPg"
 	"github.com/pangu-2/go-tools/tools/datetimePg"
@@ -24,7 +24,7 @@ type Minio struct {
 	Dir string `value:"${file.dir}"`
 }
 
-func (s *Minio) PutObject(r io.Reader, put modAttachment2.PutFileDto, ext modAttachment2.Ext) (modAttachment2.Attachment, error) {
+func (s *Minio) PutObject(r io.Reader, put modAttachment.PutFileDto, ext modAttachment.Ext) (modAttachment.Attachment, error) {
 	//获取文件名带后缀
 	filenameWithSuffix := path.Base(put.Name)
 	//获取文件后缀
@@ -33,7 +33,7 @@ func (s *Minio) PutObject(r io.Reader, put modAttachment2.PutFileDto, ext modAtt
 	filenameOnly := strings.TrimSuffix(filenameWithSuffix, fileSuffix)
 	//md5
 	fileNewName := datetimePg.NowNotFormat() + "-" + cryptPg.Md5(filenameOnly)
-	attachment := modAttachment2.Attachment{
+	attachment := modAttachment.Attachment{
 		OriginalName: put.Name,
 		Name:         fileNewName,
 		Size:         put.Size,

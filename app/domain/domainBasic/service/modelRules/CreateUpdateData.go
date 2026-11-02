@@ -7,7 +7,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicModelRules"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/yesNoPg/yesNoIntPg"
-	entityBasic2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
 	"github.com/jinzhu/copier"
 	"github.com/pangu-2/go-tools/tools/noPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -20,9 +20,9 @@ type CreateUpdateData struct {
 	Sp *Sp `autowire:"?"`
 
 	ct       modBasicModelRules.CreateUpdateDataCt
-	model    *entityBasic2.BasicConfigModelEntity
-	event    *entityBasic2.BasicConfigEventEntity
-	fields   []*entityBasic2.BasicModelRulesEntity
+	model    *entityBasic.BasicConfigModelEntity
+	event    *entityBasic.BasicConfigEventEntity
+	fields   []*entityBasic.BasicModelRulesEntity
 	isUpdate bool
 }
 
@@ -32,9 +32,9 @@ func NewCreateUpdateData(sp *Sp,
 		Sp:       sp,
 		isUpdate: isUpdate,
 		ct:       ct,
-		fields:   make([]*entityBasic2.BasicModelRulesEntity, 0),
-		model:    &entityBasic2.BasicConfigModelEntity{},
-		event:    &entityBasic2.BasicConfigEventEntity{},
+		fields:   make([]*entityBasic.BasicModelRulesEntity, 0),
+		model:    &entityBasic.BasicConfigModelEntity{},
+		event:    &entityBasic.BasicConfigEventEntity{},
 	}
 }
 
@@ -79,8 +79,8 @@ func (c *CreateUpdateData) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 			c.Sp.repRules.DeleteAllByValueNoAndIds(ctx, no, delIds)
 		}
 	}
-	dataAdd := make([]*entityBasic2.BasicModelRulesEntity, 0)
-	dataUpdate := make([]*entityBasic2.BasicModelRulesEntity, 0)
+	dataAdd := make([]*entityBasic.BasicModelRulesEntity, 0)
+	dataUpdate := make([]*entityBasic.BasicModelRulesEntity, 0)
 	for _, item := range ct.Body {
 		//
 		if strPg.IsBlank(item.Name) {
@@ -91,7 +91,7 @@ func (c *CreateUpdateData) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		}
 	}
 	for _, item := range ct.Body {
-		obj := entityBasic2.BasicModelRulesEntity{}
+		obj := entityBasic.BasicModelRulesEntity{}
 		err := copier.Copy(&obj, &item)
 		if err != nil {
 			log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))

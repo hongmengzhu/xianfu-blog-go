@@ -1,13 +1,11 @@
 package authTokenPg
 
-import (
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/interfaces"
-)
+import "github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg/holderIfPg"
 
 // Param 用户 会话信息 登录人信息
 type Param struct {
 	UniqueId      string                    `json:"uniqueId" label:"唯一身份标识，主要用来作为一次性token,从而回避重放攻击"`
-	MultiTenant   interfaces.IMultiTenantPg `json:"mTenant,omitempty" label:"多租户"`
+	MultiTenant   holderIfPg.IMultiTenantPg `json:"mTenant,omitempty" label:"多租户"`
 	LoginNo       string                    `json:"loginNo"  label:"登录用户编号"`
 	No            string                    `json:"no" label:"系统编号"`
 	LoginUserName string                    `json:"loginUserName" label:"登录用户名"`

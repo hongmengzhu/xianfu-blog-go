@@ -10,11 +10,11 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typePubPrivePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/clientPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
-	entityRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
+	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
-	authTokenPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/authTokenPg"
+	authTokenPg "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/authTokenPg"
 	cacheAuthPubPrivPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/cachePg/cacheAuthPubPrivPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/cryptoPg"
 	"github.com/pangu-2/go-tools/tools/jsonPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
@@ -56,7 +56,7 @@ func (c *CacheSessionPubPrive) LoginPubPriveKey(ctx context.Context, typeDomain 
 	}
 	//是否新生成密钥
 	isMakeNewKey := true
-	var privatePubKeyEnt entityRam2.RamAsaJsonPrivatePublicKey
+	var privatePubKeyEnt entityRam.RamAsaJsonPrivatePublicKey
 	info, result := c.sessionAk.FindByTenantNoAndTypeDomainInAndClientAndTypeAndState(ctx, tenantNo, typeDomain.Code(), client.Index(), keyType.Code())
 	if result {
 		isMakeNewKey = false
@@ -75,7 +75,7 @@ func (c *CacheSessionPubPrive) LoginPubPriveKeyByNew(ctx context.Context,
 	isMakeNewKey bool,
 	typeDomain typeDomainPg.TypeDomain,
 	client clientPg.Client, tenantNo string, keyType sessionKeyTypePg.SessionKeyType,
-	json entityRam2.RamAsaJsonPrivatePublicKey) model.AuthPubPriveDto {
+	json entityRam.RamAsaJsonPrivatePublicKey) model.AuthPubPriveDto {
 	//重新生成
 	if isMakeNewKey {
 		ret := cryptoPg.Sm2GenerateKey()
@@ -91,7 +91,7 @@ func (c *CacheSessionPubPrive) LoginPubPriveKeyByNew(ctx context.Context,
 		json.Public = privatePubKey.PublicKey
 		toJson, _ := jsonPg.ObjToJson(json)
 		//
-		save := entityRam2.RamAccountSessionAccessKeyEntity{
+		save := entityRam.RamAccountSessionAccessKeyEntity{
 			Ano:        "",
 			Data:       toJson,
 			No:         noPg.No(),
@@ -153,22 +153,22 @@ func (c *CacheSessionPubPrive) DecodeByLoginManage(ctx context.Context, pwd stri
 // @param
 // @return
 func (c *CacheSessionPubPrive) PaseKeyByNew(ctx context.Context, isMakeNewKey bool,
-	jsonEntity *entityRam2.RamAsaJsonPrivatePublicKey,
+	jsonEntity *entityRam.RamAsaJsonPrivatePublicKey,
 	keyType sessionKeyTypePg.SessionKeyType, typeDomain typeDomainPg.TypeDomain,
-	client clientPg.Client, tenantNo string) entityRam2.RamAsaJsonPrivatePublicKey {
-	privatePubKey := authTokenPg2.Result{}
+	client clientPg.Client, tenantNo string) entityRam.RamAsaJsonPrivatePublicKey {
+	privatePubKey := authTokenPg.Result{}
 	//
 	// 需要重新生成
 	if isMakeNewKey {
-		jsonEntity = &entityRam2.RamAsaJsonPrivatePublicKey{}
-		privatePubKey = authTokenPg2.MakePublicPrivateKey()
+		jsonEntity = &entityRam.RamAsaJsonPrivatePublicKey{}
+		privatePubKey = authTokenPg.MakePublicPrivateKey()
 		jsonEntity.Private = privatePubKey.PrivateKey
 		jsonEntity.Public = privatePubKey.PublicKey
 		// 删除已存在的
 		c.sessionAk.DeleteByTenantNoAndTypeDomainAndClientAndTypeAndState(ctx, tenantNo, typeDomain.Code(), client.Index(), keyType.Code())
 		//
 		toJson, _ := jsonPg.ObjToJson(jsonEntity)
-		save := entityRam2.RamAccountSessionAccessKeyEntity{
+		save := entityRam.RamAccountSessionAccessKeyEntity{
 			Ano:        "",
 			Data:       toJson,
 			No:         noPg.No(),
@@ -206,7 +206,7 @@ func (c *CacheSessionPubPrive) PaseKeyByNew(ctx context.Context, isMakeNewKey bo
 // @return
 func (c *CacheSessionPubPrive) PaseKey(ctx context.Context,
 	keyType sessionKeyTypePg.SessionKeyType,
-	typeDomain typeDomainPg.TypeDomain, client clientPg.Client, tenantNo string, jsonEntity *entityRam2.RamAsaJsonPrivatePublicKey) entityRam2.RamAsaJsonPrivatePublicKey {
+	typeDomain typeDomainPg.TypeDomain, client clientPg.Client, tenantNo string, jsonEntity *entityRam.RamAsaJsonPrivatePublicKey) entityRam.RamAsaJsonPrivatePublicKey {
 	get, b := cacheAuthPubPrivPg2.Get(cacheAuthPubPrivPg2.Key(keyType, tenantNo, typeDomain, client))
 	if b {
 		return get
@@ -216,7 +216,7 @@ func (c *CacheSessionPubPrive) PaseKey(ctx context.Context,
 	if result {
 		if strPg.IsNotBlank(info.Data) {
 			isMakeNewKey = false
-			jsonEntity = &entityRam2.RamAsaJsonPrivatePublicKey{}
+			jsonEntity = &entityRam.RamAsaJsonPrivatePublicKey{}
 			err := json.Unmarshal([]byte(info.Data), jsonEntity)
 			if err != nil {
 				//解析失败，重新生成
@@ -233,7 +233,7 @@ func (c *CacheSessionPubPrive) PaseKey(ctx context.Context,
 // @param
 // @return
 func (c *CacheSessionPubPrive) PaseKeyAccessToken(ctx context.Context,
-	typeDomain typeDomainPg.TypeDomain, client clientPg.Client, tenantNo string, jsonEntity *entityRam2.RamAsaJsonPrivatePublicKey) entityRam2.RamAsaJsonPrivatePublicKey {
+	typeDomain typeDomainPg.TypeDomain, client clientPg.Client, tenantNo string, jsonEntity *entityRam.RamAsaJsonPrivatePublicKey) entityRam.RamAsaJsonPrivatePublicKey {
 	return c.PaseKey(ctx, sessionKeyTypePg.AccessToken, typeDomain, client, tenantNo, jsonEntity)
 }
 
@@ -243,6 +243,6 @@ func (c *CacheSessionPubPrive) PaseKeyAccessToken(ctx context.Context,
 // @param
 // @return
 func (c *CacheSessionPubPrive) PaseKeyRefreshToken(ctx context.Context,
-	typeDomain typeDomainPg.TypeDomain, client clientPg.Client, tenantNo string, jsonEntity *entityRam2.RamAsaJsonPrivatePublicKey) entityRam2.RamAsaJsonPrivatePublicKey {
+	typeDomain typeDomainPg.TypeDomain, client clientPg.Client, tenantNo string, jsonEntity *entityRam.RamAsaJsonPrivatePublicKey) entityRam.RamAsaJsonPrivatePublicKey {
 	return c.PaseKey(ctx, sessionKeyTypePg.RefreshToken, typeDomain, client, tenantNo, jsonEntity)
 }

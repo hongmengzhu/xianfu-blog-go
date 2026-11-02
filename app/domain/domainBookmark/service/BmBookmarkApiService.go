@@ -11,7 +11,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
 	repositoryBm2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBm"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/holderPg/holderApiPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg/holderApiPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
 	"github.com/pangu-2/go-tools/tools/numberPg"

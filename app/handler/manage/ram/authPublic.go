@@ -6,7 +6,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modPublic"
 	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/holderPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"go-spring.org/spring/gs"
 )
 

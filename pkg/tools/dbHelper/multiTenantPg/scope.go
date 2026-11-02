@@ -6,8 +6,8 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg/pg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constContextPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/holderPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/interfaces"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg/holderIfPg"
 	"go-spring.org/log"
 	"gorm.io/gorm"
 )
@@ -16,11 +16,11 @@ import (
 func ScopeRulePgWhere(ctx *gin.Context, tableName string) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		var multiRule *MultiRule
-		var iHolderRule interfaces.IHolderRule
+		var iHolderRule holderIfPg.IHolderRule
 		value, exists := ctx.Get(constContextPg.CTX_RULE)
 		if exists && nil != value {
 			log.Error(ctx, log.TagAppDef, nil, "CTX_RULE=%+v", log.Any("value", value))
-			iHolderRule = value.(interfaces.IHolderRule)
+			iHolderRule = value.(holderIfPg.IHolderRule)
 			multiRule = iHolderRule.(*MultiRule)
 		}
 		if nil == multiRule {

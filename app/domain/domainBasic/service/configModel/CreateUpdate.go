@@ -9,9 +9,9 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/typeSysPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/yesNoPg/yesNoIntPg"
-	entityBasic2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/holderPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/model/modelBasePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model/modelBasePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/jinzhu/copier"
 	"github.com/pangu-2/go-tools/tools/cryptPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
@@ -25,9 +25,9 @@ type CreateUpdate struct {
 	Sp *Sp `autowire:"?"`
 
 	ct       modBasicConfigModel.CreateUpdateCt
-	model    *entityBasic2.BasicConfigModelEntity
-	module   *entityBasic2.BasicModuleEntity
-	fields   []*entityBasic2.BasicConfigModelFieldsEntity
+	model    *entityBasic.BasicConfigModelEntity
+	module   *entityBasic.BasicModuleEntity
+	fields   []*entityBasic.BasicConfigModelFieldsEntity
 	isUpdate bool
 }
 
@@ -37,9 +37,9 @@ func NewCreateUpdate(sp *Sp,
 		Sp:       sp,
 		isUpdate: isUpdate,
 		ct:       ct,
-		fields:   make([]*entityBasic2.BasicConfigModelFieldsEntity, 0),
-		model:    &entityBasic2.BasicConfigModelEntity{},
-		module:   &entityBasic2.BasicModuleEntity{},
+		fields:   make([]*entityBasic.BasicConfigModelFieldsEntity, 0),
+		model:    &entityBasic.BasicConfigModelEntity{},
+		module:   &entityBasic.BasicModuleEntity{},
 	}
 }
 
@@ -101,7 +101,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		for _, item := range c.ct.Body {
 			i++
 
-			var field entityBasic2.BasicConfigModelFieldsEntity
+			var field entityBasic.BasicConfigModelFieldsEntity
 			err := copier.Copy(&field, &item)
 			if err != nil {
 				log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
@@ -212,7 +212,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 			return rt.ErrorMessage("模型不存在")
 		}
 		//
-		var save entityBasic2.BasicConfigModelEntity
+		var save entityBasic.BasicConfigModelEntity
 		{
 			err := copier.Copy(&save, info)
 			if err != nil {
@@ -229,9 +229,9 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		save.KindUnique = cryptPg.Md5(save.Model)
 		//
 		delIds := make([]string, 0)
-		dataInsert := make([]*entityBasic2.BasicConfigModelFieldsEntity, 0)
-		dataUpdate := make([]*entityBasic2.BasicConfigModelFieldsEntity, 0)
-		mapField := make(map[int64]*entityBasic2.BasicConfigModelFieldsEntity)
+		dataInsert := make([]*entityBasic.BasicConfigModelFieldsEntity, 0)
+		dataUpdate := make([]*entityBasic.BasicConfigModelFieldsEntity, 0)
+		mapField := make(map[int64]*entityBasic.BasicConfigModelFieldsEntity)
 		if len(ids) > 0 {
 			infos, result := c.Sp.repField.FindAllByIdStringIn(ctx, ids)
 			if result {

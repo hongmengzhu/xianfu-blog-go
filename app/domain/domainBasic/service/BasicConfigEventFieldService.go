@@ -7,9 +7,9 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicConfigEventFields"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/configModelPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
-	entityBasic2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
-	repositoryBasic2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
 	"github.com/pangu-2/go-tools/tools/cryptPg"
@@ -29,8 +29,8 @@ func init() {
 // BasicConfigEventFieldsService 省市区
 // @Description:
 type BasicConfigEventFieldsService struct {
-	sv    *repositoryBasic2.BasicConfigEventFieldsRepository `autowire:"?"`
-	event *repositoryBasic2.BasicConfigEventRepository       `autowire:"?"`
+	sv    *repositoryBasic.BasicConfigEventFieldsRepository `autowire:"?"`
+	event *repositoryBasic.BasicConfigEventRepository       `autowire:"?"`
 }
 
 // CreateUpdate 新增
@@ -63,8 +63,8 @@ func (c *BasicConfigEventFieldsService) CreateUpdate(ctx *gin.Context, ct modBas
 		}
 
 	}
-	dataAdd := make([]*entityBasic2.BasicConfigEventFieldsEntity, 0)
-	dataUpdate := make([]*entityBasic2.BasicConfigEventFieldsEntity, 0)
+	dataAdd := make([]*entityBasic.BasicConfigEventFieldsEntity, 0)
+	dataUpdate := make([]*entityBasic.BasicConfigEventFieldsEntity, 0)
 	findField := make(map[string]bool)
 	for _, item := range ct.Body {
 		//
@@ -80,8 +80,8 @@ func (c *BasicConfigEventFieldsService) CreateUpdate(ctx *gin.Context, ct modBas
 		findField[strings.TrimSpace(item.Field)] = true
 	}
 	for _, item := range ct.Body {
-		parameterConfig := entityBasic2.BasicConfigEventFieldsJsonParameterConfig{}
-		obj := entityBasic2.BasicConfigEventFieldsEntity{}
+		parameterConfig := entityBasic.BasicConfigEventFieldsJsonParameterConfig{}
+		obj := entityBasic.BasicConfigEventFieldsEntity{}
 		err := copier.Copy(&obj, &item)
 		if err != nil {
 			log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
@@ -198,7 +198,7 @@ func (c *BasicConfigEventFieldsService) State(ctx *gin.Context, ids []string, st
 	}
 	for _, info := range finds {
 		if info.State != state.IndexInt8() {
-			r.Update(ctx, entityBasic2.BasicConfigEventFieldsEntity{State: state.IndexInt8()}, info.ID)
+			r.Update(ctx, entityBasic.BasicConfigEventFieldsEntity{State: state.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -241,7 +241,7 @@ func (c *BasicConfigEventFieldsService) LogicalDeletion(ctx *gin.Context, ids []
 			enum := enumStatePg.State(info.State)
 			// 有效 停用，反转 为对应的 取消 弃置
 			if ok, reverse := enum.ReverseEnableDisable(); ok {
-				repository.Update(ctx, entityBasic2.BasicConfigEventFieldsEntity{State: reverse.IndexInt8()}, info.ID)
+				repository.Update(ctx, entityBasic.BasicConfigEventFieldsEntity{State: reverse.IndexInt8()}, info.ID)
 			}
 		}
 	}
@@ -268,7 +268,7 @@ func (c *BasicConfigEventFieldsService) LogicalRecovery(ctx *gin.Context, ids []
 		enum := enumStatePg.State(info.State)
 		//  取消 弃置 批量删除，反转 为对应的 有效 停用 停用
 		if ok, reverse := enum.ReverseCancelLayAside(); ok {
-			repository.Update(ctx, entityBasic2.BasicConfigEventFieldsEntity{State: reverse.IndexInt8()}, info.ID)
+			repository.Update(ctx, entityBasic.BasicConfigEventFieldsEntity{State: reverse.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -307,7 +307,7 @@ func (c *BasicConfigEventFieldsService) PhysicalDeletion(ctx *gin.Context, ids [
 //	@param ct
 func (c *BasicConfigEventFieldsService) Query(ctx *gin.Context, ct modBasicConfigEventFields.QueryCt) (rt rg.Rs[pagePg.Paginator[modBasicConfigEventFields.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityBasic2.BasicConfigEventFieldsEntity
+	var query entityBasic.BasicConfigEventFieldsEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modBasicConfigEventFields.Vo, 0)
 	rt.Data.Data = slice
@@ -350,7 +350,7 @@ func (c *BasicConfigEventFieldsService) Query(ctx *gin.Context, ct modBasicConfi
 //	@param ct
 func (c *BasicConfigEventFieldsService) AllByEventNo(ctx *gin.Context, ct modBasicConfigEventFields.QueryPublicCt) (rt rg.Rs[[]modBasicConfigEventFields.Vo]) {
 
-	var query entityBasic2.BasicConfigEventFieldsEntity
+	var query entityBasic.BasicConfigEventFieldsEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modBasicConfigEventFields.Vo, 0)
 	rt.Data = slice
@@ -381,7 +381,7 @@ func (c *BasicConfigEventFieldsService) AllByEventNo(ctx *gin.Context, ct modBas
 //	@receiver c
 //	@param ct
 func (c *BasicConfigEventFieldsService) SelectNodeAllPublic(ctx *gin.Context, ct modBasicConfigEventFields.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
-	var query entityBasic2.BasicConfigEventFieldsEntity
+	var query entityBasic.BasicConfigEventFieldsEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
 	rt.Data = slice

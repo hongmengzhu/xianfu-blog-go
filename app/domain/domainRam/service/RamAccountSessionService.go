@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamAccountSession"
-	entityRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -59,7 +59,7 @@ func (c *RamAccountSessionService) PhysicalDeletion(ctx *gin.Context, ids []stri
 //	@param ct
 func (c *RamAccountSessionService) Query(ctx *gin.Context, ct modRamAccountSession.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamAccountSession.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam2.RamAccountSessionEntity
+	var query entityRam.RamAccountSessionEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modRamAccountSession.Vo, 0)
 	rt.Data.Data = slice
@@ -81,7 +81,7 @@ func (c *RamAccountSessionService) Query(ctx *gin.Context, ct modRamAccountSessi
 
 	if page.Total > 0 && page.Data != nil && len(page.Data) > 0 {
 		pg := pagePg.NewPaginatorByPageable[modRamAccountSession.Vo](page.Pageable)
-		mapAcc := make(map[string]*entityRam2.RamAccountEntity)
+		mapAcc := make(map[string]*entityRam.RamAccountEntity)
 		idsAcc := make([]string, 0)
 		for _, item := range page.Data {
 			if strPg.IsNotBlank(item.Ano) {

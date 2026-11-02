@@ -5,10 +5,10 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBasic/service/configEvent"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicConfigEvent"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
-	entityBasic2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
-	repositoryBasic2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/holderPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
 	"github.com/pangu-2/go-tools/tools/dbPg/pagePg"
@@ -26,9 +26,9 @@ func init() {
 }
 
 type BasicConfigEventService struct {
-	sv        *repositoryBasic2.BasicConfigEventRepository       `autowire:"?"`
-	repoField *repositoryBasic2.BasicConfigEventFieldsRepository `autowire:"?"`
-	sp        *configEvent.Sp                                    `autowire:"?"`
+	sv        *repositoryBasic.BasicConfigEventRepository       `autowire:"?"`
+	repoField *repositoryBasic.BasicConfigEventFieldsRepository `autowire:"?"`
+	sp        *configEvent.Sp                                   `autowire:"?"`
 }
 
 // Create 创建事件
@@ -44,7 +44,7 @@ func (s *BasicConfigEventService) Create(ctx *gin.Context, ct modBasicConfigEven
 	}
 
 	// 检查事件是否已存在 (EventNo = Field)
-	var existEvent entityBasic2.BasicConfigEventEntity
+	var existEvent entityBasic.BasicConfigEventEntity
 	// Field 对应 EventNo 或者 Field 本身，这里假设 BasicConfigEventEntity.Field 存储事件的英文标识
 	// 根据用户描述：Field 英文标识
 	tx := s.sv.Db().Where("field = ?", ct.Field).First(&existEvent)
@@ -55,7 +55,7 @@ func (s *BasicConfigEventService) Create(ctx *gin.Context, ct modBasicConfigEven
 	holder := holderPg.GetContextAccount(ctx)
 
 	// 1. 创建事件头
-	eventEntity := entityBasic2.BasicConfigEventEntity{
+	eventEntity := entityBasic.BasicConfigEventEntity{
 		Name:      ct.Name,
 		Field:     ct.Field, // 事件标识
 		Model:     ct.Model, // 关联的模型
@@ -80,7 +80,7 @@ func (s *BasicConfigEventService) Create(ctx *gin.Context, ct modBasicConfigEven
 
 	// 2. 创建事件字段
 	for _, fieldCt := range ct.Fields {
-		fieldEntity := entityBasic2.BasicConfigEventFieldsEntity{
+		fieldEntity := entityBasic.BasicConfigEventFieldsEntity{
 			EventNo:         eventEntity.Field,
 			ModelNo:         eventEntity.ModelNo,
 			Name:            fieldCt.Name,
@@ -150,7 +150,7 @@ func (c *BasicConfigEventService) State(ctx *gin.Context, ids []string, state en
 	}
 	for _, info := range finds {
 		if info.State != state.IndexInt8() {
-			r.Update(ctx, entityBasic2.BasicConfigEventEntity{State: state.IndexInt8()}, info.ID)
+			r.Update(ctx, entityBasic.BasicConfigEventEntity{State: state.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -192,7 +192,7 @@ func (c *BasicConfigEventService) LogicalDeletion(ctx *gin.Context, ids []string
 			enum := enumStatePg.State(info.State)
 			// 有效 停用，反转 为对应的 取消 弃置
 			if ok, reverse := enum.ReverseEnableDisable(); ok {
-				repository.Update(ctx, entityBasic2.BasicConfigEventEntity{State: reverse.IndexInt8()}, info.ID)
+				repository.Update(ctx, entityBasic.BasicConfigEventEntity{State: reverse.IndexInt8()}, info.ID)
 			}
 		}
 	}
@@ -219,7 +219,7 @@ func (c *BasicConfigEventService) LogicalRecovery(ctx *gin.Context, ids []string
 		enum := enumStatePg.State(info.State)
 		//  取消 弃置 批量删除，反转 为对应的 有效 停用 停用
 		if ok, reverse := enum.ReverseCancelLayAside(); ok {
-			repository.Update(ctx, entityBasic2.BasicConfigEventEntity{State: reverse.IndexInt8()}, info.ID)
+			repository.Update(ctx, entityBasic.BasicConfigEventEntity{State: reverse.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -258,7 +258,7 @@ func (c *BasicConfigEventService) PhysicalDeletion(ctx *gin.Context, ids []strin
 //	@param ct
 func (c *BasicConfigEventService) Query(ctx *gin.Context, ct modBasicConfigEvent.QueryCt) (rt rg.Rs[pagePg.Paginator[modBasicConfigEvent.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityBasic2.BasicConfigEventEntity
+	var query entityBasic.BasicConfigEventEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modBasicConfigEvent.Vo, 0)
 	rt.Data.Data = slice
@@ -302,7 +302,7 @@ func (c *BasicConfigEventService) Query(ctx *gin.Context, ct modBasicConfigEvent
 //	@receiver c
 //	@param ct
 func (c *BasicConfigEventService) SelectNodeAllPublic(ctx *gin.Context, ct modBasicConfigEvent.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
-	var query entityBasic2.BasicConfigEventEntity
+	var query entityBasic.BasicConfigEventEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
 	rt.Data = slice
@@ -334,7 +334,7 @@ func (c *BasicConfigEventService) SelectNodeAllPublic(ctx *gin.Context, ct modBa
 //	@receiver c
 //	@param ct
 func (c *BasicConfigEventService) AllByModel(ctx *gin.Context, ct modBasicConfigEvent.QueryCt) (rt rg.Rs[[]modBasicConfigEvent.Vo]) {
-	var query entityBasic2.BasicConfigEventEntity
+	var query entityBasic.BasicConfigEventEntity
 	copier.Copy(&query, &ct)
 	//
 	slice := make([]modBasicConfigEvent.Vo, 0)

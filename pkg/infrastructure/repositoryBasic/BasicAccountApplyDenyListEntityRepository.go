@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	entityBasic2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/support"
 	"go-spring.org/log"
@@ -19,10 +19,10 @@ func init() {
 }
 
 type BasicAccountApplyDenyListEntityRepository struct {
-	repositoryPg.BaseRepository[entityBasic2.BasicAccountApplyDenyListEntity, int64]
+	repositoryPg.BaseRepository[entityBasic.BasicAccountApplyDenyListEntity, int64]
 }
 
-func (c *BasicAccountApplyDenyListEntityRepository) FindByExprAndIdNot(ctx context.Context, name string, id string) (info *entityBasic2.BasicTagsRelationEntity, result bool) {
+func (c *BasicAccountApplyDenyListEntityRepository) FindByExprAndIdNot(ctx context.Context, name string, id string) (info *entityBasic.BasicTagsRelationEntity, result bool) {
 	tx := c.Db().WithContext(ctx).Where("expr=?", name).Where("id <> ?", id).First(&info)
 	if tx.Error != nil {
 		// record not found 跳过日志

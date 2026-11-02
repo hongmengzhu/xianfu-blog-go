@@ -10,7 +10,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeIdentityPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
-	entityRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityTc"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/dataFilePg"
 	"github.com/pangu-2/go-tools/tools/cryptPg"
@@ -41,7 +41,7 @@ func NewInitAccount(sp *Sp) *InitAccount {
 }
 
 func (t *InitAccount) Processor(ctx context.Context) error {
-	mapDomain := make(map[string]*entityRam2.RamAccountEntity)
+	mapDomain := make(map[string]*entityRam.RamAccountEntity)
 	find := make(map[string]bool)
 	// 获取超管账号
 	info, result := t.sp.accDb.FindByTypeDomainIn(ctx, domain)
@@ -84,7 +84,7 @@ func (t *InitAccount) Processor(ctx context.Context) error {
 func (t *InitAccount) systemAccount(ctx context.Context, domain string) {
 	no := noPg.No()
 	now := time.Now()
-	save := entityRam2.RamAccountEntity{
+	save := entityRam.RamAccountEntity{
 		ID:            1,
 		No:            domain,
 		Code:          domain,
@@ -105,7 +105,7 @@ func (t *InitAccount) systemAccount(ctx context.Context, domain string) {
 	save.Name = constsPg.ACCOUNT_NAME
 	save.RealName = constsPg.ACCOUNT_NAME
 	//
-	os := entityRam2.RamAccountJsonOs{
+	os := entityRam.RamAccountJsonOs{
 		Departments: make([]string, 0),
 		Groups:      make([]string, 0),
 		Levels:      make([]string, 0),
@@ -124,7 +124,7 @@ func (t *InitAccount) systemAccount(ctx context.Context, domain string) {
 	t.sp.authDb.DeleteByAno(ctx, save.No)
 	//
 	salt := strPg.GetNanoid(8)
-	authorizationEntity := entityRam2.RamAccountAuthorizationEntity{
+	authorizationEntity := entityRam.RamAccountAuthorizationEntity{
 		Ano:       save.No,
 		Type:      authorizationTypePg.PASSWORD.String(),
 		TenantNo:  save.TenantNo,
@@ -158,7 +158,7 @@ func (t *InitAccount) manageAccount(ctx context.Context, domain string) {
 		t.sp.tenantDb.Create(ctx, tenant)
 		//
 	}
-	save := entityRam2.RamAccountEntity{
+	save := entityRam.RamAccountEntity{
 		ID:            1000,
 		No:            constsPg.ACCOUNT_MANAGE_No,
 		Code:          constsPg.ACCOUNT_MANAGE_No,
@@ -179,7 +179,7 @@ func (t *InitAccount) manageAccount(ctx context.Context, domain string) {
 	save.Name = constsPg.ACCOUNT_NAME
 	save.RealName = constsPg.ACCOUNT_NAME
 	//
-	os := entityRam2.RamAccountJsonOs{
+	os := entityRam.RamAccountJsonOs{
 		Departments: make([]string, 0),
 		Groups:      make([]string, 0),
 		Levels:      make([]string, 0),
@@ -198,7 +198,7 @@ func (t *InitAccount) manageAccount(ctx context.Context, domain string) {
 	t.sp.authDb.DeleteByAno(ctx, save.No)
 	//
 	salt := strPg.GetNanoid(8)
-	authorizationEntity := entityRam2.RamAccountAuthorizationEntity{
+	authorizationEntity := entityRam.RamAccountAuthorizationEntity{
 		Ano:       save.No,
 		Type:      authorizationTypePg.PASSWORD.String(),
 		TenantNo:  save.TenantNo,

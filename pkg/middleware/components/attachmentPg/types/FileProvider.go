@@ -3,7 +3,7 @@ package types
 import (
 	"io"
 
-	modAttachment2 "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/attachmentPg/modAttachment"
+	modAttachment "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/attachmentPg/modAttachment"
 )
 
 type FileProvider interface {
@@ -17,7 +17,7 @@ type FileProvider interface {
 	//  @return error 报错
 	//
 	//
-	PutObject(r io.Reader, put modAttachment2.PutFileDto, ext modAttachment2.Ext) (modAttachment2.Attachment, error)
+	PutObject(r io.Reader, put modAttachment.PutFileDto, ext modAttachment.Ext) (modAttachment.Attachment, error)
 
 	ExistsObject(name string) bool
 }

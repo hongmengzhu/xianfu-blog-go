@@ -4,9 +4,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamAccountDevice"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"go-spring.org/spring/gs"
 )
 

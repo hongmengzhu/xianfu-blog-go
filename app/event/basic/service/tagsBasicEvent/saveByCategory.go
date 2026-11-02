@@ -4,10 +4,10 @@ import (
 	"context"
 	"strings"
 
-	modEventBasicTags2 "github.com/hongmengzhu/xianfu-blog-go/app/models/event/basic/modEventBasicTags"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/event/basic/modEventBasicTags"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/typeSysPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
-	entityBasic2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
 	"github.com/pangu-2/go-tools/tools/noPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"
@@ -18,10 +18,10 @@ import (
 type SaveByCategory struct {
 	sp *Sp
 
-	dto modEventBasicTags2.TagsRelation
+	dto modEventBasicTags.TagsRelation
 }
 
-func NewSaveByCategory(sp *Sp, dto modEventBasicTags2.TagsRelation) *SaveByCategory {
+func NewSaveByCategory(sp *Sp, dto modEventBasicTags.TagsRelation) *SaveByCategory {
 	return &SaveByCategory{
 		sp:  sp,
 		dto: dto,
@@ -52,8 +52,8 @@ func (c *SaveByCategory) Processor() error {
 	categoryRoot := make([]string, 0)
 	categoryRoot = append(categoryRoot, c.dto.Category)
 	mapTagsOnly := make(map[string]string)
-	tagsEntity := make(map[string]*entityBasic2.BasicTagsEntity)
-	tagsRelation := make(map[string]*entityBasic2.BasicTagsRelationEntity)
+	tagsEntity := make(map[string]*entityBasic.BasicTagsEntity)
+	tagsRelation := make(map[string]*entityBasic.BasicTagsRelationEntity)
 	tagsNo := make([]string, 0)
 	in, r := c.sp.TagsDb.FindAllByNameIn(context.Background(), c.dto.Tags)
 	if r {
@@ -85,7 +85,7 @@ func (c *SaveByCategory) Processor() error {
 					continue
 				}
 			}
-			save := &entityBasic2.BasicTagsEntity{}
+			save := &entityBasic.BasicTagsEntity{}
 			//标签 不存在，创建标签
 			if strPg.IsBlank(get) {
 				save.Name = strings.TrimSpace(v)
@@ -107,7 +107,7 @@ func (c *SaveByCategory) Processor() error {
 			//关系不存在
 			if _, ok2 := tagsRelation[save.No]; !ok2 {
 				save = tagsEntity[save.No]
-				rel := entityBasic2.BasicTagsRelationEntity{}
+				rel := entityBasic.BasicTagsRelationEntity{}
 				rel.TagNo = save.No
 				rel.CategoryNo = save.No
 				rel.State = enumStatePg.ENABLE.Index()
@@ -132,7 +132,7 @@ func (c *SaveByCategory) Processor() error {
 
 // 缓存更新
 func (t *SaveByCategory) cache(categoryRoot []string) {
-	dto := modEventBasicTags2.TagsCacheDto{CategoryRoot: categoryRoot}
+	dto := modEventBasicTags.TagsCacheDto{CategoryRoot: categoryRoot}
 	//缓存更新
 	err := NewCachePush(t.sp, dto).Processor(context.Background())
 	if err != nil {

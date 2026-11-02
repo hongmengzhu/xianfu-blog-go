@@ -10,7 +10,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/cache/basic/modCacheBasicEvent"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cachePg/bigCachePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/yesNoPg/yesNoIntPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/holderPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/basic/key/basicEventKey"
 	"github.com/jinzhu/copier"
 	"github.com/pangu-2/go-tools/tools/strPg"

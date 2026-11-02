@@ -9,9 +9,9 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeAttrPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/typeSysPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
-	entityRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
+	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"
@@ -53,7 +53,7 @@ func (c *RamResourceAuthorityService) Create(ctx *gin.Context, ct modRamResource
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
 	}
-	var info entityRam2.RamResourceAuthorityEntity
+	var info entityRam.RamResourceAuthorityEntity
 	copier.Copy(&info, &ct)
 	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	c.sv.Create(ctx, &info)
@@ -100,7 +100,7 @@ func (c *RamResourceAuthorityService) CreatByGroup(ctx *gin.Context, ct modRamRe
 		if !typeAttrPg.Resource.IsEqual(item.TypeAttr) {
 			continue
 		}
-		var info entityRam2.RamResourceAuthorityEntity
+		var info entityRam.RamResourceAuthorityEntity
 		info.Name = item.Name
 		info.NameFl = item.NameFl
 		info.NameFull = item.NameFull
@@ -152,7 +152,7 @@ func (c *RamResourceAuthorityService) Update(ctx *gin.Context, ct modRamResource
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
-	var info entityRam2.RamResourceAuthorityEntity
+	var info entityRam.RamResourceAuthorityEntity
 	copier.Copy(&info, &ct)
 	r.Update(ctx, info, info.ID)
 	return rt.Ok()
@@ -210,7 +210,7 @@ func (c *RamResourceAuthorityService) State(ctx *gin.Context, ids []string, stat
 	}
 	for _, info := range finds {
 		if info.State != state.IndexInt8() {
-			r.Update(ctx, entityRam2.RamResourceAuthorityEntity{State: state.IndexInt8()}, info.ID)
+			r.Update(ctx, entityRam.RamResourceAuthorityEntity{State: state.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -253,7 +253,7 @@ func (c *RamResourceAuthorityService) LogicalDeletion(ctx *gin.Context, ids []st
 			enum := enumStatePg.State(info.State)
 			// 有效 停用，反转 为对应的 取消 弃置
 			if ok, reverse := enum.ReverseEnableDisable(); ok {
-				repository.Update(ctx, entityRam2.RamResourceAuthorityEntity{State: reverse.IndexInt8()}, info.ID)
+				repository.Update(ctx, entityRam.RamResourceAuthorityEntity{State: reverse.IndexInt8()}, info.ID)
 			}
 		}
 	}
@@ -280,7 +280,7 @@ func (c *RamResourceAuthorityService) LogicalRecovery(ctx *gin.Context, ids []st
 		enum := enumStatePg.State(info.State)
 		//  取消 弃置 批量删除，反转 为对应的 有效 停用 停用
 		if ok, reverse := enum.ReverseCancelLayAside(); ok {
-			repository.Update(ctx, entityRam2.RamResourceAuthorityEntity{State: reverse.IndexInt8()}, info.ID)
+			repository.Update(ctx, entityRam.RamResourceAuthorityEntity{State: reverse.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -319,7 +319,7 @@ func (c *RamResourceAuthorityService) PhysicalDeletion(ctx *gin.Context, ids []s
 //	@param ct
 func (c *RamResourceAuthorityService) Query(ctx *gin.Context, ct modRamResourceAuthority.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamResourceAuthority.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam2.RamResourceAuthorityEntity
+	var query entityRam.RamResourceAuthorityEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modRamResourceAuthority.Vo, 0)
 	rt.Data.Data = slice
@@ -363,7 +363,7 @@ func (c *RamResourceAuthorityService) Query(ctx *gin.Context, ct modRamResourceA
 //	@param ct
 func (c *RamResourceAuthorityService) SelectNodePublic(ctx *gin.Context, ct modRamResourceAuthority.QueryCt) (rt rg.Rs[[]model.BaseNode]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam2.RamResourceAuthorityEntity
+	var query entityRam.RamResourceAuthorityEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNode, 0)
 	rt.Data = slice
@@ -388,7 +388,7 @@ func (c *RamResourceAuthorityService) SelectNodePublic(ctx *gin.Context, ct modR
 //	@param ct
 func (c *RamResourceAuthorityService) SelectNodeAllPublic(ctx *gin.Context, ct modRamResourceAuthority.QueryCt) (rt rg.Rs[[]model.BaseNode]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam2.RamResourceAuthorityEntity
+	var query entityRam.RamResourceAuthorityEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNode, 0)
 	rt.Data = slice
@@ -416,7 +416,7 @@ func (c *RamResourceAuthorityService) SelectNodeAllPublic(ctx *gin.Context, ct m
 //	@param ct
 func (c *RamResourceAuthorityService) SelectPublic(ctx *gin.Context, ct modRamResourceAuthority.QueryCt) (rt rg.Rs[[]modRamResourceAuthority.Vo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam2.RamResourceAuthorityEntity
+	var query entityRam.RamResourceAuthorityEntity
 	copier.Copy(&query, &ct)
 	rt.Data = []modRamResourceAuthority.Vo{}
 	infos := c.sv.FindAll(ctx, query)
@@ -438,8 +438,8 @@ func (c *RamResourceAuthorityService) SelectPublic(ctx *gin.Context, ct modRamRe
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *RamResourceAuthorityService) CreateByResourceGroup(ctx *gin.Context, value *entityRam2.RamResourceGroupEntity) (*entityRam2.RamResourceAuthorityEntity, bool) {
-	var info entityRam2.RamResourceAuthorityEntity
+func (c *RamResourceAuthorityService) CreateByResourceGroup(ctx *gin.Context, value *entityRam.RamResourceGroupEntity) (*entityRam.RamResourceAuthorityEntity, bool) {
+	var info entityRam.RamResourceAuthorityEntity
 	copier.Copy(&info, value)
 	now := time.Now()
 	info.ID = 0

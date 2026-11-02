@@ -5,10 +5,10 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicTags"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/automatedPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
-	repositoryBasic2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/holderPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
 	"github.com/pangu-2/go-tools/tools/dbPg/pagePg"
@@ -27,8 +27,8 @@ func init() {
 // BasicTagsService 团队
 // @Description:
 type BasicTagsService struct {
-	sv          *repositoryBasic2.BasicTagsRepository         `autowire:"?"`
-	categoryRep *repositoryBasic2.BasicTagsCategoryRepository `autowire:"?"`
+	sv          *repositoryBasic.BasicTagsRepository         `autowire:"?"`
+	categoryRep *repositoryBasic.BasicTagsCategoryRepository `autowire:"?"`
 }
 
 // Create 新增

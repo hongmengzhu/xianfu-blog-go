@@ -8,7 +8,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeAttrPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/typeSysPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
-	entityRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"go-spring.org/log"
 
@@ -30,9 +30,9 @@ type UpdateByTypeValue struct {
 	ct              modRamResourceAuthority.UpdateByTypeValueCt
 	ctx             *gin.Context
 	//
-	groupData     []*entityRam2.RamResourceGroupEntity
-	groupAuthData []*entityRam2.RamResourceAuthorityEntity
-	role          *entityRam2.RamRoleEntity
+	groupData     []*entityRam.RamResourceGroupEntity
+	groupAuthData []*entityRam.RamResourceAuthorityEntity
+	role          *entityRam.RamRoleEntity
 }
 
 // NewUpdateByTypeValue
@@ -152,7 +152,7 @@ func (c *UpdateByTypeValue) roleProcess() (rt rg.Rs[string]) {
 		if !typeAttrPg.Resource.IsEqual(item.TypeAttr) {
 			continue
 		}
-		var info entityRam2.RamResourceGroupRelationEntity
+		var info entityRam.RamResourceGroupRelationEntity
 		info.Name = item.Name
 		info.NameFl = item.NameFl
 		info.NameFull = item.NameFull
@@ -194,7 +194,7 @@ func (c *UpdateByTypeValue) saveResourceRelationByRole() (rt rg.Rs[string]) {
 			ids = append(ids, item.ResourceNo)
 		}
 		result := false
-		data := make([]*entityRam2.RamResourceEntity, 0)
+		data := make([]*entityRam.RamResourceEntity, 0)
 		data, result = c.resDb.FindAllByNoIn(c.ctx, ids)
 		if !result {
 			return rt.ErrorMessage("没有获取到任何资源组权限")
@@ -205,7 +205,7 @@ func (c *UpdateByTypeValue) saveResourceRelationByRole() (rt rg.Rs[string]) {
 			if !typeAttrPg.Resource.IsEqual(item.TypeAttr) {
 				continue
 			}
-			var info entityRam2.RamResourceRelationEntity
+			var info entityRam.RamResourceRelationEntity
 			info.Code = item.Code
 			info.TypeAttr = item.TypeAttr
 			info.TypeCategory = c.typeCategory.String()
