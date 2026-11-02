@@ -183,6 +183,7 @@ func (c *CategoryCache) all(ctx context.Context) error {
 				}
 			}
 		}
+		log.Info(ctx, log.TagAppDef, "缓存成功")
 	}
 	return nil
 }

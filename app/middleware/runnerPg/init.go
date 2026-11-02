@@ -42,8 +42,14 @@ func init() {
 	gs.Provide(new(data.InitSessionPubPrive)).Export(gs.As[gs.Runner]())
 	// 基础
 	gs.Provide(new(data.ZInitCacheBasic)).Export(gs.As[gs.Runner]())
-	// 初始化博客缓存
+	///////////////////////////////////
+	// 初始化-博客缓存
 	gs.Provide(new(data.ZInitCacheBlog)).Export(gs.As[gs.Runner]())
+
+	// 初始化-书签缓存
+	gs.Provide(new(data.ZInitCacheBm)).Export(gs.As[gs.Runner]())
+
+	/////////////////////////////////////
 	// 初始化标签缓存
 	gs.Provide(new(data.ZInitTagsCache)).Export(gs.As[gs.Runner]())
 	//超管账号初始化

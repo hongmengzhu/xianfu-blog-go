@@ -36,8 +36,8 @@ func init() {
 // @Description:
 type BlogArticleCategoryService struct {
 	sv  *repositoryBlog.BlogArticleCategoryRepository `autowire:"?"`
-	chd *cacheBlogArticleCategoryPg.Cache             `autowire:"?"`
 	Bus event.Bus                                     `autowire:"?"`
+	chd *cacheBlogArticleCategoryPg.Cache             `autowire:"?"`
 }
 
 // Create 新增

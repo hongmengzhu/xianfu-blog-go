@@ -1,7 +1,7 @@
 package bookmark
 
 import (
-	"context"
+	"slices"
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/core/cache/cacheBookmark"
@@ -9,10 +9,10 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkWeb"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
 	"github.com/pangu-2/go-tools/tools/strPg"
-	"go-spring.org/log"
 	"go-spring.org/spring/gs"
 )
 
@@ -35,32 +35,41 @@ type IndexController struct {
 func (c *IndexController) RegisterRoutes(e *gin.Engine) {
 	group := e.Group("", authPg.GroupWebMiddleware(c.Sp))
 	group.GET("/bookmark", c.Index)
-	group.GET("/bookmark/page/:page", c.Page)
+	//group.GET("/bookmark/page/:page", c.Page)
 }
 
 func (c *IndexController) Index(ctx *gin.Context) {
-	var ct modBmBookmarkWeb.QueryCt
-	ctx.Bind(&ct)
-	//
-	rt := c.sv.Query(ctx, ct)
-	log.Info(context.Background(), log.TagBizDef, "Data", log.Any("Pageable", rt.Data.Pageable))
+	htmlOption := make([]templatePg.Option, 0)
+	htmlOption = append(htmlOption, templatePg.WithHtmlObjSet("pageUrl", "/bookmark"))
+	htmlOption = append(htmlOption, templatePg.WithHtmlObjSet("pageCategory", make([]model.BaseNodeTree, 0)))
+	htmlOption = append(htmlOption, templatePg.WithSitePage(templatePg.SitePage{
+		Title:       "博客",
+		Description: "博客",
+		Keywords:    "博客",
+		SiteName:    "博客",
+	}))
 	//
 	tenantNo := webPg.GetTenantNo(ctx)
-	tree, _ := c.catCache.FormatTree(ctx, tenantNo)
-
-	//fmt.Printf("Data: %+v\n", tree)
+	nosCategory := make([]string, 0)
+	cate, b := c.catCache.GetAllByCache(ctx, tenantNo)
+	if b {
+		//
+		for _, item := range cate {
+			if strPg.IsNotBlank(item.No) && !slices.Contains(nosCategory, item.No) {
+				nosCategory = append(nosCategory, item.No)
+			}
+		}
+		//
+		tree := c.catCache.ConvertToTree(cate)
+		htmlOption = append(htmlOption, templatePg.WithHtmlObjSet("pageCategory", tree))
+		//
+		rt := c.sv.QueryListBYCategory(ctx, tenantNo, nosCategory, 20)
+		if rt.SuccessIs() {
+			templatePg.WithDataByResult(rt.SuccessIs(), rt.Data)
+		}
+	}
 	// 模版
-	templatePg.HTML(ctx, "bookmark/index",
-		templatePg.WithDataByResult(rt.SuccessIs(), rt.Data),
-		// 页面 分类
-		templatePg.WithHtmlObjSet("pageCategory", tree),
-		templatePg.WithHtmlObjSet("pageUrl", "page"),
-		templatePg.WithSitePage(templatePg.SitePage{
-			Title:       "博客",
-			Description: "博客",
-			Keywords:    "博客",
-			SiteName:    "博客",
-		}))
+	templatePg.HTML(ctx, "bookmark/index", htmlOption...)
 }
 
 func (c *IndexController) Page(ctx *gin.Context) {

@@ -34,28 +34,28 @@ func (c *DetailController) RegisterRoutes(e *gin.Engine) {
 }
 
 func (c *DetailController) DetailCode(ctx *gin.Context) {
+	htmlOption := make([]templatePg.Option, 0)
+	htmlOption = append(htmlOption, templatePg.WithHtmlObjSet("pageUrl", "page"))
+	htmlOption = append(htmlOption, templatePg.WithSitePage(templatePg.SitePage{
+		Title:       "博客",
+		Description: "博客",
+		Keywords:    "博客",
+		SiteName:    "博客",
+	}))
+	//
+	//
 	param := ctx.Param("code")
 	log.Info(ctx, log.TagBizDef, "Param", log.Any("code", param))
-	dataIs := false
-	var data any
-	rt := c.sv.Detail(ctx, param)
-	if rt.SuccessIs() {
-		dataIs = true
-		data = rt.Data
-	}
+	//
 	//
 	tenantNo := webPg.GetTenantNo(ctx)
+	//
 	tree, _ := c.catCache.FormatTree(ctx, tenantNo)
-	//fmt.Printf("Data: %+v\n", data)
+	htmlOption = append(htmlOption, templatePg.WithHtmlObjSet("pageCategory", tree))
+	//
+	rt := c.sv.Detail(ctx, param)
+	htmlOption = append(htmlOption, templatePg.WithDataByResult(rt.SuccessIs(), rt.Data))
+	//
 	// 模版
-	templatePg.HTML(ctx, "bookmark/detail",
-		templatePg.WithDataByResult(dataIs, data),
-		templatePg.WithHtmlObjSet("pageCategory", tree),
-		templatePg.WithHtmlObjSet("pageUrl", "article"),
-		templatePg.WithSitePage(templatePg.SitePage{
-			Title:       "详情",
-			Description: "博客",
-			Keywords:    "博客",
-			SiteName:    "博客",
-		}))
+	templatePg.HTML(ctx, "bookmark/detail", htmlOption...)
 }

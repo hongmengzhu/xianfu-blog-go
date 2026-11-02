@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	modApiBmBookmarkCategory2 "github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkCategory/modApiBmBookmarkCategory"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkCategory/modApiBmBookmarkCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBm"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
@@ -32,14 +32,14 @@ type BmBookmarkCategoryApiService struct {
 }
 
 // GetAll 获取所有
-func (c *BmBookmarkCategoryApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBmBookmarkCategory2.VoAll]) {
+func (c *BmBookmarkCategoryApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBmBookmarkCategory.VoAll]) {
 	//
 	holder := holderApiPg.GetContextAccount(ctx)
 	//
-	vo := modApiBmBookmarkCategory2.VoAll{}
-	vo.My = make([]modApiBmBookmarkCategory2.Vo, 0)
-	vo.Team = make([]modApiBmBookmarkCategory2.Vo, 0)
-	vo.Org = make([]modApiBmBookmarkCategory2.Vo, 0)
+	vo := modApiBmBookmarkCategory.VoAll{}
+	vo.My = make([]modApiBmBookmarkCategory.Vo, 0)
+	vo.Team = make([]modApiBmBookmarkCategory.Vo, 0)
+	vo.Org = make([]modApiBmBookmarkCategory.Vo, 0)
 	//
 	{
 		q := entityBm.BmBookmarkCategoryEntity{}
@@ -50,7 +50,7 @@ func (c *BmBookmarkCategoryApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApi
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, info := range infos {
-				vo.My = append(vo.My, modApiBmBookmarkCategory2.Vo{
+				vo.My = append(vo.My, modApiBmBookmarkCategory.Vo{
 					ID:       typePg.Int64String(info.ID),
 					Name:     info.Name,
 					NameFl:   info.NameFl,
@@ -71,7 +71,7 @@ func (c *BmBookmarkCategoryApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApi
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, info := range infos {
-				vo.Team = append(vo.Team, modApiBmBookmarkCategory2.Vo{
+				vo.Team = append(vo.Team, modApiBmBookmarkCategory.Vo{
 					ID:       typePg.Int64String(info.ID),
 					Name:     info.Name,
 					NameFl:   info.NameFl,
@@ -92,7 +92,7 @@ func (c *BmBookmarkCategoryApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApi
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, info := range infos {
-				vo.Org = append(vo.Org, modApiBmBookmarkCategory2.Vo{
+				vo.Org = append(vo.Org, modApiBmBookmarkCategory.Vo{
 					ID:       typePg.Int64String(info.ID),
 					Name:     info.Name,
 					NameFl:   info.NameFl,
@@ -109,11 +109,11 @@ func (c *BmBookmarkCategoryApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApi
 }
 
 // GetMy 获取我的
-func (c *BmBookmarkCategoryApiService) GetMy(ctx *gin.Context) (rt rg.Rs[[]modApiBmBookmarkCategory2.Vo]) {
+func (c *BmBookmarkCategoryApiService) GetMy(ctx *gin.Context) (rt rg.Rs[[]modApiBmBookmarkCategory.Vo]) {
 	//
 	holder := holderApiPg.GetContextAccount(ctx)
 	//
-	data := make([]modApiBmBookmarkCategory2.Vo, 0)
+	data := make([]modApiBmBookmarkCategory.Vo, 0)
 	//
 	{
 		q := entityBm.BmBookmarkCategoryEntity{}
@@ -124,7 +124,7 @@ func (c *BmBookmarkCategoryApiService) GetMy(ctx *gin.Context) (rt rg.Rs[[]modAp
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, info := range infos {
-				data = append(data, modApiBmBookmarkCategory2.Vo{
+				data = append(data, modApiBmBookmarkCategory.Vo{
 					ID:       typePg.Int64String(info.ID),
 					Name:     info.Name,
 					NameFl:   info.NameFl,
@@ -141,11 +141,11 @@ func (c *BmBookmarkCategoryApiService) GetMy(ctx *gin.Context) (rt rg.Rs[[]modAp
 }
 
 // GetOrg 获取所有
-func (c *BmBookmarkCategoryApiService) GetOrg(ctx *gin.Context) (rt rg.Rs[[]modApiBmBookmarkCategory2.Vo]) {
+func (c *BmBookmarkCategoryApiService) GetOrg(ctx *gin.Context) (rt rg.Rs[[]modApiBmBookmarkCategory.Vo]) {
 	//
 	holder := holderApiPg.GetContextAccount(ctx)
 	//
-	data := make([]modApiBmBookmarkCategory2.Vo, 0)
+	data := make([]modApiBmBookmarkCategory.Vo, 0)
 	//
 	{
 		q := entityBm.BmBookmarkCategoryEntity{}
@@ -156,7 +156,7 @@ func (c *BmBookmarkCategoryApiService) GetOrg(ctx *gin.Context) (rt rg.Rs[[]modA
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, info := range infos {
-				data = append(data, modApiBmBookmarkCategory2.Vo{
+				data = append(data, modApiBmBookmarkCategory.Vo{
 					ID:       typePg.Int64String(info.ID),
 					Name:     info.Name,
 					NameFl:   info.NameFl,
@@ -178,7 +178,7 @@ func (c *BmBookmarkCategoryApiService) GetOrg(ctx *gin.Context) (rt rg.Rs[[]modA
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *BmBookmarkCategoryApiService) CreateUpdate(ctx *gin.Context, ct modApiBmBookmarkCategory2.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *BmBookmarkCategoryApiService) CreateUpdate(ctx *gin.Context, ct modApiBmBookmarkCategory.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")

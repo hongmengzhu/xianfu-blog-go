@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/gin-gonic/gin"
-	modBmBookmark2 "github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmark"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmark"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBm"
 	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
@@ -38,7 +38,7 @@ type BmBookmarkService struct {
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *BmBookmarkService) Create(ctx *gin.Context, ct modBmBookmark2.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *BmBookmarkService) Create(ctx *gin.Context, ct modBmBookmark.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityBm.BmBookmarkEntity
 	err := copier.Copy(&info, &ct)
@@ -69,7 +69,7 @@ func (c *BmBookmarkService) Create(ctx *gin.Context, ct modBmBookmark2.CreateUpd
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *BmBookmarkService) Update(ctx *gin.Context, ct modBmBookmark2.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *BmBookmarkService) Update(ctx *gin.Context, ct modBmBookmark.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityBm.BmBookmarkEntity
 	err := copier.Copy(&info, &ct)
@@ -103,7 +103,7 @@ func (c *BmBookmarkService) Update(ctx *gin.Context, ct modBmBookmark2.CreateUpd
 //	@Description:
 //	@receiver c
 //	@param id
-func (c *BmBookmarkService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modBmBookmark2.DetailVo]) {
+func (c *BmBookmarkService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modBmBookmark.DetailVo]) {
 	if id < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -111,7 +111,7 @@ func (c *BmBookmarkService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modBmBo
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
-	var info modBmBookmark2.DetailVo
+	var info modBmBookmark.DetailVo
 	copier.Copy(&info, &find)
 	info.Tags = make([]string, 0)
 	info.Where = make([]string, 0)
@@ -277,10 +277,10 @@ func (c *BmBookmarkService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BmBookmarkService) Query(ctx *gin.Context, ct modBmBookmark2.QueryCt) (rt rg.Rs[pagePg.Paginator[modBmBookmark2.Vo]]) {
+func (c *BmBookmarkService) Query(ctx *gin.Context, ct modBmBookmark.QueryCt) (rt rg.Rs[pagePg.Paginator[modBmBookmark.Vo]]) {
 	var query entityBm.BmBookmarkEntity
 	copier.Copy(&query, &ct)
-	slice := make([]modBmBookmark2.Vo, 0)
+	slice := make([]modBmBookmark.Vo, 0)
 	rt.Data.Data = slice
 	r := c.sv
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
@@ -310,7 +310,7 @@ func (c *BmBookmarkService) Query(ctx *gin.Context, ct modBmBookmark2.QueryCt) (
 	}
 
 	if page.Total > 0 && page.Data != nil && len(page.Data) > 0 {
-		pg := pagePg.NewPaginatorByPageable[modBmBookmark2.Vo](page.Pageable)
+		pg := pagePg.NewPaginatorByPageable[modBmBookmark.Vo](page.Pageable)
 		mapCategory := make(map[string]*entityBm.BmBookmarkCategoryEntity)
 		idsCategory := make([]string, 0)
 		for _, item := range page.Data {
@@ -329,7 +329,7 @@ func (c *BmBookmarkService) Query(ctx *gin.Context, ct modBmBookmark2.QueryCt) (
 		}
 		//字段赋值
 		for _, item := range page.Data {
-			var vo modBmBookmark2.Vo
+			var vo modBmBookmark.Vo
 			copier.Copy(&vo, &item)
 			vo.Tags = make([]string, 0)
 			vo.Where = make([]string, 0)
@@ -369,15 +369,15 @@ func (c *BmBookmarkService) Query(ctx *gin.Context, ct modBmBookmark2.QueryCt) (
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BmBookmarkService) QueryAll(ctx *gin.Context, ct modBmBookmark2.QueryCt) (rt rg.Rs[[]modBmBookmark2.Vo]) {
+func (c *BmBookmarkService) QueryAll(ctx *gin.Context, ct modBmBookmark.QueryCt) (rt rg.Rs[[]modBmBookmark.Vo]) {
 	var query entityBm.BmBookmarkEntity
 	copier.Copy(&query, &ct)
-	rt.Data = []modBmBookmark2.Vo{}
+	rt.Data = []modBmBookmark.Vo{}
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
-		slice := make([]modBmBookmark2.Vo, 0)
+		slice := make([]modBmBookmark.Vo, 0)
 		for _, item := range infos {
-			var vo modBmBookmark2.Vo
+			var vo modBmBookmark.Vo
 			copier.Copy(&vo, &item)
 			slice = append(slice, vo)
 		}
@@ -391,7 +391,7 @@ func (c *BmBookmarkService) QueryAll(ctx *gin.Context, ct modBmBookmark2.QueryCt
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BmBookmarkService) SelectNodePublic(ctx *gin.Context, ct modBmBookmark2.QueryCt) (rt rg.Rs[[]model.BaseNode]) {
+func (c *BmBookmarkService) SelectNodePublic(ctx *gin.Context, ct modBmBookmark.QueryCt) (rt rg.Rs[[]model.BaseNode]) {
 	var query entityBm.BmBookmarkEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNode, 0)
@@ -411,7 +411,7 @@ func (c *BmBookmarkService) SelectNodePublic(ctx *gin.Context, ct modBmBookmark2
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BmBookmarkService) SelectNodeAllPublic(ctx *gin.Context, ct modBmBookmark2.QueryCt) (rt rg.Rs[[]model.BaseNode]) {
+func (c *BmBookmarkService) SelectNodeAllPublic(ctx *gin.Context, ct modBmBookmark.QueryCt) (rt rg.Rs[[]model.BaseNode]) {
 	var query entityBm.BmBookmarkEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNode, 0)
@@ -419,7 +419,7 @@ func (c *BmBookmarkService) SelectNodeAllPublic(ctx *gin.Context, ct modBmBookma
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
 		for _, item := range infos {
-			var vo modBmBookmark2.Vo
+			var vo modBmBookmark.Vo
 			copier.Copy(&vo, &item)
 			slice = append(slice, model.BaseNode{Key: numberPg.Int64ToString(item.ID), Label: item.Name, Extend: vo})
 		}
