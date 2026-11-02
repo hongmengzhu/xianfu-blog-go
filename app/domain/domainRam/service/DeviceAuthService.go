@@ -6,12 +6,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 	modRamDeviceAuth2 "github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamDeviceAuth"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	deviceauth2 "github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/deviceauth"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/typeDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/clientPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"

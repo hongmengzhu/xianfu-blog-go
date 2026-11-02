@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamAccountLoginLog"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
+	entityRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"
@@ -24,8 +24,8 @@ func init() {
 // RamAccountLoginLogService 团队
 // @Description:
 type RamAccountLoginLogService struct {
-	sv    *repositoryRam.RamAccountLoginLogRepository `autowire:"?"`
-	accDb *repositoryRam.RamAccountRepository         `autowire:"?"`
+	sv    *repositoryRam2.RamAccountLoginLogRepository `autowire:"?"`
+	accDb *repositoryRam2.RamAccountRepository         `autowire:"?"`
 }
 
 // PhysicalDeletion 物理删除
@@ -61,7 +61,7 @@ func (c *RamAccountLoginLogService) PhysicalDeletion(ctx *gin.Context, ids []str
 //	@param ct
 func (c *RamAccountLoginLogService) Query(ctx *gin.Context, ct modRamAccountLoginLog.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamAccountLoginLog.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam.RamAccountLoginLogEntity
+	var query entityRam2.RamAccountLoginLogEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modRamAccountLoginLog.Vo, 0)
 	rt.Data.Data = slice
@@ -83,7 +83,7 @@ func (c *RamAccountLoginLogService) Query(ctx *gin.Context, ct modRamAccountLogi
 
 	if page.Total > 0 && page.Data != nil && len(page.Data) > 0 {
 		pg := pagePg.NewPaginatorByPageable[modRamAccountLoginLog.Vo](page.Pageable)
-		mapAcc := make(map[string]*entityRam.RamAccountEntity)
+		mapAcc := make(map[string]*entityRam2.RamAccountEntity)
 		idsAcc := make([]string, 0)
 		for _, item := range page.Data {
 			if strPg.IsNotBlank(item.Ano) && !slices.Contains(idsAcc, item.Ano) {

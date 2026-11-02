@@ -6,10 +6,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	modRamAppAccessKey2 "github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamAppAccessKey"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
@@ -31,8 +31,8 @@ func init() {
 // RamAppAccessKeyService 团队
 // @Description:
 type RamAppAccessKeyService struct {
-	sv  *repositoryRam.RamAppAccessKeyRepository `autowire:"?"`
-	app *repositoryRam.RamAppRepository          `autowire:"?"`
+	sv  *repositoryRam2.RamAppAccessKeyRepository `autowire:"?"`
+	app *repositoryRam2.RamAppRepository          `autowire:"?"`
 }
 
 // MakeNewRecord

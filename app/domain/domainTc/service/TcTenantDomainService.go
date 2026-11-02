@@ -5,13 +5,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/modTcTenantDomain"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityTc"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryTc"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/automatedPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/yesNoPg/yesNoIntPg"
+	entityTc2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityTc"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	repositoryTc2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryTc"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
@@ -32,9 +32,9 @@ func init() {
 // TcTenantDomainService 租户
 // @Description:
 type TcTenantDomainService struct {
-	sv  *repositoryTc.TcTenantDomainRepository `autowire:"?"`
-	acc *repositoryRam.RamAccountRepository    `autowire:"?"`
-	ten *repositoryTc.TcTenantRepository       `autowire:"?"`
+	sv  *repositoryTc2.TcTenantDomainRepository `autowire:"?"`
+	acc *repositoryRam.RamAccountRepository     `autowire:"?"`
+	ten *repositoryTc2.TcTenantRepository       `autowire:"?"`
 }
 
 // Create 新增
@@ -46,7 +46,7 @@ type TcTenantDomainService struct {
 func (c *TcTenantDomainService) Create(ctx *gin.Context, ct modTcTenantDomain.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
-	var info entityTc.TcTenantDomainEntity
+	var info entityTc2.TcTenantDomainEntity
 	copier.Copy(&info, &ct)
 	holder := holderPg.GetContextAccount(ctx)
 	info.TenantNo = holder.GetTenantNo()
@@ -106,7 +106,7 @@ func (c *TcTenantDomainService) Create(ctx *gin.Context, ct modTcTenantDomain.Cr
 func (c *TcTenantDomainService) Update(ctx *gin.Context, ct modTcTenantDomain.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
-	var info entityTc.TcTenantDomainEntity
+	var info entityTc2.TcTenantDomainEntity
 	copier.Copy(&info, &ct)
 	//
 	if ct.ID < 1 {
@@ -160,7 +160,7 @@ func (c *TcTenantDomainService) Update(ctx *gin.Context, ct modTcTenantDomain.Cr
 func (c *TcTenantDomainService) UpdateByTenant(ctx *gin.Context, ct modTcTenantDomain.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
-	var info entityTc.TcTenantDomainEntity
+	var info entityTc2.TcTenantDomainEntity
 	copier.Copy(&info, &ct)
 	holder := holderPg.GetContextAccount(ctx)
 	//
@@ -226,11 +226,11 @@ func (c *TcTenantDomainService) setDefaulted(ctx context.Context, tenantNo strin
 			c.sv.SetDefaultedByTenantNo(ctx, yesNoIntPg.No.IndexInt8(), tenantNo)
 			//设置当前默认值是是
 			if newId > 0 {
-				c.sv.Update(ctx, entityTc.TcTenantDomainEntity{Defaulted: yesNoIntPg.Yes.IndexInt8()}, newId)
+				c.sv.Update(ctx, entityTc2.TcTenantDomainEntity{Defaulted: yesNoIntPg.Yes.IndexInt8()}, newId)
 			}
 		} else if defaultCount == 0 && newId > 0 {
 			//如果没有默认值，则设置当前默认值是是
-			c.sv.Update(ctx, entityTc.TcTenantDomainEntity{Defaulted: yesNoIntPg.Yes.IndexInt8()}, newId)
+			c.sv.Update(ctx, entityTc2.TcTenantDomainEntity{Defaulted: yesNoIntPg.Yes.IndexInt8()}, newId)
 		}
 	}
 	return rt.Ok()
@@ -315,7 +315,7 @@ func (c *TcTenantDomainService) State(ctx *gin.Context, ct model.BaseStateIdsCt[
 	}
 	for _, info := range finds {
 		if info.State != state.IndexInt8() {
-			err := r.Update(ctx, entityTc.TcTenantDomainEntity{State: state.IndexInt8()}, info.ID)
+			err := r.Update(ctx, entityTc2.TcTenantDomainEntity{State: state.IndexInt8()}, info.ID)
 			if err != nil {
 				log.Error(ctx, log.TagAppDef, err, "更新失败", log.Any("id", info.ID))
 			}
@@ -357,7 +357,7 @@ func (c *TcTenantDomainService) LogicalDeletion(ctx *gin.Context, ids []string) 
 			enum := enumStatePg.State(info.State)
 			// 有效 停用，反转 为对应的 取消 弃置
 			if ok, reverse := enum.ReverseEnableDisable(); ok {
-				repository.Update(ctx, entityTc.TcTenantDomainEntity{State: reverse.IndexInt8()}, info.ID)
+				repository.Update(ctx, entityTc2.TcTenantDomainEntity{State: reverse.IndexInt8()}, info.ID)
 			}
 		}
 	}
@@ -383,7 +383,7 @@ func (c *TcTenantDomainService) LogicalRecovery(ctx *gin.Context, ids []string) 
 		enum := enumStatePg.State(info.State)
 		//  取消 弃置 批量删除，反转 为对应的 有效 停用 停用
 		if ok, reverse := enum.ReverseCancelLayAside(); ok {
-			repository.Update(ctx, entityTc.TcTenantDomainEntity{State: reverse.IndexInt8()}, info.ID)
+			repository.Update(ctx, entityTc2.TcTenantDomainEntity{State: reverse.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -420,7 +420,7 @@ func (c *TcTenantDomainService) PhysicalDeletion(ctx *gin.Context, ids []string)
 //	@receiver c
 //	@param ct
 func (c *TcTenantDomainService) Query(ctx *gin.Context, ct modTcTenantDomain.QueryCt) (rt rg.Rs[pagePg.Paginator[modTcTenantDomain.Vo]]) {
-	var query entityTc.TcTenantDomainEntity
+	var query entityTc2.TcTenantDomainEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modTcTenantDomain.Vo, 0)
 	rt.Data.Data = slice
@@ -442,7 +442,7 @@ func (c *TcTenantDomainService) Query(ctx *gin.Context, ct modTcTenantDomain.Que
 
 	if page.Total > 0 && page.Data != nil && len(page.Data) > 0 {
 		pg := pagePg.NewPaginatorByPageable[modTcTenantDomain.Vo](page.Pageable)
-		mapTenant := make(map[string]*entityTc.TcTenantEntity)
+		mapTenant := make(map[string]*entityTc2.TcTenantEntity)
 		idsTenant := make([]string, 0)
 		for _, item := range page.Data {
 			if strPg.IsNotBlank(item.TenantNo) && !slices.Contains(idsTenant, item.TenantNo) {
@@ -486,7 +486,7 @@ func (c *TcTenantDomainService) Query(ctx *gin.Context, ct modTcTenantDomain.Que
 //	@receiver c
 //	@param ct
 func (c *TcTenantDomainService) SelectNodePublic(ctx *gin.Context, ct modTcTenantDomain.QueryCt) (rt rg.Rs[[]model.BaseNode]) {
-	var query entityTc.TcTenantDomainEntity
+	var query entityTc2.TcTenantDomainEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNode, 0)
 	rt.Data = slice
@@ -507,7 +507,7 @@ func (c *TcTenantDomainService) SelectNodePublic(ctx *gin.Context, ct modTcTenan
 //	@receiver c
 //	@param ct
 func (c *TcTenantDomainService) SelectNodeAllPublic(ctx *gin.Context, ct modTcTenantDomain.QueryCt) (rt rg.Rs[[]model.BaseNode]) {
-	var query entityTc.TcTenantDomainEntity
+	var query entityTc2.TcTenantDomainEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNode, 0)
 	rt.Data = slice
@@ -530,7 +530,7 @@ func (c *TcTenantDomainService) SelectNodeAllPublic(ctx *gin.Context, ct modTcTe
 //	@receiver c
 //	@param ct
 func (c *TcTenantDomainService) SelectPublic(ctx *gin.Context, ct modTcTenantDomain.QueryCt) (rt rg.Rs[[]modTcTenantDomain.Vo]) {
-	var query entityTc.TcTenantDomainEntity
+	var query entityTc2.TcTenantDomainEntity
 	copier.Copy(&query, &ct)
 	rt.Data = []modTcTenantDomain.Vo{}
 	infos := c.sv.FindAll(ctx, query)
@@ -634,7 +634,7 @@ func (c *TcTenantDomainService) SetDefaulted(ctx *gin.Context, ct model.BaseStat
 		c.setDefaulted(ctx, finds[0].TenantNo, 0)
 	}
 	for _, info := range finds {
-		err := r.Update(ctx, entityTc.TcTenantDomainEntity{Defaulted: state.IndexInt8()}, info.ID)
+		err := r.Update(ctx, entityTc2.TcTenantDomainEntity{Defaulted: state.IndexInt8()}, info.ID)
 		if err != nil {
 			log.Error(ctx, log.TagAppDef, err, "更新失败", log.Any("id", info.ID))
 		}

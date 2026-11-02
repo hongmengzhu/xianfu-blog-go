@@ -6,12 +6,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmark/modApiBmBookmark"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkCategory/modApiBmBookmarkCategory"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBm"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg/holderApiPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/blog/bookmarkTypeOwnerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/blog/typeReadingPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
+	repositoryBm2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
 	"github.com/pangu-2/go-tools/tools/numberPg"
@@ -26,9 +26,9 @@ func init() {
 }
 
 type BmBookmarkApiService struct {
-	sv     *repositoryBm.BmBookmarkRepository         `autowire:"?"`
-	catDb  *repositoryBm.BmBookmarkCategoryRepository `autowire:"?"`
-	catSer *BmBookmarkCategoryApiService              `autowire:"?"`
+	sv     *repositoryBm2.BmBookmarkRepository         `autowire:"?"`
+	catDb  *repositoryBm2.BmBookmarkCategoryRepository `autowire:"?"`
+	catSer *BmBookmarkCategoryApiService               `autowire:"?"`
 }
 
 // GetAll 获取所有

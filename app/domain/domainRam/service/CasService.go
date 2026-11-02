@@ -7,9 +7,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	modRamCas2 "github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamCas"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
 	pkgcas "github.com/hongmengzhu/xianfu-blog-go/pkg/cas"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
@@ -21,8 +21,8 @@ func init() {
 
 // CasService CAS ST 管理 Service
 type CasService struct {
-	daoAccount *repositoryRam.RamAccountRepository        `autowire:"?"`
-	daoSource  *repositoryRam.RamIdentitySourceRepository `autowire:"?"`
+	daoAccount *repositoryRam2.RamAccountRepository        `autowire:"?"`
+	daoSource  *repositoryRam2.RamIdentitySourceRepository `autowire:"?"`
 }
 
 // Login CAS 登录（生成 Service Ticket）

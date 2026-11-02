@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/hongmengzhu/xianfu-blog-go/app/event/ram/listenerRam/service"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
+	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/ram/model/modRamAccount"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"
@@ -20,9 +20,9 @@ func init() {
 
 // RamListener ram相关
 type RamListener struct {
-	acc      *repositoryRam.RamAccountRepository         `autowire:"?"`
-	loginLog *repositoryRam.RamAccountLoginLogRepository `autowire:"?"`
-	session  *repositoryRam.RamAccountSessionRepository  `autowire:"?"`
+	acc      *repositoryRam2.RamAccountRepository         `autowire:"?"`
+	loginLog *repositoryRam2.RamAccountLoginLogRepository `autowire:"?"`
+	session  *repositoryRam2.RamAccountSessionRepository  `autowire:"?"`
 }
 
 func (c *RamListener) Register(bus event.Bus) {

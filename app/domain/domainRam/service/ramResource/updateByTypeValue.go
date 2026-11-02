@@ -4,12 +4,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/utilsRam"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamResourceAuthority"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/resourceTypeCategoryPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/typeAttrPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/enumCommonPg/typeSysPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	entityRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"go-spring.org/log"
 
 	"github.com/pangu-2/go-tools/tools/numberPg"
@@ -20,19 +20,19 @@ import (
 // UpdateByTypeValue
 // @Description: 根据资源类型和资源组id修改资源组权限
 type UpdateByTypeValue struct {
-	roleDb          *repositoryRam.RamRoleRepository                  `autowire:"?"`
-	authDb          *repositoryRam.RamResourceAuthorityRepository     `autowire:"?"`
-	resDb           *repositoryRam.RamResourceRepository              `autowire:"?"`
-	groupDb         *repositoryRam.RamResourceGroupRepository         `autowire:"?"`
-	groupRelationDb *repositoryRam.RamResourceGroupRelationRepository `autowire:"?"`
-	relationDb      *repositoryRam.RamResourceRelationRepository      `autowire:"?"`
+	roleDb          *repositoryRam2.RamRoleRepository                  `autowire:"?"`
+	authDb          *repositoryRam2.RamResourceAuthorityRepository     `autowire:"?"`
+	resDb           *repositoryRam2.RamResourceRepository              `autowire:"?"`
+	groupDb         *repositoryRam2.RamResourceGroupRepository         `autowire:"?"`
+	groupRelationDb *repositoryRam2.RamResourceGroupRelationRepository `autowire:"?"`
+	relationDb      *repositoryRam2.RamResourceRelationRepository      `autowire:"?"`
 	typeCategory    resourceTypeCategoryPg.ResourceTypeCategory
 	ct              modRamResourceAuthority.UpdateByTypeValueCt
 	ctx             *gin.Context
 	//
-	groupData     []*entityRam.RamResourceGroupEntity
-	groupAuthData []*entityRam.RamResourceAuthorityEntity
-	role          *entityRam.RamRoleEntity
+	groupData     []*entityRam2.RamResourceGroupEntity
+	groupAuthData []*entityRam2.RamResourceAuthorityEntity
+	role          *entityRam2.RamRoleEntity
 }
 
 // NewUpdateByTypeValue
@@ -48,12 +48,12 @@ type UpdateByTypeValue struct {
 //	@param ctx
 //	@return *UpdateByTypeValue
 func NewUpdateByTypeValue(
-	roleDb *repositoryRam.RamRoleRepository,
-	authDb *repositoryRam.RamResourceAuthorityRepository,
-	resDb *repositoryRam.RamResourceRepository,
-	groupDb *repositoryRam.RamResourceGroupRepository,
-	groupRelationDb *repositoryRam.RamResourceGroupRelationRepository,
-	relationDb *repositoryRam.RamResourceRelationRepository,
+	roleDb *repositoryRam2.RamRoleRepository,
+	authDb *repositoryRam2.RamResourceAuthorityRepository,
+	resDb *repositoryRam2.RamResourceRepository,
+	groupDb *repositoryRam2.RamResourceGroupRepository,
+	groupRelationDb *repositoryRam2.RamResourceGroupRelationRepository,
+	relationDb *repositoryRam2.RamResourceRelationRepository,
 	typeCategory resourceTypeCategoryPg.ResourceTypeCategory,
 	ct modRamResourceAuthority.UpdateByTypeValueCt,
 	ctx *gin.Context) *UpdateByTypeValue {
@@ -152,7 +152,7 @@ func (c *UpdateByTypeValue) roleProcess() (rt rg.Rs[string]) {
 		if !typeAttrPg.Resource.IsEqual(item.TypeAttr) {
 			continue
 		}
-		var info entityRam.RamResourceGroupRelationEntity
+		var info entityRam2.RamResourceGroupRelationEntity
 		info.Name = item.Name
 		info.NameFl = item.NameFl
 		info.NameFull = item.NameFull
@@ -194,7 +194,7 @@ func (c *UpdateByTypeValue) saveResourceRelationByRole() (rt rg.Rs[string]) {
 			ids = append(ids, item.ResourceNo)
 		}
 		result := false
-		data := make([]*entityRam.RamResourceEntity, 0)
+		data := make([]*entityRam2.RamResourceEntity, 0)
 		data, result = c.resDb.FindAllByNoIn(c.ctx, ids)
 		if !result {
 			return rt.ErrorMessage("没有获取到任何资源组权限")
@@ -205,7 +205,7 @@ func (c *UpdateByTypeValue) saveResourceRelationByRole() (rt rg.Rs[string]) {
 			if !typeAttrPg.Resource.IsEqual(item.TypeAttr) {
 				continue
 			}
-			var info entityRam.RamResourceRelationEntity
+			var info entityRam2.RamResourceRelationEntity
 			info.Code = item.Code
 			info.TypeAttr = item.TypeAttr
 			info.TypeCategory = c.typeCategory.String()

@@ -3,11 +3,11 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/api/modApiDipl"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityApi"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryApi"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/automatedPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityApi"
+	repositoryApi2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryApi"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
@@ -28,8 +28,8 @@ func init() {
 // ApiDiplService 团队
 // @Description:
 type ApiDiplService struct {
-	sv  *repositoryApi.ApiDiplRepository         `autowire:"?"`
-	cat *repositoryApi.ApiDiplCategoryRepository `autowire:"?"`
+	sv  *repositoryApi2.ApiDiplRepository         `autowire:"?"`
+	cat *repositoryApi2.ApiDiplCategoryRepository `autowire:"?"`
 }
 
 // Create 新增

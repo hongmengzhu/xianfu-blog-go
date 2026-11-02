@@ -6,12 +6,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/utilsRam"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamAccount"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/authorizationTypePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/identityPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/sexPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/enumCommonPg/appModulePg"
+	entityRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	"github.com/pangu-2/go-tools/tools/noPg"
 	"go-spring.org/log"
 
@@ -27,7 +27,7 @@ type Create struct {
 	sp  *Sp `autowire:"?"`
 	ctx *gin.Context
 	//
-	entity *entityRam.RamAccountEntity
+	entity *entityRam2.RamAccountEntity
 }
 
 // NewCreate
@@ -47,7 +47,7 @@ func NewCreate(
 	return &Create{
 		sp:     sp,
 		ctx:    ctx,
-		entity: &entityRam.RamAccountEntity{},
+		entity: &entityRam2.RamAccountEntity{},
 	}
 }
 
@@ -98,7 +98,7 @@ func (c *Create) accountCreateSimple(ctx *gin.Context, ct modRamAccount.CreateUp
 		c.entity.Sex = sexPg.MALE.String()
 	}
 	//
-	os := entityRam.RamAccountJsonOs{
+	os := entityRam2.RamAccountJsonOs{
 		Departments: make([]string, 0),
 		Groups:      make([]string, 0),
 		Levels:      make([]string, 0),
@@ -132,7 +132,7 @@ func (c *Create) accountCreateSimple(ctx *gin.Context, ct modRamAccount.CreateUp
 	if err != nil {
 		return rt.ErrorMessage("创建用户失败")
 	}
-	authorizationEntity := entityRam.RamAccountAuthorizationEntity{
+	authorizationEntity := entityRam2.RamAccountAuthorizationEntity{
 		Ano:      c.entity.No,
 		Type:     authorizationTypePg.PASSWORD.String(),
 		TenantNo: c.entity.TenantNo,
@@ -175,7 +175,7 @@ func (c *Create) createAll(ctx *gin.Context, ct modRamAccount.CreateUpdateCt, tp
 	}
 	var dataCt modRamAccount.CreateUpdateCt
 	copier.Copy(&dataCt, &ct)
-	var entity entityRam.RamAccountEntity
+	var entity entityRam2.RamAccountEntity
 	//赋值 数据
 	copier.Copy(&entity, &dataCt)
 	//

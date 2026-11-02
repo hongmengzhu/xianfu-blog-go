@@ -4,9 +4,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service/blogArticle"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticle/modApiBlogArticle"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
+	entityBlog2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBlog"
+	repositoryBlog2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBlog"
 	"github.com/pangu-2/go-tools/tools/noPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
@@ -19,10 +19,10 @@ func init() {
 }
 
 type BlogArticleApiService struct {
-	sv    *repositoryBlog.BlogArticleRepository           `autowire:"?"`
-	catDb *repositoryBlog.BlogArticleCategoryRepository   `autowire:"?"`
-	sata  *repositoryBlog.BlogArticleStatisticsRepository `autowire:"?"`
-	sp    *blogArticle.Sp                                 `autowire:"?"`
+	sv    *repositoryBlog2.BlogArticleRepository           `autowire:"?"`
+	catDb *repositoryBlog2.BlogArticleCategoryRepository   `autowire:"?"`
+	sata  *repositoryBlog2.BlogArticleStatisticsRepository `autowire:"?"`
+	sp    *blogArticle.Sp                                  `autowire:"?"`
 }
 
 // Push
@@ -45,7 +45,7 @@ func (c *BlogArticleApiService) Push(ctx *gin.Context, ct modApiBlogArticle.Push
 		return rt.ErrorMessage("分类不存在")
 	}
 	holder := holderPg.GetContextAccount(ctx)
-	save := entityBlog.BlogArticleEntity{
+	save := entityBlog2.BlogArticleEntity{
 		CategoryNo:  info.No,
 		Name:        ct.Title,
 		UrlSource:   ct.Url,
@@ -62,7 +62,7 @@ func (c *BlogArticleApiService) Push(ctx *gin.Context, ct modApiBlogArticle.Push
 		})
 		return rt.ErrorMessage("保存失败：" + err.Error())
 	}
-	err, _ = c.sata.Create(ctx, &entityBlog.BlogArticleStatisticsEntity{ID: save.ID, ArticleNo: save.No})
+	err, _ = c.sata.Create(ctx, &entityBlog2.BlogArticleStatisticsEntity{ID: save.ID, ArticleNo: save.No})
 	if err != nil {
 		log.Debug(ctx, log.TagAppDef, "save err=%+v", func() []log.Field {
 			return []log.Field{log.Any("error", err)}

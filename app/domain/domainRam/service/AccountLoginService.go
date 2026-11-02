@@ -11,8 +11,6 @@ import (
 	authTokenPg "github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/authTokenPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modPublic"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLogin"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg/pg"
@@ -21,6 +19,8 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/clientPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/ram/model/modRamAccount"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
 	"github.com/jinzhu/copier"
@@ -39,13 +39,13 @@ func init() {
 // AccountLoginService 登录
 // @Description:
 type AccountLoginService struct {
-	dao                  *repositoryRam.RamAccountRepository                 `autowire:"?"`
-	daoAuth              *repositoryRam.RamAccountAuthorizationRepository    `autowire:"?"`
-	sessionAk            *repositoryRam.RamAccountSessionAccessKeyRepository `autowire:"?"`
-	cacheSessionPubPrive *cacheRam.CacheSessionPubPrive                      `autowire:"?" `
-	Bus                  event.Bus                                           `autowire:"?"`
-	pg                   configPg.Pg                                         `value:"${pg}"`
-	authLogin            pg.Auth                                             `value:"${pg.auth}"`
+	dao                  *repositoryRam2.RamAccountRepository                 `autowire:"?"`
+	daoAuth              *repositoryRam2.RamAccountAuthorizationRepository    `autowire:"?"`
+	sessionAk            *repositoryRam2.RamAccountSessionAccessKeyRepository `autowire:"?"`
+	cacheSessionPubPrive *cacheRam.CacheSessionPubPrive                       `autowire:"?" `
+	Bus                  event.Bus                                            `autowire:"?"`
+	pg                   configPg.Pg                                          `value:"${pg}"`
+	authLogin            pg.Auth                                              `value:"${pg.auth}"`
 }
 
 func NewAccountLoginService() *AccountLoginService {

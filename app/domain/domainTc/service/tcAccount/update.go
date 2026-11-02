@@ -3,10 +3,10 @@ package tcAccount
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/modTcAccount"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/identityPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/sexPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/enumCommonPg/appModulePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	"go-spring.org/log"
 
 	"github.com/jinzhu/copier"

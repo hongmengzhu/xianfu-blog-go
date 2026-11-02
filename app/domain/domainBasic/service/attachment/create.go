@@ -3,8 +3,8 @@ package attachment
 import (
 	"context"
 
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBasic"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
 )
 
 // Create 附件创建

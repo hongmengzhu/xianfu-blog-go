@@ -2,7 +2,7 @@ package cacheAuthPubPrivPg
 
 import (
 	cache "github.com/go-pkgz/expirable-cache/v3"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 )
 
 var dipl = cache.NewCache[string, entityRam.RamAsaJsonPrivatePublicKey]()

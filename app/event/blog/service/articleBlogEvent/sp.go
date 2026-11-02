@@ -1,8 +1,8 @@
 package articleBlogEvent
 
 import (
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/bigCachePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBlog"
 	"go-spring.org/spring/gs"
 )
 

@@ -5,11 +5,11 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/core/cache/cacheRam"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modPublic"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamAccount"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg/pg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/passwordTypePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/pangu-2/go-tools/tools/numberPg"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
@@ -27,10 +27,10 @@ func init() {
 // RamAccountPublicService 账户公共动作
 // @Description:
 type RamAccountPublicService struct {
-	sv                   *repositoryRam.RamAccountRepository              `autowire:"?"`
-	aAuth                *repositoryRam.RamAccountAuthorizationRepository `autowire:"?"`
-	authLogin            pg.Auth                                          `value:"${pg.auth}"`
-	cacheSessionPubPrive *cacheRam.CacheSessionPubPrive                   `autowire:"?" `
+	sv                   *repositoryRam2.RamAccountRepository              `autowire:"?"`
+	aAuth                *repositoryRam2.RamAccountAuthorizationRepository `autowire:"?"`
+	authLogin            pg.Auth                                           `value:"${pg.auth}"`
+	cacheSessionPubPrive *cacheRam.CacheSessionPubPrive                    `autowire:"?" `
 }
 
 func NewRamAccountPublicService() *RamAccountPublicService {

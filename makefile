@@ -1,8 +1,10 @@
 # ================== 可配置参数 ==================
-SCAN_DIR       ?= ./infrastructure,./pkg/sdk,./app,./app/middleware/components/cachePg
+# 扫描的目录
+SCAN_DIR       ?= ./pkg/infrastructure,./pkg/sdk,./app,./app/middleware/components/cachePg
 OUTPUT_FILE    ?= auto_import.go
 MODULE_NAME    ?=
 CONCURRENCY    ?= 8
+# 忽略的目录
 IGNORE_PATTERNS ?= **/vendor/**,**/.git/**,**/*_test.go,**/testdata/**,**/node_modules/**,**/middleware/**,/main.go
 
 # 构建相关

@@ -1,7 +1,7 @@
 package modTcAccount
 
 import (
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 )
 
 type OsVo struct {

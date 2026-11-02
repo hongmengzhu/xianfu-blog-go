@@ -2,11 +2,11 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/resourceTypeCategoryPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/typeAttrPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"go-spring.org/log"
@@ -23,9 +23,9 @@ func init() {
 // RamResourceGroupAuthorizationService 资源组 授权方法动作
 // @Description:
 type RamResourceGroupAuthorizationService struct {
-	sv     *repositoryRam.RamResourceGroupRepository     `autowire:"?"`
-	authDb *repositoryRam.RamResourceAuthorityRepository `autowire:"?"`
-	ra     *RamResourceAuthorizationService              `autowire:"?"`
+	sv     *repositoryRam2.RamResourceGroupRepository     `autowire:"?"`
+	authDb *repositoryRam2.RamResourceAuthorityRepository `autowire:"?"`
+	ra     *RamResourceAuthorizationService               `autowire:"?"`
 }
 
 // Enable 启用

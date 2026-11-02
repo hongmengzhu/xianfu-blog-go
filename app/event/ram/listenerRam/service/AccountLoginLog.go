@@ -5,23 +5,23 @@ import (
 
 	"time"
 
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constHeaderPg"
+	entityRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/ram/model/modRamAccount"
 	"go-spring.org/log"
 )
 
 type AccountLoginLog struct {
-	acc      *repositoryRam.RamAccountRepository         `autowire:"?"`
-	loginLog *repositoryRam.RamAccountLoginLogRepository `autowire:"?"`
-	session  *repositoryRam.RamAccountSessionRepository  `autowire:"?"`
+	acc      *repositoryRam2.RamAccountRepository         `autowire:"?"`
+	loginLog *repositoryRam2.RamAccountLoginLogRepository `autowire:"?"`
+	session  *repositoryRam2.RamAccountSessionRepository  `autowire:"?"`
 }
 
 func NewAccountLoginLog(
-	acc *repositoryRam.RamAccountRepository,
-	loginLog *repositoryRam.RamAccountLoginLogRepository,
-	session *repositoryRam.RamAccountSessionRepository,
+	acc *repositoryRam2.RamAccountRepository,
+	loginLog *repositoryRam2.RamAccountLoginLogRepository,
+	session *repositoryRam2.RamAccountSessionRepository,
 ) *AccountLoginLog {
 	return &AccountLoginLog{
 		acc:      acc,
@@ -46,12 +46,12 @@ func (c *AccountLoginLog) Processor(ctx context.Context, data modRamAccount.Logi
 	now := time.Now()
 	//登录时间
 	{
-		save := entityRam.RamAccountEntity{LoginTime: &now}
+		save := entityRam2.RamAccountEntity{LoginTime: &now}
 		c.acc.Update(ctx, save, acc.ID)
 	}
 	//会话信息
 	{
-		session := entityRam.RamAccountSessionEntity{
+		session := entityRam2.RamAccountSessionEntity{
 			Ano:         acc.No,
 			AppNo:       data.AppNo,
 			Client:      data.Client,
@@ -67,7 +67,7 @@ func (c *AccountLoginLog) Processor(ctx context.Context, data modRamAccount.Logi
 		}
 	}
 	//登录日志
-	save := entityRam.RamAccountLoginLogEntity{
+	save := entityRam2.RamAccountLoginLogEntity{
 		AppNo:       data.AppNo,
 		Ano:         acc.No,
 		Client:      data.Client,

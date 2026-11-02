@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityApi"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBasic"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBm"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityTc"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
+	entityApi2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityApi"
+	entityBasic2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
+	entityBlog2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBlog"
+	entityBm2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
+	entityRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	entityTc2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityTc"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbMakePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbManagerPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -31,78 +31,78 @@ func (b *AInitTable) Run(ctx context.Context) error {
 	log.Info(context.Background(), log.TagAppDef, "初始化表=>表不存在时,则进行初始化")
 	entityData := make([]any, 0)
 	{
-		entityData = append(entityData, &entityApi.ApiDiplEntity{})
-		entityData = append(entityData, &entityApi.ApiDiplAccessKeyEntity{})
-		entityData = append(entityData, &entityApi.ApiDiplCategoryEntity{})
+		entityData = append(entityData, &entityApi2.ApiDiplEntity{})
+		entityData = append(entityData, &entityApi2.ApiDiplAccessKeyEntity{})
+		entityData = append(entityData, &entityApi2.ApiDiplCategoryEntity{})
 	}
 	{
-		entityData = append(entityData, &entityBasic.BasicAccountApplyDenyListEntity{})
-		entityData = append(entityData, &entityBasic.BasicAreaEntity{})
-		entityData = append(entityData, &entityBasic.BasicAttachmentEntity{})
-		entityData = append(entityData, &entityBasic.BasicCountryEntity{})
-		entityData = append(entityData, &entityBasic.BasicConfigEntity{})
-		entityData = append(entityData, &entityBasic.BasicConfigEventEntity{})
-		entityData = append(entityData, &entityBasic.BasicConfigEventFieldsEntity{})
-		entityData = append(entityData, &entityBasic.BasicConfigListEntity{})
-		entityData = append(entityData, &entityBasic.BasicConfigModelEntity{})
-		entityData = append(entityData, &entityBasic.BasicConfigModelFieldsEntity{})
-		entityData = append(entityData, &entityBasic.BasicDataDictionaryEntity{})
-		entityData = append(entityData, &entityBasic.BasicDataSnapshotEntity{})
-		entityData = append(entityData, &entityBasic.BasicModelRulesEntity{})
-		entityData = append(entityData, &entityBasic.BasicModuleEntity{})
-		entityData = append(entityData, &entityBasic.BasicTagsEntity{})
-		entityData = append(entityData, &entityBasic.BasicTagsCategoryEntity{})
-		entityData = append(entityData, &entityBasic.BasicTagsRelationEntity{})
+		entityData = append(entityData, &entityBasic2.BasicAccountApplyDenyListEntity{})
+		entityData = append(entityData, &entityBasic2.BasicAreaEntity{})
+		entityData = append(entityData, &entityBasic2.BasicAttachmentEntity{})
+		entityData = append(entityData, &entityBasic2.BasicCountryEntity{})
+		entityData = append(entityData, &entityBasic2.BasicConfigEntity{})
+		entityData = append(entityData, &entityBasic2.BasicConfigEventEntity{})
+		entityData = append(entityData, &entityBasic2.BasicConfigEventFieldsEntity{})
+		entityData = append(entityData, &entityBasic2.BasicConfigListEntity{})
+		entityData = append(entityData, &entityBasic2.BasicConfigModelEntity{})
+		entityData = append(entityData, &entityBasic2.BasicConfigModelFieldsEntity{})
+		entityData = append(entityData, &entityBasic2.BasicDataDictionaryEntity{})
+		entityData = append(entityData, &entityBasic2.BasicDataSnapshotEntity{})
+		entityData = append(entityData, &entityBasic2.BasicModelRulesEntity{})
+		entityData = append(entityData, &entityBasic2.BasicModuleEntity{})
+		entityData = append(entityData, &entityBasic2.BasicTagsEntity{})
+		entityData = append(entityData, &entityBasic2.BasicTagsCategoryEntity{})
+		entityData = append(entityData, &entityBasic2.BasicTagsRelationEntity{})
 	}
 	{
-		entityData = append(entityData, &entityBlog.BlogArticleEntity{})
-		entityData = append(entityData, &entityBlog.BlogArticleCategoryEntity{})
-		entityData = append(entityData, &entityBlog.BlogArticleStatisticsEntity{})
-		entityData = append(entityData, &entityBm.BmBookmarkEntity{})
-		entityData = append(entityData, &entityBm.BmBookmarkCategoryEntity{})
-		entityData = append(entityData, &entityBlog.BlogCollectEntity{})
-		entityData = append(entityData, &entityBlog.BlogCollectCategoryEntity{})
-		entityData = append(entityData, &entityBlog.BlogTopicEntity{})
-		entityData = append(entityData, &entityBlog.BlogTopicCategoryEntity{})
-		entityData = append(entityData, &entityBlog.BlogTopicRelationEntity{})
-		entityData = append(entityData, &entityBlog.BlogTopicStatisticsEntity{})
-	}
-	//
-	{
-		entityData = append(entityData, &entityRam.RamAccountEntity{})
-		entityData = append(entityData, &entityRam.RamAccountAuthorizationEntity{})
-		entityData = append(entityData, &entityRam.RamAccountDenyListEntity{})
-		entityData = append(entityData, &entityRam.RamAccountDeviceEntity{})
-		entityData = append(entityData, &entityRam.RamAccountLoginLogEntity{})
-		entityData = append(entityData, &entityRam.RamAccountSessionEntity{})
-		entityData = append(entityData, &entityRam.RamAccountSessionAccessKeyEntity{})
-		entityData = append(entityData, &entityRam.RamAppEntity{})
-		entityData = append(entityData, &entityRam.RamAppAccessKeyEntity{})
-		entityData = append(entityData, &entityRam.RamAppCategoryEntity{})
-		entityData = append(entityData, &entityRam.RamChannelEntity{})
-		entityData = append(entityData, &entityRam.RamDepartmentEntity{})
-		entityData = append(entityData, &entityRam.RamFavoritesEntity{})
-		entityData = append(entityData, &entityRam.RamGroupEntity{})
-		entityData = append(entityData, &entityRam.RamLevelEntity{})
-		entityData = append(entityData, &entityRam.RamMenuEntity{})
-		entityData = append(entityData, &entityRam.RamJobFunctionEntity{})
-		entityData = append(entityData, &entityRam.RamPositionEntity{})
-		entityData = append(entityData, &entityRam.RamPositionEntity{})
-		entityData = append(entityData, &entityRam.RamPostEntity{})
-		entityData = append(entityData, &entityRam.RamResourceEntity{})
-		entityData = append(entityData, &entityRam.RamResourceAuthorityEntity{})
-		entityData = append(entityData, &entityRam.RamResourceGroupEntity{})
-		entityData = append(entityData, &entityRam.RamResourceGroupRelationEntity{})
-		entityData = append(entityData, &entityRam.RamResourceMenuEntity{})
-		entityData = append(entityData, &entityRam.RamResourceRelationEntity{})
-		entityData = append(entityData, &entityRam.RamRoleEntity{})
-		entityData = append(entityData, &entityRam.RamTeamEntity{})
+		entityData = append(entityData, &entityBlog2.BlogArticleEntity{})
+		entityData = append(entityData, &entityBlog2.BlogArticleCategoryEntity{})
+		entityData = append(entityData, &entityBlog2.BlogArticleStatisticsEntity{})
+		entityData = append(entityData, &entityBm2.BmBookmarkEntity{})
+		entityData = append(entityData, &entityBm2.BmBookmarkCategoryEntity{})
+		entityData = append(entityData, &entityBlog2.BlogCollectEntity{})
+		entityData = append(entityData, &entityBlog2.BlogCollectCategoryEntity{})
+		entityData = append(entityData, &entityBlog2.BlogTopicEntity{})
+		entityData = append(entityData, &entityBlog2.BlogTopicCategoryEntity{})
+		entityData = append(entityData, &entityBlog2.BlogTopicRelationEntity{})
+		entityData = append(entityData, &entityBlog2.BlogTopicStatisticsEntity{})
 	}
 	//
 	{
-		entityData = append(entityData, &entityTc.TcLevelEntity{})
-		entityData = append(entityData, &entityTc.TcTenantEntity{})
-		entityData = append(entityData, &entityTc.TcTenantDomainEntity{})
+		entityData = append(entityData, &entityRam2.RamAccountEntity{})
+		entityData = append(entityData, &entityRam2.RamAccountAuthorizationEntity{})
+		entityData = append(entityData, &entityRam2.RamAccountDenyListEntity{})
+		entityData = append(entityData, &entityRam2.RamAccountDeviceEntity{})
+		entityData = append(entityData, &entityRam2.RamAccountLoginLogEntity{})
+		entityData = append(entityData, &entityRam2.RamAccountSessionEntity{})
+		entityData = append(entityData, &entityRam2.RamAccountSessionAccessKeyEntity{})
+		entityData = append(entityData, &entityRam2.RamAppEntity{})
+		entityData = append(entityData, &entityRam2.RamAppAccessKeyEntity{})
+		entityData = append(entityData, &entityRam2.RamAppCategoryEntity{})
+		entityData = append(entityData, &entityRam2.RamChannelEntity{})
+		entityData = append(entityData, &entityRam2.RamDepartmentEntity{})
+		entityData = append(entityData, &entityRam2.RamFavoritesEntity{})
+		entityData = append(entityData, &entityRam2.RamGroupEntity{})
+		entityData = append(entityData, &entityRam2.RamLevelEntity{})
+		entityData = append(entityData, &entityRam2.RamMenuEntity{})
+		entityData = append(entityData, &entityRam2.RamJobFunctionEntity{})
+		entityData = append(entityData, &entityRam2.RamPositionEntity{})
+		entityData = append(entityData, &entityRam2.RamPositionEntity{})
+		entityData = append(entityData, &entityRam2.RamPostEntity{})
+		entityData = append(entityData, &entityRam2.RamResourceEntity{})
+		entityData = append(entityData, &entityRam2.RamResourceAuthorityEntity{})
+		entityData = append(entityData, &entityRam2.RamResourceGroupEntity{})
+		entityData = append(entityData, &entityRam2.RamResourceGroupRelationEntity{})
+		entityData = append(entityData, &entityRam2.RamResourceMenuEntity{})
+		entityData = append(entityData, &entityRam2.RamResourceRelationEntity{})
+		entityData = append(entityData, &entityRam2.RamRoleEntity{})
+		entityData = append(entityData, &entityRam2.RamTeamEntity{})
+	}
+	//
+	{
+		entityData = append(entityData, &entityTc2.TcLevelEntity{})
+		entityData = append(entityData, &entityTc2.TcTenantEntity{})
+		entityData = append(entityData, &entityTc2.TcTenantDomainEntity{})
 	}
 
 	//初始化创建表
@@ -199,7 +199,7 @@ func (b *AInitTable) seqEdit() {
 }
 
 func (b *AInitTable) sqlBasicDictionary() {
-	data := []entityBasic.BasicDataDictionaryEntity{
+	data := []entityBasic2.BasicDataDictionaryEntity{
 		{ID: 1, No: "1", Name: "身份类型", Code: "typeIdentity", State: 1, TypeUniqueMd5: "7e3a158550d82e66c9f016977dcbec61", Value: "typeIdentity"},
 		{ID: 2, No: "2", Name: "普通", Code: "general", State: 1, TypeUniqueMd5: "958153f1b8b96ec4c4eb2147429105d9", Value: "general", TypeCode: "typeIdentity"},
 		{ID: 3, No: "3", Name: "经理", Code: "manager", State: 1, TypeUniqueMd5: "1d0258c2440a8d19e716292b231e3190", Value: "manager", TypeCode: "typeIdentity"},
@@ -226,7 +226,7 @@ func (b *AInitTable) sqlBasicDictionary() {
 			item := data[i]
 			// 判断该主键数据是否已存在，存在则跳过，继续下一条
 			var count int64
-			if err := tx.Model(&entityBasic.BasicDataDictionaryEntity{}).Where("id = ?", item.ID).Count(&count).Error; err != nil {
+			if err := tx.Model(&entityBasic2.BasicDataDictionaryEntity{}).Where("id = ?", item.ID).Count(&count).Error; err != nil {
 				log.Error(context.Background(), log.TagAppDef, err, "查询数据字典主键异常", log.Any("id", item.ID))
 				return err
 			}

@@ -2,7 +2,7 @@ package vhostPg
 
 import (
 	cache "github.com/go-pkgz/expirable-cache/v3"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityTc"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityTc"
 )
 
 var dipl = cache.NewCache[string, entityTc.TcTenantDomainEntity]()

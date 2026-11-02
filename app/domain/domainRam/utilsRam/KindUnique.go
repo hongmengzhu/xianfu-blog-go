@@ -1,7 +1,7 @@
 package utilsRam
 
 import (
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 )
 
 // AuthorizationKindUniquePasswordByEntity 账户授权 种类

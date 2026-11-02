@@ -7,10 +7,10 @@ import (
 	"github.com/gin-gonic/gin"
 	cacheDiplPg2 "github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheDiplPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/api/modApiDiplAccessKey"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityApi"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryApi"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityApi"
+	repositoryApi2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryApi"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
@@ -32,8 +32,8 @@ func init() {
 // ApiDiplAccessKeyService 团队
 // @Description:
 type ApiDiplAccessKeyService struct {
-	sv  *repositoryApi.ApiDiplAccessKeyRepository `autowire:"?"`
-	app *repositoryApi.ApiDiplRepository          `autowire:"?"`
+	sv  *repositoryApi2.ApiDiplAccessKeyRepository `autowire:"?"`
+	app *repositoryApi2.ApiDiplRepository          `autowire:"?"`
 }
 
 // MakeNewRecord

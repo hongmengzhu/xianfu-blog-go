@@ -4,10 +4,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/utilsRam"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/modTcAccount"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/passwordTypePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/enumCommonPg/appModulePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
 
@@ -23,8 +23,8 @@ func init() {
 // TcTenantAccountPasswordService 密码修改
 // @Description:
 type TcTenantAccountPasswordService struct {
-	sv    *repositoryRam.RamAccountRepository              `autowire:"?"`
-	aAuth *repositoryRam.RamAccountAuthorizationRepository `autowire:"?"`
+	sv    *repositoryRam2.RamAccountRepository              `autowire:"?"`
+	aAuth *repositoryRam2.RamAccountAuthorizationRepository `autowire:"?"`
 }
 
 func NewTcTenantAccountPasswordService() *TcTenantAccountPasswordService {

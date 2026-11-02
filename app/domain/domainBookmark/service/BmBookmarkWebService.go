@@ -14,14 +14,14 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicTagsRelation"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkWeb"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBm"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBasic"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/bigCachePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constTags"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/blog/attachmentTypePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumApprovedPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
+	repositoryBm2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/blog/key/blogKeyPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
@@ -37,8 +37,8 @@ func init() {
 }
 
 type BmBookmarkWebService struct {
-	sv        *repositoryBm.BmBookmarkRepository           `autowire:"?"`
-	catDb     *repositoryBm.BmBookmarkCategoryRepository   `autowire:"?"`
+	sv        *repositoryBm2.BmBookmarkRepository          `autowire:"?"`
+	catDb     *repositoryBm2.BmBookmarkCategoryRepository  `autowire:"?"`
 	sp        *blogArticle.Sp                              `autowire:"?"`
 	tagsRelat *repositoryBasic.BasicTagsRelationRepository `autowire:"?"`
 	rdu       *bigCachePg.BatchString                      `autowire:"?"`

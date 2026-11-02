@@ -10,13 +10,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLogin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamMfa"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/mfa"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/typeDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/clientPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
@@ -30,9 +30,9 @@ func init() {
 
 // AccountMfaService MFA 管理服务
 type AccountMfaService struct {
-	daoMfa       *repositoryRam.RamAccountAuthMfaRepository `autowire:"?"`
-	daoAccount   *repositoryRam.RamAccountRepository        `autowire:"?"`
-	loginService *AccountLoginService                       `autowire:"?"`
+	daoMfa       *repositoryRam2.RamAccountAuthMfaRepository `autowire:"?"`
+	daoAccount   *repositoryRam2.RamAccountRepository        `autowire:"?"`
+	loginService *AccountLoginService                        `autowire:"?"`
 }
 
 // Setup 初始化 MFA 设置（生成 secret、恢复码）

@@ -2,7 +2,7 @@ package blog
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"go-spring.org/spring/gs"
 )

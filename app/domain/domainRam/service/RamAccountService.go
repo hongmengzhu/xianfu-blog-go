@@ -7,13 +7,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service/ramAccount"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamAccount"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/passwordTypePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/enumCommonPg/appModulePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/yesNoPg/yesNoIntPg"
+	entityRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/sdk-common-cache/cacheRamDepartmentPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/sdk-common-cache/cacheRamGroupPg"
@@ -41,15 +41,15 @@ func init() {
 // RamAccountService 账户，账号
 // @Description:
 type RamAccountService struct {
-	sv         *repositoryRam.RamAccountRepository              `autowire:"?"`
-	aAuth      *repositoryRam.RamAccountAuthorizationRepository `autowire:"?"`
-	dep        *repositoryRam.RamDepartmentRepository           `autowire:"?"`
-	role       *repositoryRam.RamRoleRepository                 `autowire:"?"`
-	team       *repositoryRam.RamTeamRepository                 `autowire:"?"`
-	levelDb    *repositoryRam.RamLevelRepository                `autowire:"?"`
-	groupDb    *repositoryRam.RamGroupRepository                `autowire:"?"`
-	positionDb *repositoryRam.RamPositionRepository             `autowire:"?"`
-	postDb     *repositoryRam.RamPostRepository                 `autowire:"?"`
+	sv         *repositoryRam2.RamAccountRepository              `autowire:"?"`
+	aAuth      *repositoryRam2.RamAccountAuthorizationRepository `autowire:"?"`
+	dep        *repositoryRam2.RamDepartmentRepository           `autowire:"?"`
+	role       *repositoryRam2.RamRoleRepository                 `autowire:"?"`
+	team       *repositoryRam2.RamTeamRepository                 `autowire:"?"`
+	levelDb    *repositoryRam2.RamLevelRepository                `autowire:"?"`
+	groupDb    *repositoryRam2.RamGroupRepository                `autowire:"?"`
+	positionDb *repositoryRam2.RamPositionRepository             `autowire:"?"`
+	postDb     *repositoryRam2.RamPostRepository                 `autowire:"?"`
 	// 缓存
 	depCache      *cacheRamDepartmentPg.Cache `autowire:"?"`
 	roleCache     *cacheRamRolePg.Cache       `autowire:"?"`
@@ -113,7 +113,7 @@ func (c *RamAccountService) State(ctx *gin.Context, ids []string, state enumStat
 			continue
 		}
 		if info.State != state.IndexInt8() {
-			r.Update(ctx, entityRam.RamAccountEntity{State: state.IndexInt8()}, info.ID)
+			r.Update(ctx, entityRam2.RamAccountEntity{State: state.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -169,7 +169,7 @@ func (c *RamAccountService) LogicalDeletion(ctx *gin.Context, ids []string, tp a
 			enum := enumStatePg.State(info.State)
 			// 有效 停用，反转 为对应的 取消 弃置
 			if ok, reverse := enum.ReverseEnableDisable(); ok {
-				r.Update(ctx, entityRam.RamAccountEntity{State: reverse.IndexInt8()}, info.ID)
+				r.Update(ctx, entityRam2.RamAccountEntity{State: reverse.IndexInt8()}, info.ID)
 			}
 		}
 	}
@@ -199,7 +199,7 @@ func (c *RamAccountService) LogicalRecovery(ctx *gin.Context, ids []string, tp a
 		enum := enumStatePg.State(info.State)
 		//  取消 弃置 批量删除，反转 为对应的 有效 停用 停用
 		if ok, reverse := enum.ReverseCancelLayAside(); ok {
-			r.Update(ctx, entityRam.RamAccountEntity{State: reverse.IndexInt8()}, info.ID)
+			r.Update(ctx, entityRam2.RamAccountEntity{State: reverse.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -239,7 +239,7 @@ func (c *RamAccountService) PhysicalDeletion(ctx *gin.Context, ids []string, tp 
 //	@receiver c
 //	@param ct
 func (c *RamAccountService) Query(ctx *gin.Context, ct modRamAccount.QueryCt, tp appModulePg.AppModule) (rt rg.Rs[pagePg.Paginator[modRamAccount.Vo]]) {
-	var query entityRam.RamAccountEntity
+	var query entityRam2.RamAccountEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modRamAccount.Vo, 0)
 	rt.Data.Data = slice
@@ -372,13 +372,13 @@ func (c *RamAccountService) Query(ctx *gin.Context, ct modRamAccount.QueryCt, tp
 	if page.Total > 0 && page.Data != nil && len(page.Data) > 0 {
 		pg := pagePg.NewPaginatorByPageable[modRamAccount.Vo](page.Pageable)
 		//
-		mapDep := make(map[string]*entityRam.RamDepartmentEntity)
-		mapRole := make(map[string]*entityRam.RamRoleEntity)
-		mapLevel := make(map[string]*entityRam.RamLevelEntity)
-		mapGroup := make(map[string]*entityRam.RamGroupEntity)
-		mapTeam := make(map[string]*entityRam.RamTeamEntity)
-		mapPosition := make(map[string]*entityRam.RamPositionEntity)
-		mapPost := make(map[string]*entityRam.RamPostEntity)
+		mapDep := make(map[string]*entityRam2.RamDepartmentEntity)
+		mapRole := make(map[string]*entityRam2.RamRoleEntity)
+		mapLevel := make(map[string]*entityRam2.RamLevelEntity)
+		mapGroup := make(map[string]*entityRam2.RamGroupEntity)
+		mapTeam := make(map[string]*entityRam2.RamTeamEntity)
+		mapPosition := make(map[string]*entityRam2.RamPositionEntity)
+		mapPost := make(map[string]*entityRam2.RamPostEntity)
 		idsDep := make([]string, 0)
 		idsRole := make([]string, 0)
 		idsLevel := make([]string, 0)
@@ -779,7 +779,7 @@ func (c *RamAccountService) ResetPassword(ctx *gin.Context, ct model.BaseExistWd
 	if !result {
 		return rt.ErrorMessage("数据不存在")
 	}
-	entity := entityRam.RamAccountAuthorizationEntity{}
+	entity := entityRam2.RamAccountAuthorizationEntity{}
 	entity.ExtraData = strPg.GetNanoid(8)
 	entity.Value = userPg.PasswordSalt(passwdStr, entity.ExtraData)
 	if nil == passwd {

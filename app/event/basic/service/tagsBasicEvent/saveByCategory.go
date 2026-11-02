@@ -5,9 +5,9 @@ import (
 	"strings"
 
 	modEventBasicTags2 "github.com/hongmengzhu/xianfu-blog-go/app/models/event/basic/modEventBasicTags"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/enumCommonPg/typeSysPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	entityBasic2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
 	"github.com/pangu-2/go-tools/tools/noPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"
@@ -52,8 +52,8 @@ func (c *SaveByCategory) Processor() error {
 	categoryRoot := make([]string, 0)
 	categoryRoot = append(categoryRoot, c.dto.Category)
 	mapTagsOnly := make(map[string]string)
-	tagsEntity := make(map[string]*entityBasic.BasicTagsEntity)
-	tagsRelation := make(map[string]*entityBasic.BasicTagsRelationEntity)
+	tagsEntity := make(map[string]*entityBasic2.BasicTagsEntity)
+	tagsRelation := make(map[string]*entityBasic2.BasicTagsRelationEntity)
 	tagsNo := make([]string, 0)
 	in, r := c.sp.TagsDb.FindAllByNameIn(context.Background(), c.dto.Tags)
 	if r {
@@ -85,7 +85,7 @@ func (c *SaveByCategory) Processor() error {
 					continue
 				}
 			}
-			save := &entityBasic.BasicTagsEntity{}
+			save := &entityBasic2.BasicTagsEntity{}
 			//标签 不存在，创建标签
 			if strPg.IsBlank(get) {
 				save.Name = strings.TrimSpace(v)
@@ -107,7 +107,7 @@ func (c *SaveByCategory) Processor() error {
 			//关系不存在
 			if _, ok2 := tagsRelation[save.No]; !ok2 {
 				save = tagsEntity[save.No]
-				rel := entityBasic.BasicTagsRelationEntity{}
+				rel := entityBasic2.BasicTagsRelationEntity{}
 				rel.TagNo = save.No
 				rel.CategoryNo = save.No
 				rel.State = enumStatePg.ENABLE.Index()

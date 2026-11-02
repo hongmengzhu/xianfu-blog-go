@@ -3,8 +3,8 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticleCategory/modApiBlogArticleCategory"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBlog"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/jinzhu/copier"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"

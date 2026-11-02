@@ -7,13 +7,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLogin"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/idp"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constHeaderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/typeDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/clientPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	entityRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -47,13 +47,13 @@ type idpBaseConfig struct {
 // AccountLoginIdpService IDP OAuth 登录
 // @Description:
 type AccountLoginIdpService struct {
-	daoAccount    *repositoryRam.RamAccountRepository           `autowire:"?"`
-	daoSource     *repositoryRam.RamIdentitySourceRepository    `autowire:"?"`
-	daoProvider   *repositoryRam.RamIdentityProviderRepository  `autowire:"?"`
-	daoBinding    *repositoryRam.RamIdpBindingRepository        `autowire:"?"`
-	daoSessionLog *repositoryRam.RamAccountSessionLogRepository `autowire:"?"`
-	loginService  *AccountLoginService                          `autowire:"?"`
-	mfaService    *AccountMfaService                            `autowire:"?"`
+	daoAccount    *repositoryRam2.RamAccountRepository           `autowire:"?"`
+	daoSource     *repositoryRam2.RamIdentitySourceRepository    `autowire:"?"`
+	daoProvider   *repositoryRam2.RamIdentityProviderRepository  `autowire:"?"`
+	daoBinding    *repositoryRam2.RamIdpBindingRepository        `autowire:"?"`
+	daoSessionLog *repositoryRam2.RamAccountSessionLogRepository `autowire:"?"`
+	loginService  *AccountLoginService                           `autowire:"?"`
+	mfaService    *AccountMfaService                             `autowire:"?"`
 }
 
 func NewAccountLoginIdpService() *AccountLoginIdpService {
@@ -155,7 +155,7 @@ func (c *AccountLoginIdpService) Login(ctx *gin.Context, ct modRamLogin.IdpLogin
 	log.Info(ctx, log.TagAppDef, "OAuth userInfo", log.Any("Id", userInfo.Id), log.Any("Username", userInfo.Username), log.Any("Email", userInfo.Email))
 
 	// 10. 查找绑定
-	var binding *entityRam.RamIdpBindingEntity
+	var binding *entityRam2.RamIdpBindingEntity
 	bindingFound := false
 
 	// 优先按 ExternalSub 查找
@@ -188,7 +188,7 @@ func (c *AccountLoginIdpService) Login(ctx *gin.Context, ct modRamLogin.IdpLogin
 
 		// 12. 更新 binding 的 token 和登录时间
 		now := time.Now()
-		c.daoBinding.Update(ctx, entityRam.RamIdpBindingEntity{
+		c.daoBinding.Update(ctx, entityRam2.RamIdpBindingEntity{
 			AccessToken:   oauthToken.AccessToken,
 			RefreshToken:  oauthToken.RefreshToken,
 			LastLoginTime: &now,
@@ -228,16 +228,16 @@ func (c *AccountLoginIdpService) Login(ctx *gin.Context, ct modRamLogin.IdpLogin
 // createAccountAndBinding 自动创建账号和绑定记录
 func (c *AccountLoginIdpService) createAccountAndBinding(
 	ctx *gin.Context,
-	source *entityRam.RamIdentitySourceEntity,
-	providerEntity *entityRam.RamIdentityProviderEntity,
+	source *entityRam2.RamIdentitySourceEntity,
+	providerEntity *entityRam2.RamIdentityProviderEntity,
 	userInfo *idp.UserInfo,
 	oauthToken *oauth2.Token,
-) (*entityRam.RamAccountEntity, *entityRam.RamIdpBindingEntity, error) {
+) (*entityRam2.RamAccountEntity, *entityRam2.RamIdpBindingEntity, error) {
 	now := time.Now()
 	accountNo := noPg.No()
 
 	// 创建 RamAccount
-	account := &entityRam.RamAccountEntity{
+	account := &entityRam2.RamAccountEntity{
 		No:           accountNo,
 		TenantNo:     source.TenantNo,
 		OrgNo:        source.OrgNo,
@@ -273,7 +273,7 @@ func (c *AccountLoginIdpService) createAccountAndBinding(
 
 	// 创建 RamIdpBinding
 	bindingNo := noPg.No()
-	binding := &entityRam.RamIdpBindingEntity{
+	binding := &entityRam2.RamIdpBindingEntity{
 		No:            bindingNo,
 		TenantNo:      source.TenantNo,
 		OrgNo:         source.OrgNo,
@@ -310,8 +310,8 @@ func (c *AccountLoginIdpService) createAccountAndBinding(
 // loginSuccess 登录成功，生成 token 并记录审计日志
 func (c *AccountLoginIdpService) loginSuccess(
 	ctx *gin.Context,
-	account *entityRam.RamAccountEntity,
-	source *entityRam.RamIdentitySourceEntity,
+	account *entityRam2.RamAccountEntity,
+	source *entityRam2.RamIdentitySourceEntity,
 	userInfo *idp.UserInfo,
 	oauthToken *oauth2.Token,
 	isSignup bool,
@@ -346,13 +346,13 @@ func (c *AccountLoginIdpService) loginSuccess(
 // saveSessionLog 保存 IDP 登录审计日志
 func (c *AccountLoginIdpService) saveSessionLog(
 	ctx *gin.Context,
-	account *entityRam.RamAccountEntity,
-	source *entityRam.RamIdentitySourceEntity,
+	account *entityRam2.RamAccountEntity,
+	source *entityRam2.RamIdentitySourceEntity,
 	userInfo *idp.UserInfo,
 	eventResult int8,
 ) {
 	now := time.Now()
-	logEntity := &entityRam.RamAccountSessionLogEntity{
+	logEntity := &entityRam2.RamAccountSessionLogEntity{
 		No:            noPg.No(),
 		TenantNo:      account.TenantNo,
 		OrgNo:         account.OrgNo,
@@ -383,8 +383,8 @@ func (c *AccountLoginIdpService) saveSessionLog(
 // checkMfaOrLoginSuccess 检查是否需要 MFA，如果需要则返回 MFA 令牌，否则直接登录成功
 func (c *AccountLoginIdpService) checkMfaOrLoginSuccess(
 	ctx *gin.Context,
-	account *entityRam.RamAccountEntity,
-	source *entityRam.RamIdentitySourceEntity,
+	account *entityRam2.RamAccountEntity,
+	source *entityRam2.RamIdentitySourceEntity,
 	userInfo *idp.UserInfo,
 	oauthToken *oauth2.Token,
 	isSignup bool,

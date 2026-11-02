@@ -4,10 +4,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBasic/service/configBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicConfigList"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBasic"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
+	repositoryBasic2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
@@ -27,14 +27,14 @@ func init() {
 // BasicConfigListService 用户组
 // @Description:
 type BasicConfigListService struct {
-	sv *repositoryBasic.BasicConfigListRepository `autowire:"?"`
+	sv *repositoryBasic2.BasicConfigListRepository `autowire:"?"`
 
-	Sp            *configBasic.Sp                                   `autowire:"?"`
-	repModel      *repositoryBasic.BasicConfigModelRepository       `autowire:"?"`
-	repEvent      *repositoryBasic.BasicConfigEventRepository       `autowire:"?"`
-	repEventField *repositoryBasic.BasicConfigEventFieldsRepository `autowire:"?"`
-	repConfig     *repositoryBasic.BasicConfigRepository            `autowire:"?"`
-	repConfigList *repositoryBasic.BasicConfigListRepository        `autowire:"?"`
+	Sp            *configBasic.Sp                                    `autowire:"?"`
+	repModel      *repositoryBasic2.BasicConfigModelRepository       `autowire:"?"`
+	repEvent      *repositoryBasic2.BasicConfigEventRepository       `autowire:"?"`
+	repEventField *repositoryBasic2.BasicConfigEventFieldsRepository `autowire:"?"`
+	repConfig     *repositoryBasic2.BasicConfigRepository            `autowire:"?"`
+	repConfigList *repositoryBasic2.BasicConfigListRepository        `autowire:"?"`
 }
 
 // CreateUpdate 创建/更新

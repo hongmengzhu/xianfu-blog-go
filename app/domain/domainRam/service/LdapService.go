@@ -7,13 +7,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLdap"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLogin"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityRam"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
 	ldap2 "github.com/hongmengzhu/xianfu-blog-go/pkg/auth/ldap"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constHeaderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/typeDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/clientPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	entityRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -28,16 +28,16 @@ func init() {
 
 // LdapService LDAP 认证+同步 Service
 type LdapService struct {
-	daoSource     *repositoryRam.RamIdentitySourceRepository    `autowire:"?"`
-	daoProvider   *repositoryRam.RamIdentityProviderRepository  `autowire:"?"`
-	daoAccount    *repositoryRam.RamAccountRepository           `autowire:"?"`
-	daoBinding    *repositoryRam.RamIdpBindingRepository        `autowire:"?"`
-	daoSessionLog *repositoryRam.RamAccountSessionLogRepository `autowire:"?"`
-	loginService  *AccountLoginService                          `autowire:"?"`
+	daoSource     *repositoryRam2.RamIdentitySourceRepository    `autowire:"?"`
+	daoProvider   *repositoryRam2.RamIdentityProviderRepository  `autowire:"?"`
+	daoAccount    *repositoryRam2.RamAccountRepository           `autowire:"?"`
+	daoBinding    *repositoryRam2.RamIdpBindingRepository        `autowire:"?"`
+	daoSessionLog *repositoryRam2.RamAccountSessionLogRepository `autowire:"?"`
+	loginService  *AccountLoginService                           `autowire:"?"`
 }
 
 // buildLdapConfig 从认证源配置构建 LDAP 连接配置
-func (s *LdapService) buildLdapConfig(source *entityRam.RamIdentitySourceEntity) (*ldap2.LdapConfig, error) {
+func (s *LdapService) buildLdapConfig(source *entityRam2.RamIdentitySourceEntity) (*ldap2.LdapConfig, error) {
 	var baseCfg idpBaseConfig
 	if strPg.IsNotBlank(source.BaseConfig) {
 		if err := json.Unmarshal([]byte(source.BaseConfig), &baseCfg); err != nil {
@@ -243,7 +243,7 @@ func (s *LdapService) Login(ctx *gin.Context, ct modRamLdap.LdapLoginCt) (rt rg.
 
 		// 更新 binding 登录时间
 		now := time.Now()
-		s.daoBinding.Update(ctx, entityRam.RamIdpBindingEntity{
+		s.daoBinding.Update(ctx, entityRam2.RamIdpBindingEntity{
 			LastLoginTime: &now,
 		}, binding.ID)
 
@@ -268,9 +268,9 @@ func (s *LdapService) Login(ctx *gin.Context, ct modRamLdap.LdapLoginCt) (rt rg.
 // createAccountFromLdap 从 LDAP 用户创建本地账号
 func (s *LdapService) createAccountFromLdap(
 	ctx *gin.Context,
-	source *entityRam.RamIdentitySourceEntity,
+	source *entityRam2.RamIdentitySourceEntity,
 	ldapUser *ldap2.LdapUser,
-) (*entityRam.RamAccountEntity, error) {
+) (*entityRam2.RamAccountEntity, error) {
 	now := time.Now()
 	accountNo := noPg.No()
 
@@ -282,7 +282,7 @@ func (s *LdapService) createAccountFromLdap(
 		username = ldapUser.GetLdapUuid()
 	}
 
-	account := &entityRam.RamAccountEntity{
+	account := &entityRam2.RamAccountEntity{
 		No:           accountNo,
 		TenantNo:     source.TenantNo,
 		OrgNo:        source.OrgNo,
@@ -310,7 +310,7 @@ func (s *LdapService) createAccountFromLdap(
 
 	// 创建绑定记录
 	bindingNo := noPg.No()
-	binding := &entityRam.RamIdpBindingEntity{
+	binding := &entityRam2.RamIdpBindingEntity{
 		No:            bindingNo,
 		TenantNo:      source.TenantNo,
 		OrgNo:         source.OrgNo,
@@ -341,8 +341,8 @@ func (s *LdapService) createAccountFromLdap(
 // loginSuccess LDAP 登录成功
 func (s *LdapService) loginSuccess(
 	ctx *gin.Context,
-	account *entityRam.RamAccountEntity,
-	source *entityRam.RamIdentitySourceEntity,
+	account *entityRam2.RamAccountEntity,
+	source *entityRam2.RamIdentitySourceEntity,
 	ldapUser *ldap2.LdapUser,
 	isSignup bool,
 ) (rt rg.Rs[modRamLogin.IdpLoginSuccess]) {
@@ -357,7 +357,7 @@ func (s *LdapService) loginSuccess(
 
 	// 写入审计日志
 	now := time.Now()
-	logEntity := &entityRam.RamAccountSessionLogEntity{
+	logEntity := &entityRam2.RamAccountSessionLogEntity{
 		No:            noPg.No(),
 		TenantNo:      account.TenantNo,
 		OrgNo:         account.OrgNo,

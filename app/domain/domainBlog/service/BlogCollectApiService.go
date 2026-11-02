@@ -8,13 +8,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service/blogCollect"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogCollect/modApiBlogCollect"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBlog"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg/holderApiPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/blog/typeContentPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/blog/typeDataSourcePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/blog/typeReadingPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/blog/typeSourcePg"
+	entityBlog2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBlog"
+	repositoryBlog2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model/modelBasePg"
 	"github.com/pangu-2/go-tools/tools/cryptPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
@@ -30,9 +30,9 @@ func init() {
 }
 
 type BlogCollectApiService struct {
-	sv    *repositoryBlog.BlogCollectRepository         `autowire:"?"`
-	catDb *repositoryBlog.BlogCollectCategoryRepository `autowire:"?"`
-	sp    *blogCollect.Sp                               `autowire:"?"`
+	sv    *repositoryBlog2.BlogCollectRepository         `autowire:"?"`
+	catDb *repositoryBlog2.BlogCollectCategoryRepository `autowire:"?"`
+	sp    *blogCollect.Sp                                `autowire:"?"`
 }
 
 // Push
@@ -74,7 +74,7 @@ func (c *BlogCollectApiService) Push(ctx *gin.Context, ct modApiBlogCollect.Push
 	}
 
 	holder := holderApiPg.GetContextAccount(ctx)
-	save := entityBlog.BlogCollectEntity{
+	save := entityBlog2.BlogCollectEntity{
 		Name:        strings.TrimSpace(ct.Title),
 		UrlSource:   urlSource,
 		Description: strings.TrimSpace(ct.Description),
@@ -159,10 +159,10 @@ func (c *BlogCollectApiService) PushAll(ctx *gin.Context, ct modApiBlogCollect.P
 	}
 	holder := holderApiPg.GetContextAccount(ctx)
 	tmpIndex := make(map[string]int64)
-	mapUrl := make(map[string]*entityBlog.BlogCollectEntity)
-	mapCat := make(map[string]*entityBlog.BlogCollectCategoryEntity)
-	saveTmp := make([]*entityBlog.BlogCollectEntity, 0)
-	save := make([]*entityBlog.BlogCollectEntity, 0)
+	mapUrl := make(map[string]*entityBlog2.BlogCollectEntity)
+	mapCat := make(map[string]*entityBlog2.BlogCollectCategoryEntity)
+	saveTmp := make([]*entityBlog2.BlogCollectEntity, 0)
+	save := make([]*entityBlog2.BlogCollectEntity, 0)
 	catNo := make([]string, 0)
 	urlMd5 := make([]string, 0)
 	now := time.Now()
@@ -184,7 +184,7 @@ func (c *BlogCollectApiService) PushAll(ctx *gin.Context, ct modApiBlogCollect.P
 		if strPg.IsNotBlank(item.CategoryNo) {
 			catNo = append(catNo, strings.TrimSpace(item.CategoryNo))
 		}
-		obj := entityBlog.BlogCollectEntity{
+		obj := entityBlog2.BlogCollectEntity{
 			UrlSource: strings.TrimSpace(item.Url),
 		}
 		obj.UrlSourceMd5 = cryptPg.Md5(obj.UrlSource)

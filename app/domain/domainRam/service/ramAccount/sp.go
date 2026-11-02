@@ -1,7 +1,7 @@
 package ramAccount
 
 import (
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryRam"
+	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"go-spring.org/spring/gs"
 )
 
@@ -10,11 +10,11 @@ func init() {
 }
 
 type Sp struct {
-	accDb   *repositoryRam.RamAccountRepository              `autowire:"?"`
-	authDb  *repositoryRam.RamAccountAuthorizationRepository `autowire:"?"`
-	depDb   *repositoryRam.RamDepartmentRepository           `autowire:"?"`
-	roleDb  *repositoryRam.RamRoleRepository                 `autowire:"?"`
-	teamDb  *repositoryRam.RamTeamRepository                 `autowire:"?"`
-	groupDb *repositoryRam.RamGroupRepository                `autowire:"?"`
-	levelDb *repositoryRam.RamLevelRepository                `autowire:"?"`
+	accDb   *repositoryRam2.RamAccountRepository              `autowire:"?"`
+	authDb  *repositoryRam2.RamAccountAuthorizationRepository `autowire:"?"`
+	depDb   *repositoryRam2.RamDepartmentRepository           `autowire:"?"`
+	roleDb  *repositoryRam2.RamRoleRepository                 `autowire:"?"`
+	teamDb  *repositoryRam2.RamTeamRepository                 `autowire:"?"`
+	groupDb *repositoryRam2.RamGroupRepository                `autowire:"?"`
+	levelDb *repositoryRam2.RamLevelRepository                `autowire:"?"`
 }

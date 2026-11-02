@@ -5,11 +5,11 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicTagsCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicTagsRelation"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBasic"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/enumCommonPg/typeSysPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
+	repositoryBasic2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"go-spring.org/log"
@@ -33,8 +33,8 @@ func init() {
 // BasicTagsRelationService 团队
 // @Description:
 type BasicTagsRelationService struct {
-	sv          *repositoryBasic.BasicTagsRelationRepository `autowire:"?"`
-	categoryRep *repositoryBasic.BasicTagsCategoryRepository `autowire:"?"`
+	sv          *repositoryBasic2.BasicTagsRelationRepository `autowire:"?"`
+	categoryRep *repositoryBasic2.BasicTagsCategoryRepository `autowire:"?"`
 }
 
 // Create 新增

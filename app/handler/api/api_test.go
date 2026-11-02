@@ -25,7 +25,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheDiplPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/middleware/components/cachePg/cacheDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/dtoTenantDomain"
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/entityBm"
+	entityBm2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbManagerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/mapPg"
 	"go-spring.org/spring/gs"
@@ -133,7 +133,7 @@ func runAPIStack(t *testing.T, fn func(t *testing.T, ts *apiTestStack, engine *g
 				ts.Bookmark, ts.Category, ts.Manager, ts.Domain)
 		}
 		db := ts.Manager.Db()
-		if err := db.AutoMigrate(&entityBm.BmBookmarkEntity{}, &entityBm.BmBookmarkCategoryEntity{}); err != nil {
+		if err := db.AutoMigrate(&entityBm2.BmBookmarkEntity{}, &entityBm2.BmBookmarkCategoryEntity{}); err != nil {
 			t.Fatalf("建表失败: %v", err)
 		}
 		// 容器注入的 TenantDomainCache 是零值实例（Domain map 未初始化），
@@ -521,24 +521,24 @@ func TestBookmarkCategoryAPI(t *testing.T) {
 // ---- 数据准备 ----
 
 type bookmarkFixtures struct {
-	myCat       entityBm.BmBookmarkCategoryEntity
-	teamCat     entityBm.BmBookmarkCategoryEntity
-	orgCat      entityBm.BmBookmarkCategoryEntity
-	otherTenant entityBm.BmBookmarkEntity
+	myCat       entityBm2.BmBookmarkCategoryEntity
+	teamCat     entityBm2.BmBookmarkCategoryEntity
+	orgCat      entityBm2.BmBookmarkCategoryEntity
+	otherTenant entityBm2.BmBookmarkEntity
 }
 
 func seedBookmarkFixtures(t *testing.T, db *gorm.DB) bookmarkFixtures {
 	t.Helper()
 	fx := bookmarkFixtures{
-		myCat: entityBm.BmBookmarkCategoryEntity{
+		myCat: entityBm2.BmBookmarkCategoryEntity{
 			Name: "我的分类", Code: "cat-my", No: "catno-my",
 			State: 1, TenantNo: testTenantNo, Ano: testAno, TypeOwner: "my",
 		},
-		teamCat: entityBm.BmBookmarkCategoryEntity{
+		teamCat: entityBm2.BmBookmarkCategoryEntity{
 			Name: "团队分类", Code: "cat-team", No: "catno-team",
 			State: 1, TenantNo: testTenantNo, Ano: testAno, TypeOwner: "team",
 		},
-		orgCat: entityBm.BmBookmarkCategoryEntity{
+		orgCat: entityBm2.BmBookmarkCategoryEntity{
 			Name: "组织分类", Code: "cat-org", No: "catno-org",
 			State: 1, TenantNo: testTenantNo, Ano: testAno, TypeOwner: "org",
 		},
@@ -547,20 +547,20 @@ func seedBookmarkFixtures(t *testing.T, db *gorm.DB) bookmarkFixtures {
 		mustCreate(t, db, v)
 	}
 
-	fx.otherTenant = entityBm.BmBookmarkEntity{
+	fx.otherTenant = entityBm2.BmBookmarkEntity{
 		Name: "其它租户书签", UrlSource: "https://example.com/other",
 		State: 1, TenantNo: "2000", Ano: "u-002", TypeOwner: "my",
 	}
 	rows := []any{
-		&entityBm.BmBookmarkEntity{Name: "我的书签", UrlSource: "https://example.com/my",
+		&entityBm2.BmBookmarkEntity{Name: "我的书签", UrlSource: "https://example.com/my",
 			State: 1, TenantNo: testTenantNo, Ano: testAno, TypeOwner: "my", CategoryNo: fx.myCat.No},
-		&entityBm.BmBookmarkEntity{Name: "团队书签", UrlSource: "https://example.com/team",
+		&entityBm2.BmBookmarkEntity{Name: "团队书签", UrlSource: "https://example.com/team",
 			State: 1, TenantNo: testTenantNo, Ano: testAno, TypeOwner: "team"},
-		&entityBm.BmBookmarkEntity{Name: "组织书签", UrlSource: "https://example.com/org",
+		&entityBm2.BmBookmarkEntity{Name: "组织书签", UrlSource: "https://example.com/org",
 			State: 1, TenantNo: testTenantNo, Ano: testAno, TypeOwner: "org"},
-		&entityBm.BmBookmarkEntity{Name: "同租户其它账号", UrlSource: "https://example.com/other-ano",
+		&entityBm2.BmBookmarkEntity{Name: "同租户其它账号", UrlSource: "https://example.com/other-ano",
 			State: 1, TenantNo: testTenantNo, Ano: "u-999", TypeOwner: "my"},
-		&entityBm.BmBookmarkEntity{Name: "已停用书签", UrlSource: "https://example.com/disabled",
+		&entityBm2.BmBookmarkEntity{Name: "已停用书签", UrlSource: "https://example.com/disabled",
 			State: 2, TenantNo: testTenantNo, Ano: testAno, TypeOwner: "my"},
 		&fx.otherTenant,
 	}
@@ -571,26 +571,26 @@ func seedBookmarkFixtures(t *testing.T, db *gorm.DB) bookmarkFixtures {
 }
 
 type categoryFixtures struct {
-	myCat entityBm.BmBookmarkCategoryEntity
+	myCat entityBm2.BmBookmarkCategoryEntity
 }
 
 func seedCategoryFixtures(t *testing.T, db *gorm.DB) categoryFixtures {
 	t.Helper()
 	fx := categoryFixtures{
-		myCat: entityBm.BmBookmarkCategoryEntity{
+		myCat: entityBm2.BmBookmarkCategoryEntity{
 			Name: "我的分类", Code: "cat-my", No: "catno-my",
 			State: 1, TenantNo: testTenantNo, Ano: testAno, TypeOwner: "my",
 		},
 	}
 	rows := []any{
 		&fx.myCat,
-		&entityBm.BmBookmarkCategoryEntity{Name: "团队分类", Code: "cat-team", No: "catno-team",
+		&entityBm2.BmBookmarkCategoryEntity{Name: "团队分类", Code: "cat-team", No: "catno-team",
 			State: 1, TenantNo: testTenantNo, Ano: testAno, TypeOwner: "team"},
-		&entityBm.BmBookmarkCategoryEntity{Name: "组织分类", Code: "cat-org", No: "catno-org",
+		&entityBm2.BmBookmarkCategoryEntity{Name: "组织分类", Code: "cat-org", No: "catno-org",
 			State: 1, TenantNo: testTenantNo, Ano: testAno, TypeOwner: "org"},
-		&entityBm.BmBookmarkCategoryEntity{Name: "其它租户分类", Code: "cat-other", No: "catno-other",
+		&entityBm2.BmBookmarkCategoryEntity{Name: "其它租户分类", Code: "cat-other", No: "catno-other",
 			State: 1, TenantNo: "2000", Ano: "u-002", TypeOwner: "my"},
-		&entityBm.BmBookmarkCategoryEntity{Name: "已停用分类", Code: "cat-disabled", No: "catno-disabled",
+		&entityBm2.BmBookmarkCategoryEntity{Name: "已停用分类", Code: "cat-disabled", No: "catno-disabled",
 			State: 2, TenantNo: testTenantNo, Ano: testAno, TypeOwner: "my"},
 	}
 	for _, v := range rows {
@@ -713,18 +713,18 @@ func mustCreate(t *testing.T, db *gorm.DB, v any) {
 	}
 }
 
-func getBookmark(t *testing.T, db *gorm.DB, id int64) entityBm.BmBookmarkEntity {
+func getBookmark(t *testing.T, db *gorm.DB, id int64) entityBm2.BmBookmarkEntity {
 	t.Helper()
-	var e entityBm.BmBookmarkEntity
+	var e entityBm2.BmBookmarkEntity
 	if err := db.First(&e, "id = ?", id).Error; err != nil {
 		t.Fatalf("查询书签 %d 失败: %v", id, err)
 	}
 	return e
 }
 
-func getCategory(t *testing.T, db *gorm.DB, id int64) entityBm.BmBookmarkCategoryEntity {
+func getCategory(t *testing.T, db *gorm.DB, id int64) entityBm2.BmBookmarkCategoryEntity {
 	t.Helper()
-	var e entityBm.BmBookmarkCategoryEntity
+	var e entityBm2.BmBookmarkCategoryEntity
 	if err := db.First(&e, "id = ?", id).Error; err != nil {
 		t.Fatalf("查询分类 %d 失败: %v", id, err)
 	}
@@ -734,7 +734,7 @@ func getCategory(t *testing.T, db *gorm.DB, id int64) entityBm.BmBookmarkCategor
 func countBookmark(t *testing.T, db *gorm.DB, id int64) int64 {
 	t.Helper()
 	var n int64
-	if err := db.Model(&entityBm.BmBookmarkEntity{}).Where("id = ?", id).Count(&n).Error; err != nil {
+	if err := db.Model(&entityBm2.BmBookmarkEntity{}).Where("id = ?", id).Count(&n).Error; err != nil {
 		t.Fatalf("统计书签失败: %v", err)
 	}
 	return n
@@ -743,7 +743,7 @@ func countBookmark(t *testing.T, db *gorm.DB, id int64) int64 {
 func countCategory(t *testing.T, db *gorm.DB, id int64) int64 {
 	t.Helper()
 	var n int64
-	if err := db.Model(&entityBm.BmBookmarkCategoryEntity{}).Where("id = ?", id).Count(&n).Error; err != nil {
+	if err := db.Model(&entityBm2.BmBookmarkCategoryEntity{}).Where("id = ?", id).Count(&n).Error; err != nil {
 		t.Fatalf("统计分类失败: %v", err)
 	}
 	return n

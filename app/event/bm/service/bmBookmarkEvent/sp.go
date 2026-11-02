@@ -1,8 +1,8 @@
 package bmBookmarkEvent
 
 import (
-	"github.com/hongmengzhu/xianfu-blog-go/infrastructure/repositoryBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/bigCachePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBm"
 	"go-spring.org/spring/gs"
 )
 
