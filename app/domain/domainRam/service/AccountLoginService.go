@@ -42,9 +42,9 @@ type AccountLoginService struct {
 	dao                  *repositoryRam2.RamAccountRepository                 `autowire:"?"`
 	daoAuth              *repositoryRam2.RamAccountAuthorizationRepository    `autowire:"?"`
 	sessionAk            *repositoryRam2.RamAccountSessionAccessKeyRepository `autowire:"?"`
-	cacheSessionPubPrive *cacheRam.CacheSessionPubPrive `autowire:"?" `
-	Bus                  event.Bus                      `autowire:"?"`
-	pg                   configPg.Pg                    `value:"${pg}"`
+	cacheSessionPubPrive *cacheRam.CacheSessionPubPrive                       `autowire:"?" `
+	Bus                  event.Bus                                            `autowire:"?"`
+	pg                   configPg.Pg                                          `value:"${pg}"`
 	authLogin            pg.Auth                                              `value:"${pg.auth}"`
 }
 
