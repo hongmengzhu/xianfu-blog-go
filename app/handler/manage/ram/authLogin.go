@@ -4,20 +4,20 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLogin"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/typeDomainPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/clientPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/clientPg"
+	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(AuthLoginController)).Name("ManageAuthLoginController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(AuthLoginController)).Name("ManageAuthLoginController").Export(gs.As[routerPg2.RouteRegistrar]())
 }
 
 // AuthLoginController 登录
 // @Description:
 type AuthLoginController struct {
-	routerPg.RouteRegistrar
+	routerPg2.RouteRegistrar
 	sv *service.AccountLoginService `autowire:"?"`
 }
 
@@ -39,7 +39,7 @@ func (c *AuthLoginController) RegisterRoutes(e *gin.Engine) {
 //	@param ctx
 func (c *AuthLoginController) Login(ctx *gin.Context) {
 	var ct modRamLogin.LoginManageCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Login(ctx, ct, typeDomainPg.Manage))
@@ -52,7 +52,7 @@ func (c *AuthLoginController) Login(ctx *gin.Context) {
 //	@param ctx
 func (c *AuthLoginController) RefreshToken(ctx *gin.Context) {
 	var ct modRamLogin.TokenRefreshCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.RefreshToken(ctx, ct, typeDomainPg.Manage, clientPg.Browser))

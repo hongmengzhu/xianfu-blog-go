@@ -4,17 +4,17 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBasic/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicAttachment"
+	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(FilePubController)).Name("SystemFilePubController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(FilePubController)).Name("SystemFilePubController").Export(gs.As[routerPg2.RouteRegistrar]())
 }
 
 type FilePubController struct {
-	routerPg.RouteRegistrar
+	routerPg2.RouteRegistrar
 	Sp *authPg.GroupSystemMiddlewareSp `autowire:"?"`
 	sv *service.BasicAttachmentService `autowire:"?"`
 }
@@ -41,7 +41,7 @@ func (c *FilePubController) UploadMore(ctx *gin.Context) {
 
 func (c *FilePubController) UploadLink(ctx *gin.Context) {
 	var ct modBasicAttachment.WebUrlCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.UploadLink(ctx, ct))
@@ -49,7 +49,7 @@ func (c *FilePubController) UploadLink(ctx *gin.Context) {
 
 func (c *FilePubController) Query(ctx *gin.Context) {
 	var ct modBasicAttachment.QueryCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -57,7 +57,7 @@ func (c *FilePubController) Query(ctx *gin.Context) {
 
 func (c *FilePubController) UploadDetail(ctx *gin.Context) {
 	var ct modBasicAttachment.DetailByFileOwnerCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.UpdateDetail(ctx, ct))
@@ -65,7 +65,7 @@ func (c *FilePubController) UploadDetail(ctx *gin.Context) {
 
 func (c *FilePubController) UploadAddByFileOwner(ctx *gin.Context) {
 	var ct modBasicAttachment.AddByFileOwnerCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.UpdateAddByFileOwner(ctx, ct))
@@ -73,7 +73,7 @@ func (c *FilePubController) UploadAddByFileOwner(ctx *gin.Context) {
 
 func (c *FilePubController) UploadDelByOwner(ctx *gin.Context) {
 	var ct modBasicAttachment.DelFileOwnerCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.DelByOwner(ctx, ct))

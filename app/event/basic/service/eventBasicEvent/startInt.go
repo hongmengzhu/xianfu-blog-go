@@ -4,7 +4,7 @@ import (
 	"context"
 
 	modEventBasicEvent2 "github.com/hongmengzhu/xianfu-blog-go/app/models/event/basic/modEventBasicEvent"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/event"
 	"go-spring.org/log"
 )
 

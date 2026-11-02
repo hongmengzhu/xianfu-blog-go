@@ -4,12 +4,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainTc/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/modTcAccount"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/enumCommonPg/appModulePg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/appModulePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg/controllerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
 )
@@ -17,13 +17,13 @@ import (
 func init() {
 	gs.Provide(new(TenantAccountController).SetAppModule(appModulePg.Manage)).
 		Name("SystemTenantAccountController").
-		Export(gs.As[routerPg.RouteRegistrar]())
+		Export(gs.As[routerPg2.RouteRegistrar]())
 }
 
 // TenantAccountController 账户
 // @Description:
 type TenantAccountController struct {
-	routerPg.RouteRegistrar
+	routerPg2.RouteRegistrar
 	controllerPg.SpSystemAuth
 	sv        *service.TcTenantAccountService         `autowire:"?"`
 	ap        *service.TcTenantAccountPasswordService `autowire:"?"`
@@ -88,7 +88,7 @@ func (c *TenantAccountController) Detail(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantAccountController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct, c.appModule))
@@ -101,7 +101,7 @@ func (c *TenantAccountController) Enable(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantAccountController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct, c.appModule))
@@ -114,7 +114,7 @@ func (c *TenantAccountController) Disable(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantAccountController) State(ctx *gin.Context) {
 	var ct model.BaseStateIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	state, ok := enumStatePg.IsExistInt64(ct.State)
@@ -132,7 +132,7 @@ func (c *TenantAccountController) State(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantAccountController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids, c.appModule))
@@ -145,7 +145,7 @@ func (c *TenantAccountController) Delete(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantAccountController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids, c.appModule))
@@ -158,7 +158,7 @@ func (c *TenantAccountController) Recovery(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantAccountController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids, c.appModule))
@@ -171,7 +171,7 @@ func (c *TenantAccountController) PhysicalDeletion(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantAccountController) UpdatePassword(ctx *gin.Context) {
 	var ct modTcAccount.PasswordCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.ap.UpdatePassword(ctx, ct, c.appModule))
@@ -184,7 +184,7 @@ func (c *TenantAccountController) UpdatePassword(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantAccountController) Query(ctx *gin.Context) {
 	var ct modTcAccount.QueryCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct, c.appModule))
@@ -197,7 +197,7 @@ func (c *TenantAccountController) Query(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantAccountController) Create(ctx *gin.Context) {
 	var ct modTcAccount.CreateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Create(ctx, ct, c.appModule))
@@ -210,7 +210,7 @@ func (c *TenantAccountController) Create(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantAccountController) CreateAccount(ctx *gin.Context) {
 	var ct modTcAccount.CreateAccountCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.CreateAccount(ctx, ct, c.appModule))
@@ -223,7 +223,7 @@ func (c *TenantAccountController) CreateAccount(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantAccountController) Update(ctx *gin.Context) {
 	var ct modTcAccount.UpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Update(ctx, ct, c.appModule))
@@ -236,7 +236,7 @@ func (c *TenantAccountController) Update(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantAccountController) UpdateAccount(ctx *gin.Context) {
 	var ct modTcAccount.UpdateAccountCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.UpdateAccount(ctx, ct, c.appModule))
@@ -249,7 +249,7 @@ func (c *TenantAccountController) UpdateAccount(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantAccountController) ExistAccount(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistAccount(ctx, ct, c.appModule))
@@ -262,7 +262,7 @@ func (c *TenantAccountController) ExistAccount(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantAccountController) ExistPhone(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistPhone(ctx, ct, c.appModule))
@@ -275,7 +275,7 @@ func (c *TenantAccountController) ExistPhone(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantAccountController) ExistMail(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistMail(ctx, ct, c.appModule))
@@ -288,7 +288,7 @@ func (c *TenantAccountController) ExistMail(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantAccountController) ExistIdentityCode(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistIdentityCode(ctx, ct, c.appModule))
@@ -301,7 +301,7 @@ func (c *TenantAccountController) ExistIdentityCode(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantAccountController) ExistRealName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistRealName(ctx, ct, c.appModule))

@@ -6,22 +6,22 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamTeam"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg/controllerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(TeamController)).Name("SystemTeamController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(TeamController)).Name("SystemTeamController").Export(gs.As[routerPg2.RouteRegistrar]())
 }
 
 type TeamController struct {
-	routerPg.RouteRegistrar
+	routerPg2.RouteRegistrar
 	controllerPg.SpSystemAuth
 	sv *service.RamTeamService `autowire:"?"`
 }
@@ -43,7 +43,7 @@ func (c *TeamController) RegisterRoutes(e *gin.Engine) {
 
 func (c *TeamController) CreateUpdate(ctx *gin.Context) {
 	var ct modRamTeam.CreateUpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.CreateUpdate(ctx, ct))
@@ -51,7 +51,7 @@ func (c *TeamController) CreateUpdate(ctx *gin.Context) {
 
 func (c *TeamController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -59,7 +59,7 @@ func (c *TeamController) Delete(ctx *gin.Context) {
 
 func (c *TeamController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -67,7 +67,7 @@ func (c *TeamController) Recovery(ctx *gin.Context) {
 
 func (c *TeamController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -86,7 +86,7 @@ func (c *TeamController) Detail(ctx *gin.Context) {
 
 func (c *TeamController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -94,7 +94,7 @@ func (c *TeamController) Enable(ctx *gin.Context) {
 
 func (c *TeamController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -102,7 +102,7 @@ func (c *TeamController) Disable(ctx *gin.Context) {
 
 func (c *TeamController) Query(ctx *gin.Context) {
 	var ct modRamTeam.QueryCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -110,7 +110,7 @@ func (c *TeamController) Query(ctx *gin.Context) {
 
 func (c *TeamController) SelectNodeAll(ctx *gin.Context) {
 	var ct modRamTeam.QueryPublicCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.SelectNodeAll(ctx, ct))
@@ -118,7 +118,7 @@ func (c *TeamController) SelectNodeAll(ctx *gin.Context) {
 
 func (c *TeamController) SelectNodeAllPublic(ctx *gin.Context) {
 	var ct modRamTeam.QueryPublicCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
@@ -127,7 +127,7 @@ func (c *TeamController) SelectNodeAllPublic(ctx *gin.Context) {
 
 func (c *TeamController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistName(ctx, ct))

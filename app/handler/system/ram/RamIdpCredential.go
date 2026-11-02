@@ -6,22 +6,22 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdpCredential"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg/controllerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(RamIdpCredentialController)).Name("SystemRamIdpCredentialController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(RamIdpCredentialController)).Name("SystemRamIdpCredentialController").Export(gs.As[routerPg2.RouteRegistrar]())
 }
 
 type RamIdpCredentialController struct {
-	routerPg.RouteRegistrar
+	routerPg2.RouteRegistrar
 	controllerPg.SpSystemAuth
 	sv *service.RamIdpCredentialService `autowire:"?"`
 }
@@ -42,7 +42,7 @@ func (c *RamIdpCredentialController) RegisterRoutes(e *gin.Engine) {
 
 func (c *RamIdpCredentialController) CreateUpdate(ctx *gin.Context) {
 	var ct modRamIdpCredential.CreateUpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.CreateUpdate(ctx, ct))
@@ -50,7 +50,7 @@ func (c *RamIdpCredentialController) CreateUpdate(ctx *gin.Context) {
 
 func (c *RamIdpCredentialController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -58,7 +58,7 @@ func (c *RamIdpCredentialController) Delete(ctx *gin.Context) {
 
 func (c *RamIdpCredentialController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -66,7 +66,7 @@ func (c *RamIdpCredentialController) Recovery(ctx *gin.Context) {
 
 func (c *RamIdpCredentialController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -85,7 +85,7 @@ func (c *RamIdpCredentialController) Detail(ctx *gin.Context) {
 
 func (c *RamIdpCredentialController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -93,7 +93,7 @@ func (c *RamIdpCredentialController) Enable(ctx *gin.Context) {
 
 func (c *RamIdpCredentialController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -101,7 +101,7 @@ func (c *RamIdpCredentialController) Disable(ctx *gin.Context) {
 
 func (c *RamIdpCredentialController) Query(ctx *gin.Context) {
 	var ct modRamIdpCredential.QueryCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -109,7 +109,7 @@ func (c *RamIdpCredentialController) Query(ctx *gin.Context) {
 
 func (c *RamIdpCredentialController) SelectNodeAll(ctx *gin.Context) {
 	var ct modRamIdpCredential.QueryPublicCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.SelectNodeAll(ctx, ct))
@@ -117,7 +117,7 @@ func (c *RamIdpCredentialController) SelectNodeAll(ctx *gin.Context) {
 
 func (c *RamIdpCredentialController) SelectNodeAllPublic(ctx *gin.Context) {
 	var ct modRamIdpCredential.QueryPublicCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()

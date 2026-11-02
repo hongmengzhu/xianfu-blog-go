@@ -6,22 +6,22 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamJobFunction"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg/controllerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(JobFunctionController)).Name("SystemJobFunctionController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(JobFunctionController)).Name("SystemJobFunctionController").Export(gs.As[routerPg2.RouteRegistrar]())
 }
 
 type JobFunctionController struct {
-	routerPg.RouteRegistrar
+	routerPg2.RouteRegistrar
 	controllerPg.SpSystemAuth
 	sv *service.RamJobFunctionService `autowire:"?"`
 }
@@ -43,7 +43,7 @@ func (c *JobFunctionController) RegisterRoutes(e *gin.Engine) {
 
 func (c *JobFunctionController) CreateUpdate(ctx *gin.Context) {
 	var ct modRamJobFunction.CreateUpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	if ct.ID.ToInt64() > 0 {
@@ -55,7 +55,7 @@ func (c *JobFunctionController) CreateUpdate(ctx *gin.Context) {
 
 func (c *JobFunctionController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -63,7 +63,7 @@ func (c *JobFunctionController) Delete(ctx *gin.Context) {
 
 func (c *JobFunctionController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -71,7 +71,7 @@ func (c *JobFunctionController) Recovery(ctx *gin.Context) {
 
 func (c *JobFunctionController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -90,7 +90,7 @@ func (c *JobFunctionController) Detail(ctx *gin.Context) {
 
 func (c *JobFunctionController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -98,7 +98,7 @@ func (c *JobFunctionController) Enable(ctx *gin.Context) {
 
 func (c *JobFunctionController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -106,7 +106,7 @@ func (c *JobFunctionController) Disable(ctx *gin.Context) {
 
 func (c *JobFunctionController) Query(ctx *gin.Context) {
 	var ct modRamJobFunction.QueryCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -114,7 +114,7 @@ func (c *JobFunctionController) Query(ctx *gin.Context) {
 
 func (c *JobFunctionController) SelectNodeAll(ctx *gin.Context) {
 	var ct modRamJobFunction.QueryPublicCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.SelectNodeAll(ctx, ct))
@@ -122,7 +122,7 @@ func (c *JobFunctionController) SelectNodeAll(ctx *gin.Context) {
 
 func (c *JobFunctionController) SelectNodeAllPublic(ctx *gin.Context) {
 	var ct modRamJobFunction.QueryPublicCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
@@ -136,7 +136,7 @@ func (c *JobFunctionController) SelectPublic(ctx *gin.Context) {
 
 func (c *JobFunctionController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistName(ctx, ct))

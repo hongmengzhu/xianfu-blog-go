@@ -10,19 +10,19 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLogin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamMfa"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamSaml"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
+	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(AuthLoginIdpController)).Name("ManageAuthLoginIdpController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(AuthLoginIdpController)).Name("ManageAuthLoginIdpController").Export(gs.As[routerPg2.RouteRegistrar]())
 }
 
 // AuthLoginIdpController IDP OAuth 登录
 // @Description:
 type AuthLoginIdpController struct {
-	routerPg.RouteRegistrar
+	routerPg2.RouteRegistrar
 	sv            *service.AccountLoginIdpService `autowire:"?"`
 	samlService   *service.SamlLoginService       `autowire:"?"`
 	mfaService    *service.AccountMfaService      `autowire:"?"`
@@ -61,7 +61,7 @@ func (c *AuthLoginIdpController) RegisterRoutes(e *gin.Engine) {
 //	@param ctx
 func (c *AuthLoginIdpController) Login(ctx *gin.Context) {
 	var ct modRamLogin.IdpLoginCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Login(ctx, ct))
@@ -74,7 +74,7 @@ func (c *AuthLoginIdpController) Login(ctx *gin.Context) {
 //	@param ctx
 func (c *AuthLoginIdpController) RefreshToken(ctx *gin.Context) {
 	var ct modRamLogin.TokenRefreshCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.RefreshToken(ctx, ct))
@@ -83,7 +83,7 @@ func (c *AuthLoginIdpController) RefreshToken(ctx *gin.Context) {
 // MfaVerify MFA 验证（验证通过后签发 Token）
 func (c *AuthLoginIdpController) MfaVerify(ctx *gin.Context) {
 	var ct modRamMfa.VerifyCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.mfaService.VerifyLogin(ctx, ct))
@@ -92,7 +92,7 @@ func (c *AuthLoginIdpController) MfaVerify(ctx *gin.Context) {
 // MfaRecover MFA 恢复码恢复
 func (c *AuthLoginIdpController) MfaRecover(ctx *gin.Context) {
 	var ct modRamMfa.RecoverCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.mfaService.Recover(ctx, ct))

@@ -1,7 +1,7 @@
 package utilsRam
 
 import (
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/resourceTypeCategoryPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/resourceTypeCategoryPg"
 	"github.com/pangu-2/go-tools/tools/numberPg"
 )
 

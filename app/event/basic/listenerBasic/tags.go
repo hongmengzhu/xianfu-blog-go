@@ -5,7 +5,7 @@ import (
 
 	"github.com/hongmengzhu/xianfu-blog-go/app/event/basic/service/tagsBasicEvent"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/event/basic/modEventBasicTags"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/event"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"

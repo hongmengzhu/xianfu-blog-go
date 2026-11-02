@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constHeaderPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constHeaderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/cachePg/cacheDomainPg"
 	"github.com/labstack/echo/v5"
 	"github.com/pangu-2/go-tools/tools/datetimePg"

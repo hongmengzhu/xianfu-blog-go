@@ -4,18 +4,18 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamMfa"
+	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(AccountMfaController)).Name("ManageAccountMfaController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(AccountMfaController)).Name("ManageAccountMfaController").Export(gs.As[routerPg2.RouteRegistrar]())
 }
 
 // AccountMfaController MFA 管理
 type AccountMfaController struct {
-	routerPg.RouteRegistrar
+	routerPg2.RouteRegistrar
 	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
 	sv *service.AccountMfaService      `autowire:"?"`
 }
@@ -34,7 +34,7 @@ func (c *AccountMfaController) RegisterRoutes(e *gin.Engine) {
 // Setup 初始化 MFA 设置
 func (c *AccountMfaController) Setup(ctx *gin.Context) {
 	var ct modRamMfa.SetupCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Setup(ctx, ct))
@@ -43,7 +43,7 @@ func (c *AccountMfaController) Setup(ctx *gin.Context) {
 // SetupVerify 验证 MFA 设置
 func (c *AccountMfaController) SetupVerify(ctx *gin.Context) {
 	var ct modRamMfa.SetupVerifyCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.SetupVerify(ctx, ct))
@@ -52,7 +52,7 @@ func (c *AccountMfaController) SetupVerify(ctx *gin.Context) {
 // Enable 启用 MFA
 func (c *AccountMfaController) Enable(ctx *gin.Context) {
 	var ct modRamMfa.EnableCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -61,7 +61,7 @@ func (c *AccountMfaController) Enable(ctx *gin.Context) {
 // Disable 禁用 MFA
 func (c *AccountMfaController) Disable(ctx *gin.Context) {
 	var ct modRamMfa.DisableCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -75,7 +75,7 @@ func (c *AccountMfaController) Preferred(ctx *gin.Context) {
 // Recover 使用恢复码恢复
 func (c *AccountMfaController) Recover(ctx *gin.Context) {
 	var ct modRamMfa.RecoverCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Recover(ctx, ct))

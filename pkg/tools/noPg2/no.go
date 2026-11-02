@@ -1,7 +1,7 @@
 package noPg2
 
 import (
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constNoPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constNoPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
 )
 

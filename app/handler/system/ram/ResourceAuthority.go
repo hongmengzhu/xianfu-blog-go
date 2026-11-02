@@ -6,23 +6,23 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamResourceAuthority"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/resourceTypeCategoryPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/resourceTypeCategoryPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg/controllerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(ResourceAuthorityController)).Name("SystemResourceAuthorityController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(ResourceAuthorityController)).Name("SystemResourceAuthorityController").Export(gs.As[routerPg2.RouteRegistrar]())
 }
 
 type ResourceAuthorityController struct {
-	routerPg.RouteRegistrar
+	routerPg2.RouteRegistrar
 	controllerPg.SpSystemAuth
 	sv *service.RamResourceAuthorityService `autowire:"?"`
 }
@@ -45,7 +45,7 @@ func (c *ResourceAuthorityController) RegisterRoutes(e *gin.Engine) {
 
 func (c *ResourceAuthorityController) Create(ctx *gin.Context) {
 	var ct modRamResourceAuthority.CreateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Create(ctx, ct))
@@ -53,7 +53,7 @@ func (c *ResourceAuthorityController) Create(ctx *gin.Context) {
 
 func (c *ResourceAuthorityController) CreatByGroup(ctx *gin.Context) {
 	var ct modRamResourceAuthority.CreatByGroupCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.CreatByGroup(ctx, ct))
@@ -61,7 +61,7 @@ func (c *ResourceAuthorityController) CreatByGroup(ctx *gin.Context) {
 
 func (c *ResourceAuthorityController) Update(ctx *gin.Context) {
 	var ct modRamResourceAuthority.UpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Update(ctx, ct))
@@ -69,7 +69,7 @@ func (c *ResourceAuthorityController) Update(ctx *gin.Context) {
 
 func (c *ResourceAuthorityController) UpdateByRole(ctx *gin.Context) {
 	var ct modRamResourceAuthority.UpdateByTypeValueCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.UpdateByRole(ctx, ct))
@@ -77,7 +77,7 @@ func (c *ResourceAuthorityController) UpdateByRole(ctx *gin.Context) {
 
 func (c *ResourceAuthorityController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -85,7 +85,7 @@ func (c *ResourceAuthorityController) Delete(ctx *gin.Context) {
 
 func (c *ResourceAuthorityController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -93,7 +93,7 @@ func (c *ResourceAuthorityController) Recovery(ctx *gin.Context) {
 
 func (c *ResourceAuthorityController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -112,7 +112,7 @@ func (c *ResourceAuthorityController) Detail(ctx *gin.Context) {
 
 func (c *ResourceAuthorityController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -120,7 +120,7 @@ func (c *ResourceAuthorityController) Enable(ctx *gin.Context) {
 
 func (c *ResourceAuthorityController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -128,7 +128,7 @@ func (c *ResourceAuthorityController) Disable(ctx *gin.Context) {
 
 func (c *ResourceAuthorityController) Query(ctx *gin.Context) {
 	var ct modRamResourceAuthority.QueryCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -136,7 +136,7 @@ func (c *ResourceAuthorityController) Query(ctx *gin.Context) {
 
 func (c *ResourceAuthorityController) QueryByGroup(ctx *gin.Context) {
 	var ct modRamResourceAuthority.QueryCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ct.TypeCategory = resourceTypeCategoryPg.Group.String()

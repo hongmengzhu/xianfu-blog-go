@@ -4,11 +4,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hongmengzhu/xianfu-blog-go/app/core/cache/cacheBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/handler/vhost"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticleWeb"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cacheService/cacheBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/staterEchoV5"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"

@@ -7,23 +7,23 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBasic/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicModelRules"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/validatorPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(ModelRulesController)).Name("ManageModelRulesController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(ModelRulesController)).Name("ManageModelRulesController").Export(gs.As[routerPg2.RouteRegistrar]())
 }
 
 // ModelRulesController 国家
 // @Description:
 type ModelRulesController struct {
-	routerPg.RouteRegistrar
+	routerPg2.RouteRegistrar
 	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
 	sv *service.BasicModelRulesService `autowire:"?"`
 }
@@ -58,7 +58,7 @@ func (c *ModelRulesController) RegisterRoutes(e *gin.Engine) {
 //	@param ctx
 func (c *ModelRulesController) CreateUpdateData(ctx *gin.Context) {
 	var ct modBasicModelRules.CreateUpdateDataCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.CreateUpdateData(ctx, ct))
@@ -71,7 +71,7 @@ func (c *ModelRulesController) CreateUpdateData(ctx *gin.Context) {
 //	@param ctx
 func (c *ModelRulesController) CreateUpdate(ctx *gin.Context) {
 	var ct modBasicModelRules.CreateUpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.CreateUpdate(ctx, ct))
@@ -111,7 +111,7 @@ func (c *ModelRulesController) Delete(ctx *gin.Context) {
 //	@param ctx
 func (c *ModelRulesController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -124,7 +124,7 @@ func (c *ModelRulesController) Recovery(ctx *gin.Context) {
 //	@param ctx
 func (c *ModelRulesController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -153,7 +153,7 @@ func (c *ModelRulesController) Detail(ctx *gin.Context) {
 //	@param ctx
 func (c *ModelRulesController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -166,7 +166,7 @@ func (c *ModelRulesController) Enable(ctx *gin.Context) {
 //	@param ctx
 func (c *ModelRulesController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -179,7 +179,7 @@ func (c *ModelRulesController) Disable(ctx *gin.Context) {
 //	@param ctx
 func (c *ModelRulesController) State(ctx *gin.Context) {
 	var ct model.BaseStateIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	state, ok := enumStatePg.IsExistInt64(ct.State)
@@ -197,7 +197,7 @@ func (c *ModelRulesController) State(ctx *gin.Context) {
 //	@param ctx
 func (c *ModelRulesController) Query(ctx *gin.Context) {
 	var ct modBasicModelRules.QueryCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -205,7 +205,7 @@ func (c *ModelRulesController) Query(ctx *gin.Context) {
 
 func (c *ModelRulesController) AllByValueNo(ctx *gin.Context) {
 	var ct modBasicModelRules.QueryPublicCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
@@ -214,7 +214,7 @@ func (c *ModelRulesController) AllByValueNo(ctx *gin.Context) {
 
 func (c *ModelRulesController) SelectNodeAllPublic(ctx *gin.Context) {
 	var ct modBasicModelRules.QueryPublicCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
@@ -228,7 +228,7 @@ func (c *ModelRulesController) SelectNodeAllPublic(ctx *gin.Context) {
 //	@param ctx
 func (c *ModelRulesController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistName(ctx, ct))
@@ -241,7 +241,7 @@ func (c *ModelRulesController) ExistName(ctx *gin.Context) {
 //	@param ctx
 func (c *ModelRulesController) ExistCode(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistCode(ctx, ct))

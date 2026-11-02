@@ -3,9 +3,9 @@ package ramAccount
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamAccount"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/identityPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/sexPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/enumCommonPg/appModulePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/identityPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/sexPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/appModulePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	"github.com/jinzhu/copier"
 	"github.com/pangu-2/go-tools/tools/cryptPg"

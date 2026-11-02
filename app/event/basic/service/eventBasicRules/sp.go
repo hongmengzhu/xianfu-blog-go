@@ -1,7 +1,7 @@
 package eventBasicRules
 
 import (
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/bigCachePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cachePg/bigCachePg"
 	repositoryBasic2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
 	"go-spring.org/spring/gs"
 )

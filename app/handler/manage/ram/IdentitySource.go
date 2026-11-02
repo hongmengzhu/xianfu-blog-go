@@ -6,23 +6,23 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdentitySource"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(IdentitySourceController)).Name("ManageIdentitySourceController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(IdentitySourceController)).Name("ManageIdentitySourceController").Export(gs.As[routerPg2.RouteRegistrar]())
 }
 
 // IdentitySourceController 身份认证源
 // @Description:
 type IdentitySourceController struct {
-	routerPg.RouteRegistrar
+	routerPg2.RouteRegistrar
 	Sp *authPg.GroupManageMiddlewareSp   `autowire:"?"`
 	sv *service.RamIdentitySourceService `autowire:"?"`
 }
@@ -47,7 +47,7 @@ func (c *IdentitySourceController) RegisterRoutes(e *gin.Engine) {
 // Create 创建
 func (c *IdentitySourceController) Create(ctx *gin.Context) {
 	var ct modRamIdentitySource.CreateUpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Create(ctx, ct))
@@ -56,7 +56,7 @@ func (c *IdentitySourceController) Create(ctx *gin.Context) {
 // Update 更新
 func (c *IdentitySourceController) Update(ctx *gin.Context) {
 	var ct modRamIdentitySource.CreateUpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Update(ctx, ct))
@@ -65,7 +65,7 @@ func (c *IdentitySourceController) Update(ctx *gin.Context) {
 // Delete 逻辑删除
 func (c *IdentitySourceController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -74,7 +74,7 @@ func (c *IdentitySourceController) Delete(ctx *gin.Context) {
 // Recovery 逻辑删除恢复
 func (c *IdentitySourceController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -83,7 +83,7 @@ func (c *IdentitySourceController) Recovery(ctx *gin.Context) {
 // PhysicalDeletion 物理删除
 func (c *IdentitySourceController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -103,7 +103,7 @@ func (c *IdentitySourceController) Detail(ctx *gin.Context) {
 // Enable 启用
 func (c *IdentitySourceController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -112,7 +112,7 @@ func (c *IdentitySourceController) Enable(ctx *gin.Context) {
 // Disable 禁用
 func (c *IdentitySourceController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -121,7 +121,7 @@ func (c *IdentitySourceController) Disable(ctx *gin.Context) {
 // State 状态
 func (c *IdentitySourceController) State(ctx *gin.Context) {
 	var ct model.BaseStateIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	state, ok := enumStatePg.IsExistInt64(ct.State)
@@ -135,7 +135,7 @@ func (c *IdentitySourceController) State(ctx *gin.Context) {
 // Query 查询列表
 func (c *IdentitySourceController) Query(ctx *gin.Context) {
 	var ct modRamIdentitySource.QueryCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -149,7 +149,7 @@ func (c *IdentitySourceController) SelectPublic(ctx *gin.Context) {
 // ExistName 查重
 func (c *IdentitySourceController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistName(ctx, ct))

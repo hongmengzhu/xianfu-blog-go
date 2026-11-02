@@ -4,18 +4,18 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBookmark/service"
 	modApiBmBookmark2 "github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmark/modApiBmBookmark"
+	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(BookmarkApiController)).Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(BookmarkApiController)).Export(gs.As[routerPg2.RouteRegistrar]())
 }
 
 type BookmarkApiController struct {
-	routerPg.RouteRegistrar
+	routerPg2.RouteRegistrar
 	Sp *authPg.GroupApiMiddlewareSp  `autowire:"?"`
 	sv *service.BmBookmarkApiService `autowire:"?"`
 }
@@ -43,7 +43,7 @@ func (c *BookmarkApiController) GetAll(ctx *gin.Context) {
 // GetMy 获取我的
 func (c *BookmarkApiController) GetMy(ctx *gin.Context) {
 	var ct modApiBmBookmark2.QueryCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.GetMy(ctx, ct))
@@ -52,7 +52,7 @@ func (c *BookmarkApiController) GetMy(ctx *gin.Context) {
 // GetOrg 获取组织
 func (c *BookmarkApiController) GetOrg(ctx *gin.Context) {
 	var ct modApiBmBookmark2.QueryCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.GetOrg(ctx, ct))
@@ -65,7 +65,7 @@ func (c *BookmarkApiController) GetOrg(ctx *gin.Context) {
 //	@param ctx
 func (c *BookmarkApiController) Create(ctx *gin.Context) {
 	var ct modApiBmBookmark2.CreateUpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Create(ctx, ct))
@@ -78,7 +78,7 @@ func (c *BookmarkApiController) Create(ctx *gin.Context) {
 //	@param ctx
 func (c *BookmarkApiController) Update(ctx *gin.Context) {
 	var ct modApiBmBookmark2.CreateUpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Update(ctx, ct))
@@ -91,7 +91,7 @@ func (c *BookmarkApiController) Update(ctx *gin.Context) {
 //	@param ctx
 func (c *BookmarkApiController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))

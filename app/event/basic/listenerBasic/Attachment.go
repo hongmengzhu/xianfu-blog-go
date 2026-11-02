@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBasic/service/attachment"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/event"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
 	_ "go-spring.org/spring/gs"

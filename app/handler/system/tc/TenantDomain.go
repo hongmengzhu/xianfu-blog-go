@@ -4,10 +4,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainTc/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/modTcTenantDomain"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
@@ -16,13 +16,13 @@ import (
 func init() {
 	gs.Provide(new(TenantDomainController)).
 		Name("SystemTenantDomainController").
-		Export(gs.As[routerPg.RouteRegistrar]())
+		Export(gs.As[routerPg2.RouteRegistrar]())
 }
 
 // TenantDomainController 租户
 // @Description:
 type TenantDomainController struct {
-	routerPg.RouteRegistrar
+	routerPg2.RouteRegistrar
 	Sp *authPg.GroupSystemMiddlewareSp `autowire:"?"`
 	sv *service.TcTenantDomainService  `autowire:"?"`
 }
@@ -57,7 +57,7 @@ func (c *TenantDomainController) RegisterRoutes(e *gin.Engine) {
 //	@param ctx
 func (c *TenantDomainController) CreateUpdate(ctx *gin.Context) {
 	var ct modTcTenantDomain.CreateUpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	if ct.ID.ToInt64() > 0 {
@@ -74,7 +74,7 @@ func (c *TenantDomainController) CreateUpdate(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantDomainController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -87,7 +87,7 @@ func (c *TenantDomainController) Delete(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantDomainController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -100,7 +100,7 @@ func (c *TenantDomainController) Recovery(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantDomainController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -127,7 +127,7 @@ func (c *TenantDomainController) Detail(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantDomainController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -140,7 +140,7 @@ func (c *TenantDomainController) Enable(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantDomainController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -153,7 +153,7 @@ func (c *TenantDomainController) Disable(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantDomainController) State(ctx *gin.Context) {
 	var ct model.BaseStateIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.StateEnableDisable(ctx, ct))
@@ -166,7 +166,7 @@ func (c *TenantDomainController) State(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantDomainController) Query(ctx *gin.Context) {
 	var ct modTcTenantDomain.QueryCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -199,7 +199,7 @@ func (c *TenantDomainController) SelectPublic(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantDomainController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistName(ctx, ct))
@@ -212,7 +212,7 @@ func (c *TenantDomainController) ExistName(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantDomainController) ExistNo(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistNo(ctx, ct))
@@ -225,7 +225,7 @@ func (c *TenantDomainController) ExistNo(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantDomainController) ExistCode(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistCode(ctx, ct))
@@ -238,7 +238,7 @@ func (c *TenantDomainController) ExistCode(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantDomainController) SetDefaulted(ctx *gin.Context) {
 	var ct model.BaseStateIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.SetDefaulted(ctx, ct))

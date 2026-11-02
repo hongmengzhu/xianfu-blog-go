@@ -5,19 +5,19 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modPublic"
 	"github.com/hongmengzhu/xianfu-blog-go/cmd"
+	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg/controllerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/holderPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(AuthPublicController)).Name("SystemPublicController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(AuthPublicController)).Name("SystemPublicController").Export(gs.As[routerPg2.RouteRegistrar]())
 }
 
 type AuthPublicController struct {
-	routerPg.RouteRegistrar
+	routerPg2.RouteRegistrar
 	controllerPg.SpSystemAuth
 	sv *service.RamAccountPublicService `autowire:"?"`
 }
@@ -39,7 +39,7 @@ func (c *AuthPublicController) InfoPublic(ctx *gin.Context) {
 
 func (c *AuthPublicController) UpdatePassword(ctx *gin.Context) {
 	var ct modPublic.PasswordCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.UpdatePassword(ctx, ct))

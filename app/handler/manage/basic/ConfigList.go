@@ -6,23 +6,23 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBasic/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicConfigList"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(ConfigListController)).Name("ManageConfigListController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(ConfigListController)).Name("ManageConfigListController").Export(gs.As[routerPg2.RouteRegistrar]())
 }
 
 // ConfigListController 国家
 // @Description:
 type ConfigListController struct {
-	routerPg.RouteRegistrar
+	routerPg2.RouteRegistrar
 	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
 	sv *service.BasicConfigListService `autowire:"?"`
 }
@@ -56,7 +56,7 @@ func (c *ConfigListController) RegisterRoutes(e *gin.Engine) {
 //	@param ctx
 func (c *ConfigListController) CreateUpdate(ctx *gin.Context) {
 	var ct modBasicConfigList.CreateUpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.CreateUpdate(ctx, ct))
@@ -69,7 +69,7 @@ func (c *ConfigListController) CreateUpdate(ctx *gin.Context) {
 //	@param ctx
 func (c *ConfigListController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -82,7 +82,7 @@ func (c *ConfigListController) Delete(ctx *gin.Context) {
 //	@param ctx
 func (c *ConfigListController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -95,7 +95,7 @@ func (c *ConfigListController) Recovery(ctx *gin.Context) {
 //	@param ctx
 func (c *ConfigListController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -124,7 +124,7 @@ func (c *ConfigListController) Detail(ctx *gin.Context) {
 //	@param ctx
 func (c *ConfigListController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -137,7 +137,7 @@ func (c *ConfigListController) Enable(ctx *gin.Context) {
 //	@param ctx
 func (c *ConfigListController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -150,7 +150,7 @@ func (c *ConfigListController) Disable(ctx *gin.Context) {
 //	@param ctx
 func (c *ConfigListController) State(ctx *gin.Context) {
 	var ct model.BaseStateIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	state, ok := enumStatePg.IsExistInt64(ct.State)
@@ -168,7 +168,7 @@ func (c *ConfigListController) State(ctx *gin.Context) {
 //	@param ctx
 func (c *ConfigListController) Query(ctx *gin.Context) {
 	var ct modBasicConfigList.QueryCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -176,7 +176,7 @@ func (c *ConfigListController) Query(ctx *gin.Context) {
 
 func (c *ConfigListController) SelectNodeAllPublic(ctx *gin.Context) {
 	var ct modBasicConfigList.QueryPublicCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
@@ -190,7 +190,7 @@ func (c *ConfigListController) SelectNodeAllPublic(ctx *gin.Context) {
 //	@param ctx
 func (c *ConfigListController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistName(ctx, ct))
@@ -203,7 +203,7 @@ func (c *ConfigListController) ExistName(ctx *gin.Context) {
 //	@param ctx
 func (c *ConfigListController) ExistCode(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistCode(ctx, ct))
@@ -216,7 +216,7 @@ func (c *ConfigListController) ExistCode(ctx *gin.Context) {
 //	@param ctx
 func (c *ConfigListController) DetailForm(ctx *gin.Context) {
 	var ct modBasicConfigList.DetailFormCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.DetailForm(ctx, ct))
@@ -229,7 +229,7 @@ func (c *ConfigListController) DetailForm(ctx *gin.Context) {
 //	@param ctx
 func (c *ConfigListController) ConfigUpdate(ctx *gin.Context) {
 	var ct modBasicConfigList.ConfigUpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ConfigUpdate(ctx, ct))

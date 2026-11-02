@@ -6,22 +6,22 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamResource"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg/controllerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(ResourceController)).Name("SystemResourceController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(ResourceController)).Name("SystemResourceController").Export(gs.As[routerPg2.RouteRegistrar]())
 }
 
 type ResourceController struct {
-	routerPg.RouteRegistrar
+	routerPg2.RouteRegistrar
 	controllerPg.SpSystemAuth
 	sv *service.RamResourceService `autowire:"?"`
 }
@@ -46,7 +46,7 @@ func (c *ResourceController) RegisterRoutes(e *gin.Engine) {
 
 func (c *ResourceController) CreateUpdate(ctx *gin.Context) {
 	var ct modRamResource.CreateUpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	if ct.ID.ToInt64() > 0 {
@@ -57,7 +57,7 @@ func (c *ResourceController) CreateUpdate(ctx *gin.Context) {
 }
 func (c *ResourceController) CreateUpdateByCategory(ctx *gin.Context) {
 	var ct modRamResource.CreateUpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ct.ParentNo = ""
@@ -70,7 +70,7 @@ func (c *ResourceController) CreateUpdateByCategory(ctx *gin.Context) {
 
 func (c *ResourceController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -78,7 +78,7 @@ func (c *ResourceController) Delete(ctx *gin.Context) {
 
 func (c *ResourceController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -86,7 +86,7 @@ func (c *ResourceController) Recovery(ctx *gin.Context) {
 
 func (c *ResourceController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -104,7 +104,7 @@ func (c *ResourceController) Detail(ctx *gin.Context) {
 
 func (c *ResourceController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -112,7 +112,7 @@ func (c *ResourceController) Enable(ctx *gin.Context) {
 
 func (c *ResourceController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -120,7 +120,7 @@ func (c *ResourceController) Disable(ctx *gin.Context) {
 
 func (c *ResourceController) Query(ctx *gin.Context) {
 	var ct modRamResource.QueryCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -128,7 +128,7 @@ func (c *ResourceController) Query(ctx *gin.Context) {
 
 func (c *ResourceController) SelectNodeAll(ctx *gin.Context) {
 	var ct modRamResource.QueryPublicCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.SelectNodeAll(ctx, ct))
@@ -136,7 +136,7 @@ func (c *ResourceController) SelectNodeAll(ctx *gin.Context) {
 
 func (c *ResourceController) SelectNodeAllPublic(ctx *gin.Context) {
 	var ct modRamResource.QueryPublicCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
@@ -159,7 +159,7 @@ func (c *ResourceController) SelectCategory(ctx *gin.Context) {
 
 func (c *ResourceController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistName(ctx, ct))

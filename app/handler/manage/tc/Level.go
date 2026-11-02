@@ -4,23 +4,23 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainTc/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/modTcLevel"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(LevelController)).Name("ManageTcLevelController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(LevelController)).Name("ManageTcLevelController").Export(gs.As[routerPg2.RouteRegistrar]())
 }
 
 // LevelController 级别
 // @Description:
 type LevelController struct {
-	routerPg.RouteRegistrar
+	routerPg2.RouteRegistrar
 	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
 	sv *service.TcLevelService         `autowire:"?"`
 }
@@ -48,7 +48,7 @@ func (c *LevelController) RegisterRoutes(e *gin.Engine) {
 //	@param ctx
 func (c *LevelController) Create(ctx *gin.Context) {
 	var ct modTcLevel.CreateUpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Create(ctx, ct))
@@ -61,7 +61,7 @@ func (c *LevelController) Create(ctx *gin.Context) {
 //	@param ctx
 func (c *LevelController) Update(ctx *gin.Context) {
 	var ct modTcLevel.CreateUpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Update(ctx, ct))
@@ -74,7 +74,7 @@ func (c *LevelController) Update(ctx *gin.Context) {
 //	@param ctx
 func (c *LevelController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -87,7 +87,7 @@ func (c *LevelController) Delete(ctx *gin.Context) {
 //	@param ctx
 func (c *LevelController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -100,7 +100,7 @@ func (c *LevelController) Recovery(ctx *gin.Context) {
 //	@param ctx
 func (c *LevelController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -127,7 +127,7 @@ func (c *LevelController) Detail(ctx *gin.Context) {
 //	@param ctx
 func (c *LevelController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -140,7 +140,7 @@ func (c *LevelController) Enable(ctx *gin.Context) {
 //	@param ctx
 func (c *LevelController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -153,7 +153,7 @@ func (c *LevelController) Disable(ctx *gin.Context) {
 //	@param ctx
 func (c *LevelController) State(ctx *gin.Context) {
 	var ct model.BaseStateIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	state, ok := enumStatePg.IsExistInt64(ct.State)
@@ -171,7 +171,7 @@ func (c *LevelController) State(ctx *gin.Context) {
 //	@param ctx
 func (c *LevelController) Query(ctx *gin.Context) {
 	var ct modTcLevel.QueryCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -214,7 +214,7 @@ func (c *LevelController) SelectPublic(ctx *gin.Context) {
 //	@param ctx
 func (c *LevelController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistName(ctx, ct))
@@ -227,7 +227,7 @@ func (c *LevelController) ExistName(ctx *gin.Context) {
 //	@param ctx
 func (c *LevelController) ExistNo(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistNo(ctx, ct))

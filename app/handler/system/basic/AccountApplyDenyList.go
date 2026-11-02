@@ -6,21 +6,21 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBasic/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicAccountApplyDenyList"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(AccountApplyDenyListController)).Name("SystemAccountApplyDenyListController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(AccountApplyDenyListController)).Name("SystemAccountApplyDenyListController").Export(gs.As[routerPg2.RouteRegistrar]())
 }
 
 type AccountApplyDenyListController struct {
-	routerPg.RouteRegistrar
+	routerPg2.RouteRegistrar
 	Sp *authPg.GroupSystemMiddlewareSp           `autowire:"?"`
 	sv *service.BasicAccountApplyDenyListService `autowire:"?"`
 }
@@ -44,7 +44,7 @@ func (c *AccountApplyDenyListController) RegisterRoutes(e *gin.Engine) {
 
 func (c *AccountApplyDenyListController) CreateUpdate(ctx *gin.Context) {
 	var ct modBasicAccountApplyDenyList.CreateUpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	if ct.ID.ToInt64() > 0 {
@@ -56,7 +56,7 @@ func (c *AccountApplyDenyListController) CreateUpdate(ctx *gin.Context) {
 
 func (c *AccountApplyDenyListController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -64,7 +64,7 @@ func (c *AccountApplyDenyListController) Delete(ctx *gin.Context) {
 
 func (c *AccountApplyDenyListController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -72,7 +72,7 @@ func (c *AccountApplyDenyListController) Recovery(ctx *gin.Context) {
 
 func (c *AccountApplyDenyListController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -91,7 +91,7 @@ func (c *AccountApplyDenyListController) Detail(ctx *gin.Context) {
 
 func (c *AccountApplyDenyListController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -99,7 +99,7 @@ func (c *AccountApplyDenyListController) Enable(ctx *gin.Context) {
 
 func (c *AccountApplyDenyListController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -107,7 +107,7 @@ func (c *AccountApplyDenyListController) Disable(ctx *gin.Context) {
 
 func (c *AccountApplyDenyListController) State(ctx *gin.Context) {
 	var ct model.BaseStateIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	state, ok := enumStatePg.IsExistInt64(ct.State)
@@ -120,7 +120,7 @@ func (c *AccountApplyDenyListController) State(ctx *gin.Context) {
 
 func (c *AccountApplyDenyListController) Query(ctx *gin.Context) {
 	var ct modBasicAccountApplyDenyList.QueryCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -128,7 +128,7 @@ func (c *AccountApplyDenyListController) Query(ctx *gin.Context) {
 
 func (c *AccountApplyDenyListController) SelectPublic(ctx *gin.Context) {
 	var ct modBasicAccountApplyDenyList.QueryPublicCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	if ct.State.ToInt8() <= 0 {
@@ -139,7 +139,7 @@ func (c *AccountApplyDenyListController) SelectPublic(ctx *gin.Context) {
 
 func (c *AccountApplyDenyListController) SelectNodePublic(ctx *gin.Context) {
 	var ct modBasicAccountApplyDenyList.QueryPublicCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
@@ -147,14 +147,14 @@ func (c *AccountApplyDenyListController) SelectNodePublic(ctx *gin.Context) {
 }
 func (c *AccountApplyDenyListController) SelectNodeAll(ctx *gin.Context) {
 	var ct modBasicAccountApplyDenyList.QueryPublicCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.SelectNodeAllPublic(ctx, ct))
 }
 func (c *AccountApplyDenyListController) SelectNodeAllPublic(ctx *gin.Context) {
 	var ct modBasicAccountApplyDenyList.QueryPublicCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
@@ -168,7 +168,7 @@ func (c *AccountApplyDenyListController) ExportExcel(ctx *gin.Context) {
 
 func (c *AccountApplyDenyListController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistName(ctx, ct))
@@ -176,7 +176,7 @@ func (c *AccountApplyDenyListController) ExistName(ctx *gin.Context) {
 
 func (c *AccountApplyDenyListController) ExistExpr(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistExpr(ctx, ct))

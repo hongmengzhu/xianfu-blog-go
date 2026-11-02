@@ -1,9 +1,9 @@
 package cacheAuthPubPrivPg
 
 import (
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/sessionKeyTypePg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/typeDomainPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/clientPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/sessionKeyTypePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/clientPg"
 )
 
 const (

@@ -11,7 +11,7 @@ import (
 	_ "github.com/hongmengzhu/xianfu-blog-go/app/middleware"
 	"github.com/hongmengzhu/xianfu-blog-go/cmd"
 	_ "github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/bigCachePg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbManagerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
 	"github.com/pangu-2/go-tools/tools/datetimePg"

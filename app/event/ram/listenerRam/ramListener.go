@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/hongmengzhu/xianfu-blog-go/app/event/ram/listenerRam/service"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
 	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/event"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/ram/model/modRamAccount"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"

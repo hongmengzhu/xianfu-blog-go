@@ -6,23 +6,23 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBasic/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicTags"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(TagsController)).Name("ManageTagsController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(TagsController)).Name("ManageTagsController").Export(gs.As[routerPg2.RouteRegistrar]())
 }
 
 // TagsController 标签
 // @Description:
 type TagsController struct {
-	routerPg.RouteRegistrar
+	routerPg2.RouteRegistrar
 	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
 	sv *service.BasicTagsService       `autowire:"?"`
 }
@@ -58,7 +58,7 @@ func (c *TagsController) RegisterRoutes(e *gin.Engine) {
 //	@param ctx
 func (c *TagsController) Create(ctx *gin.Context) {
 	var ct modBasicTags.CreateUpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Create(ctx, ct))
@@ -71,7 +71,7 @@ func (c *TagsController) Create(ctx *gin.Context) {
 //	@param ctx
 func (c *TagsController) Update(ctx *gin.Context) {
 	var ct modBasicTags.CreateUpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Update(ctx, ct))
@@ -84,7 +84,7 @@ func (c *TagsController) Update(ctx *gin.Context) {
 //	@param ctx
 func (c *TagsController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -97,7 +97,7 @@ func (c *TagsController) Delete(ctx *gin.Context) {
 //	@param ctx
 func (c *TagsController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -110,7 +110,7 @@ func (c *TagsController) Recovery(ctx *gin.Context) {
 //	@param ctx
 func (c *TagsController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -139,7 +139,7 @@ func (c *TagsController) Detail(ctx *gin.Context) {
 //	@param ctx
 func (c *TagsController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -152,7 +152,7 @@ func (c *TagsController) Enable(ctx *gin.Context) {
 //	@param ctx
 func (c *TagsController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -165,7 +165,7 @@ func (c *TagsController) Disable(ctx *gin.Context) {
 //	@param ctx
 func (c *TagsController) State(ctx *gin.Context) {
 	var ct model.BaseStateIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	state, ok := enumStatePg.IsExistInt64(ct.State)
@@ -183,7 +183,7 @@ func (c *TagsController) State(ctx *gin.Context) {
 //	@param ctx
 func (c *TagsController) Query(ctx *gin.Context) {
 	var ct modBasicTags.QueryCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -211,7 +211,7 @@ func (c *TagsController) SelectNodeAllPublic(ctx *gin.Context) {
 //	@param ctx
 func (c *TagsController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistName(ctx, ct))
@@ -224,7 +224,7 @@ func (c *TagsController) ExistName(ctx *gin.Context) {
 //	@param ctx
 func (c *TagsController) ExistCode(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistCode(ctx, ct))

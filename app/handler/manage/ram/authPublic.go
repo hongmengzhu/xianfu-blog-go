@@ -4,20 +4,20 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modPublic"
+	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/holderPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(PublicController)).Name("ManagePublicController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(PublicController)).Name("ManagePublicController").Export(gs.As[routerPg2.RouteRegistrar]())
 }
 
 // PublicController 用户公共动作
 // @Description:
 type PublicController struct {
-	routerPg.RouteRegistrar
+	routerPg2.RouteRegistrar
 	Sp *authPg.GroupManageMiddlewareSp  `autowire:"?"`
 	sv *service.RamAccountPublicService `autowire:"?"`
 }
@@ -46,7 +46,7 @@ func (c *PublicController) Public(ctx *gin.Context) {
 // UpdatePassword 修改密码
 func (c *PublicController) UpdatePassword(ctx *gin.Context) {
 	var ct modPublic.PasswordCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.UpdatePassword(ctx, ct))

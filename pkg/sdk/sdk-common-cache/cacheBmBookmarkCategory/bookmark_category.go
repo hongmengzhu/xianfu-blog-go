@@ -6,7 +6,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/cachePg/bigCachePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cachePg/bigCachePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBm"
 	"github.com/pangu-2/go-tools/tools/strPg"

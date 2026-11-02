@@ -1,7 +1,7 @@
 package runnerPg
 
 import (
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/event"
 	data2 "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/runnerPg/data"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/runnerPg/table"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbManagerPg"

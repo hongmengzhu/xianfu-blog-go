@@ -3,7 +3,7 @@ package runnerPg
 import (
 	"context"
 
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/event"
 )
 
 // Publisher 配置变更发布者。

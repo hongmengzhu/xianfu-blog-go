@@ -7,20 +7,20 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/core/cache/cacheRam"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modPublic"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLogin"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg/pg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constHeaderPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constsRam/typeDomainPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/clientPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/event"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cacheService/cacheRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constHeaderPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/clientPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	authTokenPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/authTokenPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/idpPg/auth/holderPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/event"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/ram/model/modRamAccount"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
 	"github.com/jinzhu/copier"
@@ -42,9 +42,9 @@ type AccountLoginService struct {
 	dao                  *repositoryRam2.RamAccountRepository                 `autowire:"?"`
 	daoAuth              *repositoryRam2.RamAccountAuthorizationRepository    `autowire:"?"`
 	sessionAk            *repositoryRam2.RamAccountSessionAccessKeyRepository `autowire:"?"`
-	cacheSessionPubPrive *cacheRam.CacheSessionPubPrive                       `autowire:"?" `
-	Bus                  event.Bus                                            `autowire:"?"`
-	pg                   configPg.Pg                                          `value:"${pg}"`
+	cacheSessionPubPrive *cacheRam.CacheSessionPubPrive `autowire:"?" `
+	Bus                  event.Bus                      `autowire:"?"`
+	pg                   configPg.Pg                    `value:"${pg}"`
 	authLogin            pg.Auth                                              `value:"${pg.auth}"`
 }
 

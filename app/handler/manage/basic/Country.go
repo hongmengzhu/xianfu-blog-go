@@ -6,23 +6,23 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBasic/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicCountry"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(CountryController)).Name("ManageCountryController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(CountryController)).Name("ManageCountryController").Export(gs.As[routerPg2.RouteRegistrar]())
 }
 
 // CountryController 国家
 // @Description:
 type CountryController struct {
-	routerPg.RouteRegistrar
+	routerPg2.RouteRegistrar
 	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
 	sv *service.BasicCountryService    `autowire:"?"`
 }
@@ -52,7 +52,7 @@ func (c *CountryController) RegisterRoutes(e *gin.Engine) {
 //	@param ctx
 func (c *CountryController) Create(ctx *gin.Context) {
 	var ct modBasicCountry.CreateUpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Create(ctx, ct))
@@ -65,7 +65,7 @@ func (c *CountryController) Create(ctx *gin.Context) {
 //	@param ctx
 func (c *CountryController) Update(ctx *gin.Context) {
 	var ct modBasicCountry.CreateUpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Update(ctx, ct))
@@ -78,7 +78,7 @@ func (c *CountryController) Update(ctx *gin.Context) {
 //	@param ctx
 func (c *CountryController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -91,7 +91,7 @@ func (c *CountryController) Delete(ctx *gin.Context) {
 //	@param ctx
 func (c *CountryController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -104,7 +104,7 @@ func (c *CountryController) Recovery(ctx *gin.Context) {
 //	@param ctx
 func (c *CountryController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -133,7 +133,7 @@ func (c *CountryController) Detail(ctx *gin.Context) {
 //	@param ctx
 func (c *CountryController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -146,7 +146,7 @@ func (c *CountryController) Enable(ctx *gin.Context) {
 //	@param ctx
 func (c *CountryController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -159,7 +159,7 @@ func (c *CountryController) Disable(ctx *gin.Context) {
 //	@param ctx
 func (c *CountryController) State(ctx *gin.Context) {
 	var ct model.BaseStateIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	state, ok := enumStatePg.IsExistInt64(ct.State)
@@ -177,7 +177,7 @@ func (c *CountryController) State(ctx *gin.Context) {
 //	@param ctx
 func (c *CountryController) Query(ctx *gin.Context) {
 	var ct modBasicCountry.QueryCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -185,7 +185,7 @@ func (c *CountryController) Query(ctx *gin.Context) {
 
 func (c *CountryController) SelectPublic(ctx *gin.Context) {
 	var ct modBasicCountry.QueryCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	if ct.State.ToInt8() <= 0 {
@@ -196,7 +196,7 @@ func (c *CountryController) SelectPublic(ctx *gin.Context) {
 
 func (c *CountryController) SelectNodePublic(ctx *gin.Context) {
 	var ct modBasicCountry.QueryPublicCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
@@ -204,7 +204,7 @@ func (c *CountryController) SelectNodePublic(ctx *gin.Context) {
 }
 func (c *CountryController) SelectNodeAllPublic(ctx *gin.Context) {
 	var ct modBasicCountry.QueryPublicCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
@@ -213,7 +213,7 @@ func (c *CountryController) SelectNodeAllPublic(ctx *gin.Context) {
 
 func (c *CountryController) SelectPublicCountryCode(ctx *gin.Context) {
 	var ct modBasicCountry.QueryPublicCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
@@ -232,7 +232,7 @@ func (c *CountryController) ExportExcel(ctx *gin.Context) {
 //	@param ctx
 func (c *CountryController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistName(ctx, ct))
@@ -245,7 +245,7 @@ func (c *CountryController) ExistName(ctx *gin.Context) {
 //	@param ctx
 func (c *CountryController) ExistCode(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistCode(ctx, ct))
@@ -258,7 +258,7 @@ func (c *CountryController) ExistCode(ctx *gin.Context) {
 //	@param ctx
 func (c *CountryController) ExistCountryCode(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistCountryCode(ctx, ct))

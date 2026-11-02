@@ -4,21 +4,21 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBasic/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicDataDictionary"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/routerPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/r"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(DataDictionaryController)).Name("SystemDataDictionaryController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(DataDictionaryController)).Name("SystemDataDictionaryController").Export(gs.As[routerPg2.RouteRegistrar]())
 }
 
 type DataDictionaryController struct {
-	routerPg.RouteRegistrar
+	routerPg2.RouteRegistrar
 	Sp         *authPg.GroupSystemMiddlewareSp              `autowire:"?"`
 	sv         *service.BasicDataDictionaryService          `autowire:"?"`
 	dictSubRep *service.BasicDataDictionarySubSystemService `autowire:"?"`
@@ -45,7 +45,7 @@ func (c *DataDictionaryController) RegisterRoutes(e *gin.Engine) {
 
 func (c *DataDictionaryController) CreateUpdate(ctx *gin.Context) {
 	var ct modBasicDataDictionary.CreateUpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.CreateUpdate(ctx, ct))
@@ -53,7 +53,7 @@ func (c *DataDictionaryController) CreateUpdate(ctx *gin.Context) {
 
 func (c *DataDictionaryController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -61,7 +61,7 @@ func (c *DataDictionaryController) Delete(ctx *gin.Context) {
 
 func (c *DataDictionaryController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -69,7 +69,7 @@ func (c *DataDictionaryController) Recovery(ctx *gin.Context) {
 
 func (c *DataDictionaryController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -86,7 +86,7 @@ func (c *DataDictionaryController) Detail(ctx *gin.Context) {
 
 func (c *DataDictionaryController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -94,7 +94,7 @@ func (c *DataDictionaryController) Enable(ctx *gin.Context) {
 
 func (c *DataDictionaryController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -102,7 +102,7 @@ func (c *DataDictionaryController) Disable(ctx *gin.Context) {
 
 func (c *DataDictionaryController) State(ctx *gin.Context) {
 	var ct model.BaseStateIdsCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	state, ok := enumStatePg.IsExistInt64(ct.State)
@@ -115,7 +115,7 @@ func (c *DataDictionaryController) State(ctx *gin.Context) {
 
 func (c *DataDictionaryController) Query(ctx *gin.Context) {
 	var ct modBasicDataDictionary.QueryCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -123,14 +123,14 @@ func (c *DataDictionaryController) Query(ctx *gin.Context) {
 
 func (c *DataDictionaryController) SelectNodeAll(ctx *gin.Context) {
 	var ct modBasicDataDictionary.SelectNodeCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.SelectNodeAllPublic(ctx, ct))
 }
 func (c *DataDictionaryController) SelectNodeAllPublic(ctx *gin.Context) {
 	var ct modBasicDataDictionary.SelectNodeCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.SelectNodeAllPublic(ctx, ct))
@@ -138,7 +138,7 @@ func (c *DataDictionaryController) SelectNodeAllPublic(ctx *gin.Context) {
 
 func (c *DataDictionaryController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistName(ctx, ct))
@@ -146,7 +146,7 @@ func (c *DataDictionaryController) ExistName(ctx *gin.Context) {
 
 func (c *DataDictionaryController) ExistCode(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistCode(ctx, ct))
@@ -154,7 +154,7 @@ func (c *DataDictionaryController) ExistCode(ctx *gin.Context) {
 
 func (c *DataDictionaryController) TypeCodeAllPublic(ctx *gin.Context) {
 	var ct modBasicDataDictionary.SelectNodeAllCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.dictSubRep.TypeCodeAllPublic(ctx, ct))
@@ -162,7 +162,7 @@ func (c *DataDictionaryController) TypeCodeAllPublic(ctx *gin.Context) {
 
 func (c *DataDictionaryController) TypeCodeList(ctx *gin.Context) {
 	var ct modBasicDataDictionary.SelectNodeCt
-	if !routerPg.BindJson(ctx, &ct) {
+	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.dictSubRep.TypeCodeList(ctx, ct))

@@ -3,9 +3,9 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicArea"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/automatedPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/consts/constNodePg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/automatedPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constNodePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/model"
