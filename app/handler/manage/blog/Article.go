@@ -8,7 +8,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticle"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
@@ -16,13 +16,13 @@ import (
 )
 
 func init() {
-	gs.Provide(new(ArticleController)).Name("ManageArticleController").Export(gs.As[routerPg2.RouteRegistrar]())
+	gs.Provide(new(ArticleController)).Name("ManageArticleController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 // ArticleController 文章
 // @Description:
 type ArticleController struct {
-	routerPg2.RouteRegistrar
+	routerPg.RouteRegistrar
 	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
 	sv *service.BlogArticleService     `autowire:"?"`
 }
@@ -58,7 +58,7 @@ func (c *ArticleController) RegisterRoutes(e *gin.Engine) {
 //	@param ctx
 func (c *ArticleController) Create(ctx *gin.Context) {
 	var ct modBlogArticle.CreateUpdateCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Create(ctx, ct))
@@ -71,7 +71,7 @@ func (c *ArticleController) Create(ctx *gin.Context) {
 //	@param ctx
 func (c *ArticleController) Update(ctx *gin.Context) {
 	var ct modBlogArticle.CreateUpdateCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Update(ctx, ct))
@@ -84,7 +84,7 @@ func (c *ArticleController) Update(ctx *gin.Context) {
 //	@param ctx
 func (c *ArticleController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -97,7 +97,7 @@ func (c *ArticleController) Delete(ctx *gin.Context) {
 //	@param ctx
 func (c *ArticleController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -110,7 +110,7 @@ func (c *ArticleController) Recovery(ctx *gin.Context) {
 //	@param ctx
 func (c *ArticleController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -139,7 +139,7 @@ func (c *ArticleController) Detail(ctx *gin.Context) {
 //	@param ctx
 func (c *ArticleController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -152,7 +152,7 @@ func (c *ArticleController) Enable(ctx *gin.Context) {
 //	@param ctx
 func (c *ArticleController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -165,7 +165,7 @@ func (c *ArticleController) Disable(ctx *gin.Context) {
 //	@param ctx
 func (c *ArticleController) State(ctx *gin.Context) {
 	var ct model.BaseStateIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	state, ok := enumStatePg.IsExistInt64(ct.State)
@@ -183,7 +183,7 @@ func (c *ArticleController) State(ctx *gin.Context) {
 //	@param ctx
 func (c *ArticleController) Query(ctx *gin.Context) {
 	var ct modBlogArticle.QueryCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -211,7 +211,7 @@ func (c *ArticleController) SelectPublic(ctx *gin.Context) {
 //	@param ctx
 func (c *ArticleController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistName(ctx, ct))
@@ -224,7 +224,7 @@ func (c *ArticleController) ExistName(ctx *gin.Context) {
 //	@param ctx
 func (c *ArticleController) ExistNo(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistNo(ctx, ct))

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	modRamDeviceAuth2 "github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamDeviceAuth"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamDeviceAuth"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cachePg/deviceauth"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/clientPg"
@@ -57,7 +57,7 @@ func generateCancelToken() string {
 }
 
 // StartDeviceAuth 发起设备授权
-func (c *DeviceAuthService) StartDeviceAuth(ctx *gin.Context, ct modRamDeviceAuth2.DeviceAuthRequestCt) (rt rg.Rs[modRamDeviceAuth2.DeviceAuthVo]) {
+func (c *DeviceAuthService) StartDeviceAuth(ctx *gin.Context, ct modRamDeviceAuth.DeviceAuthRequestCt) (rt rg.Rs[modRamDeviceAuth.DeviceAuthVo]) {
 	log.Info(ctx, log.TagAppDef, "StartDeviceAuth ct", log.Any("ct", ct))
 
 	// 生成 deviceCode，确保唯一
@@ -104,7 +104,7 @@ func (c *DeviceAuthService) StartDeviceAuth(ctx *gin.Context, ct modRamDeviceAut
 	c.store.Save(deviceCode, deviceCache)
 	c.store.Save(userCode, userCache)
 
-	vo := modRamDeviceAuth2.DeviceAuthVo{
+	vo := modRamDeviceAuth.DeviceAuthVo{
 		DeviceCode:      deviceCode,
 		UserCode:        userCode,
 		VerificationUri: "/device/verify",
@@ -116,22 +116,22 @@ func (c *DeviceAuthService) StartDeviceAuth(ctx *gin.Context, ct modRamDeviceAut
 }
 
 // PollDeviceStatus 设备轮询状态
-func (c *DeviceAuthService) PollDeviceStatus(ctx *gin.Context, ct modRamDeviceAuth2.DevicePollCt) (rt rg.Rs[modRamDeviceAuth2.DeviceStatusVo]) {
+func (c *DeviceAuthService) PollDeviceStatus(ctx *gin.Context, ct modRamDeviceAuth.DevicePollCt) (rt rg.Rs[modRamDeviceAuth.DeviceStatusVo]) {
 	cache, ok := c.store.LoadByDeviceCode(ct.DeviceCode)
 	if !ok {
-		return rt.OkData(modRamDeviceAuth2.DeviceStatusVo{Status: "expired"})
+		return rt.OkData(modRamDeviceAuth.DeviceStatusVo{Status: "expired"})
 	}
 	if cache.IsExpired() {
 		c.store.Delete(ct.DeviceCode)
-		return rt.OkData(modRamDeviceAuth2.DeviceStatusVo{Status: "expired"})
+		return rt.OkData(modRamDeviceAuth.DeviceStatusVo{Status: "expired"})
 	}
 
 	switch cache.Status {
 	case deviceauth.StatusPending:
-		return rt.OkData(modRamDeviceAuth2.DeviceStatusVo{Status: "pending"})
+		return rt.OkData(modRamDeviceAuth.DeviceStatusVo{Status: "pending"})
 	case deviceauth.StatusDenied:
 		c.store.Delete(ct.DeviceCode)
-		return rt.OkData(modRamDeviceAuth2.DeviceStatusVo{Status: "denied"})
+		return rt.OkData(modRamDeviceAuth.DeviceStatusVo{Status: "denied"})
 	case deviceauth.StatusApproved:
 		// 签发 Token
 		return c.issueTokenForDevice(ctx, cache)
@@ -139,14 +139,14 @@ func (c *DeviceAuthService) PollDeviceStatus(ctx *gin.Context, ct modRamDeviceAu
 		// 已签发，直接返回 token
 		return c.issueTokenForDevice(ctx, cache)
 	default:
-		return rt.OkData(modRamDeviceAuth2.DeviceStatusVo{Status: cache.Status})
+		return rt.OkData(modRamDeviceAuth.DeviceStatusVo{Status: cache.Status})
 	}
 }
 
 // issueTokenForDevice 为已授权的设备签发 Token
-func (c *DeviceAuthService) issueTokenForDevice(ctx *gin.Context, cache deviceauth.DeviceAuthCache) (rt rg.Rs[modRamDeviceAuth2.DeviceStatusVo]) {
+func (c *DeviceAuthService) issueTokenForDevice(ctx *gin.Context, cache deviceauth.DeviceAuthCache) (rt rg.Rs[modRamDeviceAuth.DeviceStatusVo]) {
 	if cache.UserNo == "" {
-		return rt.OkData(modRamDeviceAuth2.DeviceStatusVo{Status: "pending"})
+		return rt.OkData(modRamDeviceAuth.DeviceStatusVo{Status: "pending"})
 	}
 
 	account, found := c.dao.FindByNo(ctx, cache.UserNo)
@@ -170,7 +170,7 @@ func (c *DeviceAuthService) issueTokenForDevice(ctx *gin.Context, cache deviceau
 	cache.Status = deviceauth.StatusTokenIssued
 	c.store.Update(cache)
 
-	return rt.OkData(modRamDeviceAuth2.DeviceStatusVo{
+	return rt.OkData(modRamDeviceAuth.DeviceStatusVo{
 		Status:       "approved",
 		AccessToken:  data.Access,
 		RefreshToken: data.Refresh,
@@ -178,7 +178,7 @@ func (c *DeviceAuthService) issueTokenForDevice(ctx *gin.Context, cache deviceau
 }
 
 // ApproveDeviceAuth 用户在浏览器中授权
-func (c *DeviceAuthService) ApproveDeviceAuth(ctx *gin.Context, ct modRamDeviceAuth2.DeviceApproveCt) (rt rg.Rs[string]) {
+func (c *DeviceAuthService) ApproveDeviceAuth(ctx *gin.Context, ct modRamDeviceAuth.DeviceApproveCt) (rt rg.Rs[string]) {
 	cache, ok := c.store.LoadByUserCode(ct.UserCode)
 	if !ok {
 		return rt.ErrorMessage("用户码无效或已过期")
@@ -209,7 +209,7 @@ func (c *DeviceAuthService) ApproveDeviceAuth(ctx *gin.Context, ct modRamDeviceA
 }
 
 // CancelDeviceAuth 取消设备授权
-func (c *DeviceAuthService) CancelDeviceAuth(ctx *gin.Context, ct modRamDeviceAuth2.DeviceCancelCt) (rt rg.Rs[string]) {
+func (c *DeviceAuthService) CancelDeviceAuth(ctx *gin.Context, ct modRamDeviceAuth.DeviceCancelCt) (rt rg.Rs[string]) {
 	cache, ok := c.store.LoadByUserCode(ct.UserCode)
 	if !ok {
 		return rt.ErrorMessage("用户码无效")
@@ -224,7 +224,7 @@ func (c *DeviceAuthService) CancelDeviceAuth(ctx *gin.Context, ct modRamDeviceAu
 }
 
 // CompleteDeviceAuth 完成设备授权（建立会话）
-func (c *DeviceAuthService) CompleteDeviceAuth(ctx *gin.Context, ct modRamDeviceAuth2.DeviceCompleteCt) (rt rg.Rs[modRamDeviceAuth2.DeviceStatusVo]) {
+func (c *DeviceAuthService) CompleteDeviceAuth(ctx *gin.Context, ct modRamDeviceAuth.DeviceCompleteCt) (rt rg.Rs[modRamDeviceAuth.DeviceStatusVo]) {
 	cache, ok := c.store.LoadByDeviceCode(ct.DeviceCode)
 	if !ok {
 		return rt.ErrorMessage("设备码无效")
@@ -240,7 +240,7 @@ func (c *DeviceAuthService) CompleteDeviceAuth(ctx *gin.Context, ct modRamDevice
 	// 清理缓存
 	c.store.Delete(ct.DeviceCode)
 
-	return rt.OkData(modRamDeviceAuth2.DeviceStatusVo{
+	return rt.OkData(modRamDeviceAuth.DeviceStatusVo{
 		Status: "completed",
 	})
 }

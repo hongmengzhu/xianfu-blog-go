@@ -12,7 +12,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/clientPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
-	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	repositoryRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/idpPg/idp"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
@@ -47,13 +47,13 @@ type idpBaseConfig struct {
 // AccountLoginIdpService IDP OAuth 登录
 // @Description:
 type AccountLoginIdpService struct {
-	daoAccount    *repositoryRam2.RamAccountRepository           `autowire:"?"`
-	daoSource     *repositoryRam2.RamIdentitySourceRepository    `autowire:"?"`
-	daoProvider   *repositoryRam2.RamIdentityProviderRepository  `autowire:"?"`
-	daoBinding    *repositoryRam2.RamIdpBindingRepository        `autowire:"?"`
-	daoSessionLog *repositoryRam2.RamAccountSessionLogRepository `autowire:"?"`
-	loginService  *AccountLoginService                           `autowire:"?"`
-	mfaService    *AccountMfaService                             `autowire:"?"`
+	daoAccount    *repositoryRam.RamAccountRepository           `autowire:"?"`
+	daoSource     *repositoryRam.RamIdentitySourceRepository    `autowire:"?"`
+	daoProvider   *repositoryRam.RamIdentityProviderRepository  `autowire:"?"`
+	daoBinding    *repositoryRam.RamIdpBindingRepository        `autowire:"?"`
+	daoSessionLog *repositoryRam.RamAccountSessionLogRepository `autowire:"?"`
+	loginService  *AccountLoginService                          `autowire:"?"`
+	mfaService    *AccountMfaService                            `autowire:"?"`
 }
 
 func NewAccountLoginIdpService() *AccountLoginIdpService {

@@ -11,7 +11,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
-	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	repositoryRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"
@@ -33,12 +33,12 @@ func init() {
 // RamResourceAuthorityService 资源授权
 // @Description:
 type RamResourceAuthorityService struct {
-	sv         *repositoryRam2.RamResourceAuthorityRepository     `autowire:"?"`
-	resDb      *repositoryRam2.RamResourceRepository              `autowire:"?"`
-	groupDb    *repositoryRam2.RamResourceGroupRepository         `autowire:"?"`
-	roleDb     *repositoryRam2.RamRoleRepository                  `autowire:"?"`
-	grDb       *repositoryRam2.RamResourceGroupRelationRepository `autowire:"?"`
-	relationDb *repositoryRam2.RamResourceRelationRepository      `autowire:"?"`
+	sv         *repositoryRam.RamResourceAuthorityRepository     `autowire:"?"`
+	resDb      *repositoryRam.RamResourceRepository              `autowire:"?"`
+	groupDb    *repositoryRam.RamResourceGroupRepository         `autowire:"?"`
+	roleDb     *repositoryRam.RamRoleRepository                  `autowire:"?"`
+	grDb       *repositoryRam.RamResourceGroupRelationRepository `autowire:"?"`
+	relationDb *repositoryRam.RamResourceRelationRepository      `autowire:"?"`
 	//
 
 }

@@ -8,20 +8,20 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicConfigEventFields"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(ConfigEventFieldsController)).Name("ManageConfigEventFieldsController").Export(gs.As[routerPg2.RouteRegistrar]())
+	gs.Provide(new(ConfigEventFieldsController)).Name("ManageConfigEventFieldsController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 // ConfigEventFieldsController 国家
 // @Description:
 type ConfigEventFieldsController struct {
-	routerPg2.RouteRegistrar
+	routerPg.RouteRegistrar
 	Sp *authPg.GroupManageMiddlewareSp        `autowire:"?"`
 	sv *service.BasicConfigEventFieldsService `autowire:"?"`
 }
@@ -55,7 +55,7 @@ func (c *ConfigEventFieldsController) RegisterRoutes(e *gin.Engine) {
 //	@param ctx
 func (c *ConfigEventFieldsController) CreateUpdate(ctx *gin.Context) {
 	var ct modBasicConfigEventFields.CreateUpdateCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.CreateUpdate(ctx, ct))
@@ -68,7 +68,7 @@ func (c *ConfigEventFieldsController) CreateUpdate(ctx *gin.Context) {
 //	@param ctx
 func (c *ConfigEventFieldsController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -81,7 +81,7 @@ func (c *ConfigEventFieldsController) Delete(ctx *gin.Context) {
 //	@param ctx
 func (c *ConfigEventFieldsController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -94,7 +94,7 @@ func (c *ConfigEventFieldsController) Recovery(ctx *gin.Context) {
 //	@param ctx
 func (c *ConfigEventFieldsController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -123,7 +123,7 @@ func (c *ConfigEventFieldsController) Detail(ctx *gin.Context) {
 //	@param ctx
 func (c *ConfigEventFieldsController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -136,7 +136,7 @@ func (c *ConfigEventFieldsController) Enable(ctx *gin.Context) {
 //	@param ctx
 func (c *ConfigEventFieldsController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -149,7 +149,7 @@ func (c *ConfigEventFieldsController) Disable(ctx *gin.Context) {
 //	@param ctx
 func (c *ConfigEventFieldsController) State(ctx *gin.Context) {
 	var ct model.BaseStateIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	state, ok := enumStatePg.IsExistInt64(ct.State)
@@ -167,7 +167,7 @@ func (c *ConfigEventFieldsController) State(ctx *gin.Context) {
 //	@param ctx
 func (c *ConfigEventFieldsController) Query(ctx *gin.Context) {
 	var ct modBasicConfigEventFields.QueryCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -175,7 +175,7 @@ func (c *ConfigEventFieldsController) Query(ctx *gin.Context) {
 
 func (c *ConfigEventFieldsController) AllByEventNo(ctx *gin.Context) {
 	var ct modBasicConfigEventFields.QueryPublicCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
@@ -184,7 +184,7 @@ func (c *ConfigEventFieldsController) AllByEventNo(ctx *gin.Context) {
 
 func (c *ConfigEventFieldsController) SelectNodeAllPublic(ctx *gin.Context) {
 	var ct modBasicConfigEventFields.QueryPublicCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
@@ -198,7 +198,7 @@ func (c *ConfigEventFieldsController) SelectNodeAllPublic(ctx *gin.Context) {
 //	@param ctx
 func (c *ConfigEventFieldsController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistName(ctx, ct))
@@ -211,7 +211,7 @@ func (c *ConfigEventFieldsController) ExistName(ctx *gin.Context) {
 //	@param ctx
 func (c *ConfigEventFieldsController) ExistCode(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistCode(ctx, ct))

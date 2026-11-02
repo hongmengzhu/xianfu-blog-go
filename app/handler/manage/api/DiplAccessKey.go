@@ -5,20 +5,20 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainApi/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/api/modApiDiplAccessKey"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg/controllerPg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(DiplAccessKeyController)).Name("ManageDiplAccessKeyController").Export(gs.As[routerPg2.RouteRegistrar]())
+	gs.Provide(new(DiplAccessKeyController)).Name("ManageDiplAccessKeyController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 // DiplAccessKeyController 密钥
 // @Description:
 type DiplAccessKeyController struct {
-	routerPg2.RouteRegistrar
+	routerPg.RouteRegistrar
 	controllerPg.SpManageAuth
 	sv *service.ApiDiplAccessKeyService `autowire:"?"`
 }
@@ -43,7 +43,7 @@ func (c *DiplAccessKeyController) RegisterRoutes(e *gin.Engine) {
 //	@param ctx
 func (c *DiplAccessKeyController) MakeNewRecord(ctx *gin.Context) {
 	var ct model.BaseIdCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.MakeNewRecord(ctx, ct))
@@ -56,7 +56,7 @@ func (c *DiplAccessKeyController) MakeNewRecord(ctx *gin.Context) {
 //	@param ctx
 func (c *DiplAccessKeyController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -69,7 +69,7 @@ func (c *DiplAccessKeyController) Delete(ctx *gin.Context) {
 //	@param ctx
 func (c *DiplAccessKeyController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -82,7 +82,7 @@ func (c *DiplAccessKeyController) Recovery(ctx *gin.Context) {
 //	@param ctx
 func (c *DiplAccessKeyController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -95,7 +95,7 @@ func (c *DiplAccessKeyController) PhysicalDeletion(ctx *gin.Context) {
 //	@param ctx
 func (c *DiplAccessKeyController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -108,7 +108,7 @@ func (c *DiplAccessKeyController) Enable(ctx *gin.Context) {
 //	@param ctx
 func (c *DiplAccessKeyController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -121,7 +121,7 @@ func (c *DiplAccessKeyController) Disable(ctx *gin.Context) {
 //	@param ctx
 func (c *DiplAccessKeyController) State(ctx *gin.Context) {
 	var ct model.BaseStateIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.StateEnableDisable(ctx, ct))
@@ -134,7 +134,7 @@ func (c *DiplAccessKeyController) State(ctx *gin.Context) {
 //	@param ctx
 func (c *DiplAccessKeyController) Query(ctx *gin.Context) {
 	var ct modApiDiplAccessKey.QueryCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -142,7 +142,7 @@ func (c *DiplAccessKeyController) Query(ctx *gin.Context) {
 
 func (c *DiplAccessKeyController) SelectPublic(ctx *gin.Context) {
 	var ct modApiDiplAccessKey.QueryCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	//ct.State = enumStatePg.ENABLE.IndexPg()

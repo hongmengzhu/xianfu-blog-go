@@ -7,7 +7,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityApi"
-	repositoryApi2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryApi"
+	repositoryApi "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryApi"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
@@ -28,8 +28,8 @@ func init() {
 // ApiDiplService 团队
 // @Description:
 type ApiDiplService struct {
-	sv  *repositoryApi2.ApiDiplRepository         `autowire:"?"`
-	cat *repositoryApi2.ApiDiplCategoryRepository `autowire:"?"`
+	sv  *repositoryApi.ApiDiplRepository         `autowire:"?"`
+	cat *repositoryApi.ApiDiplCategoryRepository `autowire:"?"`
 }
 
 // Create 新增

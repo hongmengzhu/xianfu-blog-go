@@ -17,7 +17,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/clientPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
-	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	repositoryRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	authTokenPg "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/authTokenPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/event"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
@@ -39,13 +39,13 @@ func init() {
 // AccountLoginService 登录
 // @Description:
 type AccountLoginService struct {
-	dao                  *repositoryRam2.RamAccountRepository                 `autowire:"?"`
-	daoAuth              *repositoryRam2.RamAccountAuthorizationRepository    `autowire:"?"`
-	sessionAk            *repositoryRam2.RamAccountSessionAccessKeyRepository `autowire:"?"`
-	cacheSessionPubPrive *cacheRam.CacheSessionPubPrive                       `autowire:"?" `
-	Bus                  event.Bus                                            `autowire:"?"`
-	pg                   configPg.Pg                                          `value:"${pg}"`
-	authLogin            pg.Auth                                              `value:"${pg.auth}"`
+	dao                  *repositoryRam.RamAccountRepository                 `autowire:"?"`
+	daoAuth              *repositoryRam.RamAccountAuthorizationRepository    `autowire:"?"`
+	sessionAk            *repositoryRam.RamAccountSessionAccessKeyRepository `autowire:"?"`
+	cacheSessionPubPrive *cacheRam.CacheSessionPubPrive                      `autowire:"?" `
+	Bus                  event.Bus                                           `autowire:"?"`
+	pg                   configPg.Pg                                         `value:"${pg}"`
+	authLogin            pg.Auth                                             `value:"${pg.auth}"`
 }
 
 func NewAccountLoginService() *AccountLoginService {

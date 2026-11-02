@@ -5,19 +5,19 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamAccountSession"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(AccountSessionController)).Name("ManageAccountSessionController").Export(gs.As[routerPg2.RouteRegistrar]())
+	gs.Provide(new(AccountSessionController)).Name("ManageAccountSessionController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 // AccountSessionController 团队
 // @Description:
 type AccountSessionController struct {
-	routerPg2.RouteRegistrar
+	routerPg.RouteRegistrar
 	Sp *authPg.GroupManageMiddlewareSp   `autowire:"?"`
 	sv *service.RamAccountSessionService `autowire:"?"`
 }
@@ -40,7 +40,7 @@ func (c *AccountSessionController) RegisterRoutes(e *gin.Engine) {
 //	@param ctx
 func (c *AccountSessionController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -53,7 +53,7 @@ func (c *AccountSessionController) PhysicalDeletion(ctx *gin.Context) {
 //	@param ctx
 func (c *AccountSessionController) Query(ctx *gin.Context) {
 	var ct modRamAccountSession.QueryCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))

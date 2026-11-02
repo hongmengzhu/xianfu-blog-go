@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/gin-gonic/gin"
-	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	repositoryRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/idpPg/faceid"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
@@ -32,8 +32,8 @@ type FaceIdVerifyCt struct {
 
 // FaceIdService Face ID 登录验证
 type FaceIdService struct {
-	daoSource   *repositoryRam2.RamIdentitySourceRepository   `autowire:"?"`
-	daoProvider *repositoryRam2.RamIdentityProviderRepository `autowire:"?"`
+	daoSource   *repositoryRam.RamIdentitySourceRepository   `autowire:"?"`
+	daoProvider *repositoryRam.RamIdentityProviderRepository `autowire:"?"`
 }
 
 // Begin 开始 Face ID 验证（返回 Face ID 提供商类型及配置信息）

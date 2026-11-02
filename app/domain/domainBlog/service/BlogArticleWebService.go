@@ -17,10 +17,10 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/blog/attachmentTypePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumApprovedPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
-	entityBlog2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBlog"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
-	repositoryBlog2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBlog"
-	markdownPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/markdownPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBlog"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/markdownPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/blog/key/blogKeyPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
@@ -37,13 +37,13 @@ func init() {
 }
 
 type BlogArticleWebService struct {
-	sv        *repositoryBlog2.BlogArticleRepository           `autowire:"?"`
-	statDb    *repositoryBlog2.BlogArticleStatisticsRepository `autowire:"?"`
-	catDb     *repositoryBlog2.BlogArticleCategoryRepository   `autowire:"?"`
-	sp        *blogArticle.Sp                                  `autowire:"?"`
-	tagsRelat *repositoryBasic.BasicTagsRelationRepository     `autowire:"?"`
-	rdu       *bigCachePg.BatchString                          `autowire:"?"`
-	catCore   *cacheBlog.CacheBlogArticleCategory              `autowire:"?"`
+	sv        *repositoryBlog.BlogArticleRepository           `autowire:"?"`
+	statDb    *repositoryBlog.BlogArticleStatisticsRepository `autowire:"?"`
+	catDb     *repositoryBlog.BlogArticleCategoryRepository   `autowire:"?"`
+	sp        *blogArticle.Sp                                 `autowire:"?"`
+	tagsRelat *repositoryBasic.BasicTagsRelationRepository    `autowire:"?"`
+	rdu       *bigCachePg.BatchString                         `autowire:"?"`
+	catCore   *cacheBlog.CacheBlogArticleCategory             `autowire:"?"`
 }
 
 // Detail 详情
@@ -219,7 +219,7 @@ func (c *BlogArticleWebService) DetailByContext(ctx context.Context, tenantNo st
 	}
 
 	if strPg.IsNotBlank(find.Content) {
-		raw := markdownPg2.Markdown([]byte(find.Content))
+		raw := markdownPg.Markdown([]byte(find.Content))
 		info.ContentConv = raw.String()
 	}
 	//log.Info(context.Background(), log.TagAppDef, "info:%+v", info)
@@ -244,7 +244,7 @@ func (c *BlogArticleWebService) Query(ctx *gin.Context, ct modBlogArticleWeb.Que
 //	@param tenantNo 租户编号
 //	@param ct
 func (c *BlogArticleWebService) QueryByContext(ctx context.Context, tenantNo string, ct modBlogArticleWeb.QueryCt) (rt rg.Rs[pagePg.Paginator[modBlogArticleWeb.Vo]]) {
-	var query entityBlog2.BlogArticleEntity
+	var query entityBlog.BlogArticleEntity
 	copier.Copy(&query, &ct)
 	if strPg.IsNotBlank(tenantNo) {
 		query.TenantNo = tenantNo
@@ -300,7 +300,7 @@ func (c *BlogArticleWebService) QueryByContext(ctx context.Context, tenantNo str
 		ImgDefault := "/assets/imgs/shop/product-1-1.jpg"
 		pg := pagePg.NewPaginatorByPageable[modBlogArticleWeb.Vo](page.Pageable)
 		mapCategory := make(map[string]*modBlogArticleCategory.Cache)
-		mapStat := make(map[string]*entityBlog2.BlogArticleStatisticsEntity)
+		mapStat := make(map[string]*entityBlog.BlogArticleStatisticsEntity)
 		idsCategory := make([]string, 0)
 		idsNo := make([]string, 0)
 		tags := make([]string, 0)
@@ -465,8 +465,8 @@ func (c *BlogArticleWebService) QueryByContext(ctx context.Context, tenantNo str
 			}
 			if strPg.IsNotBlank(item.Content) {
 				// 截取前1000个有效文字（图片不计，代码段完整）
-				truncated := markdownPg2.TruncateMarkdown(item.Content, 1000)
-				raw := markdownPg2.Markdown([]byte(truncated))
+				truncated := markdownPg.TruncateMarkdown(item.Content, 1000)
+				raw := markdownPg.Markdown([]byte(truncated))
 				vo.ContentConv = raw.String()
 			}
 			// 栏目

@@ -4,17 +4,17 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBasic/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicAttachment"
-	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(AttachmentController)).Name("SystemAttachmentController").Export(gs.As[routerPg2.RouteRegistrar]())
+	gs.Provide(new(AttachmentController)).Name("SystemAttachmentController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 type AttachmentController struct {
-	routerPg2.RouteRegistrar
+	routerPg.RouteRegistrar
 	Sp *authPg.GroupSystemMiddlewareSp `autowire:"?"`
 	sv *service.BasicAttachmentService `autowire:"?"`
 }
@@ -38,7 +38,7 @@ func (c *AttachmentController) UploadMore(ctx *gin.Context) {
 
 func (c *AttachmentController) UploadLink(ctx *gin.Context) {
 	var ct modBasicAttachment.WebUrlCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.UploadLink(ctx, ct))
@@ -46,7 +46,7 @@ func (c *AttachmentController) UploadLink(ctx *gin.Context) {
 
 func (c *AttachmentController) Query(ctx *gin.Context) {
 	var ct modBasicAttachment.QueryCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -54,7 +54,7 @@ func (c *AttachmentController) Query(ctx *gin.Context) {
 
 func (c *AttachmentController) UpdateAddByFileOwner(ctx *gin.Context) {
 	var ct modBasicAttachment.AddByFileOwnerCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.UpdateAddByFileOwner(ctx, ct))

@@ -7,8 +7,8 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmark"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	entityBm2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
-	repositoryBm2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBm"
+	entityBm "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
+	repositoryBm "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
@@ -28,8 +28,8 @@ func init() {
 // BmBookmarkService 书签
 // @Description:
 type BmBookmarkService struct {
-	sv    *repositoryBm2.BmBookmarkRepository         `autowire:"?"`
-	catDb *repositoryBm2.BmBookmarkCategoryRepository `autowire:"?"`
+	sv    *repositoryBm.BmBookmarkRepository         `autowire:"?"`
+	catDb *repositoryBm.BmBookmarkCategoryRepository `autowire:"?"`
 }
 
 // Create 新增
@@ -40,7 +40,7 @@ type BmBookmarkService struct {
 //	@return rt
 func (c *BmBookmarkService) Create(ctx *gin.Context, ct modBmBookmark.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var info entityBm2.BmBookmarkEntity
+	var info entityBm.BmBookmarkEntity
 	err := copier.Copy(&info, &ct)
 	if err != nil {
 		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
@@ -71,7 +71,7 @@ func (c *BmBookmarkService) Create(ctx *gin.Context, ct modBmBookmark.CreateUpda
 //	@return rt
 func (c *BmBookmarkService) Update(ctx *gin.Context, ct modBmBookmark.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var info entityBm2.BmBookmarkEntity
+	var info entityBm.BmBookmarkEntity
 	err := copier.Copy(&info, &ct)
 	if err != nil {
 		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
@@ -176,7 +176,7 @@ func (c *BmBookmarkService) State(ctx *gin.Context, ids []string, state enumStat
 	}
 	for _, info := range finds {
 		if info.State != state.IndexInt8() {
-			r.Update(ctx, entityBm2.BmBookmarkEntity{State: state.IndexInt8()}, info.ID)
+			r.Update(ctx, entityBm.BmBookmarkEntity{State: state.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -217,7 +217,7 @@ func (c *BmBookmarkService) LogicalDeletion(ctx *gin.Context, ids []string) (rt 
 		for _, info := range finds {
 			enum := enumStatePg.State(info.State)
 			if ok, reverse := enum.ReverseEnableDisable(); ok {
-				repository.Update(ctx, entityBm2.BmBookmarkEntity{State: reverse.IndexInt8()}, info.ID)
+				repository.Update(ctx, entityBm.BmBookmarkEntity{State: reverse.IndexInt8()}, info.ID)
 			}
 		}
 	}
@@ -241,7 +241,7 @@ func (c *BmBookmarkService) LogicalRecovery(ctx *gin.Context, ids []string) (rt 
 	for _, info := range finds {
 		enum := enumStatePg.State(info.State)
 		if ok, reverse := enum.ReverseCancelLayAside(); ok {
-			repository.Update(ctx, entityBm2.BmBookmarkEntity{State: reverse.IndexInt8()}, info.ID)
+			repository.Update(ctx, entityBm.BmBookmarkEntity{State: reverse.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -278,7 +278,7 @@ func (c *BmBookmarkService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt
 //	@receiver c
 //	@param ct
 func (c *BmBookmarkService) Query(ctx *gin.Context, ct modBmBookmark.QueryCt) (rt rg.Rs[pagePg.Paginator[modBmBookmark.Vo]]) {
-	var query entityBm2.BmBookmarkEntity
+	var query entityBm.BmBookmarkEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modBmBookmark.Vo, 0)
 	rt.Data.Data = slice
@@ -311,7 +311,7 @@ func (c *BmBookmarkService) Query(ctx *gin.Context, ct modBmBookmark.QueryCt) (r
 
 	if page.Total > 0 && page.Data != nil && len(page.Data) > 0 {
 		pg := pagePg.NewPaginatorByPageable[modBmBookmark.Vo](page.Pageable)
-		mapCategory := make(map[string]*entityBm2.BmBookmarkCategoryEntity)
+		mapCategory := make(map[string]*entityBm.BmBookmarkCategoryEntity)
 		idsCategory := make([]string, 0)
 		for _, item := range page.Data {
 			if strPg.IsNotBlank(item.CategoryNo) {
@@ -370,7 +370,7 @@ func (c *BmBookmarkService) Query(ctx *gin.Context, ct modBmBookmark.QueryCt) (r
 //	@receiver c
 //	@param ct
 func (c *BmBookmarkService) QueryAll(ctx *gin.Context, ct modBmBookmark.QueryCt) (rt rg.Rs[[]modBmBookmark.Vo]) {
-	var query entityBm2.BmBookmarkEntity
+	var query entityBm.BmBookmarkEntity
 	copier.Copy(&query, &ct)
 	rt.Data = []modBmBookmark.Vo{}
 	infos := c.sv.FindAll(ctx, query)
@@ -392,7 +392,7 @@ func (c *BmBookmarkService) QueryAll(ctx *gin.Context, ct modBmBookmark.QueryCt)
 //	@receiver c
 //	@param ct
 func (c *BmBookmarkService) SelectNodePublic(ctx *gin.Context, ct modBmBookmark.QueryCt) (rt rg.Rs[[]model.BaseNode]) {
-	var query entityBm2.BmBookmarkEntity
+	var query entityBm.BmBookmarkEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNode, 0)
 	rt.Data = slice
@@ -412,7 +412,7 @@ func (c *BmBookmarkService) SelectNodePublic(ctx *gin.Context, ct modBmBookmark.
 //	@receiver c
 //	@param ct
 func (c *BmBookmarkService) SelectNodeAllPublic(ctx *gin.Context, ct modBmBookmark.QueryCt) (rt rg.Rs[[]model.BaseNode]) {
-	var query entityBm2.BmBookmarkEntity
+	var query entityBm.BmBookmarkEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNode, 0)
 	rt.Data = slice

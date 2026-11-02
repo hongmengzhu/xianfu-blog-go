@@ -15,9 +15,9 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/content/enumEditorPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/yesNoPg/yesNoIntPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/yesNoPg/yesNoString"
-	entityBlog2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBlog"
+	entityBlog "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
-	repositoryBlog2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBlog"
+	repositoryBlog "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/versionPg"
@@ -35,10 +35,10 @@ func init() {
 }
 
 type Sp struct {
-	sv            *repositoryBlog2.BlogCollectRepository         `autowire:"?"`
-	catDb         *repositoryBlog2.BlogCollectCategoryRepository `autowire:"?"`
-	topicRel      *repositoryBlog2.BlogTopicRelationRepository   `autowire:"?"`
-	AttachmentDao *repositoryBasic.BasicAttachmentRepository     `autowire:"?"`
+	sv            *repositoryBlog.BlogCollectRepository         `autowire:"?"`
+	catDb         *repositoryBlog.BlogCollectCategoryRepository `autowire:"?"`
+	topicRel      *repositoryBlog.BlogTopicRelationRepository   `autowire:"?"`
+	AttachmentDao *repositoryBasic.BasicAttachmentRepository    `autowire:"?"`
 }
 
 func New(sp *Sp, holder holderPg.HolderPg, ct modBlogCollect.CreateUpdateCt, isUpdate bool) *CreateUpdate {
@@ -60,10 +60,10 @@ type CreateUpdate struct {
 	ct       modBlogCollect.CreateUpdateCt
 	holder   holderPg.HolderPg
 	//
-	record         *entityBlog2.BlogCollectEntity //查询记录专用
-	recordCategory *entityBlog2.BlogCollectCategoryEntity
-	entitySave     *entityBlog2.BlogCollectEntity //保存专用
-	images         map[string]string              //图片集
+	record         *entityBlog.BlogCollectEntity //查询记录专用
+	recordCategory *entityBlog.BlogCollectCategoryEntity
+	entitySave     *entityBlog.BlogCollectEntity //保存专用
+	images         map[string]string             //图片集
 	module         string
 	tags           []string
 }
@@ -76,7 +76,7 @@ type CreateUpdate struct {
 //	@return rt
 func (c *CreateUpdate) Process(ctx *gin.Context) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", c.ct))
-	c.entitySave = &entityBlog2.BlogCollectEntity{}
+	c.entitySave = &entityBlog.BlogCollectEntity{}
 	ret := c.verify(ctx)
 	if ret.ErrorIs() {
 		return ret
@@ -236,7 +236,7 @@ func (c CreateUpdate) save(ctx *gin.Context) (rt rg.Rs[string]) {
 	c.entitySave.Version = versionPg.Make()
 	r := c.sp.sv
 	if c.isUpdate {
-		var info entityBlog2.BlogCollectEntity
+		var info entityBlog.BlogCollectEntity
 		copier.Copy(&info, c.entitySave)
 		info.ID = 0
 		log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
@@ -271,7 +271,7 @@ func (c CreateUpdate) save(ctx *gin.Context) (rt rg.Rs[string]) {
 	//
 	c.attachment(ctx)
 	// 更新 附件图
-	var imageEnt entityBlog2.BlogCollectEntity
+	var imageEnt entityBlog.BlogCollectEntity
 	//附件图
 	images, err := json.Marshal(c.images)
 	if err == nil {

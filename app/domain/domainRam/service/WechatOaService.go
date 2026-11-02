@@ -14,8 +14,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamWechat"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
-	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
-	idp2 "github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/idpPg/idp"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	ldap "github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/idpPg/idp"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/log"
@@ -54,8 +54,8 @@ var (
 
 // WechatOaService 微信公众号扫码登录 Service
 type WechatOaService struct {
-	daoSource   *repositoryRam2.RamIdentitySourceRepository   `autowire:"?"`
-	daoProvider *repositoryRam2.RamIdentityProviderRepository `autowire:"?"`
+	daoSource   *repositoryRam.RamIdentitySourceRepository   `autowire:"?"`
+	daoProvider *repositoryRam.RamIdentityProviderRepository `autowire:"?"`
 }
 
 // NewWechatOaService 构造函数
@@ -94,7 +94,7 @@ func (s *WechatOaService) GetQRCode(ctx *gin.Context, sourceNo string) (rt rg.Rs
 	sceneStr := sourceNo + "_" + randomString(16)
 
 	// 调用微信 API 创建二维码
-	qrResult, err := idp2.WechatOaCreateQRCode(cfg.ClientId2, cfg.ClientSecret2, sceneStr)
+	qrResult, err := ldap.WechatOaCreateQRCode(cfg.ClientId2, cfg.ClientSecret2, sceneStr)
 	if err != nil {
 		log.Error(ctx, log.TagAppDef, err, "创建公众号二维码失败")
 		return rt.ErrorMessage("创建二维码失败: " + err.Error())
@@ -102,7 +102,7 @@ func (s *WechatOaService) GetQRCode(ctx *gin.Context, sourceNo string) (rt rg.Rs
 
 	vo := modRamWechat.QRCodeVo{
 		Ticket:        qrResult.Ticket,
-		QRUrl:         idp2.WechatOaQRCodeShowURL(qrResult.Ticket),
+		QRUrl:         ldap.WechatOaQRCodeShowURL(qrResult.Ticket),
 		ExpireSeconds: qrResult.ExpireSeconds,
 	}
 	return rt.OkData(vo)
@@ -194,15 +194,15 @@ func (s *WechatOaService) HandleEvent(ctx *gin.Context, bodyBytes []byte, source
 	log.Info(ctx, log.TagAppDef, "微信扫码事件: ", log.Any("ticket", eventData.Ticket), log.Any("unionId", eventData.FromUserName), log.Any("event", event))
 
 	// 同时写入 idp 包的全局缓存（兼容已有的 wechat.go GetUserInfo 逻辑）
-	idp2.Lock.Lock()
-	if idp2.WechatCacheMap == nil {
-		idp2.WechatCacheMap = make(map[string]idp2.WechatCacheMapValue)
+	ldap.Lock.Lock()
+	if ldap.WechatCacheMap == nil {
+		ldap.WechatCacheMap = make(map[string]ldap.WechatCacheMapValue)
 	}
-	idp2.WechatCacheMap[eventData.Ticket] = idp2.WechatCacheMapValue{
+	ldap.WechatCacheMap[eventData.Ticket] = ldap.WechatCacheMapValue{
 		IsScanned:     true,
 		WechatUnionId: eventData.FromUserName,
 	}
-	idp2.Lock.Unlock()
+	ldap.Lock.Unlock()
 
 	return rt.OkData("")
 }

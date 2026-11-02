@@ -8,7 +8,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicTagsCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
@@ -16,11 +16,11 @@ import (
 )
 
 func init() {
-	gs.Provide(new(TagsCategoryController)).Name("SystemTagsCategoryController").Export(gs.As[routerPg2.RouteRegistrar]())
+	gs.Provide(new(TagsCategoryController)).Name("SystemTagsCategoryController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 type TagsCategoryController struct {
-	routerPg2.RouteRegistrar
+	routerPg.RouteRegistrar
 	Sp *authPg.GroupSystemMiddlewareSp   `autowire:"?"`
 	sv *service.BasicTagsCategoryService `autowire:"?"`
 }
@@ -43,7 +43,7 @@ func (c *TagsCategoryController) RegisterRoutes(e *gin.Engine) {
 
 func (c *TagsCategoryController) CreateUpdate(ctx *gin.Context) {
 	var ct modBasicTagsCategory.CreateUpdateCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	if ct.ID.ToInt64() > 0 {
@@ -55,7 +55,7 @@ func (c *TagsCategoryController) CreateUpdate(ctx *gin.Context) {
 
 func (c *TagsCategoryController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -63,7 +63,7 @@ func (c *TagsCategoryController) Delete(ctx *gin.Context) {
 
 func (c *TagsCategoryController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -71,7 +71,7 @@ func (c *TagsCategoryController) Recovery(ctx *gin.Context) {
 
 func (c *TagsCategoryController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -90,7 +90,7 @@ func (c *TagsCategoryController) Detail(ctx *gin.Context) {
 
 func (c *TagsCategoryController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -98,7 +98,7 @@ func (c *TagsCategoryController) Enable(ctx *gin.Context) {
 
 func (c *TagsCategoryController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -106,7 +106,7 @@ func (c *TagsCategoryController) Disable(ctx *gin.Context) {
 
 func (c *TagsCategoryController) State(ctx *gin.Context) {
 	var ct model.BaseStateIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	state, ok := enumStatePg.IsExistInt64(ct.State)
@@ -119,7 +119,7 @@ func (c *TagsCategoryController) State(ctx *gin.Context) {
 
 func (c *TagsCategoryController) Query(ctx *gin.Context) {
 	var ct modBasicTagsCategory.QueryCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -132,7 +132,7 @@ func (c *TagsCategoryController) SelectPublic(ctx *gin.Context) {
 
 func (c *TagsCategoryController) SelectNodePublic(ctx *gin.Context) {
 	var ct modBasicTagsCategory.QueryPublicCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
@@ -141,7 +141,7 @@ func (c *TagsCategoryController) SelectNodePublic(ctx *gin.Context) {
 
 func (c *TagsCategoryController) SelectNodeAll(ctx *gin.Context) {
 	var ct modBasicTagsCategory.QueryPublicCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.SelectNodeAllPublic(ctx, ct))
@@ -149,7 +149,7 @@ func (c *TagsCategoryController) SelectNodeAll(ctx *gin.Context) {
 
 func (c *TagsCategoryController) SelectNodeAllPublic(ctx *gin.Context) {
 	var ct modBasicTagsCategory.QueryPublicCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
@@ -158,7 +158,7 @@ func (c *TagsCategoryController) SelectNodeAllPublic(ctx *gin.Context) {
 
 func (c *TagsCategoryController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistName(ctx, ct))
@@ -166,7 +166,7 @@ func (c *TagsCategoryController) ExistName(ctx *gin.Context) {
 
 func (c *TagsCategoryController) ExistCode(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistCode(ctx, ct))

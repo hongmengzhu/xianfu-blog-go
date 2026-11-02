@@ -8,7 +8,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamRole"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg/controllerPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -17,11 +17,11 @@ import (
 )
 
 func init() {
-	gs.Provide(new(RoleController)).Name("SystemRoleController").Export(gs.As[routerPg2.RouteRegistrar]())
+	gs.Provide(new(RoleController)).Name("SystemRoleController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 type RoleController struct {
-	routerPg2.RouteRegistrar
+	routerPg.RouteRegistrar
 	controllerPg.SpSystemAuth
 	sv *service.RamRoleService `autowire:"?"`
 }
@@ -43,7 +43,7 @@ func (c *RoleController) RegisterRoutes(e *gin.Engine) {
 
 func (c *RoleController) CreateUpdate(ctx *gin.Context) {
 	var ct modRamRole.CreateUpdateCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	if ct.ID.ToInt64() < 1 {
@@ -55,7 +55,7 @@ func (c *RoleController) CreateUpdate(ctx *gin.Context) {
 
 func (c *RoleController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -63,7 +63,7 @@ func (c *RoleController) Delete(ctx *gin.Context) {
 
 func (c *RoleController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -71,7 +71,7 @@ func (c *RoleController) Recovery(ctx *gin.Context) {
 
 func (c *RoleController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -90,7 +90,7 @@ func (c *RoleController) Detail(ctx *gin.Context) {
 
 func (c *RoleController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -98,7 +98,7 @@ func (c *RoleController) Enable(ctx *gin.Context) {
 
 func (c *RoleController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -106,7 +106,7 @@ func (c *RoleController) Disable(ctx *gin.Context) {
 
 func (c *RoleController) Query(ctx *gin.Context) {
 	var ct modRamRole.QueryCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -114,7 +114,7 @@ func (c *RoleController) Query(ctx *gin.Context) {
 
 func (c *RoleController) SelectNodeAll(ctx *gin.Context) {
 	var ct modRamRole.QueryPublicCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.SelectNodeAll(ctx, ct))
@@ -122,7 +122,7 @@ func (c *RoleController) SelectNodeAll(ctx *gin.Context) {
 
 func (c *RoleController) SelectNodeAllPublic(ctx *gin.Context) {
 	var ct modRamRole.QueryPublicCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
@@ -136,7 +136,7 @@ func (c *RoleController) SelectPublic(ctx *gin.Context) {
 
 func (c *RoleController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistName(ctx, ct))

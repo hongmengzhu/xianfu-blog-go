@@ -5,17 +5,17 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBookmark/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkCategory/modApiBmBookmarkCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(BookmarkCategoryApiController)).Export(gs.As[routerPg2.RouteRegistrar]())
+	gs.Provide(new(BookmarkCategoryApiController)).Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 type BookmarkCategoryApiController struct {
-	routerPg2.RouteRegistrar
+	routerPg.RouteRegistrar
 	Sp *authPg.GroupApiMiddlewareSp          `autowire:"?"`
 	sv *service.BmBookmarkCategoryApiService `autowire:"?"`
 }
@@ -56,7 +56,7 @@ func (c *BookmarkCategoryApiController) GetOrg(ctx *gin.Context) {
 //	@param ctx
 func (c *BookmarkCategoryApiController) CreateUpdate(ctx *gin.Context) {
 	var ct modApiBmBookmarkCategory.CreateUpdateCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.CreateUpdate(ctx, ct))
@@ -69,7 +69,7 @@ func (c *BookmarkCategoryApiController) CreateUpdate(ctx *gin.Context) {
 //	@param ctx
 func (c *BookmarkCategoryApiController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))

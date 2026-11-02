@@ -5,18 +5,18 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamResourceGroupRelation"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/resourceTypeCategoryPg"
-	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg/controllerPg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(ResourceGroupRelationController)).Name("SystemResourceGroupRelationController").Export(gs.As[routerPg2.RouteRegistrar]())
+	gs.Provide(new(ResourceGroupRelationController)).Name("SystemResourceGroupRelationController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 type ResourceGroupRelationController struct {
-	routerPg2.RouteRegistrar
+	routerPg.RouteRegistrar
 	controllerPg.SpSystemAuth
 	sv *service.RamResourceGroupRelationService `autowire:"?"`
 }
@@ -28,7 +28,7 @@ func (c *ResourceGroupRelationController) RegisterRoutes(e *gin.Engine) {
 
 func (c *ResourceGroupRelationController) Selected(ctx *gin.Context) {
 	var ct modRamResourceGroupRelation.QueryByTypeValueCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Selected(ctx, ct))
@@ -41,7 +41,7 @@ func (c *ResourceGroupRelationController) Selected(ctx *gin.Context) {
 //	@param ctx
 func (c *ResourceGroupRelationController) SelectedByRole(ctx *gin.Context) {
 	var ct modRamResourceGroupRelation.QueryByTypeValueCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ct.TypeCategory = resourceTypeCategoryPg.Role.Index()

@@ -8,7 +8,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamMenu"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg/controllerPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -17,11 +17,11 @@ import (
 )
 
 func init() {
-	gs.Provide(new(MenuController)).Name("SystemMenuController").Export(gs.As[routerPg2.RouteRegistrar]())
+	gs.Provide(new(MenuController)).Name("SystemMenuController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 type MenuController struct {
-	routerPg2.RouteRegistrar
+	routerPg.RouteRegistrar
 	controllerPg.SpSystemAuth
 	sv *service.RamMenuService `autowire:"?"`
 }
@@ -44,7 +44,7 @@ func (c *MenuController) RegisterRoutes(e *gin.Engine) {
 
 func (c *MenuController) CreateUpdate(ctx *gin.Context) {
 	var ct modRamMenu.CreateUpdateCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	if ct.ID.ToInt64() > 0 {
@@ -56,7 +56,7 @@ func (c *MenuController) CreateUpdate(ctx *gin.Context) {
 
 func (c *MenuController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -64,7 +64,7 @@ func (c *MenuController) Delete(ctx *gin.Context) {
 
 func (c *MenuController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -72,7 +72,7 @@ func (c *MenuController) Recovery(ctx *gin.Context) {
 
 func (c *MenuController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -91,7 +91,7 @@ func (c *MenuController) Detail(ctx *gin.Context) {
 
 func (c *MenuController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -99,7 +99,7 @@ func (c *MenuController) Enable(ctx *gin.Context) {
 
 func (c *MenuController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -107,7 +107,7 @@ func (c *MenuController) Disable(ctx *gin.Context) {
 
 func (c *MenuController) Query(ctx *gin.Context) {
 	var ct modRamMenu.QueryCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -115,7 +115,7 @@ func (c *MenuController) Query(ctx *gin.Context) {
 
 func (c *MenuController) SelectNodeAll(ctx *gin.Context) {
 	var ct modRamMenu.QueryPublicCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 
@@ -124,7 +124,7 @@ func (c *MenuController) SelectNodeAll(ctx *gin.Context) {
 
 func (c *MenuController) SelectNodeAllPublic(ctx *gin.Context) {
 	var ct modRamMenu.QueryPublicCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
@@ -138,7 +138,7 @@ func (c *MenuController) QueryAll(ctx *gin.Context) {
 
 func (c *MenuController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistName(ctx, ct))

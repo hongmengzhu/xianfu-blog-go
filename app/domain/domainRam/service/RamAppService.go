@@ -2,12 +2,12 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	modRamApp2 "github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamApp"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamApp"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/automatedPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
-	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
@@ -28,8 +28,8 @@ func init() {
 // RamAppService 团队
 // @Description:
 type RamAppService struct {
-	sv  *repositoryRam2.RamAppRepository         `autowire:"?"`
-	cat *repositoryRam2.RamAppCategoryRepository `autowire:"?"`
+	sv  *repositoryRam.RamAppRepository         `autowire:"?"`
+	cat *repositoryRam.RamAppCategoryRepository `autowire:"?"`
 }
 
 // Create 新增
@@ -38,7 +38,7 @@ type RamAppService struct {
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *RamAppService) Create(ctx *gin.Context, ct modRamApp2.CreateCt) (rt rg.Rs[string]) {
+func (c *RamAppService) Create(ctx *gin.Context, ct modRamApp.CreateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityRam.RamAppEntity
 	err := copier.Copy(&info, &ct)
@@ -91,7 +91,7 @@ func (c *RamAppService) Create(ctx *gin.Context, ct modRamApp2.CreateCt) (rt rg.
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *RamAppService) Update(ctx *gin.Context, ct modRamApp2.UpdateCt) (rt rg.Rs[string]) {
+func (c *RamAppService) Update(ctx *gin.Context, ct modRamApp.UpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityRam.RamAppEntity
 	copier.Copy(&info, &ct)
@@ -136,7 +136,7 @@ func (c *RamAppService) Update(ctx *gin.Context, ct modRamApp2.UpdateCt) (rt rg.
 //	@Description:
 //	@receiver c
 //	@param id
-func (c *RamAppService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamApp2.Vo]) {
+func (c *RamAppService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamApp.Vo]) {
 	if id < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -144,7 +144,7 @@ func (c *RamAppService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamApp2.
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
-	var info modRamApp2.Vo
+	var info modRamApp.Vo
 	copier.Copy(&info, &find)
 	return rt.OkData(info)
 }
@@ -291,11 +291,11 @@ func (c *RamAppService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamAppService) Query(ctx *gin.Context, ct modRamApp2.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamApp2.Vo]]) {
+func (c *RamAppService) Query(ctx *gin.Context, ct modRamApp.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamApp.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamAppEntity
 	copier.Copy(&query, &ct)
-	slice := make([]modRamApp2.Vo, 0)
+	slice := make([]modRamApp.Vo, 0)
 	rt.Data.Data = slice
 	r := c.sv
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
@@ -315,10 +315,10 @@ func (c *RamAppService) Query(ctx *gin.Context, ct modRamApp2.QueryCt) (rt rg.Rs
 
 	if page.Total > 0 && page.Data != nil && len(page.Data) > 0 {
 
-		pg := pagePg.NewPaginatorByPageable[modRamApp2.Vo](page.Pageable)
+		pg := pagePg.NewPaginatorByPageable[modRamApp.Vo](page.Pageable)
 		//字段赋值
 		for _, item := range page.Data {
-			var vo modRamApp2.Vo
+			var vo modRamApp.Vo
 			copier.Copy(&vo, &item)
 			slice = append(slice, vo)
 		}
@@ -335,7 +335,7 @@ func (c *RamAppService) Query(ctx *gin.Context, ct modRamApp2.QueryCt) (rt rg.Rs
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamAppService) SelectNodePublic(ctx *gin.Context, ct modRamApp2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *RamAppService) SelectNodePublic(ctx *gin.Context, ct modRamApp.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamAppEntity
 	copier.Copy(&query, &ct)
@@ -344,7 +344,7 @@ func (c *RamAppService) SelectNodePublic(ctx *gin.Context, ct modRamApp2.QueryPu
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
 		for _, item := range infos {
-			var vo modRamApp2.Vo
+			var vo modRamApp.Vo
 			copier.Copy(&vo, &item)
 			code := model.BaseNodeNo{
 				Value:  item.No,
@@ -364,7 +364,7 @@ func (c *RamAppService) SelectNodePublic(ctx *gin.Context, ct modRamApp2.QueryPu
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamAppService) SelectNodeAllPublic(ctx *gin.Context, ct modRamApp2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *RamAppService) SelectNodeAllPublic(ctx *gin.Context, ct modRamApp.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamAppEntity
 	copier.Copy(&query, &ct)
@@ -373,7 +373,7 @@ func (c *RamAppService) SelectNodeAllPublic(ctx *gin.Context, ct modRamApp2.Quer
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
 		for _, item := range infos {
-			var vo modRamApp2.Vo
+			var vo modRamApp.Vo
 			copier.Copy(&vo, &item)
 			code := model.BaseNodeNo{
 				Value:  item.No,
@@ -393,16 +393,16 @@ func (c *RamAppService) SelectNodeAllPublic(ctx *gin.Context, ct modRamApp2.Quer
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamAppService) SelectPublic(ctx *gin.Context, ct modRamApp2.QueryCt) (rt rg.Rs[[]modRamApp2.Vo]) {
+func (c *RamAppService) SelectPublic(ctx *gin.Context, ct modRamApp.QueryCt) (rt rg.Rs[[]modRamApp.Vo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamAppEntity
 	copier.Copy(&query, &ct)
-	slice := make([]modRamApp2.Vo, 0)
+	slice := make([]modRamApp.Vo, 0)
 	rt.Data = slice
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
 		for _, item := range infos {
-			var vo modRamApp2.Vo
+			var vo modRamApp.Vo
 			copier.Copy(&vo, &item)
 			slice = append(slice, vo)
 		}

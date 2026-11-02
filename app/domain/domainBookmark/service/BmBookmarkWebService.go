@@ -20,8 +20,8 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
-	repositoryBm2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBm"
-	markdownPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/markdownPg"
+	repositoryBm "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBm"
+	markdownPg "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/markdownPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/blog/key/blogKeyPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
@@ -37,8 +37,8 @@ func init() {
 }
 
 type BmBookmarkWebService struct {
-	sv        *repositoryBm2.BmBookmarkRepository          `autowire:"?"`
-	catDb     *repositoryBm2.BmBookmarkCategoryRepository  `autowire:"?"`
+	sv        *repositoryBm.BmBookmarkRepository           `autowire:"?"`
+	catDb     *repositoryBm.BmBookmarkCategoryRepository   `autowire:"?"`
 	sp        *blogArticle.Sp                              `autowire:"?"`
 	tagsRelat *repositoryBasic.BasicTagsRelationRepository `autowire:"?"`
 	rdu       *bigCachePg.BatchString                      `autowire:"?"`
@@ -216,7 +216,7 @@ func (c *BmBookmarkWebService) DetailByContext(ctx context.Context, tenantNo str
 	}
 
 	if strPg.IsNotBlank(find.Content) {
-		raw := markdownPg2.Markdown([]byte(find.Content))
+		raw := markdownPg.Markdown([]byte(find.Content))
 		info.ContentConv = raw.String()
 	}
 	// log.Info(context.Background(), log.TagAppDef, "info:%+v", info)
@@ -476,8 +476,8 @@ func (c *BmBookmarkWebService) DataConvert(ctx context.Context, tenantNo string,
 			}
 			if strPg.IsNotBlank(item.Content) {
 				// 截取前1000个有效文字（图片不计，代码段完整）
-				truncated := markdownPg2.TruncateMarkdown(item.Content, 1000)
-				raw := markdownPg2.Markdown([]byte(truncated))
+				truncated := markdownPg.TruncateMarkdown(item.Content, 1000)
+				raw := markdownPg.Markdown([]byte(truncated))
 				vo.ContentConv = raw.String()
 			}
 			// 栏目

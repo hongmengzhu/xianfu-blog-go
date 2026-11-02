@@ -3,10 +3,10 @@ package bookmark
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBookmark/service"
-	modBmBookmark2 "github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmark"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmark"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
@@ -14,13 +14,13 @@ import (
 )
 
 func init() {
-	gs.Provide(new(BookmarkController)).Name("ManageBookmarkController").Export(gs.As[routerPg2.RouteRegistrar]())
+	gs.Provide(new(BookmarkController)).Name("ManageBookmarkController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 // BookmarkController 书签
 // @Description:
 type BookmarkController struct {
-	routerPg2.RouteRegistrar
+	routerPg.RouteRegistrar
 	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
 	sv *service.BmBookmarkService      `autowire:"?"`
 }
@@ -53,8 +53,8 @@ func (c *BookmarkController) RegisterRoutes(e *gin.Engine) {
 //	@receiver c
 //	@param ctx
 func (c *BookmarkController) CreateUpdate(ctx *gin.Context) {
-	var ct modBmBookmark2.CreateUpdateCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	var ct modBmBookmark.CreateUpdateCt
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	if ct.ID.ToInt64() > 0 {
@@ -71,7 +71,7 @@ func (c *BookmarkController) CreateUpdate(ctx *gin.Context) {
 //	@param ctx
 func (c *BookmarkController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -84,7 +84,7 @@ func (c *BookmarkController) Delete(ctx *gin.Context) {
 //	@param ctx
 func (c *BookmarkController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -97,7 +97,7 @@ func (c *BookmarkController) Recovery(ctx *gin.Context) {
 //	@param ctx
 func (c *BookmarkController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -124,7 +124,7 @@ func (c *BookmarkController) Detail(ctx *gin.Context) {
 //	@param ctx
 func (c *BookmarkController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -137,7 +137,7 @@ func (c *BookmarkController) Enable(ctx *gin.Context) {
 //	@param ctx
 func (c *BookmarkController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -150,7 +150,7 @@ func (c *BookmarkController) Disable(ctx *gin.Context) {
 //	@param ctx
 func (c *BookmarkController) State(ctx *gin.Context) {
 	var ct model.BaseStateIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	state, ok := enumStatePg.IsExistInt64(ct.State)
@@ -167,25 +167,25 @@ func (c *BookmarkController) State(ctx *gin.Context) {
 //	@receiver c
 //	@param ctx
 func (c *BookmarkController) Query(ctx *gin.Context) {
-	var ct modBmBookmark2.QueryCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	var ct modBmBookmark.QueryCt
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
 }
 
 func (c *BookmarkController) SelectNodePublic(ctx *gin.Context) {
-	ct := modBmBookmark2.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
+	ct := modBmBookmark.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
 	ctx.JSON(200, c.sv.SelectNodePublic(ctx, ct))
 }
 
 func (c *BookmarkController) SelectNodeAllPublic(ctx *gin.Context) {
-	ct := modBmBookmark2.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
+	ct := modBmBookmark.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
 	ctx.JSON(200, c.sv.SelectNodeAllPublic(ctx, ct))
 }
 
 func (c *BookmarkController) QueryAll(ctx *gin.Context) {
-	ct := modBmBookmark2.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
+	ct := modBmBookmark.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
 	ctx.JSON(200, c.sv.QueryAll(ctx, ct))
 }
 
@@ -196,7 +196,7 @@ func (c *BookmarkController) QueryAll(ctx *gin.Context) {
 //	@param ctx
 func (c *BookmarkController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistName(ctx, ct))
@@ -209,7 +209,7 @@ func (c *BookmarkController) ExistName(ctx *gin.Context) {
 //	@param ctx
 func (c *BookmarkController) ExistNo(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistNo(ctx, ct))

@@ -11,7 +11,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
-	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	repositoryRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
 	"go-spring.org/log"
@@ -33,8 +33,8 @@ func init() {
 // RamResourceGroupService 资源组
 // @Description:
 type RamResourceGroupService struct {
-	sv     *repositoryRam2.RamResourceGroupRepository     `autowire:"?"`
-	authDb *repositoryRam2.RamResourceAuthorityRepository `autowire:"?"`
+	sv     *repositoryRam.RamResourceGroupRepository     `autowire:"?"`
+	authDb *repositoryRam.RamResourceAuthorityRepository `autowire:"?"`
 }
 
 // Create 新增

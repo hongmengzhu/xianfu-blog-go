@@ -13,7 +13,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/clientPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
-	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	repositoryRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/idpPg/idp"
 	samlPkg "github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/idpPg/saml"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
@@ -38,14 +38,14 @@ type samlSourceConfig struct {
 
 // SamlLoginService SAML 登录 Service
 type SamlLoginService struct {
-	daoAccount    *repositoryRam2.RamAccountRepository           `autowire:"?"`
-	daoSource     *repositoryRam2.RamIdentitySourceRepository    `autowire:"?"`
-	daoCredential *repositoryRam2.RamIdpCredentialRepository     `autowire:"?"`
-	daoMetadata   *repositoryRam2.RamIdpMetadataCacheRepository  `autowire:"?"`
-	daoBinding    *repositoryRam2.RamIdpBindingRepository        `autowire:"?"`
-	daoSessionLog *repositoryRam2.RamAccountSessionLogRepository `autowire:"?"`
-	loginService  *AccountLoginService                           `autowire:"?"`
-	mfaService    *AccountMfaService                             `autowire:"?"`
+	daoAccount    *repositoryRam.RamAccountRepository           `autowire:"?"`
+	daoSource     *repositoryRam.RamIdentitySourceRepository    `autowire:"?"`
+	daoCredential *repositoryRam.RamIdpCredentialRepository     `autowire:"?"`
+	daoMetadata   *repositoryRam.RamIdpMetadataCacheRepository  `autowire:"?"`
+	daoBinding    *repositoryRam.RamIdpBindingRepository        `autowire:"?"`
+	daoSessionLog *repositoryRam.RamAccountSessionLogRepository `autowire:"?"`
+	loginService  *AccountLoginService                          `autowire:"?"`
+	mfaService    *AccountMfaService                            `autowire:"?"`
 }
 
 func NewSamlLoginService() *SamlLoginService {

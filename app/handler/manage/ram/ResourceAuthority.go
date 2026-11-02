@@ -5,19 +5,19 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamResourceAuthority"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(ResourceAuthorityController)).Name("ManageResourceAuthorityController").Export(gs.As[routerPg2.RouteRegistrar]())
+	gs.Provide(new(ResourceAuthorityController)).Name("ManageResourceAuthorityController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 // ResourceAuthorityController 资源授权
 // @Description:
 type ResourceAuthorityController struct {
-	routerPg2.RouteRegistrar
+	routerPg.RouteRegistrar
 	Sp *authPg.GroupManageMiddlewareSp      `autowire:"?"`
 	sv *service.RamResourceAuthorityService `autowire:"?"`
 }
@@ -41,7 +41,7 @@ func (c *ResourceAuthorityController) RegisterRoutes(e *gin.Engine) {
 //	@param ctx
 func (c *ResourceAuthorityController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -54,7 +54,7 @@ func (c *ResourceAuthorityController) Delete(ctx *gin.Context) {
 //	@param ctx
 func (c *ResourceAuthorityController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -67,7 +67,7 @@ func (c *ResourceAuthorityController) PhysicalDeletion(ctx *gin.Context) {
 //	@param ctx
 func (c *ResourceAuthorityController) Query(ctx *gin.Context) {
 	var ct modRamResourceAuthority.QueryCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))

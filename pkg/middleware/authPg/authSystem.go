@@ -10,7 +10,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constContextPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constHeaderPg"
 	authTokenPg "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/authTokenPg"
-	cacheAuthPubPrivPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/cachePg/cacheAuthPubPrivPg"
+	cacheAuthPubPrivPg "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/cachePg/cacheAuthPubPrivPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
@@ -38,7 +38,7 @@ func GroupSystemMiddleware(m *GroupSystemMiddlewareSp) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader(constHeaderPg.HeaderAuthorization_system)
 		if strPg.IsNotBlank(token) {
-			get, b := cacheAuthPubPrivPg2.Get(cacheAuthPubPrivPg2.KeySystem())
+			get, b := cacheAuthPubPrivPg.Get(cacheAuthPubPrivPg.KeySystem())
 			if !b {
 				c.JSON(200, rg.Error[string]("密钥不存在"))
 				c.Abort()

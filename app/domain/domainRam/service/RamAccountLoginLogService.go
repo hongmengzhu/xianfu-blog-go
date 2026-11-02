@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamAccountLoginLog"
 	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
-	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	repositoryRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"
@@ -24,8 +24,8 @@ func init() {
 // RamAccountLoginLogService 团队
 // @Description:
 type RamAccountLoginLogService struct {
-	sv    *repositoryRam2.RamAccountLoginLogRepository `autowire:"?"`
-	accDb *repositoryRam2.RamAccountRepository         `autowire:"?"`
+	sv    *repositoryRam.RamAccountLoginLogRepository `autowire:"?"`
+	accDb *repositoryRam.RamAccountRepository         `autowire:"?"`
 }
 
 // PhysicalDeletion 物理删除

@@ -6,7 +6,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeAttrPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
-	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	repositoryRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
@@ -25,12 +25,12 @@ func init() {
 // RamResourceAuthorizationService 资源授权动作 公共调用
 // @Description:
 type RamResourceAuthorizationService struct {
-	ra            *RamResourceAuthorityService                   `autowire:"?"`
-	resourceAuth  *repositoryRam2.RamResourceAuthorityRepository `autowire:"?"`
-	resourceGroup *repositoryRam2.RamResourceGroupRepository     `autowire:"?"`
-	resourceRel   *repositoryRam2.RamResourceRelationRepository  `autowire:"?"`
-	resource      *repositoryRam2.RamResourceRepository          `autowire:"?"`
-	casbin        *RamResourceCasbinService                      `autowire:"?"`
+	ra            *RamResourceAuthorityService                  `autowire:"?"`
+	resourceAuth  *repositoryRam.RamResourceAuthorityRepository `autowire:"?"`
+	resourceGroup *repositoryRam.RamResourceGroupRepository     `autowire:"?"`
+	resourceRel   *repositoryRam.RamResourceRelationRepository  `autowire:"?"`
+	resource      *repositoryRam.RamResourceRepository          `autowire:"?"`
+	casbin        *RamResourceCasbinService                     `autowire:"?"`
 }
 
 // UpdateByResourceGroup 更新权限

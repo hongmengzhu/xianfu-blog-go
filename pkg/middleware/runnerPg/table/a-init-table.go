@@ -6,12 +6,12 @@ import (
 	"time"
 
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
-	entityApi2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityApi"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityApi"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
-	entityBlog2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBlog"
-	entityBm2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
-	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
-	entityTc2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityTc"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBlog"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityTc"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbMakePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbManagerPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -31,9 +31,9 @@ func (b *AInitTable) Run(ctx context.Context) error {
 	log.Info(context.Background(), log.TagAppDef, "初始化表=>表不存在时,则进行初始化")
 	entityData := make([]any, 0)
 	{
-		entityData = append(entityData, &entityApi2.ApiDiplEntity{})
-		entityData = append(entityData, &entityApi2.ApiDiplAccessKeyEntity{})
-		entityData = append(entityData, &entityApi2.ApiDiplCategoryEntity{})
+		entityData = append(entityData, &entityApi.ApiDiplEntity{})
+		entityData = append(entityData, &entityApi.ApiDiplAccessKeyEntity{})
+		entityData = append(entityData, &entityApi.ApiDiplCategoryEntity{})
 	}
 	{
 		entityData = append(entityData, &entityBasic.BasicAccountApplyDenyListEntity{})
@@ -55,17 +55,17 @@ func (b *AInitTable) Run(ctx context.Context) error {
 		entityData = append(entityData, &entityBasic.BasicTagsRelationEntity{})
 	}
 	{
-		entityData = append(entityData, &entityBlog2.BlogArticleEntity{})
-		entityData = append(entityData, &entityBlog2.BlogArticleCategoryEntity{})
-		entityData = append(entityData, &entityBlog2.BlogArticleStatisticsEntity{})
-		entityData = append(entityData, &entityBm2.BmBookmarkEntity{})
-		entityData = append(entityData, &entityBm2.BmBookmarkCategoryEntity{})
-		entityData = append(entityData, &entityBlog2.BlogCollectEntity{})
-		entityData = append(entityData, &entityBlog2.BlogCollectCategoryEntity{})
-		entityData = append(entityData, &entityBlog2.BlogTopicEntity{})
-		entityData = append(entityData, &entityBlog2.BlogTopicCategoryEntity{})
-		entityData = append(entityData, &entityBlog2.BlogTopicRelationEntity{})
-		entityData = append(entityData, &entityBlog2.BlogTopicStatisticsEntity{})
+		entityData = append(entityData, &entityBlog.BlogArticleEntity{})
+		entityData = append(entityData, &entityBlog.BlogArticleCategoryEntity{})
+		entityData = append(entityData, &entityBlog.BlogArticleStatisticsEntity{})
+		entityData = append(entityData, &entityBm.BmBookmarkEntity{})
+		entityData = append(entityData, &entityBm.BmBookmarkCategoryEntity{})
+		entityData = append(entityData, &entityBlog.BlogCollectEntity{})
+		entityData = append(entityData, &entityBlog.BlogCollectCategoryEntity{})
+		entityData = append(entityData, &entityBlog.BlogTopicEntity{})
+		entityData = append(entityData, &entityBlog.BlogTopicCategoryEntity{})
+		entityData = append(entityData, &entityBlog.BlogTopicRelationEntity{})
+		entityData = append(entityData, &entityBlog.BlogTopicStatisticsEntity{})
 	}
 	//
 	{
@@ -100,9 +100,9 @@ func (b *AInitTable) Run(ctx context.Context) error {
 	}
 	//
 	{
-		entityData = append(entityData, &entityTc2.TcLevelEntity{})
-		entityData = append(entityData, &entityTc2.TcTenantEntity{})
-		entityData = append(entityData, &entityTc2.TcTenantDomainEntity{})
+		entityData = append(entityData, &entityTc.TcLevelEntity{})
+		entityData = append(entityData, &entityTc.TcTenantEntity{})
+		entityData = append(entityData, &entityTc.TcTenantDomainEntity{})
 	}
 
 	//初始化创建表

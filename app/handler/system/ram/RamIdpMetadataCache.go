@@ -8,7 +8,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdpMetadataCache"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg/controllerPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -17,11 +17,11 @@ import (
 )
 
 func init() {
-	gs.Provide(new(RamIdpMetadataCacheController)).Name("SystemRamIdpMetadataCacheController").Export(gs.As[routerPg2.RouteRegistrar]())
+	gs.Provide(new(RamIdpMetadataCacheController)).Name("SystemRamIdpMetadataCacheController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 type RamIdpMetadataCacheController struct {
-	routerPg2.RouteRegistrar
+	routerPg.RouteRegistrar
 	controllerPg.SpSystemAuth
 	sv *service.RamIdpMetadataCacheService `autowire:"?"`
 }
@@ -42,7 +42,7 @@ func (c *RamIdpMetadataCacheController) RegisterRoutes(e *gin.Engine) {
 
 func (c *RamIdpMetadataCacheController) CreateUpdate(ctx *gin.Context) {
 	var ct modRamIdpMetadataCache.CreateUpdateCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.CreateUpdate(ctx, ct))
@@ -50,7 +50,7 @@ func (c *RamIdpMetadataCacheController) CreateUpdate(ctx *gin.Context) {
 
 func (c *RamIdpMetadataCacheController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -58,7 +58,7 @@ func (c *RamIdpMetadataCacheController) Delete(ctx *gin.Context) {
 
 func (c *RamIdpMetadataCacheController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -66,7 +66,7 @@ func (c *RamIdpMetadataCacheController) Recovery(ctx *gin.Context) {
 
 func (c *RamIdpMetadataCacheController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -85,7 +85,7 @@ func (c *RamIdpMetadataCacheController) Detail(ctx *gin.Context) {
 
 func (c *RamIdpMetadataCacheController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -93,7 +93,7 @@ func (c *RamIdpMetadataCacheController) Enable(ctx *gin.Context) {
 
 func (c *RamIdpMetadataCacheController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -101,7 +101,7 @@ func (c *RamIdpMetadataCacheController) Disable(ctx *gin.Context) {
 
 func (c *RamIdpMetadataCacheController) Query(ctx *gin.Context) {
 	var ct modRamIdpMetadataCache.QueryCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -109,7 +109,7 @@ func (c *RamIdpMetadataCacheController) Query(ctx *gin.Context) {
 
 func (c *RamIdpMetadataCacheController) SelectNodeAll(ctx *gin.Context) {
 	var ct modRamIdpMetadataCache.QueryPublicCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.SelectNodeAll(ctx, ct))
@@ -117,7 +117,7 @@ func (c *RamIdpMetadataCacheController) SelectNodeAll(ctx *gin.Context) {
 
 func (c *RamIdpMetadataCacheController) SelectNodeAllPublic(ctx *gin.Context) {
 	var ct modRamIdpMetadataCache.QueryPublicCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()

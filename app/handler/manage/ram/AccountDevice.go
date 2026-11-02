@@ -5,19 +5,19 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamAccountDevice"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(AccountDeviceController)).Name("ManageAccountDeviceController").Export(gs.As[routerPg2.RouteRegistrar]())
+	gs.Provide(new(AccountDeviceController)).Name("ManageAccountDeviceController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 // AccountDeviceController 设备
 // @Description:
 type AccountDeviceController struct {
-	routerPg2.RouteRegistrar
+	routerPg.RouteRegistrar
 	Sp *authPg.GroupManageMiddlewareSp  `autowire:"?"`
 	sv *service.RamAccountDeviceService `autowire:"?"`
 }
@@ -40,7 +40,7 @@ func (c *AccountDeviceController) RegisterRoutes(e *gin.Engine) {
 //	@param ctx
 func (c *AccountDeviceController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -53,7 +53,7 @@ func (c *AccountDeviceController) PhysicalDeletion(ctx *gin.Context) {
 //	@param ctx
 func (c *AccountDeviceController) Query(ctx *gin.Context) {
 	var ct modRamAccountDevice.QueryCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))

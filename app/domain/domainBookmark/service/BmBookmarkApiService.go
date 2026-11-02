@@ -10,7 +10,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/blog/typeReadingPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
-	repositoryBm2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBm"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg/holderApiPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
@@ -26,9 +26,9 @@ func init() {
 }
 
 type BmBookmarkApiService struct {
-	sv     *repositoryBm2.BmBookmarkRepository         `autowire:"?"`
-	catDb  *repositoryBm2.BmBookmarkCategoryRepository `autowire:"?"`
-	catSer *BmBookmarkCategoryApiService               `autowire:"?"`
+	sv     *repositoryBm.BmBookmarkRepository         `autowire:"?"`
+	catDb  *repositoryBm.BmBookmarkCategoryRepository `autowire:"?"`
+	catSer *BmBookmarkCategoryApiService              `autowire:"?"`
 }
 
 // GetAll 获取所有

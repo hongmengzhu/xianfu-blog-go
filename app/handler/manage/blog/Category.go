@@ -6,7 +6,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
@@ -14,13 +14,13 @@ import (
 )
 
 func init() {
-	gs.Provide(new(CategoryController)).Name("ManageCategoryController").Export(gs.As[routerPg2.RouteRegistrar]())
+	gs.Provide(new(CategoryController)).Name("ManageCategoryController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 // CategoryController 分类
 // @Description:
 type CategoryController struct {
-	routerPg2.RouteRegistrar
+	routerPg.RouteRegistrar
 	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
 	sv *service.BlogCategoryService    `autowire:"?"`
 }
@@ -56,7 +56,7 @@ func (c *CategoryController) RegisterRoutes(e *gin.Engine) {
 //	@param ctx
 func (c *CategoryController) Create(ctx *gin.Context) {
 	var ct modBlogCategory.CreateCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Create(ctx, ct))
@@ -69,7 +69,7 @@ func (c *CategoryController) Create(ctx *gin.Context) {
 //	@param ctx
 func (c *CategoryController) Update(ctx *gin.Context) {
 	var ct modBlogCategory.UpdateCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Update(ctx, ct))
@@ -82,7 +82,7 @@ func (c *CategoryController) Update(ctx *gin.Context) {
 //	@param ctx
 func (c *CategoryController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -95,7 +95,7 @@ func (c *CategoryController) Delete(ctx *gin.Context) {
 //	@param ctx
 func (c *CategoryController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -108,7 +108,7 @@ func (c *CategoryController) Recovery(ctx *gin.Context) {
 //	@param ctx
 func (c *CategoryController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -135,7 +135,7 @@ func (c *CategoryController) Detail(ctx *gin.Context) {
 //	@param ctx
 func (c *CategoryController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -148,7 +148,7 @@ func (c *CategoryController) Enable(ctx *gin.Context) {
 //	@param ctx
 func (c *CategoryController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -161,7 +161,7 @@ func (c *CategoryController) Disable(ctx *gin.Context) {
 //	@param ctx
 func (c *CategoryController) State(ctx *gin.Context) {
 	var ct model.BaseStateIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	state, ok := enumStatePg.IsExistInt64(ct.State)
@@ -179,7 +179,7 @@ func (c *CategoryController) State(ctx *gin.Context) {
 //	@param ctx
 func (c *CategoryController) Query(ctx *gin.Context) {
 	var ct modBlogCategory.QueryCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -187,7 +187,7 @@ func (c *CategoryController) Query(ctx *gin.Context) {
 
 func (c *CategoryController) SelectNodePublic(ctx *gin.Context) {
 	var ct modBlogCategory.QueryPublicCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
@@ -196,7 +196,7 @@ func (c *CategoryController) SelectNodePublic(ctx *gin.Context) {
 
 func (c *CategoryController) SelectNodeAllPublic(ctx *gin.Context) {
 	var ct modBlogCategory.QueryPublicCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
@@ -205,7 +205,7 @@ func (c *CategoryController) SelectNodeAllPublic(ctx *gin.Context) {
 
 func (c *CategoryController) SelectPublic(ctx *gin.Context) {
 	var ct modBlogCategory.QueryPublicCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
@@ -219,7 +219,7 @@ func (c *CategoryController) SelectPublic(ctx *gin.Context) {
 //	@param ctx
 func (c *CategoryController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistName(ctx, ct))
@@ -232,7 +232,7 @@ func (c *CategoryController) ExistName(ctx *gin.Context) {
 //	@param ctx
 func (c *CategoryController) ExistCode(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistCode(ctx, ct))

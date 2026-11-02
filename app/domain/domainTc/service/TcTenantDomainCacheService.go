@@ -5,8 +5,8 @@ import (
 
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/dtoTenantDomain"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
-	entityTc2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityTc"
-	repositoryTc2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryTc"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityTc"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryTc"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/cachePg/cacheDomainPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/log"
@@ -18,9 +18,9 @@ func init() {
 }
 
 type TcTenantDomainCacheService struct {
-	sv    *repositoryTc2.TcTenantDomainRepository `autowire:"?"`
-	tenDb *repositoryTc2.TcTenantRepository       `autowire:"?"`
-	ca    *cacheDomainPg.TenantDomainCache        `autowire:"?"`
+	sv    *repositoryTc.TcTenantDomainRepository `autowire:"?"`
+	tenDb *repositoryTc.TcTenantRepository       `autowire:"?"`
+	ca    *cacheDomainPg.TenantDomainCache       `autowire:"?"`
 }
 
 // InitTenantDomain
@@ -28,7 +28,7 @@ type TcTenantDomainCacheService struct {
 //	@Description: 初始化加载域名缓存
 //	@receiver c
 func (c *TcTenantDomainCacheService) InitTenantDomain(ctx context.Context) {
-	query := entityTc2.TcTenantDomainEntity{
+	query := entityTc.TcTenantDomainEntity{
 		State: enumStatePg.ENABLE.Index(),
 	}
 	infos := c.sv.FindAll(ctx, query)
@@ -39,7 +39,7 @@ func (c *TcTenantDomainCacheService) InitTenantDomain(ctx context.Context) {
 	})
 	if len(infos) > 0 {
 		idsTenantNo := make([]string, 0)
-		mapTenant := make(map[string]*entityTc2.TcTenantEntity)
+		mapTenant := make(map[string]*entityTc.TcTenantEntity)
 		for _, item := range infos {
 			if strPg.IsNotBlank(item.TenantNo) {
 				idsTenantNo = append(idsTenantNo, item.TenantNo)

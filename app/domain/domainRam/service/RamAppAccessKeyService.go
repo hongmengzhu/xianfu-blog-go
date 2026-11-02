@@ -5,11 +5,11 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	modRamAppAccessKey2 "github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamAppAccessKey"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamAppAccessKey"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
-	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
@@ -31,8 +31,8 @@ func init() {
 // RamAppAccessKeyService 团队
 // @Description:
 type RamAppAccessKeyService struct {
-	sv  *repositoryRam2.RamAppAccessKeyRepository `autowire:"?"`
-	app *repositoryRam2.RamAppRepository          `autowire:"?"`
+	sv  *repositoryRam.RamAppAccessKeyRepository `autowire:"?"`
+	app *repositoryRam.RamAppRepository          `autowire:"?"`
 }
 
 // MakeNewRecord
@@ -238,11 +238,11 @@ func (c *RamAppAccessKeyService) PhysicalDeletion(ctx *gin.Context, ids []string
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamAppAccessKeyService) Query(ctx *gin.Context, ct modRamAppAccessKey2.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamAppAccessKey2.Vo]]) {
+func (c *RamAppAccessKeyService) Query(ctx *gin.Context, ct modRamAppAccessKey.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamAppAccessKey.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamAppAccessKeyEntity
 	copier.Copy(&query, &ct)
-	slice := make([]modRamAppAccessKey2.Vo, 0)
+	slice := make([]modRamAppAccessKey.Vo, 0)
 	rt.Data.Data = slice
 	r := c.sv
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
@@ -262,10 +262,10 @@ func (c *RamAppAccessKeyService) Query(ctx *gin.Context, ct modRamAppAccessKey2.
 
 	if page.Total > 0 && page.Data != nil && len(page.Data) > 0 {
 
-		pg := pagePg.NewPaginatorByPageable[modRamAppAccessKey2.Vo](page.Pageable)
+		pg := pagePg.NewPaginatorByPageable[modRamAppAccessKey.Vo](page.Pageable)
 		//字段赋值
 		for _, item := range page.Data {
-			var vo modRamAppAccessKey2.Vo
+			var vo modRamAppAccessKey.Vo
 			copier.Copy(&vo, &item)
 			slice = append(slice, vo)
 		}
@@ -282,14 +282,14 @@ func (c *RamAppAccessKeyService) Query(ctx *gin.Context, ct modRamAppAccessKey2.
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamAppAccessKeyService) SelectPublic(ctx *gin.Context, ct modRamAppAccessKey2.QueryCt) (rt rg.Rs[[]modRamAppAccessKey2.Vo]) {
+func (c *RamAppAccessKeyService) SelectPublic(ctx *gin.Context, ct modRamAppAccessKey.QueryCt) (rt rg.Rs[[]modRamAppAccessKey.Vo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityRam.RamAppAccessKeyEntity
 	copier.Copy(&query, &ct)
 	if strPg.IsBlank(ct.AppNo) {
 		query.AppNo = "-1"
 	}
-	slice := make([]modRamAppAccessKey2.Vo, 0)
+	slice := make([]modRamAppAccessKey.Vo, 0)
 	rt.Data = slice
 	infos := c.sv.FindAll(ctx, query, optionsPg.WithCondition(func(db *gorm.DB) *gorm.DB {
 		db = db.Order("create_at desc")
@@ -297,7 +297,7 @@ func (c *RamAppAccessKeyService) SelectPublic(ctx *gin.Context, ct modRamAppAcce
 	}))
 	if len(infos) > 0 {
 		for _, item := range infos {
-			var vo modRamAppAccessKey2.Vo
+			var vo modRamAppAccessKey.Vo
 			copier.Copy(&vo, &item)
 			slice = append(slice, vo)
 		}

@@ -8,7 +8,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamDepartment"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
@@ -16,13 +16,13 @@ import (
 )
 
 func init() {
-	gs.Provide(new(DepartmentController)).Name("ManageDepartmentController").Export(gs.As[routerPg2.RouteRegistrar]())
+	gs.Provide(new(DepartmentController)).Name("ManageDepartmentController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 // DepartmentController 部门
 // @Description:
 type DepartmentController struct {
-	routerPg2.RouteRegistrar
+	routerPg.RouteRegistrar
 	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
 	sv *service.RamDepartmentService   `autowire:"?"`
 }
@@ -53,7 +53,7 @@ func (c *DepartmentController) RegisterRoutes(e *gin.Engine) {
 
 func (c *DepartmentController) CreateUpdate(ctx *gin.Context) {
 	var ct modRamDepartment.CreateUpdateCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	if ct.ID.ToInt64() > 0 {
@@ -70,7 +70,7 @@ func (c *DepartmentController) CreateUpdate(ctx *gin.Context) {
 //	@param ctx
 func (c *DepartmentController) Create(ctx *gin.Context) {
 	var ct modRamDepartment.CreateUpdateCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Create(ctx, ct))
@@ -83,7 +83,7 @@ func (c *DepartmentController) Create(ctx *gin.Context) {
 //	@param ctx
 func (c *DepartmentController) Update(ctx *gin.Context) {
 	var ct modRamDepartment.CreateUpdateCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Update(ctx, ct))
@@ -96,7 +96,7 @@ func (c *DepartmentController) Update(ctx *gin.Context) {
 //	@param ctx
 func (c *DepartmentController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
@@ -109,7 +109,7 @@ func (c *DepartmentController) Delete(ctx *gin.Context) {
 //	@param ctx
 func (c *DepartmentController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
@@ -122,7 +122,7 @@ func (c *DepartmentController) Recovery(ctx *gin.Context) {
 //	@param ctx
 func (c *DepartmentController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -151,7 +151,7 @@ func (c *DepartmentController) Detail(ctx *gin.Context) {
 //	@param ctx
 func (c *DepartmentController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
@@ -164,7 +164,7 @@ func (c *DepartmentController) Enable(ctx *gin.Context) {
 //	@param ctx
 func (c *DepartmentController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
@@ -177,7 +177,7 @@ func (c *DepartmentController) Disable(ctx *gin.Context) {
 //	@param ctx
 func (c *DepartmentController) State(ctx *gin.Context) {
 	var ct model.BaseStateIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	state, ok := enumStatePg.IsExistInt64(ct.State)
@@ -195,7 +195,7 @@ func (c *DepartmentController) State(ctx *gin.Context) {
 //	@param ctx
 func (c *DepartmentController) Query(ctx *gin.Context) {
 	var ct modRamDepartment.QueryCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -203,7 +203,7 @@ func (c *DepartmentController) Query(ctx *gin.Context) {
 
 func (c *DepartmentController) QueryAll(ctx *gin.Context) {
 	var ct modRamDepartment.QueryCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.QueryAll(ctx, ct))
@@ -211,7 +211,7 @@ func (c *DepartmentController) QueryAll(ctx *gin.Context) {
 
 func (c *DepartmentController) SelectNodeAll(ctx *gin.Context) {
 	var ct modRamDepartment.QueryPublicCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.SelectNodeAll(ctx, ct))
@@ -219,7 +219,7 @@ func (c *DepartmentController) SelectNodeAll(ctx *gin.Context) {
 
 func (c *DepartmentController) SelectNodeAllPublic(ctx *gin.Context) {
 	var ct modRamDepartment.QueryPublicCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
@@ -238,7 +238,7 @@ func (c *DepartmentController) ExportExcel(ctx *gin.Context) {
 //	@param ctx
 func (c *DepartmentController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistName(ctx, ct))

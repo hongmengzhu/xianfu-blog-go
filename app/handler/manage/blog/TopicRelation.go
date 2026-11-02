@@ -5,19 +5,19 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogTopicRelation"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(TopicRelationController)).Name("ManageTopicRelationController").Export(gs.As[routerPg2.RouteRegistrar]())
+	gs.Provide(new(TopicRelationController)).Name("ManageTopicRelationController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 // TopicRelationController 文章话题关系
 // @Description:
 type TopicRelationController struct {
-	routerPg2.RouteRegistrar
+	routerPg.RouteRegistrar
 	Sp *authPg.GroupManageMiddlewareSp   `autowire:"?"`
 	sv *service.BlogTopicRelationService `autowire:"?"`
 }
@@ -42,7 +42,7 @@ func (c *TopicRelationController) RegisterRoutes(e *gin.Engine) {
 //	@param ctx
 func (c *TopicRelationController) AddByTopic(ctx *gin.Context) {
 	var ct modBlogTopicRelation.AddByTopicCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.AddByTopic(ctx, ct))
@@ -55,7 +55,7 @@ func (c *TopicRelationController) AddByTopic(ctx *gin.Context) {
 //	@param ctx
 func (c *TopicRelationController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -68,7 +68,7 @@ func (c *TopicRelationController) PhysicalDeletion(ctx *gin.Context) {
 //	@param ctx
 func (c *TopicRelationController) Query(ctx *gin.Context) {
 	var ct modBlogTopicRelation.QueryCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))

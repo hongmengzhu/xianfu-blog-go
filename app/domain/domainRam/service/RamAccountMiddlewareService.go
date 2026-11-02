@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
-	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	repositoryRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -21,8 +21,8 @@ func init() {
 // RamAccountMiddlewareService 账户公共动作
 // @Description:
 type RamAccountMiddlewareService struct {
-	sv    *repositoryRam2.RamAccountRepository              `autowire:"?"`
-	aAuth *repositoryRam2.RamAccountAuthorizationRepository `autowire:"?"`
+	sv    *repositoryRam.RamAccountRepository              `autowire:"?"`
+	aAuth *repositoryRam.RamAccountAuthorizationRepository `autowire:"?"`
 }
 
 func NewRamAccountMiddlewareService() *RamAccountMiddlewareService {

@@ -9,7 +9,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamResourceRelation"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg/controllerPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -18,11 +18,11 @@ import (
 )
 
 func init() {
-	gs.Provide(new(ResourceGroupController)).Name("SystemResourceGroupController").Export(gs.As[routerPg2.RouteRegistrar]())
+	gs.Provide(new(ResourceGroupController)).Name("SystemResourceGroupController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 type ResourceGroupController struct {
-	routerPg2.RouteRegistrar
+	routerPg.RouteRegistrar
 	controllerPg.SpSystemAuth
 	sv  *service.RamResourceGroupService              `autowire:"?"`
 	sva *service.RamResourceGroupAuthorizationService `autowire:"?"`
@@ -52,7 +52,7 @@ func (c *ResourceGroupController) RegisterRoutes(e *gin.Engine) {
 
 func (c *ResourceGroupController) CreateUpdate(ctx *gin.Context) {
 	var ct modRamResourceGroup.CreateUpdateCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	if ct.ID.ToInt64() > 0 {
@@ -63,7 +63,7 @@ func (c *ResourceGroupController) CreateUpdate(ctx *gin.Context) {
 }
 func (c *ResourceGroupController) CreateUpdateCategory(ctx *gin.Context) {
 	var ct modRamResourceGroup.CreateUpdateCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	if ct.ID.ToInt64() > 0 {
@@ -75,7 +75,7 @@ func (c *ResourceGroupController) CreateUpdateCategory(ctx *gin.Context) {
 
 func (c *ResourceGroupController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sva.LogicalDeletion(ctx, ct.Ids))
@@ -83,7 +83,7 @@ func (c *ResourceGroupController) Delete(ctx *gin.Context) {
 
 func (c *ResourceGroupController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sva.LogicalRecovery(ctx, ct.Ids))
@@ -91,7 +91,7 @@ func (c *ResourceGroupController) Recovery(ctx *gin.Context) {
 
 func (c *ResourceGroupController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sva.PhysicalDeletion(ctx, ct.Ids))
@@ -110,7 +110,7 @@ func (c *ResourceGroupController) Detail(ctx *gin.Context) {
 
 func (c *ResourceGroupController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sva.Enable(ctx, ct))
@@ -118,7 +118,7 @@ func (c *ResourceGroupController) Enable(ctx *gin.Context) {
 
 func (c *ResourceGroupController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sva.Disable(ctx, ct))
@@ -126,7 +126,7 @@ func (c *ResourceGroupController) Disable(ctx *gin.Context) {
 
 func (c *ResourceGroupController) Query(ctx *gin.Context) {
 	var ct modRamResourceGroup.QueryCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
@@ -134,7 +134,7 @@ func (c *ResourceGroupController) Query(ctx *gin.Context) {
 
 func (c *ResourceGroupController) SelectNodeAll(ctx *gin.Context) {
 	var ct modRamResourceGroup.QueryPublicCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.SelectNodeAll(ctx, ct))
@@ -142,7 +142,7 @@ func (c *ResourceGroupController) SelectNodeAll(ctx *gin.Context) {
 
 func (c *ResourceGroupController) SelectNodeAllPublic(ctx *gin.Context) {
 	var ct modRamResourceGroup.QueryPublicCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
@@ -160,7 +160,7 @@ func (c *ResourceGroupController) QueryAllCategory(ctx *gin.Context) {
 
 func (c *ResourceGroupController) UpdateByResourceGroup(ctx *gin.Context) {
 	var ct modRamResourceRelation.UpdateByResourceGroupCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.ra.UpdateByResourceGroup(ctx, ct))
@@ -168,7 +168,7 @@ func (c *ResourceGroupController) UpdateByResourceGroup(ctx *gin.Context) {
 
 func (c *ResourceGroupController) Selected(ctx *gin.Context) {
 	var ct modRamResourceRelation.QuerySelectedCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.rr.Selected(ctx, ct.Code))
@@ -176,7 +176,7 @@ func (c *ResourceGroupController) Selected(ctx *gin.Context) {
 
 func (c *ResourceGroupController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistName(ctx, ct))

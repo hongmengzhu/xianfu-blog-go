@@ -14,10 +14,10 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constTags"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	entityBlog2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBlog"
+	entityBlog "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityTc"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
-	repositoryBlog2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBlog"
+	repositoryBlog "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryTc"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
@@ -37,14 +37,14 @@ func init() {
 // BlogArticleService 说明分类,协议，服务
 // @Description:
 type BlogArticleService struct {
-	sv           *repositoryBlog2.BlogArticleRepository           `autowire:"?"`
-	statisticsDb *repositoryBlog2.BlogArticleStatisticsRepository `autowire:"?"`
-	catDb        *repositoryBlog2.BlogArticleCategoryRepository   `autowire:"?"`
-	topic        *repositoryBlog2.BlogTopicRepository             `autowire:"?"`
-	topicRel     *repositoryBlog2.BlogTopicRelationRepository     `autowire:"?"`
-	tagsRelat    *repositoryBasic.BasicTagsRelationRepository     `autowire:"?"`
-	ten          *repositoryTc.TcTenantRepository                 `autowire:"?"`
-	sp           *blogArticle.Sp                                  `autowire:"?"`
+	sv           *repositoryBlog.BlogArticleRepository           `autowire:"?"`
+	statisticsDb *repositoryBlog.BlogArticleStatisticsRepository `autowire:"?"`
+	catDb        *repositoryBlog.BlogArticleCategoryRepository   `autowire:"?"`
+	topic        *repositoryBlog.BlogTopicRepository             `autowire:"?"`
+	topicRel     *repositoryBlog.BlogTopicRelationRepository     `autowire:"?"`
+	tagsRelat    *repositoryBasic.BasicTagsRelationRepository    `autowire:"?"`
+	ten          *repositoryTc.TcTenantRepository                `autowire:"?"`
+	sp           *blogArticle.Sp                                 `autowire:"?"`
 
 	rdu *bigCachePg.BatchString `autowire:"?"`
 }
@@ -247,7 +247,7 @@ func (c *BlogArticleService) State(ctx *gin.Context, ids []string, state enumSta
 	}
 	for _, info := range finds {
 		if info.State != state.IndexInt8() {
-			r.Update(ctx, entityBlog2.BlogArticleEntity{State: state.IndexInt8()}, info.ID)
+			r.Update(ctx, entityBlog.BlogArticleEntity{State: state.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -289,7 +289,7 @@ func (c *BlogArticleService) LogicalDeletion(ctx *gin.Context, ids []string) (rt
 			enum := enumStatePg.State(info.State)
 			// 有效 停用，反转 为对应的 取消 弃置
 			if ok, reverse := enum.ReverseEnableDisable(); ok {
-				repository.Update(ctx, entityBlog2.BlogArticleEntity{State: reverse.IndexInt8()}, info.ID)
+				repository.Update(ctx, entityBlog.BlogArticleEntity{State: reverse.IndexInt8()}, info.ID)
 			}
 		}
 	}
@@ -315,7 +315,7 @@ func (c *BlogArticleService) LogicalRecovery(ctx *gin.Context, ids []string) (rt
 		enum := enumStatePg.State(info.State)
 		//  取消 弃置 批量删除，反转 为对应的 有效 停用 停用
 		if ok, reverse := enum.ReverseCancelLayAside(); ok {
-			repository.Update(ctx, entityBlog2.BlogArticleEntity{State: reverse.IndexInt8()}, info.ID)
+			repository.Update(ctx, entityBlog.BlogArticleEntity{State: reverse.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -352,7 +352,7 @@ func (c *BlogArticleService) PhysicalDeletion(ctx *gin.Context, ids []string) (r
 //	@receiver c
 //	@param ct
 func (c *BlogArticleService) Query(ctx *gin.Context, ct modBlogArticle.QueryCt) (rt rg.Rs[pagePg.Paginator[modBlogArticle.Vo]]) {
-	var query entityBlog2.BlogArticleEntity
+	var query entityBlog.BlogArticleEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modBlogArticle.Vo, 0)
 	rt.Data.Data = slice
@@ -393,8 +393,8 @@ func (c *BlogArticleService) Query(ctx *gin.Context, ct modBlogArticle.QueryCt) 
 
 	if page.Total > 0 && page.Data != nil && len(page.Data) > 0 {
 		pg := pagePg.NewPaginatorByPageable[modBlogArticle.Vo](page.Pageable)
-		mapCategory := make(map[string]*entityBlog2.BlogArticleCategoryEntity)
-		mapStat := make(map[string]*entityBlog2.BlogArticleStatisticsEntity)
+		mapCategory := make(map[string]*entityBlog.BlogArticleCategoryEntity)
+		mapStat := make(map[string]*entityBlog.BlogArticleStatisticsEntity)
 		mapTenant := make(map[string]*entityTc.TcTenantEntity)
 		idsCategory := make([]string, 0)
 		idsTenant := make([]string, 0)
@@ -577,7 +577,7 @@ func (c *BlogArticleService) Query(ctx *gin.Context, ct modBlogArticle.QueryCt) 
 //	@receiver c
 //	@param ct
 func (c *BlogArticleService) SelectNodePublic(ctx *gin.Context, ct modBlogArticle.QueryCt) (rt rg.Rs[[]model.BaseNode]) {
-	var query entityBlog2.BlogArticleEntity
+	var query entityBlog.BlogArticleEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNode, 0)
 	rt.Data = slice
@@ -598,7 +598,7 @@ func (c *BlogArticleService) SelectNodePublic(ctx *gin.Context, ct modBlogArticl
 //	@receiver c
 //	@param ct
 func (c *BlogArticleService) SelectNodeAllPublic(ctx *gin.Context, ct modBlogArticle.QueryCt) (rt rg.Rs[[]model.BaseNode]) {
-	var query entityBlog2.BlogArticleEntity
+	var query entityBlog.BlogArticleEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNode, 0)
 	rt.Data = slice
@@ -621,7 +621,7 @@ func (c *BlogArticleService) SelectNodeAllPublic(ctx *gin.Context, ct modBlogArt
 //	@receiver c
 //	@param ct
 func (c *BlogArticleService) SelectPublic(ctx *gin.Context, ct modBlogArticle.QueryCt) (rt rg.Rs[[]modBlogArticle.Vo]) {
-	var query entityBlog2.BlogArticleEntity
+	var query entityBlog.BlogArticleEntity
 	copier.Copy(&query, &ct)
 	rt.Data = []modBlogArticle.Vo{}
 	infos := c.sv.FindAll(ctx, query)

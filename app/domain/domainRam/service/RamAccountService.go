@@ -14,7 +14,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/yesNoPg/yesNoIntPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
-	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	repositoryRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/sdk-common-cache/cacheRamDepartmentPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/sdk-common-cache/cacheRamGroupPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/sdk-common-cache/cacheRamLevelPg"
@@ -41,15 +41,15 @@ func init() {
 // RamAccountService 账户，账号
 // @Description:
 type RamAccountService struct {
-	sv         *repositoryRam2.RamAccountRepository              `autowire:"?"`
-	aAuth      *repositoryRam2.RamAccountAuthorizationRepository `autowire:"?"`
-	dep        *repositoryRam2.RamDepartmentRepository           `autowire:"?"`
-	role       *repositoryRam2.RamRoleRepository                 `autowire:"?"`
-	team       *repositoryRam2.RamTeamRepository                 `autowire:"?"`
-	levelDb    *repositoryRam2.RamLevelRepository                `autowire:"?"`
-	groupDb    *repositoryRam2.RamGroupRepository                `autowire:"?"`
-	positionDb *repositoryRam2.RamPositionRepository             `autowire:"?"`
-	postDb     *repositoryRam2.RamPostRepository                 `autowire:"?"`
+	sv         *repositoryRam.RamAccountRepository              `autowire:"?"`
+	aAuth      *repositoryRam.RamAccountAuthorizationRepository `autowire:"?"`
+	dep        *repositoryRam.RamDepartmentRepository           `autowire:"?"`
+	role       *repositoryRam.RamRoleRepository                 `autowire:"?"`
+	team       *repositoryRam.RamTeamRepository                 `autowire:"?"`
+	levelDb    *repositoryRam.RamLevelRepository                `autowire:"?"`
+	groupDb    *repositoryRam.RamGroupRepository                `autowire:"?"`
+	positionDb *repositoryRam.RamPositionRepository             `autowire:"?"`
+	postDb     *repositoryRam.RamPostRepository                 `autowire:"?"`
 	// 缓存
 	depCache      *cacheRamDepartmentPg.Cache `autowire:"?"`
 	roleCache     *cacheRamRolePg.Cache       `autowire:"?"`

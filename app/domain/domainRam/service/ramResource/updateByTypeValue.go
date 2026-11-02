@@ -9,7 +9,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/typeSysPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
-	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	repositoryRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"go-spring.org/log"
 
 	"github.com/pangu-2/go-tools/tools/numberPg"
@@ -20,12 +20,12 @@ import (
 // UpdateByTypeValue
 // @Description: 根据资源类型和资源组id修改资源组权限
 type UpdateByTypeValue struct {
-	roleDb          *repositoryRam2.RamRoleRepository                  `autowire:"?"`
-	authDb          *repositoryRam2.RamResourceAuthorityRepository     `autowire:"?"`
-	resDb           *repositoryRam2.RamResourceRepository              `autowire:"?"`
-	groupDb         *repositoryRam2.RamResourceGroupRepository         `autowire:"?"`
-	groupRelationDb *repositoryRam2.RamResourceGroupRelationRepository `autowire:"?"`
-	relationDb      *repositoryRam2.RamResourceRelationRepository      `autowire:"?"`
+	roleDb          *repositoryRam.RamRoleRepository                  `autowire:"?"`
+	authDb          *repositoryRam.RamResourceAuthorityRepository     `autowire:"?"`
+	resDb           *repositoryRam.RamResourceRepository              `autowire:"?"`
+	groupDb         *repositoryRam.RamResourceGroupRepository         `autowire:"?"`
+	groupRelationDb *repositoryRam.RamResourceGroupRelationRepository `autowire:"?"`
+	relationDb      *repositoryRam.RamResourceRelationRepository      `autowire:"?"`
 	typeCategory    resourceTypeCategoryPg.ResourceTypeCategory
 	ct              modRamResourceAuthority.UpdateByTypeValueCt
 	ctx             *gin.Context
@@ -48,12 +48,12 @@ type UpdateByTypeValue struct {
 //	@param ctx
 //	@return *UpdateByTypeValue
 func NewUpdateByTypeValue(
-	roleDb *repositoryRam2.RamRoleRepository,
-	authDb *repositoryRam2.RamResourceAuthorityRepository,
-	resDb *repositoryRam2.RamResourceRepository,
-	groupDb *repositoryRam2.RamResourceGroupRepository,
-	groupRelationDb *repositoryRam2.RamResourceGroupRelationRepository,
-	relationDb *repositoryRam2.RamResourceRelationRepository,
+	roleDb *repositoryRam.RamRoleRepository,
+	authDb *repositoryRam.RamResourceAuthorityRepository,
+	resDb *repositoryRam.RamResourceRepository,
+	groupDb *repositoryRam.RamResourceGroupRepository,
+	groupRelationDb *repositoryRam.RamResourceGroupRelationRepository,
+	relationDb *repositoryRam.RamResourceRelationRepository,
 	typeCategory resourceTypeCategoryPg.ResourceTypeCategory,
 	ct modRamResourceAuthority.UpdateByTypeValueCt,
 	ctx *gin.Context) *UpdateByTypeValue {

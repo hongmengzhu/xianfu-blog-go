@@ -9,7 +9,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityApi"
-	repositoryApi2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryApi"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryApi"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/cachePg/cacheDiplPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
@@ -32,8 +32,8 @@ func init() {
 // ApiDiplAccessKeyService 团队
 // @Description:
 type ApiDiplAccessKeyService struct {
-	sv  *repositoryApi2.ApiDiplAccessKeyRepository `autowire:"?"`
-	app *repositoryApi2.ApiDiplRepository          `autowire:"?"`
+	sv  *repositoryApi.ApiDiplAccessKeyRepository `autowire:"?"`
+	app *repositoryApi.ApiDiplRepository          `autowire:"?"`
 }
 
 // MakeNewRecord

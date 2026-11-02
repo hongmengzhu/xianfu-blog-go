@@ -5,18 +5,18 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamAccountLoginLog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg/controllerPg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(AccountLoginLogController)).Name("SystemAccountLoginLogController").Export(gs.As[routerPg2.RouteRegistrar]())
+	gs.Provide(new(AccountLoginLogController)).Name("SystemAccountLoginLogController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 type AccountLoginLogController struct {
-	routerPg2.RouteRegistrar
+	routerPg.RouteRegistrar
 	controllerPg.SpSystemAuth
 	sv *service.RamAccountLoginLogService `autowire:"?"`
 }
@@ -29,7 +29,7 @@ func (c *AccountLoginLogController) RegisterRoutes(e *gin.Engine) {
 
 func (c *AccountLoginLogController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
@@ -37,7 +37,7 @@ func (c *AccountLoginLogController) PhysicalDeletion(ctx *gin.Context) {
 
 func (c *AccountLoginLogController) Query(ctx *gin.Context) {
 	var ct modRamAccountLoginLog.QueryCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))

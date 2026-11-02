@@ -4,17 +4,17 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogCollect/modApiBlogCollect"
-	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(CollectController)).Export(gs.As[routerPg2.RouteRegistrar]())
+	gs.Provide(new(CollectController)).Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 type CollectController struct {
-	routerPg2.RouteRegistrar
+	routerPg.RouteRegistrar
 	Sp *authPg.GroupApiMiddlewareSp   `autowire:"?"`
 	sv *service.BlogCollectApiService `autowire:"?"`
 }
@@ -37,7 +37,7 @@ func (c *CollectController) RegisterRoutes(e *gin.Engine) {
 //	@param ctx
 func (c *CollectController) Push(ctx *gin.Context) {
 	var ct modApiBlogCollect.PushCt
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Push(ctx, ct))
@@ -50,7 +50,7 @@ func (c *CollectController) Push(ctx *gin.Context) {
 //	@param ctx
 func (c *CollectController) PushAll(ctx *gin.Context) {
 	var ct modApiBlogCollect.PushAll
-	if !routerPg2.BindJson(ctx, &ct) {
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.PushAll(ctx, ct))

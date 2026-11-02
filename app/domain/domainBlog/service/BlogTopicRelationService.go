@@ -5,7 +5,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogTopicRelation"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBlog"
-	repositoryBlog2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBlog"
+	repositoryBlog "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
@@ -22,9 +22,9 @@ func init() {
 }
 
 type BlogTopicRelationService struct {
-	topic    *repositoryBlog2.BlogTopicRepository         `autowire:"?"`
-	article  *repositoryBlog2.BlogArticleRepository       `autowire:"?"`
-	relation *repositoryBlog2.BlogTopicRelationRepository `autowire:"?"`
+	topic    *repositoryBlog.BlogTopicRepository         `autowire:"?"`
+	article  *repositoryBlog.BlogArticleRepository       `autowire:"?"`
+	relation *repositoryBlog.BlogTopicRelationRepository `autowire:"?"`
 }
 
 // AddByTopic

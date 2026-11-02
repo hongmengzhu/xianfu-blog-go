@@ -7,21 +7,21 @@ import (
 
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constHeaderPg"
 	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
-	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	repositoryRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/ram/model/modRamAccount"
 	"go-spring.org/log"
 )
 
 type AccountLoginLog struct {
-	acc      *repositoryRam2.RamAccountRepository         `autowire:"?"`
-	loginLog *repositoryRam2.RamAccountLoginLogRepository `autowire:"?"`
-	session  *repositoryRam2.RamAccountSessionRepository  `autowire:"?"`
+	acc      *repositoryRam.RamAccountRepository         `autowire:"?"`
+	loginLog *repositoryRam.RamAccountLoginLogRepository `autowire:"?"`
+	session  *repositoryRam.RamAccountSessionRepository  `autowire:"?"`
 }
 
 func NewAccountLoginLog(
-	acc *repositoryRam2.RamAccountRepository,
-	loginLog *repositoryRam2.RamAccountLoginLogRepository,
-	session *repositoryRam2.RamAccountSessionRepository,
+	acc *repositoryRam.RamAccountRepository,
+	loginLog *repositoryRam.RamAccountLoginLogRepository,
+	session *repositoryRam.RamAccountSessionRepository,
 ) *AccountLoginLog {
 	return &AccountLoginLog{
 		acc:      acc,

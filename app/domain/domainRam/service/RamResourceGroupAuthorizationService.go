@@ -7,7 +7,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
-	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	repositoryRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
@@ -23,9 +23,9 @@ func init() {
 // RamResourceGroupAuthorizationService 资源组 授权方法动作
 // @Description:
 type RamResourceGroupAuthorizationService struct {
-	sv     *repositoryRam2.RamResourceGroupRepository     `autowire:"?"`
-	authDb *repositoryRam2.RamResourceAuthorityRepository `autowire:"?"`
-	ra     *RamResourceAuthorizationService               `autowire:"?"`
+	sv     *repositoryRam.RamResourceGroupRepository     `autowire:"?"`
+	authDb *repositoryRam.RamResourceAuthorityRepository `autowire:"?"`
+	ra     *RamResourceAuthorizationService              `autowire:"?"`
 }
 
 // Enable 启用

@@ -51,7 +51,7 @@ func NewCreate(
 	}
 }
 
-// accountCreateSimple 创建
+// accountCreateSimple 创建-快速创建
 //
 //	@Description:
 //	@receiver c

@@ -9,7 +9,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
-	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	repositoryRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
@@ -30,8 +30,8 @@ func init() {
 // RamAccountDeviceService 团队
 // @Description:
 type RamAccountDeviceService struct {
-	sv  *repositoryRam2.RamAccountDeviceRepository `autowire:"?"`
-	acc *repositoryRam2.RamAccountRepository       `autowire:"?"`
+	sv  *repositoryRam.RamAccountDeviceRepository `autowire:"?"`
+	acc *repositoryRam.RamAccountRepository       `autowire:"?"`
 }
 
 // Create 新增
