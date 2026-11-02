@@ -14,6 +14,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg/holderApiPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
+	"github.com/pangu-2/go-tools/tools/noPg"
 	"github.com/pangu-2/go-tools/tools/numberPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/log"
@@ -179,6 +180,8 @@ func (c *BmBookmarkApiService) GetOrg(ctx *gin.Context, ct modApiBmBookmark.Quer
 // Create 创建
 func (c *BmBookmarkApiService) Create(ctx *gin.Context, ct modApiBmBookmark.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	//
+	holder := holderApiPg.GetContextAccount(ctx)
 	var info entityBm.BmBookmarkEntity
 	err := copier.Copy(&info, &ct)
 	if err != nil {
@@ -194,6 +197,12 @@ func (c *BmBookmarkApiService) Create(ctx *gin.Context, ct modApiBmBookmark.Crea
 	if nil == ct.PublishTime {
 		info.PublishTime = &now
 	}
+	info.TypeReading = typeReadingPg.UNREAD.Index()
+	info.State = enumStatePg.ENABLE.Index()
+	info.TenantNo = holder.GetTenantNo()
+	info.Ano = holder.GetAno()
+	info.No = noPg.No()
+	info.Code = info.No
 	err, _ = c.sv.Create(ctx, &info)
 	if err != nil {
 		return rt.ErrorMessage("保存失败 " + err.Error())
@@ -204,12 +213,17 @@ func (c *BmBookmarkApiService) Create(ctx *gin.Context, ct modApiBmBookmark.Crea
 // Update 创建
 func (c *BmBookmarkApiService) Update(ctx *gin.Context, ct modApiBmBookmark.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	//
+	holder := holderApiPg.GetContextAccount(ctx)
 	if ct.ID.ToInt64() <= 0 {
 		return rt.ErrorMessage("ID不能为空")
 	}
-	find, b := c.sv.FindById(ctx, ct.ID.ToInt64())
+	find, b := c.sv.FindById(ctx, ct.ID.ToInt64(), optionsPg.WithCtx(ctx))
 	if !b {
 		return rt.ErrorMessage("数据不存在")
+	}
+	if find.TenantNo != holder.GetTenantNo() {
+		return rt.ErrorMessage("无权限")
 	}
 	var info entityBm.BmBookmarkEntity
 	err := copier.Copy(&info, &ct)

@@ -9,7 +9,6 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBm"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg/holderApiPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/typePg"
@@ -112,6 +111,7 @@ func (c *BmBookmarkCategoryApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApi
 func (c *BmBookmarkCategoryApiService) GetMy(ctx *gin.Context) (rt rg.Rs[[]modApiBmBookmarkCategory.Vo]) {
 	//
 	holder := holderApiPg.GetContextAccount(ctx)
+	log.Info(ctx, log.TagAppDef, "GetMy", log.Any("GetTenantNo", holder.GetTenantNo()), log.Any("Ano", holder.GetAno()))
 	//
 	data := make([]modApiBmBookmarkCategory.Vo, 0)
 	//
@@ -309,8 +309,9 @@ func (c *BmBookmarkCategoryApiService) CreateUpdate(ctx *gin.Context, ct modApiB
 	if automatedPg.IsCreateCode(info.Code) {
 		info.Code = strPg.GenerateNumberId22()
 	}
-	holder := holderPg.GetContextAccount(ctx)
+	holder := holderApiPg.GetContextAccount(ctx)
 	info.TenantNo = holder.GetTenantNo()
+	info.Ano = holder.GetAno()
 	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	err, _ = r.Create(ctx, &info)
 	if err != nil {

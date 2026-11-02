@@ -46,7 +46,7 @@ func (c *AccountController) SetOption(option domainPg.Option) *AccountController
 //	@receiver c
 //	@param e
 func (c *AccountController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/manage/ram/account", authPg.GroupManageMiddleware(c.Sp))
+	group := e.Group("/xianfu/manage/api/dipl-account", authPg.GroupManageMiddleware(c.Sp))
 	group.POST("/enable", c.Enable)
 	group.POST("/disable", c.Disable)
 	group.GET("/detail/:id", c.Detail)

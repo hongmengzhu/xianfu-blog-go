@@ -10,6 +10,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityApi"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryApi"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/cachePg/cacheDiplPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
@@ -32,8 +33,9 @@ func init() {
 // ApiDiplAccessKeyService 团队
 // @Description:
 type ApiDiplAccessKeyService struct {
-	sv  *repositoryApi.ApiDiplAccessKeyRepository `autowire:"?"`
-	app *repositoryApi.ApiDiplRepository          `autowire:"?"`
+	sv     *repositoryApi.ApiDiplAccessKeyRepository `autowire:"?"`
+	app    *repositoryApi.ApiDiplRepository          `autowire:"?"`
+	repAcc *repositoryRam.RamAccountRepository       `autowire:"?"`
 }
 
 // MakeNewRecord
@@ -74,6 +76,69 @@ func (c *ApiDiplAccessKeyService) MakeNewRecord(ctx *gin.Context, ct model.BaseI
 		Key:      save.Key,
 		Secret:   save.Secret,
 		Ano:      save.Ano,
+	}
+	cacheDiplPg.Set(save.Key, obj)
+	return rt.Ok()
+}
+
+// MakeNewRecordByPrincipalType
+//
+//	@Description: 生成新记录
+//	@receiver c
+//	@param ctx
+//	@param ct
+//	@return rt
+func (c *ApiDiplAccessKeyService) MakeNewRecordByPrincipalType(ctx *gin.Context, ct modApiDiplAccessKey.MakeNewCt) (rt rg.Rs[string]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	//
+	if strPg.IsBlank(ct.No) {
+		return rt.ErrorMessage("编号代号 错误")
+	}
+	save := entityApi.ApiDiplAccessKeyEntity{}
+	if "SERVICE" == ct.PrincipalType {
+		save.Ano = ct.No
+		save.PrincipalType = "SERVICE"
+		//
+		info, result := c.repAcc.FindByNo(ctx, ct.No)
+		if !result {
+			return rt.ErrorMessage("账号 不存在")
+		}
+		if enumStatePg.ENABLE.IndexInt8() != info.PrincipalTypeService {
+			return rt.ErrorMessage("账号 主体类型服务 不正确")
+		}
+	} else {
+		save.DiplNo = strings.TrimSpace(ct.No)
+		save.PrincipalType = "APP"
+		if strPg.IsBlank(save.DiplNo) {
+			return rt.ErrorMessage("应用 编号 错误")
+		}
+	}
+
+	//当前时间增加 5年
+	add := time.Now().AddDate(10, 0, 0)
+	holder := holderPg.GetContextAccount(ctx)
+	save.State = enumStatePg.ENABLE.IndexInt8()
+	save.Name = noPg.No()
+	save.TenantNo = holder.GetTenantNo()
+	save.Key = strPg.GetNanoIdNumber(20)
+	save.Secret = strPg.GetNanoid(20)
+	save.ExpiryDate = &add
+	save.KindUnique = userPg.SaltMake(save.Key, save.Secret+save.ExpiryDate.String())
+	err, _ := c.sv.Create(ctx, &save)
+	if err != nil {
+		log.Error(ctx, log.TagAppDef, err, "")
+		return rt.ErrorMessage("保存失败")
+	}
+	//加入缓存
+	sha := cacheDiplPg.HashSha(save.Key, save.Secret)
+	obj := cacheDiplPg.DiplCo{
+		HashSha:       sha,
+		No:            save.DiplNo,
+		TenantNo:      save.TenantNo,
+		Key:           save.Key,
+		Secret:        save.Secret,
+		Ano:           save.Ano,
+		PrincipalType: save.PrincipalType,
 	}
 	cacheDiplPg.Set(save.Key, obj)
 	return rt.Ok()
@@ -303,8 +368,14 @@ func (c *ApiDiplAccessKeyService) SelectPublic(ctx *gin.Context, ct modApiDiplAc
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityApi.ApiDiplAccessKeyEntity
 	copier.Copy(&query, &ct)
-	if strPg.IsBlank(ct.DiplNo) {
+	if "SERVICE" == ct.PrincipalType {
+		query.DiplNo = ""
+		if strPg.IsBlank(ct.Ano) {
+			query.Ano = "-1"
+		}
+	} else if strPg.IsBlank(ct.DiplNo) {
 		query.DiplNo = "-1"
+		query.Ano = ""
 	}
 
 	slice := make([]modApiDiplAccessKey.Vo, 0)

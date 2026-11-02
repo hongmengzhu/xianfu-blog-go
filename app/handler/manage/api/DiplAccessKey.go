@@ -42,11 +42,11 @@ func (c *DiplAccessKeyController) RegisterRoutes(e *gin.Engine) {
 //	@receiver c
 //	@param ctx
 func (c *DiplAccessKeyController) MakeNewRecord(ctx *gin.Context) {
-	var ct model.BaseIdCt[string]
+	var ct modApiDiplAccessKey.MakeNewCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.MakeNewRecord(ctx, ct))
+	ctx.JSON(200, c.sv.MakeNewRecordByPrincipalType(ctx, ct))
 }
 
 // Delete 逻辑删除

@@ -23,7 +23,7 @@ type ApiDiplAccessKeyEntity struct {
 	KindUnique    string     `gorm:"column:kind_unique;type:varchar(80);index;default:;comment:种类唯一" json:"kind_unique" comment:"种类唯一" `
 	DiplNo        string     `gorm:"column:dipl_no;type:varchar(80);index;default:;comment:应用编号" json:"dipl_no" comment:"应用编号" `
 	ExpiryDate    *time.Time `gorm:"column:expiry_date;comment:有效期" json:"expiry_date" comment:"有效期" `
-	PrincipalType string     `gorm:"column:principal_type;type:varchar(80);comment:主体类型|USER|APP|SERVICE" json:"principal_type" comment:"主体类型" `
+	PrincipalType string     `gorm:"column:principal_type;type:varchar(80);default:'APP';comment:主体类型|USER|APP|SERVICE" json:"principal_type" comment:"主体类型" `
 }
 
 func (*ApiDiplAccessKeyEntity) TableName() string {

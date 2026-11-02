@@ -5,10 +5,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constContextPg"
+	"go-spring.org/log"
 )
 
 func GetContextAccount(ctx *gin.Context) (holder HolderPg) {
 	get, is := ctx.Get(constContextPg.AUTH_LOGIN_API)
+	log.Info(ctx, log.TagAppDef, "GetContextAccount", log.Any("get", get))
 	if !is || nil == get {
 		return
 	}

@@ -31,6 +31,7 @@ func (c *BookmarkApiController) RegisterRoutes(e *gin.Engine) {
 	group.POST("/getMy", c.GetMy)
 	group.POST("/getOrg", c.GetOrg)
 	group.POST("/create", c.Create)
+	group.POST("/createByOrg", c.Create)
 	group.POST("/update", c.Update)
 	group.POST("/delete", c.Delete)
 }
