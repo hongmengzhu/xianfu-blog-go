@@ -632,11 +632,11 @@ rg.ErrorMessageData[T](msgs) // 带校验错误数据的响应
 
 | Model | 路径 | 用途 |
 |-------|------|------|
-| `model.BaseQueryCt` | `pkg/model/BaseQueryCt.go` | 分页查询基类（PageNum, PageSize, Wd） |
-| `model.BaseIdsCt[T]` | `pkg/model/BaseIdsCt.go` | 批量操作（Ids []T） |
-| `model.BaseExistWdCt[T]` | `pkg/model/BaseExistWdCt.go` | 查重（Id排除, Wd关键词） |
-| `model.BaseStateIdsCt[T]` | `pkg/model/BaseStateIdsCt.go` | 批量状态变更 |
-| `model.BaseNode` | `pkg/model/BaseNode.go` | 树形节点（Key, Label, ParentId, Extend） |
+| `model.BaseQueryCt` | `../../pkg/core/model` | 分页查询基类（PageNum, PageSize, Wd） |
+| `model.BaseIdsCt[T]` | `../../pkg/core/model` | 批量操作（Ids []T） |
+| `model.BaseExistWdCt[T]` | `../../pkg/core/model` | 查重（Id排除, Wd关键词） |
+| `model.BaseStateIdsCt[T]` | `../../pkg/core/model` | 批量状态变更 |
+| `model.BaseNode` | `../../pkg/core/model` | 树形节点（Key, Label, ParentId, Extend） |
 | `typePg.Uint64String` | `pkg/tools/typePg/` | ID类型，JSON序列化为字符串 |
 | `typePg.Int8` | `pkg/tools/typePg/` | 小整数类型 |
 
