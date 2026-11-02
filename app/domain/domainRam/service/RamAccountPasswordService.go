@@ -3,8 +3,8 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamAccount"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsPg/domainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/passwordTypePg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/appModulePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"go-spring.org/log"
@@ -35,8 +35,8 @@ func NewRamAccountPasswordService() *RamAccountPasswordService {
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamAccountPasswordService) UpdatePassword(ctx *gin.Context, ct modRamAccount.PasswordCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
-	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct), log.Any("tp", tp))
+func (c *RamAccountPasswordService) UpdatePassword(ctx *gin.Context, ct modRamAccount.PasswordCt, option domainPg.Option) (rt rg.Rs[string]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct), log.Any("option", option))
 	if ct.ID == 0 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -44,7 +44,7 @@ func (c *RamAccountPasswordService) UpdatePassword(ctx *gin.Context, ct modRamAc
 		return rt.ErrorMessage("密码不能为空")
 	}
 	r := c.sv
-	info, b := r.FindByIdAndTypeDomain(ctx, ct.ID.ToInt64(), tp.ToTypeDomain().String())
+	info, b := r.FindByIdAndTypeDomain(ctx, ct.ID.ToInt64(), option.TypeDomain.String())
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}

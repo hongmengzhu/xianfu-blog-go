@@ -4,7 +4,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainTc/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/modTcAccount"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/appModulePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsPg/domainPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsPg/terminalCodePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
@@ -15,7 +17,10 @@ import (
 )
 
 func init() {
-	gs.Provide(new(TenantAccountController).SetAppModule(appModulePg.Manage)).
+	gs.Provide(new(TenantAccountController).SetOption(domainPg.Option{
+		TerminalCode: terminalCodePg.Manage,
+		TypeDomain:   typeDomainPg.Manage,
+	})).
 		Name("SystemTenantAccountController").
 		Export(gs.As[routerPg2.RouteRegistrar]())
 }
@@ -25,19 +30,15 @@ func init() {
 type TenantAccountController struct {
 	routerPg2.RouteRegistrar
 	controllerPg.SpSystemAuth
-	sv        *service.TcTenantAccountService         `autowire:"?"`
-	ap        *service.TcTenantAccountPasswordService `autowire:"?"`
-	appModule appModulePg.AppModule
+	sv           *service.TcTenantAccountService         `autowire:"?"`
+	ap           *service.TcTenantAccountPasswordService `autowire:"?"`
+	domainOption domainPg.Option
 }
 
-// SetAppModule 设置应用模块
-//
-//	@Description:
-//	@receiver c
-//	@param appModule
-//	@return *TenantAccountController
-func (c *TenantAccountController) SetAppModule(appModule appModulePg.AppModule) *TenantAccountController {
-	c.appModule = appModule
+// SetOption 设置模块
+// @Description:
+func (c *TenantAccountController) SetOption(option domainPg.Option) *TenantAccountController {
+	c.domainOption = option
 	return c
 }
 
@@ -78,7 +79,7 @@ func (c *TenantAccountController) Detail(ctx *gin.Context) {
 		ctx.JSON(200, rg.Error[string]("id不能为空"))
 		return
 	}
-	ctx.JSON(200, c.sv.Detail(ctx, param, c.appModule))
+	ctx.JSON(200, c.sv.Detail(ctx, param, c.domainOption))
 }
 
 // Enable 有效
@@ -91,7 +92,7 @@ func (c *TenantAccountController) Enable(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.Enable(ctx, ct, c.appModule))
+	ctx.JSON(200, c.sv.Enable(ctx, ct, c.domainOption))
 }
 
 // Disable 停用
@@ -104,7 +105,7 @@ func (c *TenantAccountController) Disable(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.Disable(ctx, ct, c.appModule))
+	ctx.JSON(200, c.sv.Disable(ctx, ct, c.domainOption))
 }
 
 // State 状态
@@ -122,7 +123,7 @@ func (c *TenantAccountController) State(ctx *gin.Context) {
 		ctx.JSON(200, rg.Error[string]("类型不正确"))
 		return
 	}
-	ctx.JSON(200, c.sv.StateEnableDisable(ctx, ct.Ids, state, c.appModule))
+	ctx.JSON(200, c.sv.StateEnableDisable(ctx, ct.Ids, state, c.domainOption))
 }
 
 // Delete 逻辑删除
@@ -135,7 +136,7 @@ func (c *TenantAccountController) Delete(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids, c.appModule))
+	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids, c.domainOption))
 }
 
 // Recovery 删除 恢复
@@ -148,7 +149,7 @@ func (c *TenantAccountController) Recovery(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids, c.appModule))
+	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids, c.domainOption))
 }
 
 // PhysicalDeletion 物理删除
@@ -161,7 +162,7 @@ func (c *TenantAccountController) PhysicalDeletion(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids, c.appModule))
+	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids, c.domainOption))
 }
 
 // UpdatePassword 更新密码
@@ -174,7 +175,7 @@ func (c *TenantAccountController) UpdatePassword(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.ap.UpdatePassword(ctx, ct, c.appModule))
+	ctx.JSON(200, c.ap.UpdatePassword(ctx, ct, c.domainOption))
 }
 
 // Query 查询列表
@@ -187,7 +188,7 @@ func (c *TenantAccountController) Query(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.Query(ctx, ct, c.appModule))
+	ctx.JSON(200, c.sv.Query(ctx, ct, c.domainOption))
 }
 
 // Create 添加
@@ -200,7 +201,7 @@ func (c *TenantAccountController) Create(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.Create(ctx, ct, c.appModule))
+	ctx.JSON(200, c.sv.Create(ctx, ct, c.domainOption))
 }
 
 // CreateAccount 添加账号
@@ -213,7 +214,7 @@ func (c *TenantAccountController) CreateAccount(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.CreateAccount(ctx, ct, c.appModule))
+	ctx.JSON(200, c.sv.CreateAccount(ctx, ct, c.domainOption))
 }
 
 // Update 更新
@@ -226,7 +227,7 @@ func (c *TenantAccountController) Update(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.Update(ctx, ct, c.appModule))
+	ctx.JSON(200, c.sv.Update(ctx, ct, c.domainOption))
 }
 
 // UpdateAccount 更新
@@ -239,7 +240,7 @@ func (c *TenantAccountController) UpdateAccount(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.UpdateAccount(ctx, ct, c.appModule))
+	ctx.JSON(200, c.sv.UpdateAccount(ctx, ct, c.domainOption))
 }
 
 // ExistAccount 查重
@@ -252,7 +253,7 @@ func (c *TenantAccountController) ExistAccount(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.ExistAccount(ctx, ct, c.appModule))
+	ctx.JSON(200, c.sv.ExistAccount(ctx, ct, c.domainOption))
 }
 
 // ExistPhone 查重
@@ -265,7 +266,7 @@ func (c *TenantAccountController) ExistPhone(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.ExistPhone(ctx, ct, c.appModule))
+	ctx.JSON(200, c.sv.ExistPhone(ctx, ct, c.domainOption))
 }
 
 // ExistMail 查重
@@ -278,7 +279,7 @@ func (c *TenantAccountController) ExistMail(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.ExistMail(ctx, ct, c.appModule))
+	ctx.JSON(200, c.sv.ExistMail(ctx, ct, c.domainOption))
 }
 
 // ExistIdentityCode 查重
@@ -291,7 +292,7 @@ func (c *TenantAccountController) ExistIdentityCode(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.ExistIdentityCode(ctx, ct, c.appModule))
+	ctx.JSON(200, c.sv.ExistIdentityCode(ctx, ct, c.domainOption))
 }
 
 // ExistRealName 查重
@@ -304,5 +305,5 @@ func (c *TenantAccountController) ExistRealName(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.ExistRealName(ctx, ct, c.appModule))
+	ctx.JSON(200, c.sv.ExistRealName(ctx, ct, c.domainOption))
 }

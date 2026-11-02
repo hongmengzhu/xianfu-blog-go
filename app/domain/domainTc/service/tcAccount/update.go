@@ -3,9 +3,9 @@ package tcAccount
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/modTcAccount"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsPg/domainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/identityPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/sexPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/appModulePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	"go-spring.org/log"
 
@@ -50,7 +50,7 @@ func NewUpdate(
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *Update) accountUpdate(ctx *gin.Context, ct modTcAccount.UpdateAccountCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
+func (c *Update) accountUpdate(ctx *gin.Context, ct modTcAccount.UpdateAccountCt, option domainPg.Option) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if ct.ID <= 0 {
 		return rt.ErrorMessage("id不能为空")
@@ -69,23 +69,23 @@ func (c *Update) accountUpdate(ctx *gin.Context, ct modTcAccount.UpdateAccountCt
 	}
 	r := c.sp.accDb
 	query := false
-	c.entity, query = r.FindByIdAndTypeDomain(ctx, ct.ID.ToInt64(), tp.ToTypeDomain().String())
+	c.entity, query = r.FindByIdAndTypeDomain(ctx, ct.ID.ToInt64(), option.TypeDomain.String())
 	if !query {
 		return rt.ErrorMessage("账号信息不存在")
 	}
-	find, ok := r.FindByAccountAndTypeDomain(ctx, ct.Account, tp.ToTypeDomain().String())
+	find, ok := r.FindByAccountAndTypeDomain(ctx, ct.Account, option.TypeDomain.String())
 	if ok && ct.ID.ToInt64() != find.ID {
 		return rt.ErrorMessage("账户已存在")
 	}
-	_, ok = r.FindByPhoneAndTypeDomainAndIdNot(ctx, ct.Phone, tp.ToTypeDomain().String(), ct.ID.ToString())
+	_, ok = r.FindByPhoneAndTypeDomainAndIdNot(ctx, ct.Phone, option.TypeDomain.String(), ct.ID.ToString())
 	if ok {
 		return rt.ErrorMessage("手机号已存在")
 	}
-	_, ok = r.FindByMailAndTypeDomainAndIdNot(ctx, ct.Mail, tp.ToTypeDomain().String(), ct.ID.ToString())
+	_, ok = r.FindByMailAndTypeDomainAndIdNot(ctx, ct.Mail, option.TypeDomain.String(), ct.ID.ToString())
 	if ok {
 		return rt.ErrorMessage("邮箱已存在")
 	}
-	_, ok = r.FindByNoAndTypeDomainAndIdNot(ctx, ct.Code, tp.ToTypeDomain().String(), ct.ID.ToString())
+	_, ok = r.FindByNoAndTypeDomainAndIdNot(ctx, ct.Code, option.TypeDomain.String(), ct.ID.ToString())
 	if ok {
 		return rt.ErrorMessage("编号已存在")
 	}
@@ -114,8 +114,8 @@ func (c *Update) accountUpdate(ctx *gin.Context, ct modTcAccount.UpdateAccountCt
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *Update) UpdateAccount(ctx *gin.Context, ct modTcAccount.UpdateAccountCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
-	account := c.accountUpdate(ctx, ct, tp)
+func (c *Update) UpdateAccount(ctx *gin.Context, ct modTcAccount.UpdateAccountCt, option domainPg.Option) (rt rg.Rs[string]) {
+	account := c.accountUpdate(ctx, ct, option)
 	if account.ErrorIs() {
 		return rt.ErrorMessage(account.Message)
 	}
@@ -130,11 +130,11 @@ func (c *Update) UpdateAccount(ctx *gin.Context, ct modTcAccount.UpdateAccountCt
 //	@param ct
 //	@param tp
 //	@return rt
-func (c *Update) updateAll(ctx *gin.Context, ct modTcAccount.UpdateCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
+func (c *Update) updateAll(ctx *gin.Context, ct modTcAccount.UpdateCt, option domainPg.Option) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var ctAccount modTcAccount.UpdateAccountCt
 	copier.Copy(&ctAccount, &ct)
-	account := c.accountUpdate(ctx, ctAccount, tp)
+	account := c.accountUpdate(ctx, ctAccount, option)
 	if account.ErrorIs() {
 		return rt.ErrorMessage(account.Message)
 	}
@@ -146,7 +146,7 @@ func (c *Update) updateAll(ctx *gin.Context, ct modTcAccount.UpdateCt, tp appMod
 	copier.Copy(&entity, &dataCt)
 	//
 	r := c.sp.accDb
-	info, query := r.FindByIdAndTypeDomain(ctx, ct.ID.ToInt64(), tp.ToTypeDomain().String())
+	info, query := r.FindByIdAndTypeDomain(ctx, ct.ID.ToInt64(), option.TypeDomain.String())
 	if !query {
 		return rt.ErrorMessage("账号信息不存在")
 	}
@@ -301,6 +301,6 @@ func (c *Update) updateAll(ctx *gin.Context, ct modTcAccount.UpdateCt, tp appMod
 //	@param ct
 //	@param tp
 //	@return rt
-func (c *Update) Process(ctx *gin.Context, ct modTcAccount.UpdateCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
-	return c.updateAll(ctx, ct, tp)
+func (c *Update) Process(ctx *gin.Context, ct modTcAccount.UpdateCt, option domainPg.Option) (rt rg.Rs[string]) {
+	return c.updateAll(ctx, ct, option)
 }

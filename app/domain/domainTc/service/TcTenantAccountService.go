@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainTc/service/tcAccount"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/modTcAccount"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/appModulePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsPg/domainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/yesNoPg/yesNoIntPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
@@ -52,8 +52,8 @@ func NewTcTenantAccountService() *TcTenantAccountService {
 //	@Description:
 //	@receiver c
 //	@param id
-func (c *TcTenantAccountService) Detail(ctx *gin.Context, id string, tp appModulePg.AppModule) (rt rg.Rs[modTcAccount.DetailVo]) {
-	detail := tcAccount.NewDetail(c.sp, tp)
+func (c *TcTenantAccountService) Detail(ctx *gin.Context, id string, option domainPg.Option) (rt rg.Rs[modTcAccount.DetailVo]) {
+	detail := tcAccount.NewDetail(c.sp, option)
 	return detail.Process(ctx, id)
 }
 
@@ -62,8 +62,8 @@ func (c *TcTenantAccountService) Detail(ctx *gin.Context, id string, tp appModul
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *TcTenantAccountService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string], tp appModulePg.AppModule) (rt rg.Rs[string]) {
-	return c.State(ctx, ct.Ids, enumStatePg.ENABLE, tp)
+func (c *TcTenantAccountService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string], option domainPg.Option) (rt rg.Rs[string]) {
+	return c.State(ctx, ct.Ids, enumStatePg.ENABLE, option)
 }
 
 // Disable 禁用
@@ -71,8 +71,8 @@ func (c *TcTenantAccountService) Enable(ctx *gin.Context, ct model.BaseIdsCt[str
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *TcTenantAccountService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string], tp appModulePg.AppModule) (rt rg.Rs[string]) {
-	return c.State(ctx, ct.Ids, enumStatePg.GetType(enumStatePg.DISABLE), tp)
+func (c *TcTenantAccountService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string], option domainPg.Option) (rt rg.Rs[string]) {
+	return c.State(ctx, ct.Ids, enumStatePg.GetType(enumStatePg.DISABLE), option)
 }
 
 // State 状态 启用/禁用
@@ -80,12 +80,12 @@ func (c *TcTenantAccountService) Disable(ctx *gin.Context, ct model.BaseIdsCt[st
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *TcTenantAccountService) State(ctx *gin.Context, ids []string, state enumStatePg.State, tp appModulePg.AppModule) (rt rg.Rs[string]) {
+func (c *TcTenantAccountService) State(ctx *gin.Context, ids []string, state enumStatePg.State, option domainPg.Option) (rt rg.Rs[string]) {
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
 	r := c.sv
-	finds, b := r.FindAllByIdStringInAndTypeDomain(ctx, ids, tp.ToTypeDomain().String())
+	finds, b := r.FindAllByIdStringInAndTypeDomain(ctx, ids, option.TypeDomain.String())
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
@@ -106,11 +106,11 @@ func (c *TcTenantAccountService) State(ctx *gin.Context, ids []string, state enu
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *TcTenantAccountService) StateEnableDisable(ctx *gin.Context, ids []string, state enumStatePg.State, tp appModulePg.AppModule) (rt rg.Rs[string]) {
+func (c *TcTenantAccountService) StateEnableDisable(ctx *gin.Context, ids []string, state enumStatePg.State, option domainPg.Option) (rt rg.Rs[string]) {
 	if !state.IsEnableDisable() {
 		return rt.ErrorMessage("状态错误")
 	}
-	return c.State(ctx, ids, state, tp)
+	return c.State(ctx, ids, state, option)
 }
 
 // LogicalDeletion 逻辑删除
@@ -118,12 +118,12 @@ func (c *TcTenantAccountService) StateEnableDisable(ctx *gin.Context, ids []stri
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *TcTenantAccountService) LogicalDeletion(ctx *gin.Context, ids []string, tp appModulePg.AppModule) (rt rg.Rs[string]) {
+func (c *TcTenantAccountService) LogicalDeletion(ctx *gin.Context, ids []string, option domainPg.Option) (rt rg.Rs[string]) {
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
 	r := c.sv
-	finds, b := r.FindAllByIdStringInAndTypeDomain(ctx, ids, tp.ToTypeDomain().String())
+	finds, b := r.FindAllByIdStringInAndTypeDomain(ctx, ids, option.TypeDomain.String())
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
@@ -164,12 +164,12 @@ func (c *TcTenantAccountService) LogicalDeletion(ctx *gin.Context, ids []string,
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *TcTenantAccountService) LogicalRecovery(ctx *gin.Context, ids []string, tp appModulePg.AppModule) (rt rg.Rs[string]) {
+func (c *TcTenantAccountService) LogicalRecovery(ctx *gin.Context, ids []string, option domainPg.Option) (rt rg.Rs[string]) {
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
 	r := c.sv
-	finds, b := r.FindAllByIdStringInAndTypeDomain(ctx, ids, tp.ToTypeDomain().String())
+	finds, b := r.FindAllByIdStringInAndTypeDomain(ctx, ids, option.TypeDomain.String())
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
@@ -192,12 +192,12 @@ func (c *TcTenantAccountService) LogicalRecovery(ctx *gin.Context, ids []string,
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *TcTenantAccountService) PhysicalDeletion(ctx *gin.Context, ids []string, tp appModulePg.AppModule) (rt rg.Rs[string]) {
+func (c *TcTenantAccountService) PhysicalDeletion(ctx *gin.Context, ids []string, option domainPg.Option) (rt rg.Rs[string]) {
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
 	r := c.sv
-	finds, b := r.FindAllByIdStringInAndTypeDomain(ctx, ids, tp.ToTypeDomain().String())
+	finds, b := r.FindAllByIdStringInAndTypeDomain(ctx, ids, option.TypeDomain.String())
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
@@ -220,7 +220,7 @@ func (c *TcTenantAccountService) PhysicalDeletion(ctx *gin.Context, ids []string
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *TcTenantAccountService) Query(ctx *gin.Context, ct modTcAccount.QueryCt, tp appModulePg.AppModule) (rt rg.Rs[pagePg.Paginator[modTcAccount.Vo]]) {
+func (c *TcTenantAccountService) Query(ctx *gin.Context, ct modTcAccount.QueryCt, option domainPg.Option) (rt rg.Rs[pagePg.Paginator[modTcAccount.Vo]]) {
 	var query entityRam.RamAccountEntity
 	copier.Copy(&query, &ct)
 	// 创始人
@@ -240,7 +240,7 @@ func (c *TcTenantAccountService) Query(ctx *gin.Context, ct modTcAccount.QueryCt
 		}
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		arg.Db = arg.Db.Order("create_at desc")
-		arg.Db = arg.Db.Where("type_domain= ?", tp.ToTypeDomain().String())
+		arg.Db = arg.Db.Where("type_domain= ?", option.TypeDomain.String())
 		//自定义查询
 		if strPg.IsNotBlank(ct.Wd) {
 			arg.Db = arg.Db.Where("account like ?", "%"+ct.Wd+"%")
@@ -643,8 +643,8 @@ func (c *TcTenantAccountService) Query(ctx *gin.Context, ct modTcAccount.QueryCt
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *TcTenantAccountService) Create(ctx *gin.Context, ct modTcAccount.CreateCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
-	return tcAccount.NewCreate(c.sp, ctx).Process(ctx, ct, tp)
+func (c *TcTenantAccountService) Create(ctx *gin.Context, ct modTcAccount.CreateCt, option domainPg.Option) (rt rg.Rs[string]) {
+	return tcAccount.NewCreate(c.sp, ctx).Process(ctx, ct, option)
 }
 
 // CreateAccount 创建
@@ -652,8 +652,8 @@ func (c *TcTenantAccountService) Create(ctx *gin.Context, ct modTcAccount.Create
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *TcTenantAccountService) CreateAccount(ctx *gin.Context, ct modTcAccount.CreateAccountCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
-	return tcAccount.NewCreate(c.sp, ctx).CreateAccount(ctx, ct, tp)
+func (c *TcTenantAccountService) CreateAccount(ctx *gin.Context, ct modTcAccount.CreateAccountCt, option domainPg.Option) (rt rg.Rs[string]) {
+	return tcAccount.NewCreate(c.sp, ctx).CreateAccount(ctx, ct, option)
 }
 
 // Update 更新
@@ -661,8 +661,8 @@ func (c *TcTenantAccountService) CreateAccount(ctx *gin.Context, ct modTcAccount
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *TcTenantAccountService) Update(ctx *gin.Context, ct modTcAccount.UpdateCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
-	return tcAccount.NewUpdate(c.sp, ctx).Process(ctx, ct, tp)
+func (c *TcTenantAccountService) Update(ctx *gin.Context, ct modTcAccount.UpdateCt, option domainPg.Option) (rt rg.Rs[string]) {
+	return tcAccount.NewUpdate(c.sp, ctx).Process(ctx, ct, option)
 }
 
 // UpdateAccount 更新
@@ -670,8 +670,8 @@ func (c *TcTenantAccountService) Update(ctx *gin.Context, ct modTcAccount.Update
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *TcTenantAccountService) UpdateAccount(ctx *gin.Context, ct modTcAccount.UpdateAccountCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
-	return tcAccount.NewUpdate(c.sp, ctx).UpdateAccount(ctx, ct, tp)
+func (c *TcTenantAccountService) UpdateAccount(ctx *gin.Context, ct modTcAccount.UpdateAccountCt, option domainPg.Option) (rt rg.Rs[string]) {
+	return tcAccount.NewUpdate(c.sp, ctx).UpdateAccount(ctx, ct, option)
 }
 
 // ExistAccount 查重
@@ -679,11 +679,11 @@ func (c *TcTenantAccountService) UpdateAccount(ctx *gin.Context, ct modTcAccount
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *TcTenantAccountService) ExistAccount(ctx *gin.Context, ct model.BaseExistWdCt[string], tp appModulePg.AppModule) (rt rg.Rs[string]) {
+func (c *TcTenantAccountService) ExistAccount(ctx *gin.Context, ct model.BaseExistWdCt[string], option domainPg.Option) (rt rg.Rs[string]) {
 	if "" == ct.Wd {
 		return rt.ErrorMessage("查询内容不能为空")
 	}
-	_, result := c.sv.FindByAccountAndTypeDomainAndIdNot(ctx, ct.Wd, tp.ToTypeDomain().String(), ct.Id)
+	_, result := c.sv.FindByAccountAndTypeDomainAndIdNot(ctx, ct.Wd, option.TypeDomain.String(), ct.Id)
 	if result {
 		return rt.ErrorMessage("重复，已存在")
 	}
@@ -695,11 +695,11 @@ func (c *TcTenantAccountService) ExistAccount(ctx *gin.Context, ct model.BaseExi
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *TcTenantAccountService) ExistPhone(ctx *gin.Context, ct model.BaseExistWdCt[string], tp appModulePg.AppModule) (rt rg.Rs[string]) {
+func (c *TcTenantAccountService) ExistPhone(ctx *gin.Context, ct model.BaseExistWdCt[string], option domainPg.Option) (rt rg.Rs[string]) {
 	if "" == ct.Wd {
 		return rt.ErrorMessage("查询内容不能为空")
 	}
-	_, result := c.sv.FindByPhoneAndTypeDomainAndIdNot(ctx, ct.Wd, tp.ToTypeDomain().String(), ct.Id)
+	_, result := c.sv.FindByPhoneAndTypeDomainAndIdNot(ctx, ct.Wd, option.TypeDomain.String(), ct.Id)
 	if result {
 		return rt.ErrorMessage("重复，已存在")
 	}
@@ -711,11 +711,11 @@ func (c *TcTenantAccountService) ExistPhone(ctx *gin.Context, ct model.BaseExist
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *TcTenantAccountService) ExistMail(ctx *gin.Context, ct model.BaseExistWdCt[string], tp appModulePg.AppModule) (rt rg.Rs[string]) {
+func (c *TcTenantAccountService) ExistMail(ctx *gin.Context, ct model.BaseExistWdCt[string], option domainPg.Option) (rt rg.Rs[string]) {
 	if "" == ct.Wd {
 		return rt.ErrorMessage("查询内容不能为空")
 	}
-	_, result := c.sv.FindByMailAndTypeDomainAndIdNot(ctx, ct.Wd, tp.ToTypeDomain().String(), ct.Id)
+	_, result := c.sv.FindByMailAndTypeDomainAndIdNot(ctx, ct.Wd, option.TypeDomain.String(), ct.Id)
 	if result {
 		return rt.ErrorMessage("重复，已存在")
 	}
@@ -727,11 +727,11 @@ func (c *TcTenantAccountService) ExistMail(ctx *gin.Context, ct model.BaseExistW
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *TcTenantAccountService) ExistIdentityCode(ctx *gin.Context, ct model.BaseExistWdCt[string], tp appModulePg.AppModule) (rt rg.Rs[string]) {
+func (c *TcTenantAccountService) ExistIdentityCode(ctx *gin.Context, ct model.BaseExistWdCt[string], option domainPg.Option) (rt rg.Rs[string]) {
 	if "" == ct.Wd {
 		return rt.ErrorMessage("查询内容不能为空")
 	}
-	_, result := c.sv.FindByIdentityCodeAndTypeDomainAndIdNot(ctx, ct.Wd, tp.ToTypeDomain().String(), ct.Id)
+	_, result := c.sv.FindByIdentityCodeAndTypeDomainAndIdNot(ctx, ct.Wd, option.TypeDomain.String(), ct.Id)
 	if result {
 		return rt.ErrorMessage("重复，已存在")
 	}
@@ -743,11 +743,11 @@ func (c *TcTenantAccountService) ExistIdentityCode(ctx *gin.Context, ct model.Ba
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *TcTenantAccountService) ExistRealName(ctx *gin.Context, ct model.BaseExistWdCt[string], tp appModulePg.AppModule) (rt rg.Rs[string]) {
+func (c *TcTenantAccountService) ExistRealName(ctx *gin.Context, ct model.BaseExistWdCt[string], option domainPg.Option) (rt rg.Rs[string]) {
 	if "" == ct.Wd {
 		return rt.ErrorMessage("查询内容不能为空")
 	}
-	_, result := c.sv.FindByRealNameAndTypeDomainAndIdNot(ctx, ct.Wd, tp.ToTypeDomain().String(), ct.Id)
+	_, result := c.sv.FindByRealNameAndTypeDomainAndIdNot(ctx, ct.Wd, option.TypeDomain.String(), ct.Id)
 	if result {
 		return rt.ErrorMessage("重复，已存在")
 	}

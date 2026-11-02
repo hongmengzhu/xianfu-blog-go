@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/utilsRam"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/modTcAccount"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsPg/domainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/passwordTypePg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/appModulePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	repositoryRam2 "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"go-spring.org/log"
@@ -36,8 +36,8 @@ func NewTcTenantAccountPasswordService() *TcTenantAccountPasswordService {
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *TcTenantAccountPasswordService) UpdatePassword(ctx *gin.Context, ct modTcAccount.PasswordCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
-	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct), log.Any("tp", tp))
+func (c *TcTenantAccountPasswordService) UpdatePassword(ctx *gin.Context, ct modTcAccount.PasswordCt, option domainPg.Option) (rt rg.Rs[string]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct), log.Any("option", option))
 	if ct.ID == 0 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -45,7 +45,7 @@ func (c *TcTenantAccountPasswordService) UpdatePassword(ctx *gin.Context, ct mod
 		return rt.ErrorMessage("密码不能为空")
 	}
 	r := c.sv
-	info, b := r.FindByIdAndTypeDomain(ctx, ct.ID.ToInt64(), tp.ToTypeDomain().String())
+	info, b := r.FindByIdAndTypeDomain(ctx, ct.ID.ToInt64(), option.TypeDomain.String())
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}

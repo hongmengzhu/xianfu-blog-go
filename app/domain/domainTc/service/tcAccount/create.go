@@ -6,10 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/utilsRam"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/modTcAccount"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsPg/domainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/authorizationTypePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/identityPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/sexPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/appModulePg"
 	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
@@ -56,7 +56,7 @@ func NewCreate(
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *Create) accountCreate(ctx *gin.Context, ct modTcAccount.CreateAccountCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
+func (c *Create) accountCreate(ctx *gin.Context, ct modTcAccount.CreateAccountCt, option domainPg.Option) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if strPg.IsBlank(ct.TenantNo) {
 		return rt.ErrorMessage("租户不能为空")
@@ -74,19 +74,19 @@ func (c *Create) accountCreate(ctx *gin.Context, ct modTcAccount.CreateAccountCt
 		ct.Code = strPg.GetNanoid(10)
 	}
 	r := c.sp.accDb
-	_, ok := r.FindByTenantNoAccountAndTypeDomainAndIdNot(ctx, ct.TenantNo, ct.Account, tp.ToTypeDomain().String(), "0")
+	_, ok := r.FindByTenantNoAccountAndTypeDomainAndIdNot(ctx, ct.TenantNo, ct.Account, option.TypeDomain.String(), "0")
 	if ok {
 		return rt.ErrorMessage("账户已存在")
 	}
-	_, ok = r.FindByPhoneAndTypeDomainAndIdNot(ctx, ct.Phone, tp.ToTypeDomain().String(), "0")
+	_, ok = r.FindByPhoneAndTypeDomainAndIdNot(ctx, ct.Phone, option.TypeDomain.String(), "0")
 	if ok {
 		return rt.ErrorMessage("手机号已存在")
 	}
-	_, ok = r.FindByMailAndTypeDomainAndIdNot(ctx, ct.Mail, tp.ToTypeDomain().String(), "0")
+	_, ok = r.FindByMailAndTypeDomainAndIdNot(ctx, ct.Mail, option.TypeDomain.String(), "0")
 	if ok {
 		return rt.ErrorMessage("邮箱已存在")
 	}
-	_, ok = r.FindByNoAndTypeDomainAndIdNot(ctx, ct.Code, tp.ToTypeDomain().String(), "0")
+	_, ok = r.FindByNoAndTypeDomainAndIdNot(ctx, ct.Code, option.TypeDomain.String(), "0")
 	if ok {
 		return rt.ErrorMessage("编号已存在")
 	}
@@ -107,7 +107,7 @@ func (c *Create) accountCreate(ctx *gin.Context, ct modTcAccount.CreateAccountCt
 	//
 	copier.Copy(&c.entity, &ct)
 	c.entity.ExtraData = datatypes.JSON([]byte(`{}`))
-	c.entity.TypeDomain = tp.ToTypeDomain().String() //域类型
+	c.entity.TypeDomain = option.TypeDomain.String() //域类型
 	//
 	c.entity.Name = c.entity.Account
 	c.entity.RealName = c.entity.Account
@@ -165,8 +165,8 @@ func (c *Create) accountCreate(ctx *gin.Context, ct modTcAccount.CreateAccountCt
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *Create) CreateAccount(ctx *gin.Context, ct modTcAccount.CreateAccountCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
-	account := c.accountCreate(ctx, ct, tp)
+func (c *Create) CreateAccount(ctx *gin.Context, ct modTcAccount.CreateAccountCt, option domainPg.Option) (rt rg.Rs[string]) {
+	account := c.accountCreate(ctx, ct, option)
 	if account.ErrorIs() {
 		return rt.ErrorMessage(account.Message)
 	}
@@ -181,11 +181,11 @@ func (c *Create) CreateAccount(ctx *gin.Context, ct modTcAccount.CreateAccountCt
 //	@param ct
 //	@param tp
 //	@return rt
-func (c *Create) createAll(ctx *gin.Context, ct modTcAccount.CreateCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
+func (c *Create) createAll(ctx *gin.Context, ct modTcAccount.CreateCt, option domainPg.Option) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var ctAccount modTcAccount.CreateAccountCt
 	copier.Copy(&ctAccount, &ct)
-	account := c.accountCreate(ctx, ctAccount, tp)
+	account := c.accountCreate(ctx, ctAccount, option)
 	if account.ErrorIs() {
 		return rt.ErrorMessage(account.Message)
 	}
@@ -345,6 +345,6 @@ func (c *Create) createAll(ctx *gin.Context, ct modTcAccount.CreateCt, tp appMod
 //	@param ct
 //	@param tp
 //	@return rt
-func (c *Create) Process(ctx *gin.Context, ct modTcAccount.CreateCt, tp appModulePg.AppModule) (rt rg.Rs[string]) {
-	return c.createAll(ctx, ct, tp)
+func (c *Create) Process(ctx *gin.Context, ct modTcAccount.CreateCt, option domainPg.Option) (rt rg.Rs[string]) {
+	return c.createAll(ctx, ct, option)
 }

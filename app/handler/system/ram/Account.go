@@ -4,7 +4,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamAccount"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/appModulePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsPg/domainPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsPg/terminalCodePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	routerPg2 "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
@@ -14,7 +16,10 @@ import (
 )
 
 func init() {
-	gs.Provide(new(AccountController).SetAppModule(appModulePg.System)).Name("SystemAccountController").Export(gs.As[routerPg2.RouteRegistrar]())
+	gs.Provide(new(AccountController).SetOption(domainPg.Option{
+		TerminalCode: terminalCodePg.Manage,
+		TypeDomain:   typeDomainPg.Manage,
+	})).Name("SystemAccountController").Export(gs.As[routerPg2.RouteRegistrar]())
 }
 
 // AccountController 账户
@@ -22,15 +27,15 @@ func init() {
 type AccountController struct {
 	routerPg2.RouteRegistrar
 	controllerPg.SpSystemAuth
-	sv        *service.RamAccountService         `autowire:"?"`
-	ap        *service.RamAccountPasswordService `autowire:"?"`
-	appModule appModulePg.AppModule
+	sv           *service.RamAccountService         `autowire:"?"`
+	ap           *service.RamAccountPasswordService `autowire:"?"`
+	domainOption domainPg.Option
 }
 
-// SetAppModule 设置模块
+// SetOption 设置模块
 // @Description:
-func (c *AccountController) SetAppModule(appModule appModulePg.AppModule) *AccountController {
-	c.appModule = appModule
+func (c *AccountController) SetOption(option domainPg.Option) *AccountController {
+	c.domainOption = option
 	return c
 }
 
@@ -70,7 +75,7 @@ func (c *AccountController) Detail(ctx *gin.Context) {
 		ctx.JSON(200, rg.Error[string]("id不能为空"))
 		return
 	}
-	ctx.JSON(200, c.sv.Detail(ctx, param, c.appModule))
+	ctx.JSON(200, c.sv.Detail(ctx, param, c.domainOption))
 }
 
 // Enable 有效
@@ -83,7 +88,7 @@ func (c *AccountController) Enable(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.Enable(ctx, ct, c.appModule))
+	ctx.JSON(200, c.sv.Enable(ctx, ct, c.domainOption))
 }
 
 // Disable 停用
@@ -96,7 +101,7 @@ func (c *AccountController) Disable(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.Disable(ctx, ct, c.appModule))
+	ctx.JSON(200, c.sv.Disable(ctx, ct, c.domainOption))
 }
 
 // Delete 逻辑删除
@@ -109,7 +114,7 @@ func (c *AccountController) Delete(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids, c.appModule))
+	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids, c.domainOption))
 }
 
 // Recovery 删除 恢复
@@ -122,7 +127,7 @@ func (c *AccountController) Recovery(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids, c.appModule))
+	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids, c.domainOption))
 }
 
 // PhysicalDeletion 物理删除
@@ -135,7 +140,7 @@ func (c *AccountController) PhysicalDeletion(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids, c.appModule))
+	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids, c.domainOption))
 }
 
 // UpdatePassword 更新密码
@@ -148,7 +153,7 @@ func (c *AccountController) UpdatePassword(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.ap.UpdatePassword(ctx, ct, c.appModule))
+	ctx.JSON(200, c.ap.UpdatePassword(ctx, ct, c.domainOption))
 }
 
 // Query 查询列表
@@ -161,7 +166,7 @@ func (c *AccountController) Query(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.Query(ctx, ct, c.appModule))
+	ctx.JSON(200, c.sv.Query(ctx, ct, c.domainOption))
 }
 
 // CreateUpdate 添加
@@ -174,7 +179,7 @@ func (c *AccountController) CreateUpdate(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.CreateUpdate(ctx, ct, c.appModule))
+	ctx.JSON(200, c.sv.CreateUpdate(ctx, ct, c.domainOption))
 }
 
 func (c *AccountController) CreateUpdateSimple(ctx *gin.Context) {
@@ -182,7 +187,7 @@ func (c *AccountController) CreateUpdateSimple(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.CreateUpdateAccountSimple(ctx, ct, c.appModule))
+	ctx.JSON(200, c.sv.CreateUpdateAccountSimple(ctx, ct, c.domainOption))
 }
 
 // ExistAccount 查重
@@ -195,7 +200,7 @@ func (c *AccountController) ExistAccount(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.ExistAccount(ctx, ct, c.appModule))
+	ctx.JSON(200, c.sv.ExistAccount(ctx, ct, c.domainOption))
 }
 
 // ExistPhone 查重
@@ -208,7 +213,7 @@ func (c *AccountController) ExistPhone(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.ExistPhone(ctx, ct, c.appModule))
+	ctx.JSON(200, c.sv.ExistPhone(ctx, ct, c.domainOption))
 }
 
 // ExistMail 查重
@@ -221,7 +226,7 @@ func (c *AccountController) ExistMail(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.ExistMail(ctx, ct, c.appModule))
+	ctx.JSON(200, c.sv.ExistMail(ctx, ct, c.domainOption))
 }
 
 func (c *AccountController) ExistCode(ctx *gin.Context) {
@@ -229,7 +234,7 @@ func (c *AccountController) ExistCode(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.ExistCode(ctx, ct, c.appModule))
+	ctx.JSON(200, c.sv.ExistCode(ctx, ct, c.domainOption))
 }
 
 // ExistIdentityCode 查重
@@ -242,7 +247,7 @@ func (c *AccountController) ExistIdentityCode(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.ExistIdentityCode(ctx, ct, c.appModule))
+	ctx.JSON(200, c.sv.ExistIdentityCode(ctx, ct, c.domainOption))
 }
 
 // ExistRealName 查重
@@ -255,5 +260,5 @@ func (c *AccountController) ExistRealName(ctx *gin.Context) {
 	if !routerPg2.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.ExistRealName(ctx, ct, c.appModule))
+	ctx.JSON(200, c.sv.ExistRealName(ctx, ct, c.domainOption))
 }

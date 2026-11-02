@@ -3,7 +3,7 @@ package tcAccount
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/modTcAccount"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/appModulePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsPg/domainPg"
 	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityTc"
 	"github.com/jinzhu/copier"
@@ -14,14 +14,14 @@ import (
 )
 
 type Detail struct {
-	sp *Sp `autowire:"?"`
-	tp appModulePg.AppModule
+	sp     *Sp `autowire:"?"`
+	option domainPg.Option
 }
 
-func NewDetail(sp *Sp, tp appModulePg.AppModule) *Detail {
+func NewDetail(sp *Sp, option domainPg.Option) *Detail {
 	return &Detail{
-		sp: sp,
-		tp: tp,
+		sp:     sp,
+		option: option,
 	}
 }
 
@@ -37,7 +37,7 @@ func (c *Detail) Process(ctx *gin.Context, id string) (rt rg.Rs[modTcAccount.Det
 	if strPg.IsBlank(id) {
 		return rt.ErrorMessage("id错误")
 	}
-	find, b := c.sp.accDb.FindByIdAndTypeDomain(ctx, numberPg.StrToInt64(id), c.tp.ToTypeDomain().String())
+	find, b := c.sp.accDb.FindByIdAndTypeDomain(ctx, numberPg.StrToInt64(id), c.option.TypeDomain.String())
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
