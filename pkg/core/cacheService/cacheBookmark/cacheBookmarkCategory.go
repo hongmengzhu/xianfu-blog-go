@@ -3,6 +3,7 @@ package cacheBookmark
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/goccy/go-json"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkCategory"
@@ -47,10 +48,14 @@ func (c *CacheBookmarkCategory) GetAllByKeysRetMap(ctx context.Context, keys []s
 	//fmt.Printf("获取缓存结果: %v\n", result)
 	if b {
 		for _, item := range result {
+			// 缓存未命中时 item 为 nil（GetAllByKeys 与 keys 一一对应）
+			if item == nil {
+				continue
+			}
 			// 解析值（JSON 字符串）
 			valueStr, ok := item.(string)
 			if !ok {
-				fmt.Printf("键 %s 的值格式错误\n", item)
+				fmt.Printf("值格式错误: %T\n", item)
 				continue
 			}
 			// 可选：将 JSON 字符串解析为结构体
@@ -68,39 +73,37 @@ func (c *CacheBookmarkCategory) GetAllByKeysRetMap(ctx context.Context, keys []s
 
 // GetByKey
 //
-//	@Description: 获取所有缓存
+//	@Description: 按分类 code 获取缓存（兼容直接传 no）
 //	@receiver c
 //	@param ctx
+//	@param keys 分类 code（也兼容 no）
 //	@param tenantNo
-//	@return []*entityBlog.BlogArticleCategoryEntity
+//	@return *modBmBookmarkCategory.Cache
 //	@return bool
 func (c *CacheBookmarkCategory) GetByKey(ctx context.Context, keys string, tenantNo string) (*modBmBookmarkCategory.Cache, bool) {
-	tmps := make([]string, 0)
 	if strPg.IsBlank(keys) {
 		return nil, false
 	}
-	tmps = append(tmps, keys)
-	result, b := c.rdt.GetAllByKeys(ctx, tmps)
-	//fmt.Printf("获取缓存结果: %v\n", keys)
-	//fmt.Printf("获取缓存结果: %v\n", result)
-	if b {
-		for _, item := range result {
-			// 解析值（JSON 字符串）
-			valueStr, ok := item.(string)
-			if !ok {
-				fmt.Printf("键 %s 的值格式错误\n", item)
-				continue
-			}
-			// 可选：将 JSON 字符串解析为结构体
-			var category modBmBookmarkCategory.Cache
-			if err := json.Unmarshal([]byte(valueStr), &category); err != nil {
-				fmt.Printf("解析键 JSON 失败: %v\n", err)
-				continue
-			}
-			return &category, true
-		}
+	// 缓存里存了两份数据：
+	//   bm:bmCate:<tenantNo>:<no>       -> 分类 JSON
+	//   bm:bmCateNoCode:<tenantNo>:<code> -> no
+	// 页面链接用 code，这里先按 code 换成 no；换不到就按 no 直接查。
+	no := strings.TrimSpace(keys)
+	if v, ok := c.rdt.Get(ctx, bmKeyPg.BookmarkCategoryTenantNoAndNoByCode(tenantNo, no)); ok && strPg.IsNotBlank(v) {
+		no = strings.TrimSpace(v)
 	}
-	return nil, false
+	key := bmKeyPg.BookmarkCategoryTenantNo(tenantNo, no)
+	valueStr, ok := c.rdt.Get(ctx, key)
+	if !ok || strPg.IsBlank(valueStr) {
+		return nil, false
+	}
+	// 可选：将 JSON 字符串解析为结构体
+	var category modBmBookmarkCategory.Cache
+	if err := json.Unmarshal([]byte(valueStr), &category); err != nil {
+		fmt.Printf("解析键 %s 的 JSON 失败: %v\n", key, err)
+		return nil, false
+	}
+	return &category, true
 }
 
 // GetAllByCache

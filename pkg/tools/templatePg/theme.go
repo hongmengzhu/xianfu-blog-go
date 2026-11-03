@@ -7,7 +7,6 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constHeaderPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
-	"go-spring.org/log"
 )
 
 // Theme
@@ -93,6 +92,6 @@ func HTML(ctx *gin.Context, file string, opts ...Option) {
 	}
 	//
 	code, name, obj := buildTemplateParam(pg, server, ctx.Request, file, opts...)
-	log.Info(ctx, log.TagAppDef, "HTML", log.Any("obj", obj))
+	//log.Info(ctx, log.TagAppDef, "HTML", log.Any("obj", obj))
 	ctx.HTML(code, name, obj)
 }

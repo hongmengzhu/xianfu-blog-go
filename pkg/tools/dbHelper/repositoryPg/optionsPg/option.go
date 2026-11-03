@@ -39,7 +39,7 @@ func WithPageable(pageable pagePg.Pageable) Option {
 func WithScopes(page *pagePg.Pageable) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		size := int64(0)
-		offset := int(10)
+		offset := int(0)
 		if nil != page {
 			if page.PageSize > 0 {
 				size = page.PageSize

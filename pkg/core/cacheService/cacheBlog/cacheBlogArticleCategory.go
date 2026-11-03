@@ -47,10 +47,14 @@ func (c *CacheBlogArticleCategory) GetAllByKeysRetMap(ctx context.Context, keys 
 	//fmt.Printf("获取缓存结果: %v\n", result)
 	if b {
 		for _, item := range result {
+			// 缓存未命中时 item 为 nil（GetAllByKeys 与 keys 一一对应）
+			if item == nil {
+				continue
+			}
 			// 解析值（JSON 字符串）
 			valueStr, ok := item.(string)
 			if !ok {
-				fmt.Printf("键 %s 的值格式错误\n", item)
+				fmt.Printf("值格式错误: %T\n", item)
 				continue
 			}
 			// 可选：将 JSON 字符串解析为结构体

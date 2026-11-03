@@ -255,6 +255,7 @@ func (c *BmBookmarkWebService) Query(ctx *gin.Context, ct modBmBookmarkWeb.Query
 //	@param tenantNo 租户编号
 //	@param ct
 func (c *BmBookmarkWebService) QueryByContext(ctx context.Context, tenantNo string, ct modBmBookmarkWeb.QueryCt) (rt rg.Rs[pagePg.Paginator[modBmBookmarkWeb.Vo]]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityBm.BmBookmarkEntity
 	copier.Copy(&query, &ct)
 	if strPg.IsNotBlank(tenantNo) {
