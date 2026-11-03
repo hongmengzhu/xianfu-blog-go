@@ -18,5 +18,5 @@ type CreateUpdateCt struct {
 	Tags        []string            `json:"tags" label:"标签" `
 	CategoryNo  string              `json:"categoryNo" label:"分类" `
 	OrgNo       string              `json:"orgNo" label:"组织" `
-	TypeOwner   string              `json:"typeOwner" label:"类型" `
+	TypeOwner   string              `json:"typeOwner" label:"类型内容所属" `
 }

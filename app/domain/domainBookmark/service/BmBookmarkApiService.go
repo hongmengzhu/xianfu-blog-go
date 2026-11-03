@@ -276,3 +276,38 @@ func (c *BmBookmarkApiService) LogicalDeletion(ctx *gin.Context, ids []string) (
 	}
 	return rt.Ok()
 }
+
+// SetTypeReading 设置读书状态
+func (c *BmBookmarkApiService) SetTypeReading(ctx *gin.Context, ct modApiBmBookmark.TypeReadingCt) (rt rg.Rs[string]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	//
+	holder := holderApiPg.GetContextAccount(ctx)
+	if ct.ID.ToInt64() <= 0 {
+		return rt.ErrorMessage("ID不能为空")
+	}
+	find, b := c.sv.FindById(ctx, ct.ID.ToInt64(), optionsPg.WithCtx(ctx))
+	if !b {
+		return rt.ErrorMessage("数据不存在")
+	}
+	if find.TenantNo != holder.GetTenantNo() {
+		return rt.ErrorMessage("无权限")
+	}
+	if ct.TypeReading == "" {
+		return rt.ErrorMessage("阅读类型不能为空")
+	}
+	if !typeReadingPg.IsExistTypeReading(ct.TypeReading) {
+		return rt.ErrorMessage("阅读类型错误")
+	}
+	var info entityBm.BmBookmarkEntity
+	err := copier.Copy(&info, &ct)
+	if err != nil {
+		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
+	}
+	now := time.Now()
+	info.FinishReading = &now
+	err = c.sv.Update(ctx, info, find.ID)
+	if err != nil {
+		return rt.ErrorMessage("保存失败 " + err.Error())
+	}
+	return rg.OkData(numberPg.Int64ToString(info.ID))
+}
