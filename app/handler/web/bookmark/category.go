@@ -42,8 +42,9 @@ func (c *CategoryController) RegisterRoutes(e *gin.Engine) {
 
 // Code
 func (c *CategoryController) Code(ctx *gin.Context) {
+	param := ctx.Param("code")
 	htmlOption := make([]templatePg.Option, 0)
-	htmlOption = append(htmlOption, templatePg.WithHtmlObjSet("pageUrl", "page"))
+	htmlOption = append(htmlOption, templatePg.WithHtmlObjSet("pageUrl", "/bookmark/category/"+param))
 	htmlOption = append(htmlOption, templatePg.WithSitePage(templatePg.SitePage{
 		Title:       "博客",
 		Description: "博客",
@@ -52,7 +53,6 @@ func (c *CategoryController) Code(ctx *gin.Context) {
 	}))
 	//
 	var ct modBmBookmarkWeb.QueryCt
-	param := ctx.Param("code")
 	//
 	tenantNo := webPg.GetTenantNo(ctx)
 	//
@@ -63,6 +63,7 @@ func (c *CategoryController) Code(ctx *gin.Context) {
 	if strPg.IsNotBlank(param) {
 		key, b := c.catCache.GetByKey(ctx, param, tenantNo)
 		if b {
+			htmlOption = append(htmlOption, templatePg.WithHtmlObjSet("pageCategoryItem", key))
 			//
 			ct.CategoryNo = key.No
 			rt := c.sv.Query(ctx, ct)
@@ -86,13 +87,21 @@ func (c *CategoryController) List(ctx *gin.Context) {
 	//
 	//
 	tenantNo := webPg.GetTenantNo(ctx)
-	nosCategory := make([]string, 0)
+	nosCategory := make([]*model.BaseNodeDataTree, 0)
+	nosIds := make([]string, 0)
 	cate, b := c.catCache.GetAllByCache(ctx, tenantNo)
 	if b {
 		//
 		for _, item := range cate {
-			if strPg.IsNotBlank(item.No) && !slices.Contains(nosCategory, item.No) {
-				nosCategory = append(nosCategory, item.No)
+			if strPg.IsNotBlank(item.No) && !slices.Contains(nosIds, item.No) {
+				nosIds = append(nosIds, item.No)
+				nosCategory = append(nosCategory, &model.BaseNodeDataTree{
+					No:       item.No,
+					Name:     item.Name,
+					ParentNo: item.ParentNo,
+					Code:     item.Code,
+					Extend:   item,
+				})
 			}
 		}
 		//

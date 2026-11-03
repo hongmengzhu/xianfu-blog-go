@@ -75,6 +75,9 @@ func (b *BaseRepository[T, ID]) DbSource() *gorm.DB {
 	return b.DbManger.Db()
 }
 func (b *BaseRepository[T, ID]) DbModel() *gorm.DB {
+	if b.Entity == nil {
+		b.Entity = new(T)
+	}
 	return b.DbScopes().Model(b.Entity)
 }
 

@@ -13,6 +13,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
 	"github.com/pangu-2/go-tools/tools/strPg"
+	"go-spring.org/log"
 	"go-spring.org/spring/gs"
 )
 
@@ -50,22 +51,35 @@ func (c *IndexController) Index(ctx *gin.Context) {
 	}))
 	//
 	tenantNo := webPg.GetTenantNo(ctx)
-	nosCategory := make([]string, 0)
+	nosCategory := make([]*model.BaseNodeDataTree, 0)
+	nosIds := make([]string, 0)
 	cate, b := c.catCache.GetAllByCache(ctx, tenantNo)
+	//log.Info(ctx, log.TagAppDef, "nosCategory", log.Any("tenantNo", tenantNo))
+	//log.Info(ctx, log.TagAppDef, "cate", log.Any("b", b), log.Any("cate", cate))
 	if b {
 		//
 		for _, item := range cate {
-			if strPg.IsNotBlank(item.No) && !slices.Contains(nosCategory, item.No) {
-				nosCategory = append(nosCategory, item.No)
+			if strPg.IsNotBlank(item.No) && !slices.Contains(nosIds, item.No) {
+				nosIds = append(nosIds, item.No)
+				nosCategory = append(nosCategory, &model.BaseNodeDataTree{
+					No:       item.No,
+					Name:     item.Name,
+					ParentNo: item.ParentNo,
+					Code:     item.Code,
+					Extend:   item,
+				})
 			}
 		}
 		//
 		tree := c.catCache.ConvertToTree(cate)
 		htmlOption = append(htmlOption, templatePg.WithHtmlObjSet("pageCategory", tree))
 		//
+		//log.Info(ctx, log.TagAppDef, "nosCategory", log.Any("nosCategory", nosCategory))
+		//
 		rt := c.sv.QueryListBYCategory(ctx, tenantNo, nosCategory, 20)
 		if rt.SuccessIs() {
-			templatePg.WithDataByResult(rt.SuccessIs(), rt.Data)
+			log.Info(ctx, log.TagAppDef, "nosCategory", log.Any("dddddd", rt.Data))
+			htmlOption = append(htmlOption, templatePg.WithDataByResult(rt.SuccessIs(), rt.Data))
 		}
 	}
 	// 模版

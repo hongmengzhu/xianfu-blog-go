@@ -18,6 +18,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/blog/attachmentTypePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumApprovedPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
 	repositoryBm "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBm"
@@ -51,7 +52,16 @@ type BmBookmarkWebService struct {
 //	@receiver c
 //	@param id
 func (c *BmBookmarkWebService) Detail(ctx *gin.Context, id string) (rt rg.Rs[modBmBookmarkWeb.DetailVo]) {
-	return c.DetailByContext(ctx, webPg.GetTenantNo(ctx), id, false)
+	return c.DetailByContext(ctx, webPg.GetTenantNo(ctx), id, false, false)
+}
+
+// DetailNo 详情
+//
+//	@Description:
+//	@receiver c
+//	@param id
+func (c *BmBookmarkWebService) DetailNo(ctx *gin.Context, id string) (rt rg.Rs[modBmBookmarkWeb.DetailVo]) {
+	return c.DetailByContext(ctx, webPg.GetTenantNo(ctx), id, false, true)
 }
 
 // DetailByContext 详情（与 Web 框架无关的核心实现，echo 等入口复用）
@@ -61,7 +71,7 @@ func (c *BmBookmarkWebService) Detail(ctx *gin.Context, id string) (rt rg.Rs[mod
 //	@param ctx
 //	@param tenantNo 租户编号
 //	@param id
-func (c *BmBookmarkWebService) DetailByContext(ctx context.Context, tenantNo string, id string, isCode bool) (rt rg.Rs[modBmBookmarkWeb.DetailVo]) {
+func (c *BmBookmarkWebService) DetailByContext(ctx context.Context, tenantNo string, id string, isCode, isNo bool) (rt rg.Rs[modBmBookmarkWeb.DetailVo]) {
 	var find *entityBm.BmBookmarkEntity
 	b := false
 	id = strings.TrimSpace(id)
@@ -70,6 +80,11 @@ func (c *BmBookmarkWebService) DetailByContext(ctx context.Context, tenantNo str
 			return rt.ErrorMessage("码值错误")
 		}
 		find, b = c.sv.FindByCode(ctx, id)
+	} else if isNo {
+		if strPg.IsBlank(id) {
+			return rt.ErrorMessage("编号错误")
+		}
+		find, b = c.sv.FindByNo(ctx, id)
 	} else {
 		if strPg.IsBlank(id) {
 			return rt.ErrorMessage("id错误")
@@ -80,8 +95,7 @@ func (c *BmBookmarkWebService) DetailByContext(ctx context.Context, tenantNo str
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
-	no := tenantNo
-	if strPg.IsNotBlank(no) && find.TenantNo != no {
+	if strPg.IsNotBlank(tenantNo) && find.TenantNo != tenantNo {
 		return rt.ErrorMessage("数据不存在")
 	}
 	log.Info(ctx, log.TagAppDef, "find=%+v", log.Any("find", find))
@@ -506,26 +520,48 @@ func (c *BmBookmarkWebService) DataConvert(ctx context.Context, tenantNo string,
 }
 
 // QueryListBYCategory 根据分类查询列表
-func (c *BmBookmarkWebService) QueryListBYCategory(ctx context.Context, tenantNo string, categories []string, limitPerCat int) (rt rg.Rs[map[string][]modBmBookmarkWeb.Vo]) {
-	sub := c.sv.DbModel().Select("*, ROW_NUMBER() OVER (PARTITION BY category_no ORDER BY created_at DESC) AS rn").
-		Where("category_no IN ?", categories).Where("tenant_no = ?", tenantNo)
-	var list []*entityBm.BmBookmarkEntity
-	err := c.sv.DbModel().Table("(?) AS t", sub).
+func (c *BmBookmarkWebService) QueryListBYCategory(ctx context.Context, tenantNo string, categories []*model.BaseNodeDataTree, limitPerCat int) (rt rg.Rs[[]*model.BaseNodeDataTree]) {
+	// 注意：这里不能用 c.sv.DbModel()，它的 Model 是 nil 的 *entityBm.BmBookmarkEntity，
+	// Scan/Rows 在设置 Dest 之前就会执行语句，gorm 取到 nil 的 Model 会报
+	// "invalid value, should be pointer to struct or slice"；子查询同样需要非空 Model。
+	ids := make([]string, 0)
+	for _, item := range categories {
+		ids = append(ids, item.No)
+	}
+	sub := c.sv.Db().WithContext(ctx).
+		Model(&entityBm.BmBookmarkEntity{}).
+		Select("*, ROW_NUMBER() OVER (PARTITION BY category_no ORDER BY create_at DESC) AS rn").
+		Where("category_no IN ?", ids).Where("tenant_no = ?", tenantNo)
+	list := make([]*entityBm.BmBookmarkEntity, 0)
+	tx := c.sv.Db().WithContext(ctx).
+		Table("(?) AS t", sub).
 		Where("t.rn <= ?", limitPerCat).
-		Scan(&list).Error
+		Scan(&list)
+	err := tx.Error
 	if err != nil {
+		log.Error(ctx, log.TagAppDef, err, "查询失败")
 		return rt.Ok()
 	}
-	listMap := make(map[string][]modBmBookmarkWeb.Vo)
+	listMapTmp := make(map[string][]modBmBookmarkWeb.Vo)
 	for _, item := range categories {
-		listMap[item] = make([]modBmBookmarkWeb.Vo, 0)
+		listMapTmp[item.No] = make([]modBmBookmarkWeb.Vo, 0)
 	}
 	tmp := c.DataConvert(ctx, tenantNo, list)
 	if tmp.SuccessIs() {
+		//log.Info(ctx, log.TagAppDef, "查询成功", log.Any("data", tmp.Data))
 		for _, item := range tmp.Data {
-			listMap[item.CategoryNo] = append(listMap[item.CategoryNo], item)
+			if strPg.IsBlank(item.CategoryNo) {
+				continue
+			}
+			listMapTmp[item.CategoryNo] = append(listMapTmp[item.CategoryNo], item)
 		}
+		//
+		//log.Info(ctx, log.TagAppDef, "查询成功", log.Any("listMapTmp", listMapTmp))
+		for _, item := range categories {
+			item.Data = listMapTmp[item.No]
+		}
+		//log.Info(ctx, log.TagAppDef, "查询成功", log.Any("categories", categories))
 	}
 
-	return rt.OkData(listMap)
+	return rt.OkData(categories)
 }

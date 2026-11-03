@@ -9,7 +9,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cachePg/bigCachePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBm"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/blog/key/blogKeyPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/bm/key/bmKeyPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"go-spring.org/spring/gs"
 )
@@ -36,7 +36,7 @@ func (c *CacheBookmarkCategory) GetAllByKeysRetMap(ctx context.Context, keys []s
 	tmps := make([]string, 0)
 	for _, item := range keys {
 		if strPg.IsNotBlank(item) {
-			tmps = append(tmps, blogKeyPg.ArticleCategoryTenantNo(tenantNo, item))
+			tmps = append(tmps, bmKeyPg.BookmarkCategoryTenantNo(tenantNo, item))
 		}
 	}
 	if len(tmps) == 0 {
@@ -114,7 +114,7 @@ func (c *CacheBookmarkCategory) GetByKey(ctx context.Context, keys string, tenan
 func (c *CacheBookmarkCategory) GetAllByCache(ctx context.Context, tenantNo string) ([]*modBmBookmarkCategory.Cache, bool) {
 	data := make([]*modBmBookmarkCategory.Cache, 0)
 	// 原来是把集合 key 交给 Lua（SMEMBERS + MGET）；现在由 GetAllBySetKey 在进程内完成同样的两步。
-	setKey := blogKeyPg.ArticleCategoryTenantNoKeys(tenantNo)
+	setKey := bmKeyPg.BookmarkCategoryTenantNoKeys(tenantNo)
 	result, b := c.rdt.GetAllBySetKey(ctx, setKey)
 	//fmt.Printf("获取缓存结果: %v\n", result)
 	if b {
