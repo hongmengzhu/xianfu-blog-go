@@ -80,3 +80,24 @@ func (c *BasicConfigModelFieldsRepository) FindByEventNoTenantAndFieldIn(ctx con
 	}
 	return info, true
 }
+
+// FindByModelNoAndField 查询模型下指定字段。
+func (c *BasicConfigModelFieldsRepository) FindByModelNoAndField(ctx context.Context, modelNo, field string) (info *entityBasic.BasicConfigModelFieldsEntity, result bool) {
+	tx := c.DbModel().WithContext(ctx).Where("model_no=?", modelNo).Where("field=?", field).First(&info)
+	if tx.Error != nil {
+		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
+		}
+		return
+	}
+	if 0 == tx.RowsAffected {
+		return nil, false
+	}
+	return info, true
+}
+
+// DeleteAllByModelNo 物理删除模型下所有字段。
+func (c *BasicConfigModelFieldsRepository) DeleteAllByModelNo(ctx context.Context, modelNo string) error {
+	tx := c.DbModel().WithContext(ctx).Where("model_no=?", modelNo).Delete(&c.Entity)
+	return tx.Error
+}

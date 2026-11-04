@@ -107,3 +107,97 @@ func (c *BasicConfigRepository) UpdateByEventNoAndNoAndValue(ctx context.Context
 	}
 	return true
 }
+
+// FindAllByModelNo 查询模型下所有配置（含停用），按 sort、创建时间排序。
+func (c *BasicConfigRepository) FindAllByModelNo(ctx context.Context, modelNo string) (info []*entityBasic.BasicConfigEntity, result bool) {
+	tx := c.DbModel().WithContext(ctx).Where("model_no=?", modelNo).Order("sort asc,create_at").Find(&info)
+	if tx.Error != nil {
+		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
+		}
+		return
+	}
+	if 0 == tx.RowsAffected {
+		return nil, false
+	}
+	return info, true
+}
+
+// FindAllEnabledByTenantNoAndModel 查询租户 + model 下所有启用配置。
+func (c *BasicConfigRepository) FindAllEnabledByTenantNoAndModel(ctx context.Context, tenantNo, model string) (info []*entityBasic.BasicConfigEntity, result bool) {
+	tx := c.DbModel().WithContext(ctx).
+		Where("tenant_no=?", tenantNo).
+		Where("model=?", model).
+		Where("state=?", 1).
+		Order("sort asc,create_at").
+		Find(&info)
+	if tx.Error != nil {
+		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
+		}
+		return
+	}
+	if 0 == tx.RowsAffected {
+		return nil, false
+	}
+	return info, true
+}
+
+// FindAllEnabled 查询所有启用配置，用于缓存重建。
+func (c *BasicConfigRepository) FindAllEnabled(ctx context.Context) (info []*entityBasic.BasicConfigEntity, result bool) {
+	tx := c.DbModel().WithContext(ctx).Where("state=?", 1).Order("sort asc,create_at").Find(&info)
+	if tx.Error != nil {
+		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
+		}
+		return
+	}
+	if 0 == tx.RowsAffected {
+		return nil, false
+	}
+	return info, true
+}
+
+// FindByTenantNoAndModelNoAndField 查询租户 + 模型编号 + 字段下唯一配置。
+func (c *BasicConfigRepository) FindByTenantNoAndModelNoAndField(ctx context.Context, tenantNo, modelNo, field string) (info *entityBasic.BasicConfigEntity, result bool) {
+	tx := c.DbModel().WithContext(ctx).
+		Where("tenant_no=?", tenantNo).
+		Where("model_no=?", modelNo).
+		Where("field=?", field).
+		First(&info)
+	if tx.Error != nil {
+		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
+		}
+		return
+	}
+	if 0 == tx.RowsAffected {
+		return nil, false
+	}
+	return info, true
+}
+
+// FindByTenantNoAndModelAndField 查询租户 + model + 字段下唯一配置。
+func (c *BasicConfigRepository) FindByTenantNoAndModelAndField(ctx context.Context, tenantNo, model, field string) (info *entityBasic.BasicConfigEntity, result bool) {
+	tx := c.DbModel().WithContext(ctx).
+		Where("tenant_no=?", tenantNo).
+		Where("model=?", model).
+		Where("field=?", field).
+		First(&info)
+	if tx.Error != nil {
+		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
+		}
+		return
+	}
+	if 0 == tx.RowsAffected {
+		return nil, false
+	}
+	return info, true
+}
+
+// DeleteAllByModelNo 物理删除模型下所有配置，用于模型删除/类型切换。
+func (c *BasicConfigRepository) DeleteAllByModelNo(ctx context.Context, modelNo string) error {
+	tx := c.DbModel().WithContext(ctx).Where("model_no=?", modelNo).Delete(&c.Entity)
+	return tx.Error
+}

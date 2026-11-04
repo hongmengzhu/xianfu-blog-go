@@ -51,3 +51,67 @@ func (c *BasicConfigModelRepository) FindByModelAndIdNot(ctx context.Context, co
 	}
 	return info, true
 }
+
+// FindByTenantNoAndModel 租户下按 model 唯一查询。
+func (c *BasicConfigModelRepository) FindByTenantNoAndModel(ctx context.Context, tenantNo, model string) (info *entityBasic.BasicConfigModelEntity, result bool) {
+	tx := c.DbModel().WithContext(ctx).Where("tenant_no=?", tenantNo).Where("model=?", model).First(&info)
+	if tx.Error != nil {
+		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
+		}
+		return
+	}
+	if 0 == tx.RowsAffected {
+		return nil, false
+	}
+	return info, true
+}
+
+// FindByTenantNoAndModelAndIdNot 租户下按 model 查重，排除指定 id（更新时使用）。
+func (c *BasicConfigModelRepository) FindByTenantNoAndModelAndIdNot(ctx context.Context, tenantNo, model, id string) (info *entityBasic.BasicConfigModelEntity, result bool) {
+	tx := c.DbModel().WithContext(ctx).
+		Where("tenant_no=?", tenantNo).
+		Where("model=?", model).
+		Where("id <>?", id).
+		First(&info)
+	if tx.Error != nil {
+		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
+		}
+		return
+	}
+	if 0 == tx.RowsAffected {
+		return nil, false
+	}
+	return info, true
+}
+
+// FindByTenantNoAndNo 租户下按模型编号查询。
+func (c *BasicConfigModelRepository) FindByTenantNoAndNo(ctx context.Context, tenantNo, no string) (info *entityBasic.BasicConfigModelEntity, result bool) {
+	tx := c.DbModel().WithContext(ctx).Where("tenant_no=?", tenantNo).Where("no=?", no).First(&info)
+	if tx.Error != nil {
+		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
+		}
+		return
+	}
+	if 0 == tx.RowsAffected {
+		return nil, false
+	}
+	return info, true
+}
+
+// FindAllByTenantNo 查询租户下所有模型，用于缓存重建/启动校验。
+func (c *BasicConfigModelRepository) FindAllByTenantNo(ctx context.Context, tenantNo string) (info []*entityBasic.BasicConfigModelEntity, result bool) {
+	tx := c.DbModel().WithContext(ctx).Where("tenant_no=?", tenantNo).Order("create_at desc").Find(&info)
+	if tx.Error != nil {
+		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			log.Error(ctx, log.TagAppDef, tx.Error, "err")
+		}
+		return
+	}
+	if 0 == tx.RowsAffected {
+		return nil, false
+	}
+	return info, true
+}
