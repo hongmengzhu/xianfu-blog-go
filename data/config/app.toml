@@ -191,6 +191,7 @@ level = "DEBUG"
 
 [[logging.logger.root.appenderRef]]
 ref = "console"
+tag = "_app_def,_app_gorm_*,_app_resilience"
 
 [[logging.logger.root.appenderRef]]
 ref = "file"
@@ -198,6 +199,7 @@ ref = "file"
 # 控制台输出器
 [logging.appender.console]
 type = "ConsoleAppender"
+#tag = "_app_def,_app_gorm_*,_app_resilience"
 
 [logging.appender.console.layout]
 type = "TextLayout"
