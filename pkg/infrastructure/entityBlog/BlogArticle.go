@@ -50,6 +50,7 @@ type BlogArticleEntity struct {
 	OperationTime    *time.Time                   `gorm:"column:operation_time;comment:操作时间" json:"operation_time" comment:"操作时间" `
 	TypeReading      string                       `gorm:"column:type_reading;type:varchar(80);index;default:no;comment:阅读类型|未看|在看|已看;" json:"type_reading" comment:"阅读类型||未看|在看|已看" `
 	TypeDomain       string                       `gorm:"column:type_domain;type:varchar(80);index;default:no;comment:领域|;" json:"type_domain" comment:"领域" `
+	Module           string                       `gorm:"column:module;type:varchar(80);index;default:no;comment:模块|;" json:"module" comment:"模块" `
 	Remark           string                       `gorm:"column:remark;type:varchar(955);comment:备注" json:"remark" comment:"备注"`
 }
 

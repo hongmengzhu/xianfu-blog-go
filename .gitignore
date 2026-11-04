@@ -20,7 +20,7 @@
 .codex
 .cursor
 .qoder
-.gocache
+.gocache*
 .tmp-build
 data/logs/
 data/attachment/

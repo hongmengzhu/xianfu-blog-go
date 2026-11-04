@@ -85,16 +85,18 @@ func NewGinEngine(registrars []routerPg.RouteRegistrar) StarterGin.RouterRegiste
 		e.Static("/assets", "./data/assets")
 		e.Static("/attachment", "./data/attachment")
 
-		// 模板函数，需在 LoadHTMLGlob 之前设置
-		e.SetFuncMap(template.FuncMap{
+		// 模板函数，需在设置渲染器之前设置
+		funcMap := template.FuncMap{
 			"unescaped":  templatePg.Unescaped,
 			"dateformat": datetimePg.Format,
-		})
+		}
+		e.SetFuncMap(funcMap)
 
-		// 加载模板文件，需在路由注册之前
-		// 加载模板文件，需在路由注册之前（目录不存在时跳过）
+		// 渲染器：按模板文件 mtime/size 变化热加载，
+		// 改模板后刷新页面即可生效，无需重启；解析失败时保留上一版模板。
+		// 目录不存在时跳过。
 		if _, err := os.Stat("data/templates"); err == nil {
-			e.LoadHTMLGlob("data/templates/**/**/*")
+			e.HTMLRender = templatePg.NewGinLiveHTML("data/templates/**/**/*", funcMap)
 		}
 
 		// 注册所有路由

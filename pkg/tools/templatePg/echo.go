@@ -23,8 +23,9 @@ func DefaultFuncMap() template.FuncMap {
 
 // echoRenderer echo 渲染器，命名规则与 gin 的 LoadHTMLGlob 保持一致，
 // 即模板以文件内 {{ define "主题/文件.html" }} 声明的名字注册。
+// 通过 LiveSet 复用同一套模板热加载逻辑。
 type echoRenderer struct {
-	templ *template.Template
+	live *LiveSet
 }
 
 // Render 实现 echo.Renderer
@@ -40,7 +41,7 @@ func (r *echoRenderer) Render(c *echo.Context, w io.Writer, name string, data an
 	if viewContext, isMap := data.(map[string]any); isMap {
 		viewContext["reverse"] = c.RouteInfo().Reverse
 	}
-	return r.templ.ExecuteTemplate(w, name, data)
+	return r.live.Template().ExecuteTemplate(w, name, data)
 }
 
 // NewEchoRenderer 解析模板目录并返回 echo 渲染器。
@@ -54,7 +55,11 @@ func NewEchoRenderer(pattern string) echo.Renderer {
 	if nil != err || len(files) == 0 {
 		return nil
 	}
-	return &echoRenderer{templ: template.Must(template.New("").Funcs(DefaultFuncMap()).ParseGlob(pattern))}
+	live := NewLiveSet(pattern, DefaultFuncMap())
+	if nil == live.cur.Load() {
+		return nil
+	}
+	return &echoRenderer{live: live}
 }
 
 // HTMLEcho 渲染模板页面（echo 版本），与 HTML 的 gin 版本产出相同的模板名与数据。
