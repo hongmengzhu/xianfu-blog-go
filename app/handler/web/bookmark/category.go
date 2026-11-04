@@ -53,6 +53,9 @@ func (c *CategoryController) Code(ctx *gin.Context) {
 	}))
 	//
 	var ct modBmBookmarkWeb.QueryCt
+	// 分页参数：pageNum 取自查询串，缺省或非法时回落到第 1 页
+	ct.PageSize = 20
+	ct.PageNum = max(strPg.ToInt64(ctx.Query("pageNum")), 1)
 	//
 	tenantNo := webPg.GetTenantNo(ctx)
 	//

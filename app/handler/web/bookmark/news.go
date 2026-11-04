@@ -8,6 +8,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticleWeb"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cacheService/cacheBlog"
+	modulePg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/blog/articleModulePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/cachePg/cacheDomainPg"
@@ -41,6 +42,8 @@ func (c *NewsController) RegisterRoutes(e *gin.Engine) {
 func (c *NewsController) List(ctx *gin.Context) {
 	var ct modBlogArticleWeb.QueryCt
 	ctx.Bind(&ct)
+	// 只查新闻模块
+	ct.Module = modulePg.NEW.String()
 	//
 	rt := c.sv.Query(ctx, ct)
 	log.Info(context.Background(), log.TagBizDef, "Data", log.Any("Pageable", rt.Data.Pageable))
@@ -55,9 +58,9 @@ func (c *NewsController) List(ctx *gin.Context) {
 		templatePg.WithHtmlObjSet("categorys", tree),
 		templatePg.WithHtmlObjSet("pageUrl", "page"),
 		templatePg.WithSitePage(templatePg.SitePage{
-			Title:       "博客",
-			Description: "博客",
-			Keywords:    "博客",
+			Title:       "AI 快讯",
+			Description: "每日更新的 AI 行业动态，涵盖新品发布、技术突破与融资并购",
+			Keywords:    "AI快讯,AI新闻,行业动态",
 			SiteName:    "博客",
 		}))
 }

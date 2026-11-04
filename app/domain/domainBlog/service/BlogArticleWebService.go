@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -53,6 +54,48 @@ type BlogArticleWebService struct {
 //	@param id
 func (c *BlogArticleWebService) Detail(ctx *gin.Context, id string) (rt rg.Rs[modBlogArticleWeb.DetailVo]) {
 	return c.DetailByContext(ctx, webPg.GetTenantNo(ctx), id)
+}
+
+// DetailByCode 按 code 查详情（教程等以 code 作为访问标识的页面）
+//
+//	@Description:
+//	@receiver c
+//	@param ctx
+//	@param code
+func (c *BlogArticleWebService) DetailByCode(ctx *gin.Context, code string) (rt rg.Rs[modBlogArticleWeb.DetailVo]) {
+	return c.DetailByCodeByContext(ctx, webPg.GetTenantNo(ctx), code)
+}
+
+// DetailByCodeByContext 按 code 查详情（与 Web 框架无关的核心实现）
+//
+//	@Description:
+//	@receiver c
+//	@param ctx
+//	@param tenantNo 租户编号
+//	@param code
+func (c *BlogArticleWebService) DetailByCodeByContext(ctx context.Context, tenantNo string, code string) (rt rg.Rs[modBlogArticleWeb.DetailVo]) {
+	if strPg.IsBlank(code) {
+		return rt.ErrorMessage("code错误")
+	}
+	var query entityBlog.BlogArticleEntity
+	query.Code = strings.TrimSpace(code)
+	if strPg.IsNotBlank(tenantNo) {
+		query.TenantNo = tenantNo
+	}
+	//启用
+	query.State = enumStatePg.ENABLE.Index()
+	//审批通过
+	query.PlatformApproved = enumApprovedPg.ApprovedStateApproved.Index()
+	page, err := c.sv.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
+		arg.Pageable = new(pagePg.PageablePageSize(0, 1, 1))
+	}))
+	if nil != err {
+		return rt.ErrorMessage("查询失败")
+	}
+	if page.Total < 1 || len(page.Data) < 1 {
+		return rt.ErrorMessage("数据不存在")
+	}
+	return c.DetailByContext(ctx, tenantNo, strconv.FormatInt(page.Data[0].ID, 10))
 }
 
 // DetailByContext 详情（与 Web 框架无关的核心实现，echo 等入口复用）

@@ -8,6 +8,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticleWeb"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cacheService/cacheBlog"
+	modulePg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/blog/articleModulePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/cachePg/cacheDomainPg"
@@ -42,6 +43,8 @@ func (c *TutorialController) RegisterRoutes(e *gin.Engine) {
 func (c *TutorialController) List(ctx *gin.Context) {
 	var ct modBlogArticleWeb.QueryCt
 	ctx.Bind(&ct)
+	// 只查教程模块
+	ct.Module = modulePg.TUTORIAL.String()
 	//
 	rt := c.sv.Query(ctx, ct)
 	log.Info(context.Background(), log.TagBizDef, "Data", log.Any("Pageable", rt.Data.Pageable))
@@ -56,20 +59,17 @@ func (c *TutorialController) List(ctx *gin.Context) {
 		templatePg.WithHtmlObjSet("categorys", tree),
 		templatePg.WithHtmlObjSet("pageUrl", "page"),
 		templatePg.WithSitePage(templatePg.SitePage{
-			Title:       "博客",
-			Description: "博客",
-			Keywords:    "博客",
+			Title:       "AI 教程资源",
+			Description: "精选 AI 工具使用教程、视频课程与学习资料，从入门到进阶系统提升你的 AI 应用能力",
+			Keywords:    "AI教程,AI专栏,AI问答,AI名人堂",
 			SiteName:    "博客",
 		}))
 }
 func (c *TutorialController) Code(ctx *gin.Context) {
-	var ct modBlogArticleWeb.QueryCt
-	ctx.Bind(&ct)
 	param := ctx.Param("code")
 	log.Info(ctx, log.TagBizDef, "Param", log.Any("code", param))
-	//
-	rt := c.sv.Query(ctx, ct)
-	log.Info(context.Background(), log.TagBizDef, "Data", log.Any("Pageable", rt.Data.Pageable))
+	// 按 code 查详情
+	rt := c.sv.DetailByCode(ctx, param)
 	//
 	tenantNo := webPg.GetTenantNo(ctx)
 	tree, _ := c.catCache.FormatTree(ctx, tenantNo)
@@ -81,9 +81,9 @@ func (c *TutorialController) Code(ctx *gin.Context) {
 		templatePg.WithHtmlObjSet("categorys", tree),
 		templatePg.WithHtmlObjSet("pageUrl", "page"),
 		templatePg.WithSitePage(templatePg.SitePage{
-			Title:       "博客",
-			Description: "博客",
-			Keywords:    "博客",
+			Title:       "AI 教程资源",
+			Description: "精选 AI 工具使用教程、视频课程与学习资料，从入门到进阶系统提升你的 AI 应用能力",
+			Keywords:    "AI教程,AI专栏,AI问答,AI名人堂",
 			SiteName:    "博客",
 		}))
 }

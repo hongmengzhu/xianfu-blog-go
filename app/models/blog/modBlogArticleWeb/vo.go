@@ -13,6 +13,7 @@ type Vo struct {
 	Name           string                          `json:"name" label:"名称" `     // 名称
 	NameFl         string                          `json:"nameFl" label:"名称外文" ` // 名称外文
 	No             string                          `json:"no" label:"编号代号" `
+	Code           string                          `json:"code" label:"标志" `
 	NameFull       string                          `json:"nameFull" label:"全称" `      // 全称
 	State          typePg.Int8                     `json:"state" label:"状态:1启用;2禁用" ` // 状态:1启用;2禁用
 	Description    string                          `json:"description" label:"描述" `   // 描述
@@ -27,6 +28,7 @@ type Vo struct {
 	ContentConv    string                          `json:"contentConv" label:"内容" `
 	Jump           typePg.Int8                     `json:"jump" label:"跳转类型:1跳转;2不跳转" `
 	Source         string                          `json:"source" label:"来源" `
+	UrlSource      string                          `json:"urlSource" label:"来源网址" `
 	TypeComment    string                          `json:"typeComment" label:"评论类型" `
 	TypeReading    string                          `json:"typeReading" label:"阅读类型" `
 	OperationTime  *typePg.Time                    `json:"operationTime" label:"操作时间" `

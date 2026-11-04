@@ -10,6 +10,8 @@ type QueryCt struct {
 	ID            typePg.Uint64String `json:"id" label:"" `
 	Name          string              `json:"name" label:"名称" `
 	No            string              `json:"no" label:"编号代号" `
+	Code          string              `json:"code" label:"标志"  form:"code" query:"code"`
+	Module        string              `json:"module" label:"模块"  form:"module" query:"module"`
 	Q             string              `json:"q" label:"关键词"  form:"q" query:"q"`
 	TagsQuery     []string            `json:"tagsQuery" label:"标签" form:"tags" query:"tags"`
 	CategoryQuery []string            `json:"categoryQuery" label:"标签" form:"categoryQuery" query:"categoryQuery"`
