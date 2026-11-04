@@ -1,0 +1,38 @@
+{{ define "nisarg/bookmark/header.html" }}<!DOCTYPE html>
+<html lang="zh-CN" class="h-full antialiased dark" data-theme="light" data-bs-theme="light">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="profile" href="http://gmpg.org/xfn/11" />
+	<title>{{.sitePage.Title}}</title>
+	<meta name="description" content="{{.sitePage.Description}}" />
+	<meta name="keywords" content="{{.sitePage.Keywords}}" />
+	<meta name="robots" content="max-image-preview:large" />
+	<link rel="canonical" href="{{.sitePage.SiteUrl}}" />
+	<meta name="theme-color" content="#050609">
+<!--	<meta name="generator" content="All in One SEO (AIOSEO) 4.3.6.1 " />-->
+	<meta property="og:locale" content="zh_CN" />
+	<meta property="og:site_name" content="{{.sitePage.Title}}" />
+	<meta property="og:type" content="article" />
+	<meta property="og:title" content="{{.sitePage.Title}}" />
+	<meta property="og:description" content="{{.sitePage.Description}}" />
+	<meta property="og:url" content="{{.sitePage.SiteUrl}}" />
+	<meta property="og:image" content="{{.sitePage.SiteLogo}}" />
+	<meta property="og:image:secure_url" content="{{.sitePage.SiteLogo}}" />
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:title" content="{{.sitePage.Title}}" />
+	<meta name="twitter:description" content="{{.sitePage.Description}}" />
+	<meta name="twitter:image" content="{{.sitePage.SiteLogo}}" />
+
+<!-- 静态文件引用 -->
+	<link rel="icon" href="/assets/static/nav-001/img/icon.png" type="image/png">
+	<link rel="preload" href="/assets/static/nav-001/css/bootstrap.min.css" as="style">
+	<link rel="stylesheet" href="/assets/static/nav-001/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/assets/static/nav-001/css/site.css">
+	<script>
+		(function(){try{var t=localStorage.getItem('fby-theme')||'light';document.documentElement.dataset.theme=t;document.documentElement.dataset.bsTheme=t;document.documentElement.classList.toggle('dark',t==='dark');}catch(e){}})();
+	</script>
+</head>
+<body>
+
+{{end}}

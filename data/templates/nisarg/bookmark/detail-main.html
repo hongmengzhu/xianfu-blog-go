@@ -1,0 +1,49 @@
+{{ define "nisarg/bookmark/detail-main.html" }}
+<main class="page-main">
+    <div class="wrap">
+        <nav class="breadcrumb-line" aria-label="面包屑">
+            <a href="/">首页</a><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#chevron-right"></use></svg><a href="/category/category/">AI聊天助手</a><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#chevron-right"></use></svg><span class="current">小黄蕉</span>
+        </nav>
+
+        <div class="tool-header-grid">
+            <div class="tool-header-card">
+                <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/chatwiz.png" alt="{{.data.Name}}" loading="lazy">
+                <div class="tool-header-main">
+                    <div class="tool-title-line"><h1>{{.data.Name}}</h1>
+<!--                        <span class="verified"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#badge-check"></use></svg>认证</span>-->
+                    </div>
+                    <p>{{.data.Description}}</p>
+                    <div class="tool-meta"><span><span class="rating none">暂无评分</span></span><span>更新于 2026年10月6日</span><span>AI聊天助手</span></div>
+                    <div class="tool-actions" style="margin-top:12px">
+<!--                        <a class="tool-action tutorial" href="/tutorials/chatwiz-tutorial"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#book-open"></use></svg>使用教程</a>-->
+                        <a class="tool-action primary" href="{{.data.UrlSource}}" target="_blank" rel="noopener">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                        <button class="tool-action" type="button" data-fav="chatwiz"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#heart"></use></svg>收藏</button>
+<!--                        <a class="tool-action" href="/compare?tools=chatwiz"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg>对比</a>-->
+                        <button class="tool-action" type="button" data-share><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#share"></use></svg>分享</button>
+                    </div>
+                </div>
+            </div>
+<!--            <div class="ad-card">-->
+<!--                <div class="ad-label"><span>广告</span><span>AD</span></div>-->
+<!--                <div class="ad-main"><div class=" fallback" aria-hidden="true" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0ea5e9,#1a1030);color:#fff;font-size:15px;font-weight:700">A</div><div><h3>AionClaw</h3><p>AionClaw 是杭州趣猿推出的桌面级 AI 智能体，基于 OpenClaw 深度升级，一键安装零门槛，能直接在电脑上读写文件。</p></div></div>-->
+<!--                <div style="margin-top:auto"><a class="ad-more" href="/apps/">展开 ▾ 了解详情 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#arrow-right"></use></svg></a></div>-->
+<!--            </div>-->
+        </div>
+
+        <div class="detail-tabs" role="tablist">
+            <button class="detail-tab active" type="button" data-detail-tab="detail">详细介绍</button>
+<!--            <button class="detail-tab" type="button" data-detail-tab="reviews">用户评价</button>-->
+        </div>
+
+        <div id="toolTabDetail">
+            <div class="detail-layout">
+                <article class="article-body">
+                    {{unescaped .data.ContentConv}}
+                </article>
+            </div>
+
+
+        </div>
+    </div>
+</main>
+{{end}}

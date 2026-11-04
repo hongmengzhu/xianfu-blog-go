@@ -1,0 +1,428 @@
+{{ define "nisarg/bookmark/list-main.html" }}
+<main class="page-main">
+    <div class="wrap">
+        <nav class="breadcrumb-line" aria-label="面包屑">
+            <a href="/">首页</a><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#chevron-right"></use></svg><a href="/apps/">AI工具库</a><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#chevron-right"></use></svg><span class="current">AI聊天助手</span>
+        </nav>
+        <header class="category-header">
+            <div class="category-head-inner">
+                <span class="category-emoji">💬</span>
+                <div>
+                    <h1>AI聊天助手</h1>
+                    <p>精选 52 款 AI 聊天助手工具，包括 ChatGPT、文心一言、通义千问、Claude 等国内外主流 AI 对话工具。支持多轮对话、代码生成、文档分析，帮你找到最适合的 AI 聊天机器人。</p>
+                </div>
+            </div>
+            <div class="subcats"><span class="subcats-label">细分方向：</span><a class="chip" href="/apps/#cat-ai-chat">AI通用对话助手</a><a class="chip" href="/apps/#cat-ai-chat">AI角色扮演与陪伴</a><a class="chip" href="/apps/#cat-ai-chat">AI模型聚合平台</a><a class="chip" href="/apps/#cat-ai-chat">AI助手客户端</a></div>
+            <div class="toolbar category-toolbar">
+                <div class="toolbar-start">
+                    <span class="result-count">共找到 <strong id="categoryVisibleCount">58</strong> 个工具</span>
+                    <span class="toolbar-label">筛选</span>
+                    <button class="filter-chip active" type="button" data-category-filter="all">全部</button>
+                    <button class="filter-chip" type="button" data-category-filter="free">仅免费</button>
+                    <button class="filter-chip" type="button" data-category-filter="tutorial">有教程</button>
+                    <button class="filter-chip" type="button" data-category-filter="rated">4星以上</button>
+                </div>
+                <div class="toolbar-end">
+                    <button class="sort-btn active" type="button" data-category-sort="default">综合排序</button>
+                    <button class="sort-btn" type="button" data-category-sort="rating">评分最高</button>
+                    <button class="sort-btn" type="button" data-category-sort="new">最新上架</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="tool-grid" id="categoryToolGrid" style="margin-top:20px">
+            <div class="tool-card" data-tool-card data-name="Jasper Chat" data-free="1" data-tutorial="1" data-rating="" data-fresh="0">
+                <div class="tool-card-head">
+                    <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/jasper.png" alt="Jasper Chat logo" loading="lazy">
+                    <div class="tool-card-main">
+                        <div class="tool-card-name"><h3>Jasper Chat</h3></div>
+                        <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                    </div>
+                </div>
+                <p class="tool-card-desc">Jasper Chat是面向营销团队的AI智能体工作空间，通过内置品牌上下文与专用智能体，自动化执行SEO、社媒及广告等端到端内容生产流程。</p>
+                <div class="tool-card-foot">
+                    <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                    <span class="rating none">暂无评分</span>
+                </div>
+                <a class="compare-mini" href="/compare?tools=jasper" title="加入对比"><svg class="icon icon-sm" aria-hidden="true">
+                    <use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+            </div>
+            <div class="tool-card" data-tool-card data-name="小黄蕉" data-free="0" data-tutorial="0" data-rating="" data-fresh="1">
+                <div class="tool-card-head">
+                    <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/chatwiz.png" alt="小黄蕉 logo" loading="lazy">
+                    <div class="tool-card-main">
+                        <div class="tool-card-name"><h3>小黄蕉</h3></div>
+                        <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                    </div>
+                </div>
+                <p class="tool-card-desc">小黄蕉是字节跳动旗下推出的AI虚拟交友聊天平台，内置多位性格各异的虚拟角色，适合想找人轻松聊天、排解情绪的用户。</p>
+                <div class="tool-card-foot">
+                    <a class="official" href="/tool/chatwiz">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                    <span class="rating none">暂无评分</span>
+                </div>
+                <a class="compare-mini" href="/compare?tools=chatwiz" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+            </div><div class="tool-card" data-tool-card data-name="Claude" data-free="0" data-tutorial="0" data-rating="" data-fresh="2">
+            <div class="tool-card-head">
+                <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/claude.png" alt="Claude logo" loading="lazy">
+                <div class="tool-card-main">
+                    <div class="tool-card-name"><h3>Claude</h3></div>
+                    <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                </div>
+            </div>
+            <p class="tool-card-desc">Anthropic推出的AI助手，支持多模态交互与深度推理，覆盖Web、移动端及桌面端，提供从日常对话到专业编程的完整工作流。</p>
+            <div class="tool-card-foot">
+                <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                <span class="rating none">暂无评分</span>
+            </div>
+            <a class="compare-mini" href="/compare?tools=claude" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+        </div><div class="tool-card" data-tool-card data-name="冒泡鸭" data-free="1" data-tutorial="0" data-rating="" data-fresh="3">
+            <div class="tool-card-head">
+                <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/maopaoya.png" alt="冒泡鸭 logo" loading="lazy">
+                <div class="tool-card-main">
+                    <div class="tool-card-name"><h3>冒泡鸭</h3></div>
+                    <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                </div>
+            </div>
+            <p class="tool-card-desc">阶跃星辰推出的多模态AI聊天与智能体平台，支持网页及移动端，提供深度对话、实时资讯获取及个性化交互体验。</p>
+            <div class="tool-card-foot">
+                <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                <span class="rating none">暂无评分</span>
+            </div>
+            <a class="compare-mini" href="/compare?tools=maopaoya" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+        </div><div class="tool-card" data-tool-card data-name="Luca面壁露卡" data-free="0" data-tutorial="1" data-rating="" data-fresh="4">
+            <div class="tool-card-head">
+                <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/luca-beta.png" alt="Luca面壁露卡 logo" loading="lazy">
+                <div class="tool-card-main">
+                    <div class="tool-card-name"><h3>Luca面壁露卡</h3></div>
+                    <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                </div>
+            </div>
+            <p class="tool-card-desc">Luca面壁露卡是面壁智能推出的千亿参数多模态大模型对话助手，支持中英文交互，旨在为用户提供知识问答、内容创作及逻辑推理等全方位智能辅助。</p>
+            <div class="tool-card-foot">
+                <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                <span class="rating none">暂无评分</span>
+            </div>
+            <a class="compare-mini" href="/compare?tools=luca-beta" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+        </div><div class="tool-card" data-tool-card data-name="元象XChat" data-free="0" data-tutorial="0" data-rating="" data-fresh="5">
+            <div class="tool-card-head">
+                <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/xverse.png" alt="元象XChat logo" loading="lazy">
+                <div class="tool-card-main">
+                    <div class="tool-card-name"><h3>元象XChat</h3></div>
+                    <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                </div>
+            </div>
+            <p class="tool-card-desc">元象XChat是基于XVERSE大模型的AI助手，融合意图理解与检索技术，提供问答、创作及多语言支持。</p>
+            <div class="tool-card-foot">
+                <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                <span class="rating none">暂无评分</span>
+            </div>
+            <a class="compare-mini" href="/compare?tools=xverse" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+        </div><div class="tool-card" data-tool-card data-name="Google Antigravity" data-free="1" data-tutorial="0" data-rating="" data-fresh="6">
+            <div class="tool-card-head">
+                <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/google-antigravity.png" alt="Google Antigravity logo" loading="lazy">
+                <div class="tool-card-main">
+                    <div class="tool-card-name"><h3>Google Antigravity</h3></div>
+                    <div class="tool-card-labels"><span class="tag">AI聊天助手</span><span class="tag plain">最新</span></div>
+                </div>
+            </div>
+            <p class="tool-card-desc">Google Antigravity 是一款基于浏览器物理引擎的互动实验项目，通过模拟重力与失重效果，为前端交互与创意开发提供动态视觉体验参考。</p>
+            <div class="tool-card-foot">
+                <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                <span class="rating none">暂无评分</span>
+            </div>
+            <a class="compare-mini" href="/compare?tools=google-antigravity" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+        </div><div class="tool-card" data-tool-card data-name="Copilot" data-free="0" data-tutorial="0" data-rating="" data-fresh="7">
+            <div class="tool-card-head">
+                <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/copilot.png" alt="Copilot logo" loading="lazy">
+                <div class="tool-card-main">
+                    <div class="tool-card-name"><h3>Copilot</h3></div>
+                    <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                </div>
+            </div>
+            <p class="tool-card-desc">微软推出的网页版智能助手，深度集成微软生态，通过自然语言交互辅助文档编写、代码生成与数据分析，全面提升桌面端用户的办公与创作效率。</p>
+            <div class="tool-card-foot">
+                <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                <span class="rating none">暂无评分</span>
+            </div>
+            <a class="compare-mini" href="/compare?tools=copilot" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+        </div><div class="tool-card" data-tool-card data-name="MiniMax" data-free="0" data-tutorial="1" data-rating="" data-fresh="8">
+            <div class="tool-card-head">
+                <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/minimax.png" alt="MiniMax logo" loading="lazy">
+                <div class="tool-card-main">
+                    <div class="tool-card-name"><h3>MiniMax</h3></div>
+                    <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                </div>
+            </div>
+            <p class="tool-card-desc">MiniMax推出的AI智能问答助手，基于自研大模型，提供文本对话、文档速读及多模态内容生成服务。</p>
+            <div class="tool-card-foot">
+                <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                <span class="rating none">暂无评分</span>
+            </div>
+            <a class="compare-mini" href="/compare?tools=minimax" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+        </div><div class="tool-card" data-tool-card data-name="Bing新必应" data-free="1" data-tutorial="0" data-rating="5.0" data-fresh="9">
+            <div class="tool-card-head">
+                <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/bing.png" alt="Bing新必应 logo" loading="lazy">
+                <div class="tool-card-main">
+                    <div class="tool-card-name"><h3>Bing新必应</h3></div>
+                    <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                </div>
+            </div>
+            <p class="tool-card-desc">微软推出的基于GPT-4大语言模型驱动的智能搜索引擎，提供对话生成式搜索与多轮交互体验，帮助用户高效获取精准信息与创作内容。</p>
+            <div class="tool-card-foot">
+                <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                <span class="rating"><svg class="icon" aria-hidden="true" style="fill:currentColor;stroke:none"><use href="/assets/static/nav-001/icons.svg#star"></use></svg> 5.0</span>
+            </div>
+            <a class="compare-mini" href="/compare?tools=bing" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+        </div><div class="tool-card" data-tool-card data-name="HuggingChat" data-free="0" data-tutorial="0" data-rating="" data-fresh="10">
+            <div class="tool-card-head">
+                <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/huggingchat.png" alt="HuggingChat logo" loading="lazy">
+                <div class="tool-card-main">
+                    <div class="tool-card-name"><h3>HuggingChat</h3></div>
+                    <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                </div>
+            </div>
+            <p class="tool-card-desc">HuggingChat是开源社区HuggingFace推出的在线聊天机器人，基于Open Assistant模型，提供多语言问答、代码编写及内容生成的免费AI助</p>
+            <div class="tool-card-foot">
+                <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                <span class="rating none">暂无评分</span>
+            </div>
+            <a class="compare-mini" href="/compare?tools=huggingchat" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+        </div><div class="tool-card" data-tool-card data-name="ColossalChat" data-free="0" data-tutorial="0" data-rating="" data-fresh="11">
+            <div class="tool-card-head">
+                <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/colossal-ai.png" alt="ColossalChat logo" loading="lazy">
+                <div class="tool-card-main">
+                    <div class="tool-card-name"><h3>ColossalChat</h3></div>
+                    <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                </div>
+            </div>
+            <p class="tool-card-desc">ColossalChat（Colossal-AI）是面向开发者的开源分布式深度学习系统，通过并行化技术加速大模型训练。</p>
+            <div class="tool-card-foot">
+                <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                <span class="rating none">暂无评分</span>
+            </div>
+            <a class="compare-mini" href="/compare?tools=colossal-ai" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+        </div><div class="tool-card" data-tool-card data-name="百川大模型" data-free="1" data-tutorial="1" data-rating="" data-fresh="12">
+            <div class="tool-card-head">
+                <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/tool-4453.png" alt="百川大模型 logo" loading="lazy">
+                <div class="tool-card-main">
+                    <div class="tool-card-name"><h3>百川大模型</h3></div>
+                    <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                </div>
+            </div>
+            <p class="tool-card-desc">百川大模型是百川智能推出的大型语言模型助手，融合意图理解、信息检索与强化学习技术，为用户提供精准、高效且专业的自然语言交互与内容生成服务。</p>
+            <div class="tool-card-foot">
+                <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                <span class="rating none">暂无评分</span>
+            </div>
+            <a class="compare-mini" href="/compare?tools=baichuan-ai" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+        </div><div class="tool-card" data-tool-card data-name="Character.AI" data-free="0" data-tutorial="0" data-rating="" data-fresh="13">
+            <div class="tool-card-head">
+                <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/characterai.png" alt="Character.AI logo" loading="lazy">
+                <div class="tool-card-main">
+                    <div class="tool-card-name"><h3>Character.AI</h3></div>
+                    <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                </div>
+            </div>
+            <p class="tool-card-desc">Character.AI是一个由前谷歌AI专家创立的虚拟角色对话平台，支持用户创建个性化AI角色并进行多语言互动。</p>
+            <div class="tool-card-foot">
+                <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                <span class="rating none">暂无评分</span>
+            </div>
+            <a class="compare-mini" href="/compare?tools=characterai" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+        </div><div class="tool-card" data-tool-card data-name="Perplexity" data-free="0" data-tutorial="0" data-rating="" data-fresh="14">
+            <div class="tool-card-head">
+                <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/perplexity-1.png" alt="Perplexity logo" loading="lazy">
+                <div class="tool-card-main">
+                    <div class="tool-card-name"><h3>Perplexity</h3></div>
+                    <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                </div>
+            </div>
+            <p class="tool-card-desc">Perplexity是一款集成多模型的AI搜索引擎，为研究人员、学生及专业人士提供深度信息检索与知识整理服务。</p>
+            <div class="tool-card-foot">
+                <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                <span class="rating none">暂无评分</span>
+            </div>
+            <a class="compare-mini" href="/compare?tools=perplexity-1" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+        </div><div class="tool-card" data-tool-card data-name="星野" data-free="1" data-tutorial="0" data-rating="" data-fresh="15">
+            <div class="tool-card-head">
+                <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/tool-13251.png" alt="星野 logo" loading="lazy">
+                <div class="tool-card-main">
+                    <div class="tool-card-name"><h3>星野</h3></div>
+                    <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                </div>
+            </div>
+            <p class="tool-card-desc">星野是字节跳动推出的AI虚拟社交陪伴平台，依托大语言模型技术，为用户提供高沉浸感的角色扮演与情感交互体验，满足情感寄托与创意表达需求。</p>
+            <div class="tool-card-foot">
+                <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                <span class="rating none">暂无评分</span>
+            </div>
+            <a class="compare-mini" href="/compare?tools=xingyeai" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+        </div><div class="tool-card" data-tool-card data-name="百度智能云千帆" data-free="0" data-tutorial="1" data-rating="" data-fresh="16">
+            <div class="tool-card-head">
+                <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/tool-6290.png" alt="百度智能云千帆 logo" loading="lazy">
+                <div class="tool-card-main">
+                    <div class="tool-card-name"><h3>百度智能云千帆</h3></div>
+                    <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                </div>
+            </div>
+            <p class="tool-card-desc">百度智能云千帆是面向企业的一站式大模型开发与应用平台，提供从模型训练、Agent构建到应用部署的全流程工具链。</p>
+            <div class="tool-card-foot">
+                <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                <span class="rating none">暂无评分</span>
+            </div>
+            <a class="compare-mini" href="/compare?tools=qianfan" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+        </div><div class="tool-card" data-tool-card data-name="New Bing" data-free="0" data-tutorial="0" data-rating="" data-fresh="17">
+            <div class="tool-card-head">
+                <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/tool-457.png" alt="New Bing logo" loading="lazy">
+                <div class="tool-card-main">
+                    <div class="tool-card-name"><h3>New Bing</h3></div>
+                    <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                </div>
+            </div>
+            <p class="tool-card-desc">微软推出的新一代AI搜索引擎与智能助手，深度融合大语言模型与实时网络数据，为用户提供带有真实来源引用的精准问答与内容创作支持。</p>
+            <div class="tool-card-foot">
+                <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                <span class="rating none">暂无评分</span>
+            </div>
+            <a class="compare-mini" href="/compare?tools=new-bing" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+        </div><div class="tool-card" data-tool-card data-name="ChatGPT" data-free="1" data-tutorial="0" data-rating="" data-fresh="18">
+            <div class="tool-card-head">
+                <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/chatgpt.png" alt="ChatGPT logo" loading="lazy">
+                <div class="tool-card-main">
+                    <div class="tool-card-name"><h3>ChatGPT</h3></div>
+                    <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                </div>
+            </div>
+            <p class="tool-card-desc">ChatGPT是OpenAI推出的生成式对话机器人，基于大语言模型提供自然流畅的多轮交互、内容创作与代码辅助服务。</p>
+            <div class="tool-card-foot">
+                <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                <span class="rating none">暂无评分</span>
+            </div>
+            <a class="compare-mini" href="/compare?tools=chatgpt" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+        </div><div class="tool-card" data-tool-card data-name="Kimi智能助手" data-free="0" data-tutorial="0" data-rating="" data-fresh="19">
+            <div class="tool-card-head">
+                <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/kimi-bot.png" alt="Kimi智能助手 logo" loading="lazy">
+                <div class="tool-card-main">
+                    <div class="tool-card-name"><h3>Kimi智能助手</h3></div>
+                    <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                </div>
+            </div>
+            <p class="tool-card-desc">月之暗面推出的AI助手，支持联网搜索与200万字长文本处理，适合需要快速整理资料、辅助创作及深度推理的用户。</p>
+            <div class="tool-card-foot">
+                <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                <span class="rating none">暂无评分</span>
+            </div>
+            <a class="compare-mini" href="/compare?tools=kimi-bot" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+        </div><div class="tool-card" data-tool-card data-name="OiiOii" data-free="0" data-tutorial="1" data-rating="" data-fresh="20">
+            <div class="tool-card-head">
+                <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/oiioii.png" alt="OiiOii logo" loading="lazy">
+                <div class="tool-card-main">
+                    <div class="tool-card-name"><h3>OiiOii</h3></div>
+                    <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                </div>
+            </div>
+            <p class="tool-card-desc">OiiOii是一款集成多智能体协作的动画创作工具，通过内置编剧、分镜等角色实现从文本到动画短片的一站式生成。</p>
+            <div class="tool-card-foot">
+                <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                <span class="rating none">暂无评分</span>
+            </div>
+            <a class="compare-mini" href="/compare?tools=oiioii" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+        </div><div class="tool-card" data-tool-card data-name="TigerBot" data-free="1" data-tutorial="0" data-rating="" data-fresh="21">
+            <div class="tool-card-head">
+                <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/tool-2771.png" alt="TigerBot logo" loading="lazy">
+                <div class="tool-card-main">
+                    <div class="tool-card-name"><h3>TigerBot</h3></div>
+                    <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                </div>
+            </div>
+            <p class="tool-card-desc">虎博科技推出的AI对话助手，基于开源多模态大模型，支持文本创作、数据分析及图像生成。</p>
+            <div class="tool-card-foot">
+                <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                <span class="rating none">暂无评分</span>
+            </div>
+            <a class="compare-mini" href="/compare?tools=tigerbot" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+        </div><div class="tool-card" data-tool-card data-name="紫东太初" data-free="0" data-tutorial="0" data-rating="" data-fresh="22">
+            <div class="tool-card-head">
+                <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/tool-5509.png" alt="紫东太初 logo" loading="lazy">
+                <div class="tool-card-main">
+                    <div class="tool-card-name"><h3>紫东太初</h3></div>
+                    <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                </div>
+            </div>
+            <p class="tool-card-desc">紫东太初是由中科院自动化所与武汉人工智能研究院联合推出的全模态大模型，提供涵盖图文音视频及3D信号的综合AI交互服务。</p>
+            <div class="tool-card-foot">
+                <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                <span class="rating none">暂无评分</span>
+            </div>
+            <a class="compare-mini" href="/compare?tools=taichu" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+        </div><div class="tool-card" data-tool-card data-name="跃问" data-free="0" data-tutorial="0" data-rating="" data-fresh="23">
+            <div class="tool-card-head">
+                <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/tool-9802.png" alt="跃问 logo" loading="lazy">
+                <div class="tool-card-main">
+                    <div class="tool-card-name"><h3>跃问</h3></div>
+                    <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                </div>
+            </div>
+            <p class="tool-card-desc">跃问是阶跃星辰推出的多模态AI聊天助手，提供高精度逻辑推理、长文本理解与复杂视觉分析能力，助力知识工作者与开发者高效处理信息。</p>
+            <div class="tool-card-foot">
+                <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                <span class="rating none">暂无评分</span>
+            </div>
+            <a class="compare-mini" href="/compare?tools=stepchat" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
+        </div></div>
+
+        <nav class="pagination" aria-label="分页">
+            <span class="page-btn" aria-disabled="true">上一页</span>
+            <a class="page-btn active" href="/category/ai-chat">1</a>
+            <a class="page-btn" href="/category/ai-chat?page=2">2</a>
+            <a class="page-btn" href="/category/ai-chat?page=3">3</a>
+            <a class="page-btn" href="/category/ai-chat?page=2">下一页 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#chevron-right"></use></svg></a>
+        </nav>
+
+        <section class="category-seo">
+            <h2>AI聊天助手是什么</h2>
+            <p><strong>AI 聊天助手</strong>是基于大语言模型构建的对话式人工智能，用户可以像与人聊天一样输入问题、下达指令或上传文件，模型会结合上下文给出回答、建议或可直接使用的结果。与早期只能匹配关键词的聊天机器人不同，今天的 AI 聊天助手具备<strong>多轮对话、长文档理解、代码生成、联网检索与工具调用</strong>等能力，已经从“聊天玩具”变成很多人日常工作中的第二大脑。</p>
+            <p>从产品形态看，AI 聊天助手大致分为三类：通用对话助手（以 ChatGPT、Claude、Kimi 为代表）、角色陪伴与虚拟社交（Character.AI、星野）以及面向企业或特定垂直场景的助手（Copilot、Perplexity、百度智能云千帆）。它们的底层能力相近，差异主要在于<strong>模型质量、上下文长度、生态集成、数据合规与收费方式</strong>。</p>
+
+            <h2>怎么选一款合适的 AI聊天助手</h2>
+            <p>选型时不要只看“模型参数”或排行榜名次，真正影响日常体验的通常是下面几件事：</p>
+            <ul>
+                <li><strong>任务类型</strong>：写方案、改代码、读论文、做表格，对模型能力的要求并不相同。代码与长文档场景优先选择上下文长、推理稳定的模型；创意写作则更看重语言风格与可控制性。</li>
+                <li><strong>中文体验</strong>：不少海外模型中文可用，但在成语、政策表述、本地化资料上的表现不如国产模型。面向中文内容生产时，建议至少准备一款国产模型作为主力或补充。</li>
+                <li><strong>价格与额度</strong>：免费额度、每日次数、会员价格与并发限制都会影响长期使用成本。高频使用者应优先考虑按月订阅而不是按次计费。</li>
+                <li><strong>数据与隐私</strong>：涉及客户资料、合同、代码等敏感内容时，要确认是否支持本地部署、是否用于模型训练、日志留存多久。</li>
+                <li><strong>生态与导出</strong>：能否接入飞书、Notion、GitHub 等常用工具，生成的内容是否方便导出为文档或代码。</li>
+            </ul>
+
+            <h2>典型场景与推荐工具</h2>
+            <div class="mini-grid">
+                <div class="mini-note"><strong>日常问答与信息整理</strong><br>适合所有人。用 ChatGPT、Kimi、Perplexity 快速查资料、总结长文、生成清单与邮件。</div>
+                <div class="mini-note"><strong>营销与内容生产</strong><br>Jasper Chat 偏向品牌语气与营销工作流，适合团队协作；国内自媒体可优先考虑本地化更好的国产助手。</div>
+                <div class="mini-note"><strong>代码与技术问答</strong><br>Claude、Copilot 在代码理解与重构上表现稳定；需要在内网使用时，优先选择支持私有化部署的方案。</div>
+                <div class="mini-note"><strong>角色陪伴与创意</strong><br>Character.AI、星野、冒泡鸭提供角色设定与长期记忆，适合互动叙事、陪伴与创意脑暴。</div>
+            </div>
+
+            <h2>免费与付费的分界</h2>
+            <p>大多数 AI 聊天助手采用“免费试用 + 订阅解锁”的模式：免费版通常限制每日消息数、上下文长度、文件上传大小或高级模型的使用；付费版则提供更长的上下文、更快的响应、更高的并发和团队协作能力。对于每天使用超过 1 小时的重度用户，订阅通常比购买多个按次计费的 API 更划算。</p>
+            <p>需要注意，部分产品会把“高级模型”和“基础模型”区分计价，宣传页上的免费额度未必能用在最强模型上。选型时应以<strong>实际任务所需模型</strong>的价格为准，而不是最低档价格。</p>
+
+            <h2>常见误区</h2>
+            <ul>
+                <li><strong>把 AI 当搜索引擎</strong>：聊天助手会生成看似合理但不准确的内容，涉及事实、数据与政策时必须交叉核验。</li>
+                <li><strong>只比较模型参数</strong>：参数规模不等于实际体验，工具链、提示词模板与产品交互同样重要。</li>
+                <li><strong>忽略隐私条款</strong>：把敏感资料直接粘贴到免费版对话窗口，是当前最常见的数据泄露方式之一。</li>
+                <li><strong>追求“全能”</strong>：没有一款助手在所有任务上都最好。把不同工具组合使用，往往比寻找“唯一最优解”更有效。</li>
+            </ul>
+
+            <h2>总结</h2>
+            <p>AI 聊天助手已经从“新鲜玩意”变成基础设施。选型的关键不是找到排行榜第一名，而是<strong>先明确任务，再匹配模型能力、价格与隐私要求</strong>。建议先用免费额度做两周真实任务测试，再决定是否长期订阅。对于团队，还应额外评估账号管理、审计日志与数据隔离能力。</p>
+        </section>
+
+        <section class="other-cats">
+            <h2>其他分类</h2>
+            <p>继续浏览其他 AI 工具分类，或用顶部搜索查找具体工具。</p>
+            <div class="other-cat-grid"><a class="chip" href="/category/ai-chat">💬 AI聊天助手</a><a class="chip" href="/apps/#cat-ai-writing">📝 AI写作工具</a><a class="chip" href="/apps/#cat-ai-coding">💻 AI编程工具</a><a class="chip" href="/apps/#cat-ai-coding-plan">🚀 AI编程套餐</a><a class="chip" href="/apps/#cat-ai-search">🔍 AI搜索引擎</a><a class="chip" href="/apps/#cat-ai-image">🎨 AI图像工具</a><a class="chip" href="/apps/#cat-ai-video">🎬 AI视频工具</a><a class="chip" href="/apps/#cat-ai-office">📊 AI办公工具</a><a class="chip" href="/apps/#cat-ai-design">🎯 AI设计工具</a><a class="chip" href="/apps/#cat-ai-audio">🎵 AI音频工具</a><a class="chip" href="/apps/#cat-ai-agent">🤖 AI智能体</a><a class="chip" href="/apps/#cat-ai-prompt">📋 AI提示指令</a><a class="chip" href="/apps/#cat-ai-dev-platform">🛠️ AI开发平台</a><a class="chip" href="/apps/#cat-ai-learning">📚 AI学习网站</a><a class="chip" href="/apps/#cat-ai-model-training">🧠 AI训练模型</a><a class="chip" href="/apps/#cat-ai-model-eval">📈 AI模型评测</a><a class="chip" href="/apps/#cat-ai-content-detection">🔬 AI内容检测</a><a class="chip" href="/apps/#cat-ai-side-hustle">💰 AI副业工具</a></div>
+        </section>
+    </div>
+</main>
+{{end}}

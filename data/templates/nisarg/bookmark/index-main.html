@@ -1,0 +1,59 @@
+{{ define "nisarg/bookmark/index-main.html" }}
+<main class="page-main">
+    <div class="wrap">
+        <header class="apps-head">
+            <h1>工具集</h1>
+            <p>发现和探索各类 应用/工具产品</p>
+        </header>
+<!--        <div class="app-filters">-->
+<!--            <span class="toolbar-label">筛选</span>-->
+<!--            <button class="filter-chip active" type="button" data-app-filter="all">全部</button>-->
+<!--            <button class="filter-chip" type="button" data-app-filter="free">仅免费</button>-->
+<!--            <button class="filter-chip" type="button" data-app-filter="tutorial">有教程</button>-->
+<!--            <button class="filter-chip" type="button" data-app-filter="rated">4星以上</button>-->
+<!--        </div>-->
+        <div class="category-item app-category">
+            {{if and .dataIs .data }}
+            {{range .data}}
+            <header class="category-header">
+                <div class="category-head-inner">
+                    <div>
+                        <h1>{{.Name}}</h1>
+                        <p style="font-size: 12px"></p>
+                    </div>
+                </div>
+            </header>
+
+            <div class="tool-grid" id="categoryToolGrid-{{.No}}" style="margin-top:20px">
+                {{range .Data}}
+                <div class="tool-card" data-tool-card data-name="{{.Name}}" data-free="1" data-tutorial="1" data-rating="" data-fresh="0">
+                    <div class="tool-card-head">
+                        <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/jasper.png" alt="{{.Name}} logo" loading="lazy">
+                        <div class="tool-card-main">
+                            <div class="tool-card-name"><h3>{{.Name}}</h3></div>
+                            <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                        </div>
+                    </div>
+                    <p class="tool-card-desc">{{.Description}}</p>
+                    <div class="tool-card-foot">
+                        <a class="official" href="{{.UrlSource}}">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                        <a class="detail" href="/bookmark/detail/{{.No}}">详情页 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#chevron-right"></use></svg></a>
+                        <span class="rating none">暂无评分</span>
+                    </div>
+                    <div class="tool-card-actions">
+<!--                        <a class="compare-mini" href="#" title="加入对比"><svg class="icon icon-sm" aria-hidden="true">-->
+<!--                            <use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span>-->
+<!--                        </a>-->
+                        <a href="#" title="收藏">
+                            <svg class="icon" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#heart"></use></svg>
+                        </a>
+                    </div>
+                </div>
+                {{end}}
+            </div>
+            {{end}}
+            {{end}}
+        </div>
+    </div>
+</main>
+{{end}}

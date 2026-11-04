@@ -1,0 +1,35 @@
+{{ define "nisarg/bookmark/left-aside.html" }}
+<aside class="app-sidebar" id="appSidebar" aria-label="主导航">
+    <div class="sidebar-content" style="display:flex;flex-direction:column;height:100%;min-height:0">
+        <a class="sidebar-brand" href="/bookmark" aria-label="分宝呀 首页">
+            <img src="/assets/static/nav-001/img/icon.png" alt="分宝呀工具" width="40" height="40">
+            <div><strong>分宝呀工具</strong><span>工具导航站</span></div>
+        </a>
+        <button class="sidebar-close" type="button" data-sidebar-close aria-label="关闭导航"><svg class="icon" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#x"></use></svg></button>
+        <nav class="sidebar-nav">
+            <a class="sidebar-link active" href="/bookmark"><svg class="icon" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#home"></use></svg><span>首页</span></a>
+<!--            <a class="sidebar-link" href="/compare"><svg class="icon" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>工具对比</span></a>-->
+<!--            <a class="sidebar-link" href="/apps/"><svg class="icon" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#heart"></use></svg><span>我的收藏</span></a>-->
+<!--            <a class="sidebar-link" href="/community?from=nav"><svg class="icon" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#users"></use></svg><span>AI 交流群</span></a>-->
+        </nav>
+        <div class="sidebar-label">分类导航</div>
+        <div class="sidebar-categories">
+            {{if .pageCategory}}
+            {{range .pageCategory}}
+            <a class="sidebar-cat" href="/bookmark/category/{{.Extend.Code}}"><span>{{.Name}}</span></a>
+            {{end}}
+            {{end}}
+        </div>
+        <div class="sidebar-bottom">
+            <div class="theme-switch" role="group" aria-label="主题切换">
+                <button type="button" data-theme-btn="dark" class="active" aria-label="切换到深色模式" title="深色模式">
+                    <svg class="icon" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#moon"></use></svg></button>
+                <button type="button" data-theme-btn="light" aria-label="切换到浅色模式" title="浅色模式">
+                    <svg class="icon" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#sun"></use></svg></button>
+            </div>
+            <div class="sidebar-copy">© 2026 fenbaoya.com</div>
+        </div>
+    </div>
+</aside>
+<div class="sidebar-overlay"></div>
+{{end}}
