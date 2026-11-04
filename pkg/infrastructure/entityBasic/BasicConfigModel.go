@@ -23,7 +23,7 @@ type BasicConfigModelEntity struct {
 	Name       string     `gorm:"column:name;type:varchar(255);comment:名称" json:"name" comment:"名称" `
 	//
 	TypeSys         string                       `gorm:"column:type_sys;type:varchar(80);index;default:'general';comment:类型|普通|系统;" json:"type_sys" comment:"类型;普通;系统;" `
-	ModelCategory   string                       `gorm:"column:model_category;type:varchar(80);index;comment:模型种类|表模型|配置模型" json:"model_category" comment:"模型种类" `
+	ModelCategory   string                       `gorm:"column:model_category;type:varchar(80);index;comment:模型种类|表模型table|配置模型config" json:"model_category" comment:"模型种类" `
 	Model           string                       `gorm:"column:model;type:varchar(80);comment:模型" json:"model" comment:"模型" `
 	Module          string                       `gorm:"column:module;type:varchar(80);index;comment:模块" json:"module" comment:"模块" `
 	ModuleSub       string                       `gorm:"column:module_sub;type:varchar(80);index;comment:子模块" json:"module_sub" comment:"子模块" `

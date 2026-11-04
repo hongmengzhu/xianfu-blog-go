@@ -26,7 +26,6 @@ type BasicConfigCategoryEntity struct {
 	NoLink      string     `gorm:"column:no_link;type:text;comment:上级" json:"no_link" comment:"上级链" `
 	TypeSys     string     `gorm:"column:type_sys;type:varchar(80);index;default:'general';comment:类型|普通|系统;" json:"type_sys" comment:"类型;普通;系统;" `
 	Ano         string     `gorm:"column:ano;type:varchar(80);index;default:'';comment:操作员" json:"ano" comment:"操作员" `
-	Category    string     `gorm:"column:category;type:varchar(80);index;comment:分类" json:"category" comment:"分类" `
 }
 
 func (*BasicConfigCategoryEntity) TableName() string {
@@ -34,5 +33,5 @@ func (*BasicConfigCategoryEntity) TableName() string {
 }
 
 func (*BasicConfigCategoryEntity) TableComment() string {
-	return "分类"
+	return "配置分类"
 }

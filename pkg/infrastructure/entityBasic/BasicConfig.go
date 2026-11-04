@@ -40,6 +40,7 @@ type BasicConfigEntity struct {
 	FormCode     string         `gorm:"column:form_code;type:varchar(80);index;comment:表单" json:"form_code" comment:"表单" `
 	ValueType    string         `gorm:"column:value_type;type:varchar(80);comment:字段值类型" json:"value_type" comment:"字段值类型" `
 	KindUnique   string         `gorm:"column:kind_unique;type:varchar(80);not null;index;default:;comment:字段种类唯一" json:"kind_unique" comment:"字段种类唯一:model_no+field" `
+	CategoryNo   string         `gorm:"column:category_no;type:varchar(80);index;default:;comment:类别编号" json:"category_no" comment:"类别编号" `
 }
 
 func (*BasicConfigEntity) TableName() string {

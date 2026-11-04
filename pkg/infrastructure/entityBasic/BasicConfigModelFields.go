@@ -48,6 +48,7 @@ type BasicConfigModelFieldsEntity struct {
 	ParameterConfig  string                       `gorm:"column:parameter_config;type:text;comment:参数配置" json:"parameter_config" comment:"参数配置" `
 	KindUnique       string                       `gorm:"column:kind_unique;type:varchar(80);not null;index;default:;comment:字段种类唯一" json:"kind_unique" comment:"字段种类唯一:model_no+field" `
 	SharedFieldNo    string                       `gorm:"column:shared_field_no;type:varchar(80);index;default:;comment:共享字段编号" json:"shared_field_no" comment:"共享字段编号" `
+	FormGroup        string                       `gorm:"column:form_group;type:varchar(80);index;default:;comment:表单分组" json:"form_group" comment:"表单分组" `
 }
 
 func (*BasicConfigModelFieldsEntity) TableName() string {
@@ -55,5 +56,5 @@ func (*BasicConfigModelFieldsEntity) TableName() string {
 }
 
 func (*BasicConfigModelFieldsEntity) TableComment() string {
-	return "模型"
+	return "模型字段"
 }
