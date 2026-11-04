@@ -26,6 +26,7 @@ type BlogArticleCategoryEntity struct {
 	NoLink      string     `gorm:"column:no_link;type:text;comment:上级" json:"no_link" comment:"上级链" `
 	TypeSys     string     `gorm:"column:type_sys;type:varchar(80);index;default:'general';comment:类型|普通|系统;" json:"type_sys" comment:"类型;普通;系统;" `
 	Ano         string     `gorm:"column:ano;type:varchar(80);index;default:'';comment:操作员" json:"ano" comment:"操作员" `
+	Module      string     `gorm:"column:module;type:varchar(80);index;default:no;comment:模块|;" json:"module" comment:"模块" `
 }
 
 func (*BlogArticleCategoryEntity) TableName() string {
