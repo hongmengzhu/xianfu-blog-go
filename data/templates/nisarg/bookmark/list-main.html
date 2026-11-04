@@ -371,13 +371,7 @@
             <a class="compare-mini" href="/compare?tools=stepchat" title="加入对比"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span></a>
         </div></div>
 
-        <nav class="pagination" aria-label="分页">
-            <span class="page-btn" aria-disabled="true">上一页</span>
-            <a class="page-btn active" href="/category/ai-chat">1</a>
-            <a class="page-btn" href="/category/ai-chat?page=2">2</a>
-            <a class="page-btn" href="/category/ai-chat?page=3">3</a>
-            <a class="page-btn" href="/category/ai-chat?page=2">下一页 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#chevron-right"></use></svg></a>
-        </nav>
+        {{template "nisarg/bookmark/block_pagination.html" .}}
 
         <section class="category-seo">
             <h2>AI聊天助手是什么</h2>
