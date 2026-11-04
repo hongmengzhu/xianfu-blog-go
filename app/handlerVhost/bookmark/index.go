@@ -1,18 +1,19 @@
 package bookmark
 
 import (
-	"net/http"
+	"slices"
 
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBookmark/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/handlerVhost"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticleWeb"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cacheService/cacheBlog"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cacheService/cacheBookmark"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/staterEchoV5"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
 	"github.com/labstack/echo/v5"
 	"github.com/pangu-2/go-tools/tools/strPg"
+	"go-spring.org/log"
 	"go-spring.org/spring/gs"
 )
 
@@ -20,15 +21,15 @@ func init() {
 	gs.Provide(new(IndexController)).Name("BookmarkHostIndexController").Export(gs.As[staterEchoV5.RouteRegistrar]())
 }
 
-// IndexController 书签首页
+// IndexController 书签首页（独立域名 bookmark.test）
 type IndexController struct {
 	staterEchoV5.RouteRegistrar
-	Sp       *authPg.GroupWebVhostMiddlewareSp   `autowire:"?"`
-	sv       *service.BlogArticleWebService      `autowire:"?"`
-	catCache *cacheBlog.CacheBlogArticleCategory `autowire:"?"`
+	Sp       *authPg.GroupWebVhostMiddlewareSp    `autowire:"?"`
+	sv       *service.BmBookmarkWebService        `autowire:"?"`
+	catCache *cacheBookmark.CacheBookmarkCategory `autowire:"?"`
 }
 
-// Hosts 模块绑定域名
+// Host 模块绑定域名
 func (c *IndexController) Host() string {
 	return handlerVhost.Host_bookmark
 }
@@ -41,48 +42,46 @@ func (c *IndexController) Host() string {
 func (c *IndexController) RegisterRoutes(g *echo.Echo) {
 	group := g.Group("", authPg.GroupWebVhostMiddlewareEcho(c.Sp))
 	group.GET("/", c.Index)
-	group.GET("/page/:page", c.Page)
 }
 
 func (c *IndexController) Index(ctx *echo.Context) error {
-	var ct modBlogArticleWeb.QueryCt
-	if err := ctx.Bind(&ct); nil != err {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	htmlOption := make([]templatePg.Option, 0)
+	htmlOption = append(htmlOption, templatePg.WithHtmlObjSet("pageUrl", "/"))
+	htmlOption = append(htmlOption, templatePg.WithHtmlObjSet("pageCategory", make([]model.BaseNodeTree, 0)))
+	htmlOption = append(htmlOption, templatePg.WithSitePage(templatePg.SitePage{
+		Title:       "分宝呀",
+		Description: "AI 工具与资源导航",
+		Keywords:    "AI工具,AI导航,AI教程",
+		SiteName:    "分宝呀",
+	}))
+	//
+	cxt := ctx.Request().Context()
+	tenantNo := webPg.GetTenantNoEcho(ctx)
+	nosCategory := make([]*model.BaseNodeDataTree, 0)
+	nosIds := make([]string, 0)
+	cate, b := c.catCache.GetAllByCache(cxt, tenantNo)
+	if b {
+		for _, item := range cate {
+			if strPg.IsNotBlank(item.No) && !slices.Contains(nosIds, item.No) {
+				nosIds = append(nosIds, item.No)
+				nosCategory = append(nosCategory, &model.BaseNodeDataTree{
+					No:       item.No,
+					Name:     item.Name,
+					ParentNo: item.ParentNo,
+					Code:     item.Code,
+					Extend:   item,
+				})
+			}
+		}
+		tree := c.catCache.ConvertToTree(cate)
+		htmlOption = append(htmlOption, templatePg.WithHtmlObjSet("pageCategory", tree))
+		//
+		rt := c.sv.QueryListBYCategory(cxt, tenantNo, nosCategory, 20)
+		if rt.SuccessIs() {
+			log.Info(cxt, log.TagAppDef, "nosCategory", log.Any("count", len(rt.Data)))
+			htmlOption = append(htmlOption, templatePg.WithDataByResult(rt.SuccessIs(), rt.Data))
+		}
 	}
-	//
-	//tenantNo := webPg.GetTenantNoEcho(ctx)
-	//rt := c.sv.QueryByContext(ctx.Request().Context(), tenantNo, ct)
-	//log.Info(context.Background(), log.TagBizDef, "Data", log.Any("Pageable", rt.Data.Pageable))
-	////
-	//tree, _ := c.catCache.FormatTree(ctx.Request().Context(), tenantNo)
 	// 模版
-	return templatePg.HTMLEcho(ctx, "bookmark/index",
-		//templatePg.WithDataByResult(rt.SuccessIs(), rt.Data),
-		//templatePg.WithHtmlObjSet("categorys", tree),
-		templatePg.WithHtmlObjSet("pageUrl", "page"),
-		templatePg.WithSitePage(templatePg.SitePage{
-			Title:       "博客",
-			Description: "博客",
-			Keywords:    "博客",
-			SiteName:    "博客",
-		}))
-}
-
-func (c *IndexController) Page(ctx *echo.Context) error {
-	param := ctx.Param("page")
-	var ct modBlogArticleWeb.QueryCt
-	ct.PageSize = 20
-	ct.PageNum = max(strPg.ToInt64(param), 1)
-	//
-	rt := c.sv.QueryByContext(ctx.Request().Context(), webPg.GetTenantNoEcho(ctx), ct)
-	// 模版
-	return templatePg.HTMLEcho(ctx, "blog/article_list",
-		templatePg.WithDataByResult(rt.SuccessIs(), rt.Data),
-		templatePg.WithHtmlObjSet("pageUrl", "page"),
-		templatePg.WithSitePage(templatePg.SitePage{
-			Title:       "博客",
-			Description: "博客",
-			Keywords:    "博客",
-			SiteName:    "博客",
-		}))
+	return templatePg.HTMLEcho(ctx, "bookmark/index", htmlOption...)
 }

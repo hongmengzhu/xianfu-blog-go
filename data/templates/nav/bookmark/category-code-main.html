@@ -1,0 +1,67 @@
+{{ define "nav/bookmark/category-code-main.html" }}
+<main class="page-main">
+    <div class="wrap">
+        <nav class="breadcrumb-line" aria-label="面包屑">
+            <a href="/">首页</a><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#chevron-right"></use></svg><a href="/apps/">AI工具库</a><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#chevron-right"></use></svg><span class="current">AI聊天助手</span>
+        </nav>
+        <header class="category-header">
+            <div class="category-head-inner">
+                <span class="category-emoji">💬</span>
+                <div>
+                    <h1>{{.pageCategoryItem.Name}}</h1>
+                    <p></p>
+                </div>
+            </div>
+            <div class="toolbar category-toolbar">
+                <div class="toolbar-start">
+                    <span class="result-count">共找到 <strong id="categoryVisibleCount">{{if .dataIs}}{{.data.Total}}{{else}}0{{end}}</strong> 个工具</span>
+                    <span class="toolbar-label">筛选</span>
+                    <button class="filter-chip active" type="button" data-category-filter="all">全部</button>
+                </div>
+                <div class="toolbar-end">
+                    <button class="sort-btn active" type="button" data-category-sort="default">综合排序</button>
+<!--                    <button class="sort-btn" type="button" data-category-sort="rating">评分最高</button>-->
+                    <button class="sort-btn" type="button" data-category-sort="new">最新上架</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="tool-grid" id="categoryToolGrid" style="margin-top:20px">
+            {{if and .dataIs .data.Data }}
+            {{range .data.Data}}
+            <div class="tool-card" data-tool-card data-name="{{.Name}}" data-free="1" data-tutorial="1" data-rating="" data-fresh="0">
+                <div class="tool-card-head">
+                    <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/jasper.png" alt="{{.Name}} logo" loading="lazy">
+                    <div class="tool-card-main">
+                        <div class="tool-card-name"><h3>{{.Name}}</h3></div>
+                        <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
+                    </div>
+                </div>
+                <p class="tool-card-desc">{{.Description}}</p>
+                <div class="tool-card-foot">
+                    <a class="official" href="{{.UrlSource}}">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+                    <span class="rating none">暂无评分</span>
+                </div>
+                <div class="tool-card-actions">
+<!--                    <a class="compare-mini" href="#" title="加入对比"><svg class="icon icon-sm" aria-hidden="true">-->
+<!--                        <use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span>-->
+<!--                    </a>-->
+                    <a href="#" title="收藏">
+                        <svg class="icon" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#heart"></use></svg>
+                    </a>
+                </div>
+            </div>
+            {{end}}
+            {{end}}
+        </div>
+
+        {{template "nav/bookmark/block_pagination.html" .}}
+
+<!--        <section class="category-seo">-->
+
+<!--        </section>-->
+
+
+    </div>
+</main>
+{{end}}

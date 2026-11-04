@@ -44,6 +44,13 @@ func (c *NewsController) List(ctx *gin.Context) {
 	ctx.Bind(&ct)
 	// 只查新闻模块
 	ct.Module = modulePg.NEW.String()
+	// 分页默认值：未传 pageSize 时 PageSize=0 会导致总页溢出且查不出数据
+	if ct.PageSize < 1 {
+		ct.PageSize = 20
+	}
+	if ct.PageNum < 1 {
+		ct.PageNum = 1
+	}
 	//
 	rt := c.sv.Query(ctx, ct)
 	log.Info(context.Background(), log.TagBizDef, "Data", log.Any("Pageable", rt.Data.Pageable))

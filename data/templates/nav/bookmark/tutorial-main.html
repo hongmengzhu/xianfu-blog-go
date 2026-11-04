@@ -1,0 +1,57 @@
+{{ define "nav/bookmark/tutorial-main.html" }}
+<main class="page-main">
+    <div class="wrap">
+        <section class="page-hero tutorial-hero">
+            <div class="page-hero-inner">
+                <div class="page-hero-copy">
+                    <h1>AI 教程资源</h1>
+                    <p>按 AI 专栏、问答、百科和名人堂分类整理，精选教程、课程与学习资料</p>
+                </div>
+                <div class="page-hero-stats">
+                    <div class="page-stat"><strong>{{if .dataIs}}{{.data.Total}}{{else}}0{{end}}</strong><span>份学习资源</span></div>
+                </div>
+            </div>
+        </section>
+
+        <div class="content-with-aside">
+            <div class="content-main">
+                <div class="tutorial-content">
+                    {{if and .dataIs (gt .data.Total 0)}}
+                    <section class="tutorial-section">
+                        <div class="section-heading"><div><h2>全部资源 <span class="count">共 {{.data.Total}} 份</span></h2><p class="sub">教程、课程与学习资料</p></div></div>
+                        <div class="tutorial-list">
+                            {{range .data.Data}}
+                            <a class="list-card tutorial-card" href="/tutorial/{{.Code}}">
+                                <div class="list-thumb">
+                                    <div class="list-thumb-inner"><svg class="icon" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#file-text"></use></svg></div>
+                                    {{if .CategoryName}}<span class="badge-float">{{.CategoryName}}</span>{{end}}
+                                    <span class="watermark"></span>
+                                </div>
+                                <div class="list-content">
+                                    <div class="list-title"><h3>{{.Name}}</h3></div>
+                                    <p class="list-desc">{{.Description}}</p>
+                                    <div class="list-meta">
+                                        {{if .CategoryName}}<span class="dot-tag"><span class="dot" style="background:#6ea8fe"></span>{{.CategoryName}}</span>{{end}}
+                                        <span class="hide-mobile"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#graduation-cap"></use></svg> {{dateformat .CreateAt "2006-01-02"}}</span>
+                                        <span class="view">阅读教程 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#arrow-right"></use></svg></span>
+                                    </div>
+                                </div>
+                            </a>
+                            {{end}}
+                        </div>
+                    </section>
+                    {{else}}
+                    <div class="no-content">
+                        <h3>暂无教程</h3>
+                        <p>还没有发布 AI 教程资源，稍后再来看看。</p>
+                    </div>
+                    {{end}}
+                </div>
+
+                {{template "nav/bookmark/block_pagination.html" .}}
+            </div>
+            <aside class="aside-stack"><div class="aside-panel"><h3>热门工具</h3><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/tool-8681.png" alt="Reecho logo" loading="lazy"><span>Reecho</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/pavo.png" alt="Pavo logo" loading="lazy"><span>Pavo</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/zaodian-ai.png" alt="千问创作 logo" loading="lazy"><span>千问创作</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/pixtv.png" alt="PixTV logo" loading="lazy"><span>PixTV</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/music-studio.png" alt="妙响 logo" loading="lazy"><span>妙响</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/laper.svg" alt="Laper logo" loading="lazy"><span>Laper</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/tool-70016.png" alt="Atoms logo" loading="lazy"><span>Atoms</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/youcom.png" alt="You.com logo" loading="lazy"><span>You.com</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/updream.png" alt="updream logo" loading="lazy"><span>updream</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/tool-6474.png" alt="LiblibAI·哩布哩布AI logo" loading="lazy"><span>LiblibAI·哩布哩布AI</span></a></div><div class="aside-panel"><h3>最新收录</h3><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/wron.png" alt="Wron logo" loading="lazy"><span>Wron</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/aliyun-cleversee.png" alt="CleverSee logo" loading="lazy"><span>CleverSee</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/letsmagic.png" alt="超级麦吉 logo" loading="lazy"><span>超级麦吉</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/gaohaole.png" alt="稿好了 logo" loading="lazy"><span>稿好了</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/eluai.png" alt="意流 eluai logo" loading="lazy"><span>意流 eluai</span></a></div><div class="aside-panel"><h3>🎓 关于教程</h3><div class="aside-note" style="margin-top:0;padding-top:0;border-top:0">精选 AI 工具使用教程、视频课程与学习资料，从入门到进阶系统提升你的 AI 应用能力。</div></div></aside>
+        </div>
+    </div>
+</main>
+{{end}}

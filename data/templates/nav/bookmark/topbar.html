@@ -1,0 +1,21 @@
+{{ define "nav/bookmark/topbar.html" }}
+<header class="topbar">
+    <div class="topbar-right topbar-right-fixed">
+        <a class="topbar-login" href="#">登录</a>
+        <a class="topbar-register" href="#" style="margin-left:8px">注册</a>
+    </div>
+    <button class="sidebar-open" type="button" data-sidebar-open aria-label="打开导航"><svg class="icon" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#menu"></use></svg></button>
+    <a class="mobile-brand" href="/">
+        <img src="/assets/static/nav-001/img/icon.png" alt="分宝呀" width="30" height="30">
+        <span>分宝呀工具</span>
+    </a>
+    <div class="topbar-search">
+        <form class="topbar-search-box" action="/apps/" method="get" role="search">
+            <svg class="icon" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#search"></use></svg>
+            <input type="search" name="q" placeholder="搜索工具、资讯、教程..." aria-label="搜索工具、资讯、教程" autocomplete="off">
+            <button type="button" class="shortcut" data-open-search aria-label="打开搜索面板"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#command"></use></svg> K</button>
+        </form>
+    </div>
+
+</header>
+{{end}}
