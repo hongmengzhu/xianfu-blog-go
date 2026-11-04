@@ -61,28 +61,3 @@ func (c *NewsController) List(ctx *gin.Context) {
 			SiteName:    "博客",
 		}))
 }
-func (c *NewsController) Code(ctx *gin.Context) {
-	var ct modBlogArticleWeb.QueryCt
-	ctx.Bind(&ct)
-	param := ctx.Param("code")
-	log.Info(ctx, log.TagBizDef, "Param", log.Any("code", param))
-	//
-	rt := c.sv.Query(ctx, ct)
-	log.Info(context.Background(), log.TagBizDef, "Data", log.Any("Pageable", rt.Data.Pageable))
-	//
-	tenantNo := webPg.GetTenantNo(ctx)
-	tree, _ := c.catCache.FormatTree(ctx, tenantNo)
-
-	//fmt.Printf("Data: %+v\n", tree)
-	// 模版
-	templatePg.HTML(ctx, "bookmark/tutorial-detail",
-		templatePg.WithDataByResult(rt.SuccessIs(), rt.Data),
-		templatePg.WithHtmlObjSet("categorys", tree),
-		templatePg.WithHtmlObjSet("pageUrl", "page"),
-		templatePg.WithSitePage(templatePg.SitePage{
-			Title:       "博客",
-			Description: "博客",
-			Keywords:    "博客",
-			SiteName:    "博客",
-		}))
-}
