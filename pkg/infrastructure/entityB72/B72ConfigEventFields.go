@@ -53,7 +53,7 @@ type B72ConfigEventFieldsEntity struct {
 }
 
 func (*B72ConfigEventFieldsEntity) TableName() string {
-	return "basic_config_event_fields"
+	return "b72_config_event_fields"
 }
 
 func (*B72ConfigEventFieldsEntity) TableComment() string {

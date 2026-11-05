@@ -52,7 +52,7 @@ type B72ConfigModelFieldsEntity struct {
 }
 
 func (*B72ConfigModelFieldsEntity) TableName() string {
-	return "basic_config_model_fields"
+	return "b72_config_model_fields"
 }
 
 func (*B72ConfigModelFieldsEntity) TableComment() string {

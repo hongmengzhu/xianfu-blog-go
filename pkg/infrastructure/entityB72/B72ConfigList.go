@@ -35,7 +35,7 @@ type B72ConfigListEntity struct {
 }
 
 func (*B72ConfigListEntity) TableName() string {
-	return "basic_config_list"
+	return "b72_config_list"
 }
 
 func (*B72ConfigListEntity) TableComment() string {

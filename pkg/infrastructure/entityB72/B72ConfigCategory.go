@@ -29,7 +29,7 @@ type B72ConfigCategoryEntity struct {
 }
 
 func (*B72ConfigCategoryEntity) TableName() string {
-	return "basic_config_category"
+	return "b72_config_category"
 }
 
 func (*B72ConfigCategoryEntity) TableComment() string {
