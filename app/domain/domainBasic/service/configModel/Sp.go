@@ -16,6 +16,7 @@ type Sp struct {
 	repRule       *repositoryBasic.BasicConfigModelRulesRepository  `autowire:"?"`
 	repFieldRules *repositoryBasic.BasicModelRulesRepository        `autowire:"?"`
 	repConfig     *repositoryBasic.BasicConfigRepository            `autowire:"?"`
+	repConfigList *repositoryBasic.BasicConfigListRepository        `autowire:"?"`
 	repModule     *repositoryBasic.BasicModuleRepository            `autowire:"?"`
 	cache         *configCache.Sp                                   `autowire:"?"`
 }

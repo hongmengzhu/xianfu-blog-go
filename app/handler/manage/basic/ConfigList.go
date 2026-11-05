@@ -19,7 +19,7 @@ func init() {
 	gs.Provide(new(ConfigListController)).Name("ManageConfigListController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
-// ConfigListController 国家
+// ConfigListController 配置列表
 // @Description:
 type ConfigListController struct {
 	routerPg.RouteRegistrar

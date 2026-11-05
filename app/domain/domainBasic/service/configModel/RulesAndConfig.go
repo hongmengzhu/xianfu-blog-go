@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicConfigModel"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/configModelPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/typeSysPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
@@ -162,6 +163,78 @@ func (c *CreateUpdate) saveRules(ctx *gin.Context, tenantNo string) error {
 			log.Error(ctx, log.TagAppDef, tx.Error, "save model rules error")
 			return tx.Error
 		}
+	}
+	return nil
+}
+
+// syncConfigList 模型种类为【配置模型】config 时同步【配置列表】行 basic_config_list：
+//   - 一个模型对应一条记录，event_no/field/field_path 使用模型标识，model_no 使用模型编号；
+//   - 已存在的记录只同步归属与展示信息，保留状态、内容等运行期数据；
+//   - 库表模型 table 不同步。
+func (c *CreateUpdate) syncConfigList(ctx *gin.Context, tenantNo string) error {
+	if !configModelPg.ModelCategoryConfig.IsEqual(c.model.ModelCategory) {
+		return nil
+	}
+	if strPg.IsBlank(c.model.No) || strPg.IsBlank(c.model.Model) {
+		return nil
+	}
+	if c.Sp.repConfigList == nil {
+		return nil
+	}
+	show := c.model.Show
+	if show < 1 {
+		show = yesNoIntPg.Yes.IndexInt8()
+	}
+	typeDomain := typeDomainPg.Tenant.String()
+	if typeSysPg.System.String() == c.model.TypeSys {
+		typeDomain = typeDomainPg.System.String()
+	}
+	kindUnique := cryptPg.Md5(tenantNo + c.model.No + c.model.Model)
+	old, exists := c.Sp.repConfigList.FindByTenantNoAndModelNo(ctx, tenantNo, c.model.No)
+	if exists {
+		updates := map[string]any{
+			"event_no":    c.model.Model,
+			"model_no":    c.model.No,
+			"model":       c.model.Model,
+			"module":      c.model.Module,
+			"module_sub":  c.model.ModuleSub,
+			"field":       c.model.Model,
+			"field_path":  c.model.Model,
+			"name":        c.model.Name,
+			"description": c.model.Description,
+			"show":        show,
+			"sort":        c.model.Sort,
+			"tenant_no":   tenantNo,
+			"type_domain": typeDomain,
+			"kind_unique": kindUnique,
+		}
+		if err := c.Sp.repConfigList.UpdateMap(ctx, updates, old.ID); err != nil {
+			log.Error(ctx, log.TagAppDef, err, "sync config list update error")
+			return err
+		}
+		return nil
+	}
+	info := &entityBasic.BasicConfigListEntity{
+		No:          noPg.No(),
+		TenantNo:    tenantNo,
+		State:       enumStatePg.ENABLE.IndexInt8(),
+		Sort:        c.model.Sort,
+		Name:        c.model.Name,
+		EventNo:     c.model.Model,
+		ModelNo:     c.model.No,
+		Model:       c.model.Model,
+		Module:      c.model.Module,
+		ModuleSub:   c.model.ModuleSub,
+		Field:       c.model.Model,
+		FieldPath:   c.model.Model,
+		Description: c.model.Description,
+		Show:        show,
+		KindUnique:  kindUnique,
+		TypeDomain:  typeDomain,
+	}
+	if err, _ := c.Sp.repConfigList.Create(ctx, info); err != nil {
+		log.Error(ctx, log.TagAppDef, err, "sync config list create error")
+		return err
 	}
 	return nil
 }

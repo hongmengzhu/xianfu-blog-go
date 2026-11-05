@@ -226,6 +226,9 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		if err := c.syncConfig(ctx, tenantNo); err != nil {
 			return rt.ErrorMessage("配置保存失败：" + err.Error())
 		}
+		if err := c.syncConfigList(ctx, tenantNo); err != nil {
+			return rt.ErrorMessage("配置列表保存失败：" + err.Error())
+		}
 	} else {
 		//
 		info, b := c.Sp.repModel.FindByIdString(ctx, header.Id.ToString())
@@ -338,12 +341,20 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		c.model.Module = info.Module
 		c.model.ModuleSub = info.ModuleSub
 		c.model.Category = save.Category
+		c.model.Name = save.Name
+		c.model.Description = save.Description
+		c.model.Show = save.Show
+		c.model.Sort = save.Sort
+		c.model.TypeSys = save.TypeSys
 		if err := c.saveRules(ctx, tenantNo); err != nil {
 			rt.Extend["errors"] = err
 			return rt.ErrorMessage("规则保存失败：" + err.Error())
 		}
 		if err := c.syncConfig(ctx, tenantNo); err != nil {
 			return rt.ErrorMessage("配置保存失败：" + err.Error())
+		}
+		if err := c.syncConfigList(ctx, tenantNo); err != nil {
+			return rt.ErrorMessage("配置列表保存失败：" + err.Error())
 		}
 		// 模型标识变更时，旧 tenant_no + model 缓存也要失效
 		if strPg.IsNotBlank(info.Model) && info.Model != c.model.Model && c.Sp.cache != nil {
