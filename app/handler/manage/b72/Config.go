@@ -27,7 +27,7 @@ type ConfigController struct {
 
 // RegisterRoutes 注册路由
 func (c *ConfigController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/manage/basic/config", authPg.GroupManageMiddleware(c.Sp))
+	group := e.Group("/xianfu/manage/b72/config", authPg.GroupManageMiddleware(c.Sp))
 	group.POST("/createUpdate", c.CreateUpdate)
 	group.GET("/detail/:id", c.Detail)
 	group.POST("/enable", c.Enable)

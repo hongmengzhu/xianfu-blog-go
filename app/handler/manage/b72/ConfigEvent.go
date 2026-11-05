@@ -32,7 +32,7 @@ type ConfigEventController struct {
 //	@receiver c
 //	@param e
 func (c *ConfigEventController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/manage/basic/configEvent", authPg.GroupManageMiddleware(c.Sp))
+	group := e.Group("/xianfu/manage/b72/configEvent", authPg.GroupManageMiddleware(c.Sp))
 	group.POST("/createUpdate", c.CreateUpdate)
 	group.GET("/detail/:id", c.Detail)
 	group.POST("/enable", c.Enable)

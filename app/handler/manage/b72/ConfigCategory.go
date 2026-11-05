@@ -26,7 +26,7 @@ type ConfigCategoryController struct {
 }
 
 func (c *ConfigCategoryController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/manage/basic/config-category", authPg.GroupManageMiddleware(c.Sp))
+	group := e.Group("/xianfu/manage/b72/config-category", authPg.GroupManageMiddleware(c.Sp))
 	group.POST("/createUpdate", c.CreateUpdate)
 	group.GET("/detail/:id", c.Detail)
 	group.POST("/enable", c.Enable)
