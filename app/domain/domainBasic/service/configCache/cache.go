@@ -6,7 +6,7 @@ import (
 
 	"github.com/goccy/go-json"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/cache/basic/modCacheBasicConfig"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityB72"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/basic/key/basicConfigKey"
 	"go-spring.org/log"
 )
@@ -102,7 +102,7 @@ func (c *Sp) Override(ctx context.Context) error {
 }
 
 // CopyItem 把配置实体转换为缓存项。
-func CopyItem(info *entityBasic.BasicConfigEntity) modCacheBasicConfig.Item {
+func CopyItem(info *entityB72.B72ConfigEntity) modCacheBasicConfig.Item {
 	return modCacheBasicConfig.Item{
 		ID:           info.ID,
 		No:           info.No,

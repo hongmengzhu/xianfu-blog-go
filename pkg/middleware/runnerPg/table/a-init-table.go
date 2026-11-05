@@ -7,6 +7,7 @@ import (
 
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityApi"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityB72"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
@@ -40,14 +41,14 @@ func (b *AInitTable) Run(ctx context.Context) error {
 		entityData = append(entityData, &entityBasic.BasicAreaEntity{})
 		entityData = append(entityData, &entityBasic.BasicAttachmentEntity{})
 		entityData = append(entityData, &entityBasic.BasicCountryEntity{})
-		entityData = append(entityData, &entityBasic.BasicConfigEntity{})
-		entityData = append(entityData, &entityBasic.BasicConfigCategoryEntity{})
-		entityData = append(entityData, &entityBasic.BasicConfigEventEntity{})
-		entityData = append(entityData, &entityBasic.BasicConfigEventFieldsEntity{})
-		entityData = append(entityData, &entityBasic.BasicConfigListEntity{})
-		entityData = append(entityData, &entityBasic.BasicConfigModelEntity{})
-		entityData = append(entityData, &entityBasic.BasicConfigModelFieldsEntity{})
-		entityData = append(entityData, &entityBasic.BasicConfigModelRulesEntity{})
+		entityData = append(entityData, &entityB72.B72ConfigEntity{})
+		entityData = append(entityData, &entityB72.B72ConfigCategoryEntity{})
+		entityData = append(entityData, &entityB72.B72ConfigEventEntity{})
+		entityData = append(entityData, &entityB72.B72ConfigEventFieldsEntity{})
+		entityData = append(entityData, &entityB72.B72ConfigListEntity{})
+		entityData = append(entityData, &entityB72.B72ConfigModelEntity{})
+		entityData = append(entityData, &entityB72.B72ConfigModelFieldsEntity{})
+		entityData = append(entityData, &entityB72.B72ConfigModelRulesEntity{})
 		entityData = append(entityData, &entityBasic.BasicDataDictionaryEntity{})
 		entityData = append(entityData, &entityBasic.BasicDataSnapshotEntity{})
 		entityData = append(entityData, &entityBasic.BasicModelRulesEntity{})

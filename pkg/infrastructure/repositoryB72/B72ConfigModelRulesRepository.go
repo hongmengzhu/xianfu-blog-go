@@ -1,10 +1,10 @@
-package repositoryBasic
+package repositoryB72
 
 import (
 	"context"
 	"errors"
 
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityB72"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/support"
 	"go-spring.org/log"
@@ -13,17 +13,17 @@ import (
 )
 
 func init() {
-	gs.Provide(new(BasicConfigModelRulesRepository))
+	gs.Provide(new(B72ConfigModelRulesRepository))
 
-	gs.Provide(new(support.BaseService[BasicConfigModelRulesRepository]))
+	gs.Provide(new(support.BaseService[B72ConfigModelRulesRepository]))
 }
 
-type BasicConfigModelRulesRepository struct {
-	repositoryPg.BaseRepository[entityBasic.BasicConfigModelRulesEntity, int64]
+type B72ConfigModelRulesRepository struct {
+	repositoryPg.BaseRepository[entityB72.B72ConfigModelRulesEntity, int64]
 }
 
 // FindAllByModelNo 查询模型下所有模型级规则。
-func (c *BasicConfigModelRulesRepository) FindAllByModelNo(ctx context.Context, modelNo string) (info []*entityBasic.BasicConfigModelRulesEntity, result bool) {
+func (c *B72ConfigModelRulesRepository) FindAllByModelNo(ctx context.Context, modelNo string) (info []*entityB72.B72ConfigModelRulesEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("model_no=?", modelNo).Order("sort asc,create_at").Find(&info)
 	if tx.Error != nil {
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
@@ -38,7 +38,7 @@ func (c *BasicConfigModelRulesRepository) FindAllByModelNo(ctx context.Context, 
 }
 
 // DeleteAllByModelNo 物理删除模型下所有模型级规则。
-func (c *BasicConfigModelRulesRepository) DeleteAllByModelNo(ctx context.Context, modelNo string) error {
+func (c *B72ConfigModelRulesRepository) DeleteAllByModelNo(ctx context.Context, modelNo string) error {
 	tx := c.DbModel().WithContext(ctx).Where("model_no=?", modelNo).Delete(&c.Entity)
 	return tx.Error
 }

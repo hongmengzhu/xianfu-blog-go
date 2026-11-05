@@ -2,6 +2,7 @@ package eventBasicEvent
 
 import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cachePg/bigCachePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryB72"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
 	"go-spring.org/spring/gs"
 )
@@ -11,10 +12,10 @@ func init() {
 }
 
 type Sp struct {
-	rdt            *bigCachePg.BatchString                           `autowire:"?"`
-	repModel       *repositoryBasic.BasicConfigModelRepository       `autowire:"?"`
-	repModelFields *repositoryBasic.BasicConfigModelFieldsRepository `autowire:"?"`
-	repEvent       *repositoryBasic.BasicConfigEventRepository       `autowire:"?"`
-	repEventFields *repositoryBasic.BasicConfigEventFieldsRepository `autowire:"?"`
-	repRules       *repositoryBasic.BasicModelRulesRepository        `autowire:"?"`
+	rdt            *bigCachePg.BatchString                       `autowire:"?"`
+	repModel       *repositoryB72.B72ConfigModelRepository       `autowire:"?"`
+	repModelFields *repositoryB72.B72ConfigModelFieldsRepository `autowire:"?"`
+	repEvent       *repositoryB72.B72ConfigEventRepository       `autowire:"?"`
+	repEventFields *repositoryB72.B72ConfigEventFieldsRepository `autowire:"?"`
+	repRules       *repositoryBasic.BasicModelRulesRepository    `autowire:"?"`
 }

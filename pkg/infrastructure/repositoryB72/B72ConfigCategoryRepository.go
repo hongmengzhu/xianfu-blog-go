@@ -1,10 +1,10 @@
-package repositoryBasic
+package repositoryB72
 
 import (
 	"context"
 	"errors"
 
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityB72"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/support"
 	"go-spring.org/log"
@@ -13,17 +13,17 @@ import (
 )
 
 func init() {
-	gs.Provide(new(BasicConfigCategoryRepository))
+	gs.Provide(new(B72ConfigCategoryRepository))
 
-	gs.Provide(new(support.BaseService[BasicConfigCategoryRepository]))
+	gs.Provide(new(support.BaseService[B72ConfigCategoryRepository]))
 }
 
-type BasicConfigCategoryRepository struct {
-	repositoryPg.BaseRepository[entityBasic.BasicConfigCategoryEntity, int64]
+type B72ConfigCategoryRepository struct {
+	repositoryPg.BaseRepository[entityB72.B72ConfigCategoryEntity, int64]
 }
 
 // FindAllEnabledByTenantNo 查询租户下所有启用分类，按 sort、创建时间排序。
-func (c *BasicConfigCategoryRepository) FindAllEnabledByTenantNo(ctx context.Context, tenantNo string) (info []*entityBasic.BasicConfigCategoryEntity, result bool) {
+func (c *B72ConfigCategoryRepository) FindAllEnabledByTenantNo(ctx context.Context, tenantNo string) (info []*entityB72.B72ConfigCategoryEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).
 		Where("tenant_no=?", tenantNo).
 		Where("state=?", 1).

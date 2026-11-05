@@ -10,6 +10,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/yesNoPg/yesNoIntPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model/modelBasePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityB72"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/jinzhu/copier"
@@ -27,9 +28,9 @@ type CreateUpdate struct {
 	Sp *Sp `autowire:"?"`
 
 	ct       modBasicConfigModel.CreateUpdateCt
-	model    *entityBasic.BasicConfigModelEntity
+	model    *entityB72.B72ConfigModelEntity
 	module   *entityBasic.BasicModuleEntity
-	fields   []*entityBasic.BasicConfigModelFieldsEntity
+	fields   []*entityB72.B72ConfigModelFieldsEntity
 	isUpdate bool
 }
 
@@ -39,8 +40,8 @@ func NewCreateUpdate(sp *Sp,
 		Sp:       sp,
 		isUpdate: isUpdate,
 		ct:       ct,
-		fields:   make([]*entityBasic.BasicConfigModelFieldsEntity, 0),
-		model:    &entityBasic.BasicConfigModelEntity{},
+		fields:   make([]*entityB72.B72ConfigModelFieldsEntity, 0),
+		model:    &entityB72.B72ConfigModelEntity{},
 		module:   &entityBasic.BasicModuleEntity{},
 	}
 }
@@ -104,7 +105,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		for _, item := range c.ct.Body {
 			i++
 
-			var field entityBasic.BasicConfigModelFieldsEntity
+			var field entityB72.B72ConfigModelFieldsEntity
 			err := copier.Copy(&field, &item)
 			if err != nil {
 				log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
@@ -243,7 +244,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 			return rt.ErrorMessage("模型标识在当前租户下已存在")
 		}
 		//
-		var save entityBasic.BasicConfigModelEntity
+		var save entityB72.B72ConfigModelEntity
 		{
 			save = *info
 			// header 中未提交的字段保持数据库原值，避免部分更新把字段清空
@@ -265,9 +266,9 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		save.KindUnique = cryptPg.Md5(save.TenantNo + save.Model)
 		//
 		delIds := make([]string, 0)
-		dataInsert := make([]*entityBasic.BasicConfigModelFieldsEntity, 0)
-		dataUpdate := make([]*entityBasic.BasicConfigModelFieldsEntity, 0)
-		mapField := make(map[int64]*entityBasic.BasicConfigModelFieldsEntity)
+		dataInsert := make([]*entityB72.B72ConfigModelFieldsEntity, 0)
+		dataUpdate := make([]*entityB72.B72ConfigModelFieldsEntity, 0)
+		mapField := make(map[int64]*entityB72.B72ConfigModelFieldsEntity)
 		if len(ids) > 0 {
 			infos, result := c.Sp.repField.FindAllByIdStringIn(ctx, ids)
 			if result {

@@ -3,12 +3,12 @@ package configModel
 import (
 	"context"
 
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityB72"
 	"go-spring.org/log"
 )
 
 // DeleteModelData 删除模型关联数据：模型字段、字段规则、模型级规则、配置行、配置列表行，并清理配置缓存。
-func (s *Sp) DeleteModelData(ctx context.Context, info *entityBasic.BasicConfigModelEntity) {
+func (s *Sp) DeleteModelData(ctx context.Context, info *entityB72.B72ConfigModelEntity) {
 	if s == nil || info == nil {
 		return
 	}

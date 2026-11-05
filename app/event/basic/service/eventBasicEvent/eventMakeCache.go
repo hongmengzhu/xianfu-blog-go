@@ -7,7 +7,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/cache/basic/modCacheBasicEvent"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/event/basic/modEventBasicEvent"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityB72"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/basic/key/basicEventKey"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
@@ -41,7 +41,7 @@ func (c *EventMakeCache) Processor(ctx context.Context) error {
 }
 
 func (c *EventMakeCache) ThisTenantAll(ctx context.Context) error {
-	var query entityBasic.BasicConfigEventEntity
+	var query entityB72.B72ConfigEventEntity
 	if strPg.IsNotBlank(c.ct.TenantNo) {
 		query.TenantNo = c.ct.TenantNo
 		query.State = enumStatePg.ENABLE.Index()
@@ -82,7 +82,7 @@ func (c *EventMakeCache) ThisTenantAll(ctx context.Context) error {
 }
 
 func (c *EventMakeCache) All(ctx context.Context) error {
-	var query entityBasic.BasicConfigEventEntity
+	var query entityB72.B72ConfigEventEntity
 	if c.ct.IsAll {
 		query.State = enumStatePg.ENABLE.Index()
 		infos := c.Sp.repEvent.FindAll(ctx, query)
@@ -124,7 +124,7 @@ func (c *EventMakeCache) All(ctx context.Context) error {
 }
 
 func (c *EventMakeCache) Nos(ctx context.Context) error {
-	var query entityBasic.BasicConfigEventEntity
+	var query entityB72.B72ConfigEventEntity
 	if strPg.IsNotBlank(c.ct.TenantNo) && !c.ct.IsThisTenantAll && len(c.ct.Nos) > 0 {
 		nos := make([]string, 0)
 		for _, item := range c.ct.Nos {

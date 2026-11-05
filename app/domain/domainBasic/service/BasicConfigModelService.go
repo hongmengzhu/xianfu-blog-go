@@ -6,8 +6,8 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicConfigModel"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityB72"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryB72"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
@@ -23,10 +23,10 @@ func init() {
 }
 
 type BasicConfigModelService struct {
-	sv        *repositoryBasic.BasicConfigModelRepository       `autowire:"?"`
-	repoField *repositoryBasic.BasicConfigModelFieldsRepository `autowire:"?"`
-	repoRule  *repositoryBasic.BasicConfigModelRulesRepository  `autowire:"?"`
-	sp        *configModel.Sp                                   `autowire:"?"`
+	sv        *repositoryB72.B72ConfigModelRepository       `autowire:"?"`
+	repoField *repositoryB72.B72ConfigModelFieldsRepository `autowire:"?"`
+	repoRule  *repositoryB72.B72ConfigModelRulesRepository  `autowire:"?"`
+	sp        *configModel.Sp                               `autowire:"?"`
 }
 
 func (c *BasicConfigModelService) CreateUpdate(ctx *gin.Context, ct modBasicConfigModel.CreateUpdateCt) (rt rg.Rs[string]) {
@@ -72,7 +72,7 @@ func (c *BasicConfigModelService) State(ctx *gin.Context, ids []string, state en
 	}
 	for _, info := range finds {
 		if info.State != state.IndexInt8() {
-			r.Update(ctx, entityBasic.BasicConfigModelEntity{State: state.IndexInt8()}, info.ID)
+			r.Update(ctx, entityB72.B72ConfigModelEntity{State: state.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -115,7 +115,7 @@ func (c *BasicConfigModelService) LogicalDeletion(ctx *gin.Context, ids []string
 			enum := enumStatePg.State(info.State)
 			// 有效 停用，反转 为对应的 取消 弃置
 			if ok, reverse := enum.ReverseEnableDisable(); ok {
-				repository.Update(ctx, entityBasic.BasicConfigModelEntity{State: reverse.IndexInt8()}, info.ID)
+				repository.Update(ctx, entityB72.B72ConfigModelEntity{State: reverse.IndexInt8()}, info.ID)
 			}
 		}
 	}
@@ -142,7 +142,7 @@ func (c *BasicConfigModelService) LogicalRecovery(ctx *gin.Context, ids []string
 		enum := enumStatePg.State(info.State)
 		//  取消 弃置 批量删除，反转 为对应的 有效 停用 停用
 		if ok, reverse := enum.ReverseCancelLayAside(); ok {
-			repository.Update(ctx, entityBasic.BasicConfigModelEntity{State: reverse.IndexInt8()}, info.ID)
+			repository.Update(ctx, entityB72.B72ConfigModelEntity{State: reverse.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -182,7 +182,7 @@ func (c *BasicConfigModelService) PhysicalDeletion(ctx *gin.Context, ids []strin
 //	@param ct
 func (c *BasicConfigModelService) Query(ctx *gin.Context, ct modBasicConfigModel.QueryCt) (rt rg.Rs[pagePg.Paginator[modBasicConfigModel.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityBasic.BasicConfigModelEntity
+	var query entityB72.B72ConfigModelEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modBasicConfigModel.Vo, 0)
 	rt.Data.Data = slice
@@ -226,7 +226,7 @@ func (c *BasicConfigModelService) Query(ctx *gin.Context, ct modBasicConfigModel
 //	@receiver c
 //	@param ct
 func (c *BasicConfigModelService) SelectNodeAllPublic(ctx *gin.Context, ct modBasicConfigModel.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
-	var query entityBasic.BasicConfigModelEntity
+	var query entityB72.B72ConfigModelEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
 	rt.Data = slice
@@ -255,7 +255,7 @@ func (c *BasicConfigModelService) SelectNodeAllPublic(ctx *gin.Context, ct modBa
 //	@receiver c
 //	@param ct
 func (c *BasicConfigModelService) SelectTenantPublic(ctx *gin.Context, ct modBasicConfigModel.QueryCt) (rt rg.Rs[[]modBasicConfigModel.Vo]) {
-	var query entityBasic.BasicConfigModelEntity
+	var query entityB72.B72ConfigModelEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modBasicConfigModel.Vo, 0)
 	rt.Data = slice

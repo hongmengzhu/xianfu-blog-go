@@ -1,11 +1,11 @@
-package entityBasic
+package entityB72
 
 import (
 	"time"
 )
 
-// BasicConfigCategoryEntity -
-type BasicConfigCategoryEntity struct {
+// B72ConfigCategoryEntity -
+type B72ConfigCategoryEntity struct {
 	ID          int64      `gorm:"column:id;primaryKey;autoIncrement:true" json:"id" comment:"" `
 	No          string     `gorm:"column:no;type:varchar(80);default:;comment:编号代号" json:"no" comment:"编号代号" `
 	Code        string     `gorm:"column:code;type:varchar(80);comment:标志" json:"code" comment:"标志" `
@@ -28,10 +28,10 @@ type BasicConfigCategoryEntity struct {
 	Ano         string     `gorm:"column:ano;type:varchar(80);index;default:'';comment:操作员" json:"ano" comment:"操作员" `
 }
 
-func (*BasicConfigCategoryEntity) TableName() string {
+func (*B72ConfigCategoryEntity) TableName() string {
 	return "basic_config_category"
 }
 
-func (*BasicConfigCategoryEntity) TableComment() string {
+func (*B72ConfigCategoryEntity) TableComment() string {
 	return "配置分类"
 }

@@ -11,7 +11,9 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/typeSysPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/yesNoPg/yesNoIntPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityB72"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryB72"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/event"
 	"github.com/pangu-2/go-tools/tools/cryptPg"
@@ -25,15 +27,15 @@ import (
 // IBasicData
 // @Description: 初始化基础数据
 type IBasicData struct {
-	Bus         event.Bus                                         `autowire:"?"`
-	country     *repositoryBasic.BasicCountryRepository           `autowire:"?"`
-	tagsCat     *repositoryBasic.BasicTagsCategoryRepository      `autowire:"?"`
-	conList     *repositoryBasic.BasicConfigListRepository        `autowire:"?"`
-	config      *repositoryBasic.BasicConfigRepository            `autowire:"?"`
-	model       *repositoryBasic.BasicConfigModelRepository       `autowire:"?"`
-	modelFields *repositoryBasic.BasicConfigModelFieldsRepository `autowire:"?"`
-	event       *repositoryBasic.BasicConfigEventRepository       `autowire:"?"`
-	eventFields *repositoryBasic.BasicConfigEventFieldsRepository `autowire:"?"`
+	Bus         event.Bus                                     `autowire:"?"`
+	country     *repositoryBasic.BasicCountryRepository       `autowire:"?"`
+	tagsCat     *repositoryBasic.BasicTagsCategoryRepository  `autowire:"?"`
+	conList     *repositoryB72.B72ConfigListRepository        `autowire:"?"`
+	config      *repositoryB72.B72ConfigRepository            `autowire:"?"`
+	model       *repositoryB72.B72ConfigModelRepository       `autowire:"?"`
+	modelFields *repositoryB72.B72ConfigModelFieldsRepository `autowire:"?"`
+	event       *repositoryB72.B72ConfigEventRepository       `autowire:"?"`
+	eventFields *repositoryB72.B72ConfigEventFieldsRepository `autowire:"?"`
 }
 
 func (b *IBasicData) Run(ctx context.Context) error {
@@ -102,7 +104,7 @@ func (b *IBasicData) Run(ctx context.Context) error {
 func (b *IBasicData) initSysConfig() {
 	ctx := context.Background()
 	log.Info(context.Background(), log.TagAppDef, "[init].[基础数据：配置.系统配置]===================")
-	save := entityBasic.BasicConfigListEntity{
+	save := entityB72.B72ConfigListEntity{
 		State:       enumStatePg.ENABLE.Index(),
 		Show:        yesNoIntPg.Yes.Index(),
 		TypeDomain:  "system",
@@ -123,10 +125,10 @@ func (b *IBasicData) initSysConfig() {
 		b.conList.Create(ctx, &save)
 	}
 	fields := make([]string, 0)
-	dataInset := make([]*entityBasic.BasicConfigEntity, 0)
+	dataInset := make([]*entityB72.B72ConfigEntity, 0)
 	{
 		{
-			item := entityBasic.BasicConfigEntity{
+			item := entityB72.B72ConfigEntity{
 				TenantNo:     save.TenantNo,
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
@@ -147,7 +149,7 @@ func (b *IBasicData) initSysConfig() {
 		}
 		//
 		{
-			item := entityBasic.BasicConfigEntity{
+			item := entityB72.B72ConfigEntity{
 				TenantNo:     save.TenantNo,
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
@@ -177,7 +179,7 @@ func (b *IBasicData) initSysConfig() {
 			for _, v := range info {
 				find = append(find, v.Field)
 			}
-			dataInsetNew := make([]*entityBasic.BasicConfigEntity, 0)
+			dataInsetNew := make([]*entityB72.B72ConfigEntity, 0)
 			//
 			for _, v := range dataInset {
 				if !slices.Contains(find, v.Field) {
@@ -196,7 +198,7 @@ func (b *IBasicData) initSysConfig() {
 func (b *IBasicData) initDefaultTenantConfig() {
 	ctx := context.Background()
 	log.Info(context.Background(), log.TagAppDef, "[init].[基础数据：配置.默认租户配置]===================")
-	save := entityBasic.BasicConfigListEntity{
+	save := entityB72.B72ConfigListEntity{
 		State:       enumStatePg.ENABLE.Index(),
 		Show:        yesNoIntPg.Yes.Index(),
 		TypeDomain:  "tenant",
@@ -217,11 +219,11 @@ func (b *IBasicData) initDefaultTenantConfig() {
 		b.conList.Create(ctx, &save)
 	}
 	fields := make([]string, 0)
-	dataInset := make([]*entityBasic.BasicConfigEntity, 0)
+	dataInset := make([]*entityB72.B72ConfigEntity, 0)
 	//默认租户
 	{
 		{
-			item := entityBasic.BasicConfigEntity{
+			item := entityB72.B72ConfigEntity{
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
 				EventNo:      constsPg.ACCOUNT_MANAGE_No,
@@ -241,7 +243,7 @@ func (b *IBasicData) initDefaultTenantConfig() {
 		}
 		//
 		{
-			item := entityBasic.BasicConfigEntity{
+			item := entityB72.B72ConfigEntity{
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
 				EventNo:      constsPg.ACCOUNT_MANAGE_No,
@@ -261,7 +263,7 @@ func (b *IBasicData) initDefaultTenantConfig() {
 		}
 		//
 		{
-			item := entityBasic.BasicConfigEntity{
+			item := entityB72.B72ConfigEntity{
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
 				EventNo:      constsPg.ACCOUNT_MANAGE_No,
@@ -281,7 +283,7 @@ func (b *IBasicData) initDefaultTenantConfig() {
 		}
 		//
 		{
-			item := entityBasic.BasicConfigEntity{
+			item := entityB72.B72ConfigEntity{
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
 				EventNo:      constsPg.ACCOUNT_MANAGE_No,
@@ -301,7 +303,7 @@ func (b *IBasicData) initDefaultTenantConfig() {
 		}
 		//
 		{
-			item := entityBasic.BasicConfigEntity{
+			item := entityB72.B72ConfigEntity{
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
 				EventNo:      constsPg.ACCOUNT_MANAGE_No,
@@ -328,7 +330,7 @@ func (b *IBasicData) initDefaultTenantConfig() {
 			for _, v := range info {
 				find = append(find, v.Field)
 			}
-			dataInsetNew := make([]*entityBasic.BasicConfigEntity, 0)
+			dataInsetNew := make([]*entityB72.B72ConfigEntity, 0)
 			//
 			for _, v := range dataInset {
 				if !slices.Contains(find, v.Field) {
@@ -346,7 +348,7 @@ func (b *IBasicData) initDefaultTenantConfig() {
 // 系统模型
 func (b *IBasicData) initSystemModel() {
 	ctx := context.Background()
-	save := entityBasic.BasicConfigModelEntity{
+	save := entityB72.B72ConfigModelEntity{
 		State:         enumStatePg.ENABLE.Index(),
 		Show:          yesNoIntPg.Yes.Index(),
 		ID:            1,
@@ -366,10 +368,10 @@ func (b *IBasicData) initSystemModel() {
 	}
 
 	fields := make([]string, 0)
-	dataInset := make([]*entityBasic.BasicConfigModelFieldsEntity, 0)
+	dataInset := make([]*entityB72.B72ConfigModelFieldsEntity, 0)
 	{
 		{
-			item := entityBasic.BasicConfigModelFieldsEntity{
+			item := entityB72.B72ConfigModelFieldsEntity{
 				TenantNo:     save.TenantNo,
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
@@ -390,7 +392,7 @@ func (b *IBasicData) initSystemModel() {
 		}
 		//
 		{
-			item := entityBasic.BasicConfigModelFieldsEntity{
+			item := entityB72.B72ConfigModelFieldsEntity{
 				TenantNo:     save.TenantNo,
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
@@ -420,7 +422,7 @@ func (b *IBasicData) initSystemModel() {
 			for _, v := range info {
 				find = append(find, v.Field)
 			}
-			dataInsetNew := make([]*entityBasic.BasicConfigModelFieldsEntity, 0)
+			dataInsetNew := make([]*entityB72.B72ConfigModelFieldsEntity, 0)
 			//
 			for _, v := range dataInset {
 				if !slices.Contains(find, v.Field) {
@@ -438,7 +440,7 @@ func (b *IBasicData) initSystemModel() {
 // 模型
 func (b *IBasicData) initDefaultTenantModel() {
 	ctx := context.Background()
-	save := entityBasic.BasicConfigModelEntity{
+	save := entityB72.B72ConfigModelEntity{
 		State:         enumStatePg.ENABLE.Index(),
 		Show:          yesNoIntPg.Yes.Index(),
 		ID:            2,
@@ -457,11 +459,11 @@ func (b *IBasicData) initDefaultTenantModel() {
 		b.model.Create(ctx, &save)
 	}
 	fields := make([]string, 0)
-	dataInset := make([]*entityBasic.BasicConfigModelFieldsEntity, 0)
+	dataInset := make([]*entityB72.B72ConfigModelFieldsEntity, 0)
 	//默认租户
 	{
 		{
-			item := entityBasic.BasicConfigModelFieldsEntity{
+			item := entityB72.B72ConfigModelFieldsEntity{
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
 				Binary:       yesNoIntPg.No.Index(),
@@ -482,7 +484,7 @@ func (b *IBasicData) initDefaultTenantModel() {
 		}
 		//
 		{
-			item := entityBasic.BasicConfigModelFieldsEntity{
+			item := entityB72.B72ConfigModelFieldsEntity{
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
 				Binary:       yesNoIntPg.No.Index(),
@@ -503,7 +505,7 @@ func (b *IBasicData) initDefaultTenantModel() {
 		}
 		//
 		{
-			item := entityBasic.BasicConfigModelFieldsEntity{
+			item := entityB72.B72ConfigModelFieldsEntity{
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
 				Binary:       yesNoIntPg.No.Index(),
@@ -524,7 +526,7 @@ func (b *IBasicData) initDefaultTenantModel() {
 		}
 		//
 		{
-			item := entityBasic.BasicConfigModelFieldsEntity{
+			item := entityB72.B72ConfigModelFieldsEntity{
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
 				Binary:       yesNoIntPg.No.Index(),
@@ -545,7 +547,7 @@ func (b *IBasicData) initDefaultTenantModel() {
 		}
 		//
 		{
-			item := entityBasic.BasicConfigModelFieldsEntity{
+			item := entityB72.B72ConfigModelFieldsEntity{
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
 				Binary:       yesNoIntPg.No.Index(),
@@ -573,7 +575,7 @@ func (b *IBasicData) initDefaultTenantModel() {
 			for _, v := range info {
 				find = append(find, v.Field)
 			}
-			dataInsetNew := make([]*entityBasic.BasicConfigModelFieldsEntity, 0)
+			dataInsetNew := make([]*entityB72.B72ConfigModelFieldsEntity, 0)
 			//
 			for _, v := range dataInset {
 				if !slices.Contains(find, v.Field) {
@@ -590,7 +592,7 @@ func (b *IBasicData) initDefaultTenantModel() {
 
 func (b *IBasicData) initSystemEvent() {
 	ctx := context.Background()
-	save := entityBasic.BasicConfigEventEntity{
+	save := entityB72.B72ConfigEventEntity{
 		State:    enumStatePg.ENABLE.Index(),
 		Show:     yesNoIntPg.Yes.Index(),
 		ID:       1,
@@ -609,10 +611,10 @@ func (b *IBasicData) initSystemEvent() {
 	}
 
 	fields := make([]string, 0)
-	dataInset := make([]*entityBasic.BasicConfigEventFieldsEntity, 0)
+	dataInset := make([]*entityB72.B72ConfigEventFieldsEntity, 0)
 	{
 		{
-			item := entityBasic.BasicConfigEventFieldsEntity{
+			item := entityB72.B72ConfigEventFieldsEntity{
 				TenantNo:     save.TenantNo,
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
@@ -635,7 +637,7 @@ func (b *IBasicData) initSystemEvent() {
 		}
 		//
 		{
-			item := entityBasic.BasicConfigEventFieldsEntity{
+			item := entityB72.B72ConfigEventFieldsEntity{
 				TenantNo:     save.TenantNo,
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
@@ -667,7 +669,7 @@ func (b *IBasicData) initSystemEvent() {
 			for _, v := range info {
 				find = append(find, v.Field)
 			}
-			dataInsetNew := make([]*entityBasic.BasicConfigEventFieldsEntity, 0)
+			dataInsetNew := make([]*entityB72.B72ConfigEventFieldsEntity, 0)
 			//
 			for _, v := range dataInset {
 				if !slices.Contains(find, v.Field) {
@@ -683,7 +685,7 @@ func (b *IBasicData) initSystemEvent() {
 }
 func (b *IBasicData) initDefaultTenantEvent() {
 	ctx := context.Background()
-	save := entityBasic.BasicConfigEventEntity{
+	save := entityB72.B72ConfigEventEntity{
 		State:    enumStatePg.ENABLE.Index(),
 		Show:     yesNoIntPg.Yes.Index(),
 		ID:       2,
@@ -701,11 +703,11 @@ func (b *IBasicData) initDefaultTenantEvent() {
 		b.event.Create(ctx, &save)
 	}
 	fields := make([]string, 0)
-	dataInset := make([]*entityBasic.BasicConfigEventFieldsEntity, 0)
+	dataInset := make([]*entityB72.B72ConfigEventFieldsEntity, 0)
 	//默认租户
 	{
 		{
-			item := entityBasic.BasicConfigEventFieldsEntity{
+			item := entityB72.B72ConfigEventFieldsEntity{
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
 				Binary:       yesNoIntPg.No.Index(),
@@ -727,7 +729,7 @@ func (b *IBasicData) initDefaultTenantEvent() {
 		}
 		//
 		{
-			item := entityBasic.BasicConfigEventFieldsEntity{
+			item := entityB72.B72ConfigEventFieldsEntity{
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
 				Binary:       yesNoIntPg.No.Index(),
@@ -749,7 +751,7 @@ func (b *IBasicData) initDefaultTenantEvent() {
 		}
 		//
 		{
-			item := entityBasic.BasicConfigEventFieldsEntity{
+			item := entityB72.B72ConfigEventFieldsEntity{
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
 				Binary:       yesNoIntPg.No.Index(),
@@ -771,7 +773,7 @@ func (b *IBasicData) initDefaultTenantEvent() {
 		}
 		//
 		{
-			item := entityBasic.BasicConfigEventFieldsEntity{
+			item := entityB72.B72ConfigEventFieldsEntity{
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
 				Binary:       yesNoIntPg.No.Index(),
@@ -793,7 +795,7 @@ func (b *IBasicData) initDefaultTenantEvent() {
 		}
 		//
 		{
-			item := entityBasic.BasicConfigEventFieldsEntity{
+			item := entityB72.B72ConfigEventFieldsEntity{
 				State:        enumStatePg.ENABLE.Index(),
 				Show:         yesNoIntPg.Yes.Index(),
 				Binary:       yesNoIntPg.No.Index(),
@@ -822,7 +824,7 @@ func (b *IBasicData) initDefaultTenantEvent() {
 			for _, v := range info {
 				find = append(find, v.Field)
 			}
-			dataInsetNew := make([]*entityBasic.BasicConfigEventFieldsEntity, 0)
+			dataInsetNew := make([]*entityB72.B72ConfigEventFieldsEntity, 0)
 			//
 			for _, v := range dataInset {
 				if !slices.Contains(find, v.Field) {

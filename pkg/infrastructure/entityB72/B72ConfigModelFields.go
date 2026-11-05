@@ -1,4 +1,4 @@
-package entityBasic
+package entityB72
 
 import (
 	"time"
@@ -6,7 +6,7 @@ import (
 	"gorm.io/datatypes"
 )
 
-type BasicConfigModelFieldsEntity struct {
+type B72ConfigModelFieldsEntity struct {
 	ID         int64      `gorm:"column:id;primaryKey;autoIncrement:true;comment:" json:"id" comment:"" `
 	CreateAt   *time.Time `gorm:"column:create_at;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `
 	UpdateAt   *time.Time `gorm:"column:update_at;autoUpdateTime;comment:更新时间;comment:更新时间" json:"update_at" comment:"更新时间" `
@@ -51,10 +51,10 @@ type BasicConfigModelFieldsEntity struct {
 	FormGroup        string                       `gorm:"column:form_group;type:varchar(80);index;default:;comment:表单分组" json:"form_group" comment:"表单分组" `
 }
 
-func (*BasicConfigModelFieldsEntity) TableName() string {
+func (*B72ConfigModelFieldsEntity) TableName() string {
 	return "basic_config_model_fields"
 }
 
-func (*BasicConfigModelFieldsEntity) TableComment() string {
+func (*B72ConfigModelFieldsEntity) TableComment() string {
 	return "模型字段"
 }

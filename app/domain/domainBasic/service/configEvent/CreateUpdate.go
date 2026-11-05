@@ -8,6 +8,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/yesNoPg/yesNoIntPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model/modelBasePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityB72"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
 	"github.com/jinzhu/copier"
 	"github.com/pangu-2/go-tools/tools/cryptPg"
@@ -22,10 +23,10 @@ type CreateUpdate struct {
 	Sp *Sp `autowire:"?"`
 
 	ct       modBasicConfigEvent.CreateUpdateCt
-	model    *entityBasic.BasicConfigModelEntity
-	event    *entityBasic.BasicConfigEventEntity
+	model    *entityB72.B72ConfigModelEntity
+	event    *entityB72.B72ConfigEventEntity
 	module   *entityBasic.BasicModuleEntity
-	fields   []*entityBasic.BasicConfigEventFieldsEntity
+	fields   []*entityB72.B72ConfigEventFieldsEntity
 	isUpdate bool
 }
 
@@ -35,9 +36,9 @@ func NewCreateUpdate(sp *Sp,
 		Sp:       sp,
 		isUpdate: isUpdate,
 		ct:       ct,
-		fields:   make([]*entityBasic.BasicConfigEventFieldsEntity, 0),
-		model:    &entityBasic.BasicConfigModelEntity{},
-		event:    &entityBasic.BasicConfigEventEntity{},
+		fields:   make([]*entityB72.B72ConfigEventFieldsEntity, 0),
+		model:    &entityB72.B72ConfigModelEntity{},
+		event:    &entityB72.B72ConfigEventEntity{},
 		module:   &entityBasic.BasicModuleEntity{},
 	}
 }
@@ -90,7 +91,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		for _, item := range c.ct.Body {
 			i++
 
-			var field entityBasic.BasicConfigEventFieldsEntity
+			var field entityB72.B72ConfigEventFieldsEntity
 			err := copier.Copy(&field, &item)
 			if err != nil {
 				log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
@@ -204,7 +205,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 			return rt.ErrorMessage("事件不存在")
 		}
 		//
-		var save entityBasic.BasicConfigEventEntity
+		var save entityB72.B72ConfigEventEntity
 		{
 			err := copier.Copy(&save, info)
 			if err != nil {
@@ -220,9 +221,9 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		save.KindUnique = cryptPg.Md5(save.Field)
 		//
 		delIds := make([]string, 0)
-		dataInsert := make([]*entityBasic.BasicConfigEventFieldsEntity, 0)
-		dataUpdate := make([]*entityBasic.BasicConfigEventFieldsEntity, 0)
-		mapField := make(map[int64]*entityBasic.BasicConfigEventFieldsEntity)
+		dataInsert := make([]*entityB72.B72ConfigEventFieldsEntity, 0)
+		dataUpdate := make([]*entityB72.B72ConfigEventFieldsEntity, 0)
+		mapField := make(map[int64]*entityB72.B72ConfigEventFieldsEntity)
 		if len(ids) > 0 {
 			infos, result := c.Sp.repEventField.FindAllByIdStringIn(ctx, ids)
 			if result {

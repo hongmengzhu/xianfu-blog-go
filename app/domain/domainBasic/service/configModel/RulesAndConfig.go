@@ -10,6 +10,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/typeSysPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/yesNoPg/yesNoIntPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityB72"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
 	"github.com/pangu-2/go-tools/tools/cryptPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
@@ -123,7 +124,7 @@ func (c *CreateUpdate) saveRules(ctx *gin.Context, tenantNo string) error {
 			})
 		}
 	}
-	modelRules := make([]*entityBasic.BasicConfigModelRulesEntity, 0, len(modelRuleItems))
+	modelRules := make([]*entityB72.B72ConfigModelRulesEntity, 0, len(modelRuleItems))
 	for idx, rule := range modelRuleItems {
 		if strPg.IsBlank(rule.RuleMode) {
 			continue
@@ -136,7 +137,7 @@ func (c *CreateUpdate) saveRules(ctx *gin.Context, tenantNo string) error {
 		if show < 1 {
 			show = yesNoIntPg.Yes.IndexInt8()
 		}
-		modelRules = append(modelRules, &entityBasic.BasicConfigModelRulesEntity{
+		modelRules = append(modelRules, &entityB72.B72ConfigModelRulesEntity{
 			No:           noPg.No(),
 			Name:         rule.Name,
 			TenantNo:     tenantNo,
@@ -214,7 +215,7 @@ func (c *CreateUpdate) syncConfigList(ctx *gin.Context, tenantNo string) error {
 		}
 		return nil
 	}
-	info := &entityBasic.BasicConfigListEntity{
+	info := &entityB72.B72ConfigListEntity{
 		No:          noPg.No(),
 		TenantNo:    tenantNo,
 		State:       enumStatePg.ENABLE.IndexInt8(),
@@ -249,7 +250,7 @@ func (c *CreateUpdate) syncConfig(ctx *gin.Context, tenantNo string) error {
 		return nil
 	}
 	existing, _ := c.Sp.repConfig.FindAllByModelNo(ctx, c.model.No)
-	byField := make(map[string]*entityBasic.BasicConfigEntity, len(existing))
+	byField := make(map[string]*entityB72.B72ConfigEntity, len(existing))
 	for _, item := range existing {
 		byField[item.Field] = item
 	}
@@ -258,7 +259,7 @@ func (c *CreateUpdate) syncConfig(ctx *gin.Context, tenantNo string) error {
 		categoryNo = configModelPg.ModelCategoryConfig.Index()
 	}
 	seen := make(map[string]bool, len(c.fields))
-	add := make([]*entityBasic.BasicConfigEntity, 0)
+	add := make([]*entityB72.B72ConfigEntity, 0)
 	for _, field := range c.fields {
 		seen[field.Field] = true
 		kindUnique := cryptPg.Md5(tenantNo + c.model.No + field.Field)
@@ -292,7 +293,7 @@ func (c *CreateUpdate) syncConfig(ctx *gin.Context, tenantNo string) error {
 		if value == "" {
 			value = field.DefaultValue
 		}
-		add = append(add, &entityBasic.BasicConfigEntity{
+		add = append(add, &entityB72.B72ConfigEntity{
 			No:           noPg.No(),
 			TenantNo:     tenantNo,
 			State:        enumStatePg.ENABLE.IndexInt8(),

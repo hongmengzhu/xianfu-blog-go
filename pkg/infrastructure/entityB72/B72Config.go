@@ -1,4 +1,4 @@
-package entityBasic
+package entityB72
 
 import (
 	"time"
@@ -6,7 +6,7 @@ import (
 	"gorm.io/datatypes"
 )
 
-type BasicConfigEntity struct {
+type B72ConfigEntity struct {
 	ID         int64      `gorm:"column:id;primaryKey;autoIncrement:true;comment:" json:"id" comment:"" `
 	CreateAt   *time.Time `gorm:"column:create_at;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `
 	UpdateAt   *time.Time `gorm:"column:update_at;autoUpdateTime;comment:更新时间;comment:更新时间" json:"update_at" comment:"更新时间" `
@@ -43,10 +43,10 @@ type BasicConfigEntity struct {
 	CategoryNo   string         `gorm:"column:category_no;type:varchar(80);index;default:;comment:类别编号" json:"category_no" comment:"类别编号" `
 }
 
-func (*BasicConfigEntity) TableName() string {
+func (*B72ConfigEntity) TableName() string {
 	return "basic_config"
 }
 
-func (*BasicConfigEntity) TableComment() string {
+func (*B72ConfigEntity) TableComment() string {
 	return "配置"
 }

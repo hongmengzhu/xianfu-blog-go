@@ -12,4 +12,9 @@ type ModelFormItem struct {
 	FormCode        string      `json:"formCode" label:"表单类型"`
 	ParameterSource string      `json:"parameterSource" label:"参数源"`
 	Rules           []string    `json:"rules" label:"验证模式类型"`
+	// 以下为渲染表单所需的模型字段属性
+	ParameterContent string `json:"parameterContent" label:"参数内容"`
+	FormAttr         string `json:"formAttr" label:"表单属性"`
+	FormGroup        string `json:"formGroup" label:"表单分组"`
+	Sort             int64  `json:"sort" label:"排序"`
 }

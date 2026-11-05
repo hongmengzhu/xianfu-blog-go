@@ -1,10 +1,10 @@
-package repositoryBasic
+package repositoryB72
 
 import (
 	"context"
 	"errors"
 
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityB72"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/support"
 	"go-spring.org/log"
@@ -13,16 +13,16 @@ import (
 )
 
 func init() {
-	gs.Provide(new(BasicConfigRepository))
+	gs.Provide(new(B72ConfigRepository))
 
-	gs.Provide(new(support.BaseService[BasicConfigRepository]))
+	gs.Provide(new(support.BaseService[B72ConfigRepository]))
 }
 
-type BasicConfigRepository struct {
-	repositoryPg.BaseRepository[entityBasic.BasicConfigEntity, int64]
+type B72ConfigRepository struct {
+	repositoryPg.BaseRepository[entityB72.B72ConfigEntity, int64]
 }
 
-func (c *BasicConfigRepository) FindByTypeDomainTenantAndField(ctx context.Context, typeDomain string, tenantNo string, code string) (info *entityBasic.BasicConfigEntity, result bool) {
+func (c *B72ConfigRepository) FindByTypeDomainTenantAndField(ctx context.Context, typeDomain string, tenantNo string, code string) (info *entityB72.B72ConfigEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("type_domain=?", typeDomain).Where("tenant_no=?", tenantNo).Where("field=?", code).First(&info)
 	if tx.Error != nil {
 		// record not found 跳过日志
@@ -36,7 +36,7 @@ func (c *BasicConfigRepository) FindByTypeDomainTenantAndField(ctx context.Conte
 	}
 	return info, true
 }
-func (c *BasicConfigRepository) FindByEventNoAndFieldIn(ctx context.Context, eventNo string, code []string) (info []*entityBasic.BasicConfigEntity, result bool) {
+func (c *B72ConfigRepository) FindByEventNoAndFieldIn(ctx context.Context, eventNo string, code []string) (info []*entityB72.B72ConfigEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("event_no=?", eventNo).Where("field in ?", code).Find(&info)
 	if tx.Error != nil {
 		// record not found 跳过日志
@@ -50,7 +50,7 @@ func (c *BasicConfigRepository) FindByEventNoAndFieldIn(ctx context.Context, eve
 	}
 	return info, true
 }
-func (c *BasicConfigRepository) FindByEventNo(ctx context.Context, eventNo string) (info []*entityBasic.BasicConfigEntity, result bool) {
+func (c *B72ConfigRepository) FindByEventNo(ctx context.Context, eventNo string) (info []*entityB72.B72ConfigEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("event_no=?", eventNo).Find(&info)
 	if tx.Error != nil {
 		// record not found 跳过日志
@@ -64,7 +64,7 @@ func (c *BasicConfigRepository) FindByEventNo(ctx context.Context, eventNo strin
 	}
 	return info, true
 }
-func (c *BasicConfigRepository) FindByEventNoTenantAndFieldIn(ctx context.Context, eventNo string, tenantNo string, code []string) (info []*entityBasic.BasicConfigEntity, result bool) {
+func (c *B72ConfigRepository) FindByEventNoTenantAndFieldIn(ctx context.Context, eventNo string, tenantNo string, code []string) (info []*entityB72.B72ConfigEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("event_no=?", eventNo).Where("tenant_no=?", tenantNo).Where("field in ?", code).Find(&info)
 	if tx.Error != nil {
 		// record not found 跳过日志
@@ -78,7 +78,7 @@ func (c *BasicConfigRepository) FindByEventNoTenantAndFieldIn(ctx context.Contex
 	}
 	return info, true
 }
-func (c *BasicConfigRepository) UpdateByTenantEventNoAndNoAndValue(ctx context.Context, tenantNo string, eventNo string, no, value string) (info []*entityBasic.BasicConfigEntity, result bool) {
+func (c *B72ConfigRepository) UpdateByTenantEventNoAndNoAndValue(ctx context.Context, tenantNo string, eventNo string, no, value string) (info []*entityB72.B72ConfigEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("tenant_no=?", tenantNo).Where("event_no=?", eventNo).Where("no = ?", no).Update("value", value)
 	if tx.Error != nil {
 		// record not found 跳过日志
@@ -93,7 +93,7 @@ func (c *BasicConfigRepository) UpdateByTenantEventNoAndNoAndValue(ctx context.C
 	return info, true
 }
 
-func (c *BasicConfigRepository) UpdateByEventNoAndNoAndValue(ctx context.Context, eventNo string, no, value string) (result bool) {
+func (c *B72ConfigRepository) UpdateByEventNoAndNoAndValue(ctx context.Context, eventNo string, no, value string) (result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("event_no=?", eventNo).Where("no = ?", no).Update("value", value)
 	if tx.Error != nil {
 		// record not found 跳过日志
@@ -109,7 +109,7 @@ func (c *BasicConfigRepository) UpdateByEventNoAndNoAndValue(ctx context.Context
 }
 
 // FindAllByModelNo 查询模型下所有配置（含停用），按 sort、创建时间排序。
-func (c *BasicConfigRepository) FindAllByModelNo(ctx context.Context, modelNo string) (info []*entityBasic.BasicConfigEntity, result bool) {
+func (c *B72ConfigRepository) FindAllByModelNo(ctx context.Context, modelNo string) (info []*entityB72.B72ConfigEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("model_no=?", modelNo).Order("sort asc,create_at").Find(&info)
 	if tx.Error != nil {
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
@@ -124,7 +124,7 @@ func (c *BasicConfigRepository) FindAllByModelNo(ctx context.Context, modelNo st
 }
 
 // FindAllEnabledByTenantNoAndModel 查询租户 + model 下所有启用配置。
-func (c *BasicConfigRepository) FindAllEnabledByTenantNoAndModel(ctx context.Context, tenantNo, model string) (info []*entityBasic.BasicConfigEntity, result bool) {
+func (c *B72ConfigRepository) FindAllEnabledByTenantNoAndModel(ctx context.Context, tenantNo, model string) (info []*entityB72.B72ConfigEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).
 		Where("tenant_no=?", tenantNo).
 		Where("model=?", model).
@@ -144,7 +144,7 @@ func (c *BasicConfigRepository) FindAllEnabledByTenantNoAndModel(ctx context.Con
 }
 
 // FindAllEnabled 查询所有启用配置，用于缓存重建。
-func (c *BasicConfigRepository) FindAllEnabled(ctx context.Context) (info []*entityBasic.BasicConfigEntity, result bool) {
+func (c *B72ConfigRepository) FindAllEnabled(ctx context.Context) (info []*entityB72.B72ConfigEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("state=?", 1).Order("sort asc,create_at").Find(&info)
 	if tx.Error != nil {
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
@@ -159,7 +159,7 @@ func (c *BasicConfigRepository) FindAllEnabled(ctx context.Context) (info []*ent
 }
 
 // FindByTenantNoAndModelNoAndField 查询租户 + 模型编号 + 字段下唯一配置。
-func (c *BasicConfigRepository) FindByTenantNoAndModelNoAndField(ctx context.Context, tenantNo, modelNo, field string) (info *entityBasic.BasicConfigEntity, result bool) {
+func (c *B72ConfigRepository) FindByTenantNoAndModelNoAndField(ctx context.Context, tenantNo, modelNo, field string) (info *entityB72.B72ConfigEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).
 		Where("tenant_no=?", tenantNo).
 		Where("model_no=?", modelNo).
@@ -178,7 +178,7 @@ func (c *BasicConfigRepository) FindByTenantNoAndModelNoAndField(ctx context.Con
 }
 
 // FindByTenantNoAndModelAndField 查询租户 + model + 字段下唯一配置。
-func (c *BasicConfigRepository) FindByTenantNoAndModelAndField(ctx context.Context, tenantNo, model, field string) (info *entityBasic.BasicConfigEntity, result bool) {
+func (c *B72ConfigRepository) FindByTenantNoAndModelAndField(ctx context.Context, tenantNo, model, field string) (info *entityB72.B72ConfigEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).
 		Where("tenant_no=?", tenantNo).
 		Where("model=?", model).
@@ -197,7 +197,7 @@ func (c *BasicConfigRepository) FindByTenantNoAndModelAndField(ctx context.Conte
 }
 
 // DeleteAllByModelNo 物理删除模型下所有配置，用于模型删除/类型切换。
-func (c *BasicConfigRepository) DeleteAllByModelNo(ctx context.Context, modelNo string) error {
+func (c *B72ConfigRepository) DeleteAllByModelNo(ctx context.Context, modelNo string) error {
 	tx := c.DbModel().WithContext(ctx).Where("model_no=?", modelNo).Delete(&c.Entity)
 	return tx.Error
 }

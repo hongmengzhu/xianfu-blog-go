@@ -10,8 +10,8 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/typeSysPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityB72"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryB72"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
@@ -30,13 +30,13 @@ func init() {
 
 // BasicConfigCategoryService 配置分类
 type BasicConfigCategoryService struct {
-	sv *repositoryBasic.BasicConfigCategoryRepository `autowire:"?"`
+	sv *repositoryB72.B72ConfigCategoryRepository `autowire:"?"`
 }
 
 // Create 新增配置分类
 func (c *BasicConfigCategoryService) Create(ctx *gin.Context, ct modBasicConfigCategory.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var info entityBasic.BasicConfigCategoryEntity
+	var info entityB72.B72ConfigCategoryEntity
 	if err := copier.Copy(&info, &ct); err != nil {
 		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 	}
@@ -59,7 +59,7 @@ func (c *BasicConfigCategoryService) Create(ctx *gin.Context, ct modBasicConfigC
 			return rt.ErrorMessage("标志已存在")
 		}
 	}
-	parent := &entityBasic.BasicConfigCategoryEntity{}
+	parent := &entityB72.B72ConfigCategoryEntity{}
 	if strPg.IsBlank(info.ParentNo) && strPg.IsNotBlank(info.ParentId) {
 		var ok bool
 		parent, ok = r.FindByIdString(ctx, info.ParentId)
@@ -118,7 +118,7 @@ func (c *BasicConfigCategoryService) Update(ctx *gin.Context, ct modBasicConfigC
 	if strPg.IsNotBlank(find.TenantNo) && find.TenantNo != holder.GetTenantNo() {
 		return rt.ErrorMessage("无权操作其他租户的分类")
 	}
-	var info entityBasic.BasicConfigCategoryEntity
+	var info entityB72.B72ConfigCategoryEntity
 	if err := copier.Copy(&info, &ct); err != nil {
 		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 	}
@@ -126,9 +126,9 @@ func (c *BasicConfigCategoryService) Update(ctx *gin.Context, ct modBasicConfigC
 	if strPg.IsBlank(info.Name) {
 		return rt.ErrorMessage("名称不能为空")
 	}
-	parent := &entityBasic.BasicConfigCategoryEntity{}
+	parent := &entityB72.B72ConfigCategoryEntity{}
 	parentMoved := false
-	var descendants []*entityBasic.BasicConfigCategoryEntity
+	var descendants []*entityB72.B72ConfigCategoryEntity
 	if strPg.IsBlank(info.ParentNo) && strPg.IsNotBlank(info.ParentId) {
 		parent, ok = c.sv.FindByIdString(ctx, info.ParentId)
 		if !ok {
@@ -206,7 +206,7 @@ func (c *BasicConfigCategoryService) Update(ctx *gin.Context, ct modBasicConfigC
 			if strPg.IsNotBlank(find.IdLink) && strings.HasPrefix(child.IdLink, find.IdLink) {
 				child.IdLink = strings.Replace(child.IdLink, find.IdLink, info.IdLink, 1)
 			}
-			if err := c.sv.Update(ctx, entityBasic.BasicConfigCategoryEntity{IdLink: child.IdLink, NoLink: child.NoLink}, child.ID); err != nil {
+			if err := c.sv.Update(ctx, entityB72.B72ConfigCategoryEntity{IdLink: child.IdLink, NoLink: child.NoLink}, child.ID); err != nil {
 				return rt.ErrorMessage(err.Error())
 			}
 		}
@@ -230,7 +230,7 @@ func (c *BasicConfigCategoryService) Detail(ctx *gin.Context, id int64) (rt rg.R
 
 // Query 分页查询
 func (c *BasicConfigCategoryService) Query(ctx *gin.Context, ct modBasicConfigCategory.QueryCt) (rt rg.Rs[pagePg.Paginator[modBasicConfigCategory.Vo]]) {
-	var query entityBasic.BasicConfigCategoryEntity
+	var query entityB72.B72ConfigCategoryEntity
 	copier.Copy(&query, &ct)
 	holder := holderPg.GetContextAccount(ctx)
 	slice := make([]modBasicConfigCategory.Vo, 0)
@@ -284,7 +284,7 @@ func (c *BasicConfigCategoryService) State(ctx *gin.Context, ids []string, state
 	}
 	for _, info := range finds {
 		if info.State != state.IndexInt8() {
-			c.sv.Update(ctx, entityBasic.BasicConfigCategoryEntity{State: state.IndexInt8()}, info.ID)
+			c.sv.Update(ctx, entityB72.B72ConfigCategoryEntity{State: state.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -314,7 +314,7 @@ func (c *BasicConfigCategoryService) LogicalDeletion(ctx *gin.Context, ids []str
 	} else {
 		for _, info := range finds {
 			if ok, reverse := enumStatePg.State(info.State).ReverseEnableDisable(); ok {
-				c.sv.Update(ctx, entityBasic.BasicConfigCategoryEntity{State: reverse.IndexInt8()}, info.ID)
+				c.sv.Update(ctx, entityB72.B72ConfigCategoryEntity{State: reverse.IndexInt8()}, info.ID)
 			}
 		}
 	}
@@ -332,7 +332,7 @@ func (c *BasicConfigCategoryService) LogicalRecovery(ctx *gin.Context, ids []str
 	}
 	for _, info := range finds {
 		if ok, reverse := enumStatePg.State(info.State).ReverseCancelLayAside(); ok {
-			c.sv.Update(ctx, entityBasic.BasicConfigCategoryEntity{State: reverse.IndexInt8()}, info.ID)
+			c.sv.Update(ctx, entityB72.B72ConfigCategoryEntity{State: reverse.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()

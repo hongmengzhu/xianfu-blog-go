@@ -1,10 +1,10 @@
-package entityBasic
+package entityB72
 
 import (
 	"time"
 )
 
-type BasicConfigListEntity struct {
+type B72ConfigListEntity struct {
 	ID         int64      `gorm:"column:id;primaryKey;autoIncrement:true;comment:" json:"id" comment:"" `
 	CreateAt   *time.Time `gorm:"column:create_at;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `
 	UpdateAt   *time.Time `gorm:"column:update_at;autoUpdateTime;comment:更新时间;comment:更新时间" json:"update_at" comment:"更新时间" `
@@ -34,10 +34,10 @@ type BasicConfigListEntity struct {
 	TypeDomain  string `gorm:"column:type_domain;type:varchar(80);index;default:'general';comment:域类型|系统|租户|商户|模块|" json:"type_domain" comment:"域类型|系统|租户|商户|模块|" `
 }
 
-func (*BasicConfigListEntity) TableName() string {
+func (*B72ConfigListEntity) TableName() string {
 	return "basic_config_list"
 }
 
-func (*BasicConfigListEntity) TableComment() string {
+func (*B72ConfigListEntity) TableComment() string {
 	return "配置列表"
 }

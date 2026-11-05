@@ -1,4 +1,4 @@
-package entityBasic
+package entityB72
 
 import (
 	"time"
@@ -6,7 +6,7 @@ import (
 	"gorm.io/datatypes"
 )
 
-type BasicConfigEventFieldsEntity struct {
+type B72ConfigEventFieldsEntity struct {
 	ID         int64      `gorm:"column:id;primaryKey;autoIncrement:true;comment:" json:"id" comment:"" `
 	CreateAt   *time.Time `gorm:"column:create_at;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `
 	UpdateAt   *time.Time `gorm:"column:update_at;autoUpdateTime;comment:更新时间;comment:更新时间" json:"update_at" comment:"更新时间" `
@@ -52,10 +52,10 @@ type BasicConfigEventFieldsEntity struct {
 	SharedFieldNo    string                                                        `gorm:"column:shared_field_no;type:varchar(80);index;default:;comment:共享字段编号" json:"shared_field_no" comment:"共享字段编号" `
 }
 
-func (*BasicConfigEventFieldsEntity) TableName() string {
+func (*B72ConfigEventFieldsEntity) TableName() string {
 	return "basic_config_event_fields"
 }
 
-func (*BasicConfigEventFieldsEntity) TableComment() string {
+func (*B72ConfigEventFieldsEntity) TableComment() string {
 	return "事件字段"
 }

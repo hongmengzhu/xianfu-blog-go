@@ -6,6 +6,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/configModelPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/yesNoPg/yesNoIntPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityB72"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
 )
 
@@ -41,7 +42,7 @@ func TestNormalizeYesNo(t *testing.T) {
 }
 
 func TestValidateRulesRequired(t *testing.T) {
-	field := &entityBasic.BasicConfigModelFieldsEntity{Name: "站点名称"}
+	field := &entityB72.B72ConfigModelFieldsEntity{Name: "站点名称"}
 	rule := &entityBasic.BasicModelRulesEntity{
 		State:    enumStatePg.ENABLE.IndexInt8(),
 		RuleMode: configModelPg.RuleModeRequired.Index(),
@@ -55,7 +56,7 @@ func TestValidateRulesRequired(t *testing.T) {
 }
 
 func TestValidateRulesLengthAndPattern(t *testing.T) {
-	field := &entityBasic.BasicConfigModelFieldsEntity{Name: "编码"}
+	field := &entityB72.B72ConfigModelFieldsEntity{Name: "编码"}
 	lengthRule := &entityBasic.BasicModelRulesEntity{
 		State:        enumStatePg.ENABLE.IndexInt8(),
 		RuleMode:     configModelPg.RuleModeLength.Index(),

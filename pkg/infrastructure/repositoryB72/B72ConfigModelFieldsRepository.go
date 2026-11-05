@@ -1,10 +1,10 @@
-package repositoryBasic
+package repositoryB72
 
 import (
 	"context"
 	"errors"
 
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityB72"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/support"
 	"go-spring.org/log"
@@ -13,16 +13,16 @@ import (
 )
 
 func init() {
-	gs.Provide(new(BasicConfigModelFieldsRepository))
+	gs.Provide(new(B72ConfigModelFieldsRepository))
 
-	gs.Provide(new(support.BaseService[BasicConfigModelFieldsRepository]))
+	gs.Provide(new(support.BaseService[B72ConfigModelFieldsRepository]))
 }
 
-type BasicConfigModelFieldsRepository struct {
-	repositoryPg.BaseRepository[entityBasic.BasicConfigModelFieldsEntity, int64]
+type B72ConfigModelFieldsRepository struct {
+	repositoryPg.BaseRepository[entityB72.B72ConfigModelFieldsEntity, int64]
 }
 
-func (c *BasicConfigModelFieldsRepository) FindAllByModelNo(ctx context.Context, no string) (info []*entityBasic.BasicConfigModelFieldsEntity, result bool) {
+func (c *B72ConfigModelFieldsRepository) FindAllByModelNo(ctx context.Context, no string) (info []*entityB72.B72ConfigModelFieldsEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("model_no=?", no).Order("sort asc,create_at").Find(&info)
 	if tx.Error != nil {
 		// record not found 跳过日志
@@ -37,7 +37,7 @@ func (c *BasicConfigModelFieldsRepository) FindAllByModelNo(ctx context.Context,
 	return info, true
 }
 
-func (c *BasicConfigModelFieldsRepository) DeleteAllByModelNoAndIds(ctx context.Context, no string, ids []string) (info []*entityBasic.BasicConfigModelFieldsEntity, result bool) {
+func (c *B72ConfigModelFieldsRepository) DeleteAllByModelNoAndIds(ctx context.Context, no string, ids []string) (info []*entityB72.B72ConfigModelFieldsEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("id in ?", ids).Where("model_no=?", no).Delete(&c.Entity)
 	if tx.Error != nil {
 		// record not found 跳过日志
@@ -52,7 +52,7 @@ func (c *BasicConfigModelFieldsRepository) DeleteAllByModelNoAndIds(ctx context.
 	return info, true
 }
 
-func (c *BasicConfigModelFieldsRepository) FindByEventNoAndFieldIn(ctx context.Context, eventNo string, code []string) (info []*entityBasic.BasicConfigModelFieldsEntity, result bool) {
+func (c *B72ConfigModelFieldsRepository) FindByEventNoAndFieldIn(ctx context.Context, eventNo string, code []string) (info []*entityB72.B72ConfigModelFieldsEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("model_no=?", eventNo).Where("field in ?", code).Find(&info)
 	if tx.Error != nil {
 		// record not found 跳过日志
@@ -66,7 +66,7 @@ func (c *BasicConfigModelFieldsRepository) FindByEventNoAndFieldIn(ctx context.C
 	}
 	return info, true
 }
-func (c *BasicConfigModelFieldsRepository) FindByEventNoTenantAndFieldIn(ctx context.Context, eventNo string, tenantNo string, code []string) (info []*entityBasic.BasicConfigModelFieldsEntity, result bool) {
+func (c *B72ConfigModelFieldsRepository) FindByEventNoTenantAndFieldIn(ctx context.Context, eventNo string, tenantNo string, code []string) (info []*entityB72.B72ConfigModelFieldsEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("model_no=?", eventNo).Where("tenant_no=?", tenantNo).Where("field in ?", code).Find(&info)
 	if tx.Error != nil {
 		// record not found 跳过日志
@@ -82,7 +82,7 @@ func (c *BasicConfigModelFieldsRepository) FindByEventNoTenantAndFieldIn(ctx con
 }
 
 // FindByModelNoAndField 查询模型下指定字段。
-func (c *BasicConfigModelFieldsRepository) FindByModelNoAndField(ctx context.Context, modelNo, field string) (info *entityBasic.BasicConfigModelFieldsEntity, result bool) {
+func (c *B72ConfigModelFieldsRepository) FindByModelNoAndField(ctx context.Context, modelNo, field string) (info *entityB72.B72ConfigModelFieldsEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("model_no=?", modelNo).Where("field=?", field).First(&info)
 	if tx.Error != nil {
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
@@ -97,7 +97,7 @@ func (c *BasicConfigModelFieldsRepository) FindByModelNoAndField(ctx context.Con
 }
 
 // DeleteAllByModelNo 物理删除模型下所有字段。
-func (c *BasicConfigModelFieldsRepository) DeleteAllByModelNo(ctx context.Context, modelNo string) error {
+func (c *B72ConfigModelFieldsRepository) DeleteAllByModelNo(ctx context.Context, modelNo string) error {
 	tx := c.DbModel().WithContext(ctx).Where("model_no=?", modelNo).Delete(&c.Entity)
 	return tx.Error
 }

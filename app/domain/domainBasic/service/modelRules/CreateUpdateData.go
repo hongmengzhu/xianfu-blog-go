@@ -7,6 +7,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicModelRules"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/yesNoPg/yesNoIntPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityB72"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
 	"github.com/jinzhu/copier"
 	"github.com/pangu-2/go-tools/tools/noPg"
@@ -20,8 +21,8 @@ type CreateUpdateData struct {
 	Sp *Sp `autowire:"?"`
 
 	ct       modBasicModelRules.CreateUpdateDataCt
-	model    *entityBasic.BasicConfigModelEntity
-	event    *entityBasic.BasicConfigEventEntity
+	model    *entityB72.B72ConfigModelEntity
+	event    *entityB72.B72ConfigEventEntity
 	fields   []*entityBasic.BasicModelRulesEntity
 	isUpdate bool
 }
@@ -33,8 +34,8 @@ func NewCreateUpdateData(sp *Sp,
 		isUpdate: isUpdate,
 		ct:       ct,
 		fields:   make([]*entityBasic.BasicModelRulesEntity, 0),
-		model:    &entityBasic.BasicConfigModelEntity{},
-		event:    &entityBasic.BasicConfigEventEntity{},
+		model:    &entityB72.B72ConfigModelEntity{},
+		event:    &entityB72.B72ConfigEventEntity{},
 	}
 }
 

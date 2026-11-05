@@ -16,7 +16,9 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/yesNoPg/yesNoIntPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityB72"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryB72"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
@@ -42,11 +44,11 @@ func init() {
 // tenant_no + model 作为 key，其他服务通过 GetByTenantNoAndModel /
 // ValuesByTenantNoAndModel 读取即可，命中时不会访问数据库。
 type BasicConfigService struct {
-	sv       *repositoryBasic.BasicConfigRepository            `autowire:"?"`
-	repModel *repositoryBasic.BasicConfigModelRepository       `autowire:"?"`
-	repField *repositoryBasic.BasicConfigModelFieldsRepository `autowire:"?"`
-	repRules *repositoryBasic.BasicModelRulesRepository        `autowire:"?"`
-	sp       *configCache.Sp                                   `autowire:"?"`
+	sv       *repositoryB72.B72ConfigRepository            `autowire:"?"`
+	repModel *repositoryB72.B72ConfigModelRepository       `autowire:"?"`
+	repField *repositoryB72.B72ConfigModelFieldsRepository `autowire:"?"`
+	repRules *repositoryBasic.BasicModelRulesRepository    `autowire:"?"`
+	sp       *configCache.Sp                               `autowire:"?"`
 }
 
 // CreateUpdate 新增/更新配置项
@@ -107,7 +109,7 @@ func (c *BasicConfigService) CreateUpdate(ctx *gin.Context, ct modBasicConfig.Cr
 		if value == "" {
 			value = defaultValue
 		}
-		info := entityBasic.BasicConfigEntity{
+		info := entityB72.B72ConfigEntity{
 			No:           noPg.No(),
 			TenantNo:     tenantNo,
 			State:        enumStatePg.ENABLE.IndexInt8(),
@@ -198,7 +200,7 @@ func (c *BasicConfigService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modBas
 // Query 配置分页查询
 func (c *BasicConfigService) Query(ctx *gin.Context, ct modBasicConfig.QueryCt) (rt rg.Rs[pagePg.Paginator[modBasicConfig.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityBasic.BasicConfigEntity
+	var query entityB72.B72ConfigEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modBasicConfig.Vo, 0)
 	rt.Data.Data = slice
@@ -325,12 +327,12 @@ func (c *BasicConfigService) UpdateValues(ctx *gin.Context, ct modBasicConfig.Up
 		return rt.ErrorMessage("配置数据不能为空")
 	}
 	infos, _ := c.sv.FindAllByModelNo(ctx, modelInfo.No)
-	byField := make(map[string]*entityBasic.BasicConfigEntity, len(infos))
+	byField := make(map[string]*entityB72.B72ConfigEntity, len(infos))
 	for _, item := range infos {
 		byField[item.Field] = item
 	}
 	fields, _ := c.repField.FindAllByModelNo(ctx, modelInfo.No)
-	fieldByField := make(map[string]*entityBasic.BasicConfigModelFieldsEntity, len(fields))
+	fieldByField := make(map[string]*entityB72.B72ConfigModelFieldsEntity, len(fields))
 	for _, item := range fields {
 		fieldByField[item.Field] = item
 	}
@@ -339,7 +341,7 @@ func (c *BasicConfigService) UpdateValues(ctx *gin.Context, ct modBasicConfig.Up
 	for _, item := range rules {
 		rulesByField[item.FieldNo] = append(rulesByField[item.FieldNo], item)
 	}
-	updates := make([]*entityBasic.BasicConfigEntity, 0, len(ct.Data))
+	updates := make([]*entityB72.B72ConfigEntity, 0, len(ct.Data))
 	updateFields := make([]map[string]any, 0, len(ct.Data))
 	updateIds := make([]int64, 0, len(ct.Data))
 	for field, value := range ct.Data {
@@ -406,7 +408,7 @@ func (c *BasicConfigService) State(ctx *gin.Context, ids []string, state enumSta
 	}
 	for _, info := range finds {
 		if info.State != state.IndexInt8() {
-			c.sv.Update(ctx, entityBasic.BasicConfigEntity{State: state.IndexInt8()}, info.ID)
+			c.sv.Update(ctx, entityB72.B72ConfigEntity{State: state.IndexInt8()}, info.ID)
 		}
 	}
 	c.refreshByConfigs(ctx, finds)
@@ -438,7 +440,7 @@ func (c *BasicConfigService) LogicalDeletion(ctx *gin.Context, ids []string) (rt
 		for _, info := range finds {
 			enum := enumStatePg.State(info.State)
 			if ok, reverse := enum.ReverseEnableDisable(); ok {
-				c.sv.Update(ctx, entityBasic.BasicConfigEntity{State: reverse.IndexInt8()}, info.ID)
+				c.sv.Update(ctx, entityB72.B72ConfigEntity{State: reverse.IndexInt8()}, info.ID)
 			}
 		}
 	}
@@ -458,7 +460,7 @@ func (c *BasicConfigService) LogicalRecovery(ctx *gin.Context, ids []string) (rt
 	for _, info := range finds {
 		enum := enumStatePg.State(info.State)
 		if ok, reverse := enum.ReverseCancelLayAside(); ok {
-			c.sv.Update(ctx, entityBasic.BasicConfigEntity{State: reverse.IndexInt8()}, info.ID)
+			c.sv.Update(ctx, entityB72.B72ConfigEntity{State: reverse.IndexInt8()}, info.ID)
 		}
 	}
 	c.refreshByConfigs(ctx, finds)
@@ -502,7 +504,7 @@ func (c *BasicConfigService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[
 
 // ---- helpers ----
 
-func (c *BasicConfigService) findModel(ctx *gin.Context, tenantNo, modelNo, model string) (*entityBasic.BasicConfigModelEntity, bool) {
+func (c *BasicConfigService) findModel(ctx *gin.Context, tenantNo, modelNo, model string) (*entityB72.B72ConfigModelEntity, bool) {
 	if strPg.IsNotBlank(modelNo) {
 		return c.repModel.FindByTenantNoAndNo(ctx, tenantNo, modelNo)
 	}
@@ -521,7 +523,7 @@ func (c *BasicConfigService) refresh(ctx context.Context, tenantNo, model string
 	}
 }
 
-func (c *BasicConfigService) refreshByConfigs(ctx context.Context, infos []*entityBasic.BasicConfigEntity) {
+func (c *BasicConfigService) refreshByConfigs(ctx context.Context, infos []*entityB72.B72ConfigEntity) {
 	pairs := make(map[string]bool, len(infos))
 	for _, info := range infos {
 		if strPg.IsBlank(info.TenantNo) || strPg.IsBlank(info.Model) {
@@ -549,7 +551,7 @@ func normalizeYesNo(value, fallback int8) int8 {
 	return fallback
 }
 
-func validateRules(value string, rules []*entityBasic.BasicModelRulesEntity, field *entityBasic.BasicConfigModelFieldsEntity) string {
+func validateRules(value string, rules []*entityBasic.BasicModelRulesEntity, field *entityB72.B72ConfigModelFieldsEntity) string {
 	if len(rules) == 0 {
 		return ""
 	}

@@ -1,4 +1,4 @@
-package entityBasic
+package entityB72
 
 import (
 	"time"
@@ -6,7 +6,7 @@ import (
 	"gorm.io/datatypes"
 )
 
-type BasicConfigModelRulesEntity struct {
+type B72ConfigModelRulesEntity struct {
 	ID         int64      `gorm:"column:id;primaryKey;autoIncrement:true;comment:" json:"id" comment:"" `
 	CreateAt   *time.Time `gorm:"column:create_at;index;autoCreateTime;default:current_timestamp;comment:创建时间" json:"create_at" comment:"创建时间" `
 	UpdateAt   *time.Time `gorm:"column:update_at;autoUpdateTime;comment:更新时间;comment:更新时间" json:"update_at" comment:"更新时间" `
@@ -39,10 +39,10 @@ type BasicConfigModelRulesEntity struct {
 	TypeCategory string                       `gorm:"column:type_category;type:varchar(80);index;default:'general';comment:模型|事件;" json:"type_category" comment:"模型|事件;" `
 }
 
-func (*BasicConfigModelRulesEntity) TableName() string {
+func (*B72ConfigModelRulesEntity) TableName() string {
 	return "basic_config_model_rules"
 }
 
-func (*BasicConfigModelRulesEntity) TableComment() string {
+func (*B72ConfigModelRulesEntity) TableComment() string {
 	return "模型规则"
 }
