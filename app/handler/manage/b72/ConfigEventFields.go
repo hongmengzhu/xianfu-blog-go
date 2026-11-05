@@ -1,4 +1,4 @@
-package basic
+package b72
 
 import (
 	"fmt"

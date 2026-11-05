@@ -1,11 +1,11 @@
-package basic
+package b72
 
 import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBasic/service"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicConfigModel"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicConfigEvent"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
@@ -15,13 +15,15 @@ import (
 )
 
 func init() {
-	gs.Provide(new(ConfigModelController)).Name("ManageConfigModelController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(ConfigEventController)).Name("ManageConfigEventController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
-type ConfigModelController struct {
+// ConfigEventController 国家
+// @Description:
+type ConfigEventController struct {
 	routerPg.RouteRegistrar
 	Sp *authPg.GroupManageMiddlewareSp  `autowire:"?"`
-	sv *service.BasicConfigModelService `autowire:"?"`
+	sv *service.BasicConfigEventService `autowire:"?"`
 }
 
 // RegisterRoutes 注册路由
@@ -29,8 +31,8 @@ type ConfigModelController struct {
 //	@Description:
 //	@receiver c
 //	@param e
-func (c *ConfigModelController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/manage/basic/config-model", authPg.GroupManageMiddleware(c.Sp))
+func (c *ConfigEventController) RegisterRoutes(e *gin.Engine) {
+	group := e.Group("/xianfu/manage/basic/configEvent", authPg.GroupManageMiddleware(c.Sp))
 	group.POST("/createUpdate", c.CreateUpdate)
 	group.GET("/detail/:id", c.Detail)
 	group.POST("/enable", c.Enable)
@@ -43,31 +45,21 @@ func (c *ConfigModelController) RegisterRoutes(e *gin.Engine) {
 	group.POST("/selectNodeAllPublic", c.SelectNodeAllPublic)
 	group.POST("/existName", c.ExistName)
 	group.POST("/existCode", c.ExistCode)
-	group.POST("/existModel", c.ExistModel)
+	group.POST("/allByModel", c.AllByModel)
+	group.POST("/modelForm", c.ModelForm)
 }
 
-func (c *ConfigModelController) CreateUpdate(ctx *gin.Context) {
-	var ct modBasicConfigModel.CreateUpdateCt
-	if !routerPg.BindJson(ctx, &ct) {
-		return
-	}
-	ctx.JSON(200, c.sv.CreateUpdate(ctx, ct))
-}
-
-// Detail 详情
+// CreateUpdate 创建
 //
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *ConfigModelController) Detail(ctx *gin.Context) {
-	param := ctx.Param("id")
-
-	fmt.Println(param)
-	if "" == param {
-		ctx.JSON(200, rg.Error[string]("id不能为空"))
+func (c *ConfigEventController) CreateUpdate(ctx *gin.Context) {
+	var ct modBasicConfigEvent.CreateUpdateCt
+	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.Detail(ctx, param))
+	ctx.JSON(200, c.sv.CreateUpdate(ctx, ct))
 }
 
 // Delete 逻辑删除
@@ -75,7 +67,7 @@ func (c *ConfigModelController) Detail(ctx *gin.Context) {
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *ConfigModelController) Delete(ctx *gin.Context) {
+func (c *ConfigEventController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -88,7 +80,7 @@ func (c *ConfigModelController) Delete(ctx *gin.Context) {
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *ConfigModelController) Recovery(ctx *gin.Context) {
+func (c *ConfigEventController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -101,7 +93,7 @@ func (c *ConfigModelController) Recovery(ctx *gin.Context) {
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *ConfigModelController) PhysicalDeletion(ctx *gin.Context) {
+func (c *ConfigEventController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -109,12 +101,28 @@ func (c *ConfigModelController) PhysicalDeletion(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
 }
 
+// Detail 详情
+//
+//	@Description:
+//	@receiver c
+//	@param ctx
+func (c *ConfigEventController) Detail(ctx *gin.Context) {
+	param := ctx.Param("id")
+
+	fmt.Println(param)
+	if "" == param {
+		ctx.JSON(200, rg.Error[string]("id不能为空"))
+		return
+	}
+	ctx.JSON(200, c.sv.Detail(ctx, param))
+}
+
 // Enable 启用
 //
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *ConfigModelController) Enable(ctx *gin.Context) {
+func (c *ConfigEventController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -127,7 +135,7 @@ func (c *ConfigModelController) Enable(ctx *gin.Context) {
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *ConfigModelController) Disable(ctx *gin.Context) {
+func (c *ConfigEventController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -140,7 +148,7 @@ func (c *ConfigModelController) Disable(ctx *gin.Context) {
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *ConfigModelController) State(ctx *gin.Context) {
+func (c *ConfigEventController) State(ctx *gin.Context) {
 	var ct model.BaseStateIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -158,16 +166,16 @@ func (c *ConfigModelController) State(ctx *gin.Context) {
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *ConfigModelController) Query(ctx *gin.Context) {
-	var ct modBasicConfigModel.QueryCt
+func (c *ConfigEventController) Query(ctx *gin.Context) {
+	var ct modBasicConfigEvent.QueryCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
 }
 
-func (c *ConfigModelController) SelectNodeAllPublic(ctx *gin.Context) {
-	var ct modBasicConfigModel.QueryPublicCt
+func (c *ConfigEventController) SelectNodeAllPublic(ctx *gin.Context) {
+	var ct modBasicConfigEvent.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -175,12 +183,21 @@ func (c *ConfigModelController) SelectNodeAllPublic(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.SelectNodeAllPublic(ctx, ct))
 }
 
+func (c *ConfigEventController) AllByModel(ctx *gin.Context) {
+	var ct modBasicConfigEvent.QueryCt
+	if !routerPg.BindJson(ctx, &ct) {
+		return
+	}
+	ct.State = enumStatePg.ENABLE.IndexPg()
+	ctx.JSON(200, c.sv.AllByModel(ctx, ct))
+}
+
 // ExistName 查重
 //
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *ConfigModelController) ExistName(ctx *gin.Context) {
+func (c *ConfigEventController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -193,7 +210,7 @@ func (c *ConfigModelController) ExistName(ctx *gin.Context) {
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *ConfigModelController) ExistCode(ctx *gin.Context) {
+func (c *ConfigEventController) ExistCode(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -201,15 +218,46 @@ func (c *ConfigModelController) ExistCode(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.ExistCode(ctx, ct))
 }
 
-// ExistModel 查重
+// ModelForm 查重
 //
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *ConfigModelController) ExistModel(ctx *gin.Context) {
-	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
-		return
+func (c *ConfigEventController) ModelForm(ctx *gin.Context) {
+	maps := modBasicConfigEvent.ModelForm{
+		Item: make([]modBasicConfigEvent.ModelFormItem, 0),
 	}
-	ctx.JSON(200, c.sv.ExistModel(ctx, ct))
+	maps.Item = append(maps.Item, modBasicConfigEvent.ModelFormItem{
+		Field:     "name",
+		Name:      "中文名称",
+		Rules:     []string{"required"},
+		Show:      1,
+		ValueType: "string",
+		FormCode:  "Input",
+	})
+	maps.Item = append(maps.Item, modBasicConfigEvent.ModelFormItem{
+		Field:     "age",
+		Name:      "年龄",
+		Rules:     []string{"required"},
+		Show:      1,
+		ValueType: "int64",
+		FormCode:  "InputNumber",
+	})
+	maps.Item = append(maps.Item, modBasicConfigEvent.ModelFormItem{
+		Field:     "sex",
+		Name:      "性别",
+		Rules:     []string{"required"},
+		Show:      1,
+		ValueType: "string",
+		FormCode:  "Select",
+	})
+	maps.Item = append(maps.Item, modBasicConfigEvent.ModelFormItem{
+		Field:     "year",
+		Name:      "日期",
+		Rules:     []string{"required"},
+		Show:      1,
+		ValueType: "string",
+		FormCode:  "DatePicker",
+	})
+	ctx.JSON(200, rg.OkData[modBasicConfigEvent.ModelForm](maps))
 }
