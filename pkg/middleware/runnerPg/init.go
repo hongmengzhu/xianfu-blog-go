@@ -56,6 +56,8 @@ func init() {
 	gs.Provide(new(data.ZInitAccountAdmin)).Export(gs.As[gs.Runner]())
 	//初始化Dipl缓存
 	gs.Provide(new(data.ZInitDiplCache)).Export(gs.As[gs.Runner]())
+	//校正自增序列（显式主键初始化数据后，序列可能落后于 max(id)）
+	gs.Provide(new(data.ZInitSequence)).Export(gs.As[gs.Runner]())
 	//显示服务启动信息
 	gs.Provide(new(data.ZzBootstrap)).Export(gs.As[gs.Runner]())
 }

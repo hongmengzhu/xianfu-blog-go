@@ -192,6 +192,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		c.model.KindUnique = cryptPg.Md5(c.model.TenantNo + c.model.Model)
 		err, _ := c.Sp.repModel.Create(ctx, c.model)
 		if err != nil {
+			log.Error(ctx, log.TagAppDef, err, "save err", log.Any("model", c.model))
 			return rt.ErrorMessage("保存失败 " + err.Error())
 		}
 		//

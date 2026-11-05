@@ -114,6 +114,86 @@ func MakeDataBaseAutoInc(dialect, table string, start int64) (sql string) {
 	return
 }
 
+// SyncSequences 按表内最大主键校正自增序列（PostgreSQL）
+//
+//	@Description: 初始化数据时存在显式指定主键（ID=1、2...）的插入，PostgreSQL
+//	不会因此推进序列，导致序列停在起始值、落后于 max(id)，后续 INSERT 取到的
+//	id 与已有行冲突，报 duplicate key value violates unique constraint "..._pkey"
+//	（SQLSTATE 23505）。这里在启动初始化完成后统一把序列推进到 max(id)+1，
+//	保证之后正常分配的 id 不会撞车。只前进不后退，避免破坏已保留的号段。
+//	MySQL 的自增值会随显式插入自动前进，无需处理。
+//	@param db gorm 连接
+//	@return error
+func SyncSequences(db *gorm.DB) error {
+	if nil == db {
+		return nil
+	}
+	if "postgres" != db.Dialector.Name() {
+		return nil
+	}
+	// 所有带 nextval 默认值的自增列
+	type seqColumn struct {
+		TableName  string `gorm:"column:table_name"`
+		ColumnName string `gorm:"column:column_name"`
+	}
+	columns := make([]seqColumn, 0)
+	err := db.Raw(`SELECT c.relname AS table_name, a.attname AS column_name
+		FROM pg_class c
+		JOIN pg_attribute a ON a.attrelid = c.oid AND a.attnum > 0 AND NOT a.attisdropped
+		JOIN pg_attrdef d ON d.adrelid = c.oid AND d.adnum = a.attnum
+		WHERE c.relkind = 'r'
+		  AND c.relnamespace = 'public'::regnamespace
+		  AND pg_get_expr(d.adbin, d.adrelid) LIKE 'nextval%'`).Scan(&columns).Error
+	if nil != err {
+		log.Error(context.Background(), log.TagAppDef, err, "查询自增序列失败")
+		return err
+	}
+	fixed := make([]string, 0)
+	for _, column := range columns {
+		var seqName string
+		err = db.Raw(`SELECT pg_get_serial_sequence(?, ?)`, column.TableName, column.ColumnName).Scan(&seqName).Error
+		if nil != err || strPg.IsBlank(seqName) {
+			continue
+		}
+		var lastValue, maxId int64
+		var isCalled bool
+		row := db.Raw(`SELECT last_value, is_called FROM ?::regclass`, seqName).Row()
+		if nil == row {
+			continue
+		}
+		if err = row.Scan(&lastValue, &isCalled); nil != err {
+			continue
+		}
+		err = db.Raw(fmt.Sprintf(`SELECT COALESCE(MAX("%s"), 0) FROM "%s"`, column.ColumnName, column.TableName)).Scan(&maxId).Error
+		if nil != err {
+			continue
+		}
+		// 序列下一次将要分配的值
+		next := lastValue
+		if isCalled {
+			next = lastValue + 1
+		}
+		if maxId < next {
+			// 序列已领先最大主键，无需调整
+			continue
+		}
+		// is_called=false 表示 setval 之后 nextval 直接返回该值
+		err = db.Exec("SELECT setval(?::regclass, ?, false)", seqName, maxId+1).Error
+		if nil != err {
+			log.Error(context.Background(), log.TagAppDef, err, "校正自增序列失败",
+				log.Any("table", column.TableName), log.Any("column", column.ColumnName))
+			continue
+		}
+		fixed = append(fixed, fmt.Sprintf("%s.%s: %d -> %d", column.TableName, column.ColumnName, next, maxId+1))
+	}
+	if len(fixed) > 0 {
+		log.Info(context.Background(), log.TagAppDef, "[init].[自增序列修正]", log.Any("fixed", fixed))
+	} else {
+		log.Info(context.Background(), log.TagAppDef, "[init].[自增序列修正] 无需调整")
+	}
+	return nil
+}
+
 // MakeJsonOsContainsCond 按数据库方言生成 os JSON 字段内数组包含指定元素的查询条件
 //
 //	@Description:
