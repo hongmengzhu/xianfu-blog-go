@@ -107,6 +107,7 @@ func (c *BasicConfigModelService) LogicalDeletion(ctx *gin.Context, ids []string
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
 			log.Info(ctx, log.TagAppDef, "id", log.Any("id", info.ID))
+			c.sp.DeleteModelData(ctx, info)
 		}
 		repository.DeleteByIdsString(ctx, ids)
 	} else {
@@ -165,6 +166,7 @@ func (c *BasicConfigModelService) PhysicalDeletion(ctx *gin.Context, ids []strin
 	idsNew := make([]int64, 0)
 	for _, info := range finds {
 		log.Info(ctx, log.TagAppDef, "id", log.Any("id", info.ID))
+		c.sp.DeleteModelData(ctx, info)
 		idsNew = append(idsNew, info.ID)
 	}
 	if len(idsNew) > 0 {

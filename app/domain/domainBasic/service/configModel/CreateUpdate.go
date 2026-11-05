@@ -15,10 +15,12 @@ import (
 	"github.com/jinzhu/copier"
 	"github.com/pangu-2/go-tools/tools/cryptPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
+	"github.com/pangu-2/go-tools/tools/numberPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/validatePg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/log"
+	"gorm.io/datatypes"
 )
 
 type CreateUpdate struct {
@@ -58,6 +60,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 	c.model.Model = strings.TrimSpace(c.model.Model)
 	c.model.ModuleSub = strings.TrimSpace(c.model.ModuleSub)
 	c.model.ModelCategory = strings.TrimSpace(c.model.ModelCategory)
+	c.model.Category = strings.TrimSpace(c.model.Category)
 	//
 	if strPg.IsBlank(c.model.Name) {
 		return rt.ErrorMessage("模型中文名称不能为空")
@@ -155,6 +158,12 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 			if yesNoIntPg.Yes.IsEqual(item.Binary.ToInt8()) {
 				field.Binary = yesNoIntPg.Yes.IndexInt8()
 			}
+			if strPg.IsBlank(field.FieldPath) {
+				field.FieldPath = field.Field
+			}
+			field.Sort = item.Sort.ToInt64()
+			field.Rules = datatypes.NewJSONType(normalizeStringSlice(item.Rules))
+			field.SharedScope = datatypes.NewJSONType(normalizeStringSlice(item.SharedScope))
 			c.fields = append(c.fields, &field)
 			//
 			if item.Id.ToInt64() > 0 {
@@ -167,15 +176,20 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		}
 	}
 	holder := holderPg.GetContextAccount(ctx)
+	tenantNo := holder.GetTenantNo()
 	//
 	//
 	if header.Id.ToInt64() <= 0 {
+		// 租户下 model 唯一
+		if _, exists := c.Sp.repModel.FindByTenantNoAndModel(ctx, tenantNo, c.model.Model); exists {
+			return rt.ErrorMessage("模型标识在当前租户下已存在")
+		}
 		c.model.State = enumStatePg.ENABLE.Index()
 		c.model.TypeSys = typeSysPg.General.String()
 		c.model.No = noPg.No()
-		c.model.TenantNo = holder.GetTenantNo()
+		c.model.TenantNo = tenantNo
 		c.model.Sort = 0
-		c.model.KindUnique = cryptPg.Md5(c.model.Model)
+		c.model.KindUnique = cryptPg.Md5(c.model.TenantNo + c.model.Model)
 		err, _ := c.Sp.repModel.Create(ctx, c.model)
 		if err != nil {
 			return rt.ErrorMessage("保存失败 " + err.Error())
@@ -190,7 +204,6 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 				item.TenantNo = c.model.TenantNo
 				item.State = enumStatePg.ENABLE.Index()
 				item.No = noPg.No()
-				item.Sort = 0
 				item.KindUnique = cryptPg.Md5(c.model.No + item.Field)
 			}
 			//
@@ -205,28 +218,47 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 				//}
 			}
 		}
+		if err := c.saveRules(ctx, tenantNo); err != nil {
+			rt.Extend["errors"] = err
+			return rt.ErrorMessage("规则保存失败：" + err.Error())
+		}
+		if err := c.syncConfig(ctx, tenantNo); err != nil {
+			return rt.ErrorMessage("配置保存失败：" + err.Error())
+		}
 	} else {
 		//
 		info, b := c.Sp.repModel.FindByIdString(ctx, header.Id.ToString())
 		if !b {
 			return rt.ErrorMessage("模型不存在")
 		}
+		if strPg.IsNotBlank(info.TenantNo) && info.TenantNo != tenantNo {
+			return rt.ErrorMessage("无权操作其他租户的模型")
+		}
+		// 租户下 model 唯一（排除自己）
+		if _, exists := c.Sp.repModel.FindByTenantNoAndModelAndIdNot(ctx, tenantNo, c.model.Model, numberPg.Int64ToString(info.ID)); exists {
+			return rt.ErrorMessage("模型标识在当前租户下已存在")
+		}
 		//
 		var save entityBasic.BasicConfigModelEntity
 		{
-			err := copier.Copy(&save, info)
+			save = *info
+			// header 中未提交的字段保持数据库原值，避免部分更新把字段清空
+			err := copier.CopyWithOption(&save, &header, copier.Option{IgnoreEmpty: true})
 			if err != nil {
 				log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 			}
 		}
-		{
-			err := copier.Copy(&save, &header)
-			if err != nil {
-				log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
-			}
+		if strPg.IsBlank(save.Model) {
+			save.Model = info.Model
+		}
+		if strPg.IsBlank(save.ModelCategory) {
+			save.ModelCategory = info.ModelCategory
+		}
+		if strPg.IsBlank(save.TenantNo) {
+			save.TenantNo = info.TenantNo
 		}
 		save.No = ""
-		save.KindUnique = cryptPg.Md5(save.Model)
+		save.KindUnique = cryptPg.Md5(save.TenantNo + save.Model)
 		//
 		delIds := make([]string, 0)
 		dataInsert := make([]*entityBasic.BasicConfigModelFieldsEntity, 0)
@@ -243,6 +275,8 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		if len(c.fields) > 0 {
 			for _, item := range c.fields {
 				if _, ok := mapField[item.ID]; ok {
+					item.No = mapField[item.ID].No
+					item.ModelNo = info.No
 					item.Model = save.Model
 					item.ModuleSub = save.ModuleSub
 					item.TenantNo = save.TenantNo
@@ -256,7 +290,6 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 					item.TenantNo = save.TenantNo
 					item.State = enumStatePg.ENABLE.Index()
 					item.No = noPg.No()
-					item.Sort = 0
 					item.KindUnique = cryptPg.Md5(info.No + item.Field)
 					dataInsert = append(dataInsert, item)
 				}
@@ -296,7 +329,27 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 				c.Sp.repField.Update(ctx, *entity, entity.ID)
 			}
 		}
-
+		// 规则与配置同步使用的模型主信息
+		c.model.No = info.No
+		c.model.TenantNo = info.TenantNo
+		c.model.Model = save.Model
+		c.model.ModelCategory = save.ModelCategory
+		c.model.Module = info.Module
+		c.model.ModuleSub = info.ModuleSub
+		c.model.Category = save.Category
+		if err := c.saveRules(ctx, tenantNo); err != nil {
+			rt.Extend["errors"] = err
+			return rt.ErrorMessage("规则保存失败：" + err.Error())
+		}
+		if err := c.syncConfig(ctx, tenantNo); err != nil {
+			return rt.ErrorMessage("配置保存失败：" + err.Error())
+		}
+		// 模型标识变更时，旧 tenant_no + model 缓存也要失效
+		if strPg.IsNotBlank(info.Model) && info.Model != c.model.Model && c.Sp.cache != nil {
+			if err := c.Sp.cache.Refresh(ctx, tenantNo, info.Model); err != nil {
+				log.Error(ctx, log.TagAppDef, err, "refresh old model config cache error")
+			}
+		}
 	}
 	if len(errs) > 0 {
 		rt.Extend["errors"] = errs

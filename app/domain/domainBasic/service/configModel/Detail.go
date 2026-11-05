@@ -33,6 +33,30 @@ func (c *Detail) Process(ctx *gin.Context, id string) (rt rg.Rs[modBasicConfigMo
 	if err != nil {
 		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
 	}
+	// 模型级规则
+	if rules, b := c.Sp.repRule.FindAllByModelNo(ctx, info.No); b {
+		for _, item := range rules {
+			var obj modBasicConfigModel.RuleItemVo
+			if err := copier.Copy(&obj, item); err != nil {
+				log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
+			}
+			obj.RuleTarget = item.RuleTarget.Data()
+			vo.Header.RuleItems = append(vo.Header.RuleItems, obj)
+			vo.Header.Rules = append(vo.Header.Rules, item.RuleMode)
+		}
+	}
+	// 字段规则
+	fieldRuleMap := make(map[string][]modBasicConfigModel.RuleItemVo)
+	if rules, b := c.Sp.repFieldRules.FindAllByValueNo(ctx, info.No); b {
+		for _, item := range rules {
+			var obj modBasicConfigModel.RuleItemVo
+			if err := copier.Copy(&obj, item); err != nil {
+				log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
+			}
+			obj.RuleTarget = item.RuleTarget.Data()
+			fieldRuleMap[item.FieldNo] = append(fieldRuleMap[item.FieldNo], obj)
+		}
+	}
 	//
 	vo.Body = make([]modBasicConfigModel.ItemVo, 0)
 	//
@@ -41,6 +65,9 @@ func (c *Detail) Process(ctx *gin.Context, id string) (rt rg.Rs[modBasicConfigMo
 		for _, item := range data {
 			var obj modBasicConfigModel.ItemVo
 			copier.Copy(&obj, item)
+			obj.Rules = item.Rules.Data()
+			obj.SharedScope = item.SharedScope.Data()
+			obj.RuleItems = fieldRuleMap[item.No]
 			//
 			vo.Body = append(vo.Body, obj)
 		}

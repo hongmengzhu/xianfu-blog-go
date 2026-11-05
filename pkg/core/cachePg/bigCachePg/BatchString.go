@@ -174,7 +174,7 @@ func (t *BatchString) Set(ctx context.Context, key string, value any, expire tim
 	if err != nil {
 		return err
 	}
-	if err := t.cache.Set(ctx, key, encodeValue(payload, expire*time.Second, time.Now())); err != nil {
+	if err := t.cache.Set(ctx, key, encodeValue(payload, expire, time.Now())); err != nil {
 		return errutil.Explain(err, "bigcache: set key %q", key)
 	}
 	return nil
