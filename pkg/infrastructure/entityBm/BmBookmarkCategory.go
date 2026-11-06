@@ -27,6 +27,8 @@ type BmBookmarkCategoryEntity struct {
 	Ano         string     `gorm:"column:ano;type:varchar(80);index;default:'';comment:操作员" json:"ano" comment:"操作员" `
 	TypeOwner   string     `gorm:"column:type_owner;type:varchar(80);index;default:'general';comment:类型|普通|团队|个人" json:"type_owner" comment:"类型;普通;团队;个人" `
 	TeamNo      string     `gorm:"column:team_no;type:varchar(80);index;default:;comment:团队编号" json:"team_no" comment:"团队编号" `
+	Module      string     `gorm:"column:module;type:varchar(80);index;default:;comment:模块" json:"module" comment:"模块" `
+	OrgNo       string     `gorm:"column:org_no;type:varchar(80);index;default:;comment:组织编号" json:"org_no" comment:"组织编号" `
 }
 
 func (*BmBookmarkCategoryEntity) TableName() string {

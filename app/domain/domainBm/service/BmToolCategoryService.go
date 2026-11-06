@@ -1,0 +1,593 @@
+package service
+
+import (
+	"context"
+
+	"github.com/gin-gonic/gin"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmToolCategory"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/cache/bm/modEventBmToolCategory"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/automatedPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constNodePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBm"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/event"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/sdk-common-cache/cacheBmToolCategory"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
+	"github.com/jinzhu/copier"
+	"github.com/pangu-2/go-tools/tools/dbPg/pagePg"
+	"github.com/pangu-2/go-tools/tools/noPg"
+	"github.com/pangu-2/go-tools/tools/numberPg"
+	"github.com/pangu-2/go-tools/tools/slicePg"
+	"github.com/pangu-2/go-tools/tools/strPg"
+	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
+	"go-spring.org/log"
+	"go-spring.org/spring/gs"
+)
+
+func init() {
+	gs.Provide(new(BmToolCategoryService))
+}
+
+// BmToolCategoryService 工具分类
+// @Description:
+type BmToolCategoryService struct {
+	sv  *repositoryBm.BmToolCategoryRepository `autowire:"?"`
+	Bus event.Bus                              `autowire:"?"`
+	chd *cacheBmToolCategory.Cache             `autowire:"?"`
+}
+
+// Create 新增
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+//	@return rt
+func (c *BmToolCategoryService) Create(ctx *gin.Context, ct modBmToolCategory.CreateCt) (rt rg.Rs[string]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	var info entityBm.BmToolCategoryEntity
+	err := copier.Copy(&info, &ct)
+	if err != nil {
+		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
+	}
+	if "" == ct.Name {
+		return rt.ErrorMessage("名称不能为空")
+	}
+	if strPg.IsBlank(ct.Code) {
+		info.Code = automatedPg.CREATE_CODE
+	}
+	holder := holderPg.GetContextAccount(ctx)
+	parent := &entityBm.BmToolCategoryEntity{}
+	r := c.sv
+	//判断是否是自动,不是自动
+	if !automatedPg.IsCreateCode(info.Code) {
+		//判断格式是否满足要求
+		if !automatedPg.FormatVerify(info.Code) {
+			return rt.ErrorMessage("标志格式不能为空")
+		}
+		//不是自动
+		_, result := r.FindByCode(ctx, info.Code, optionsPg.WithCtx(ctx))
+		if result {
+			return rt.ErrorMessage("标志已存在")
+		}
+	}
+	result := false
+	if strPg.IsNotBlank(ct.ParentNo) {
+		parent, result = r.FindByNo(ctx, ct.ParentNo, optionsPg.WithCtx(ctx))
+		if !result {
+			return rt.ErrorMessage("上级不存在")
+		}
+	}
+	info.No = noPg.No()
+	//自动设置编号
+	if automatedPg.IsCreateCode(info.Code) {
+		info.Code = strPg.GenerateNumberId22()
+	}
+	info.TenantNo = holder.GetTenantNo()
+	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
+	err, _ = r.Create(ctx, &info)
+	if err != nil {
+		return rt.ErrorMessage("保存失败 " + err.Error())
+	}
+	//设置上级 link
+	if strPg.IsNotBlank(ct.ParentNo) {
+		info.IdLink = constNodePg.NoLinkAssemble(parent.IdLink, numberPg.Int64ToString(info.ID))
+		info.NoLink = constNodePg.NoLinkAssemble(parent.NoLink, info.No)
+		info.ParentNo = parent.No
+		info.ParentId = numberPg.Int64ToString(parent.ID)
+	} else {
+		info.IdLink = constNodePg.NoLinkDefault(numberPg.Int64ToString(info.ID))
+		info.NoLink = constNodePg.NoLinkDefault(info.No)
+		info.ParentId = ""
+		info.ParentNo = ""
+	}
+	err = r.Update(ctx, info, info.ID)
+	if err != nil {
+		return rt.ErrorMessage(err.Error())
+	}
+	// 异步缓存
+	dto := modEventBmToolCategory.CacheDto{
+		Nos: make([]string, 0),
+	}
+	dto.Nos = append(dto.Nos, info.No)
+	err2 := c.Bus.Publish(context.Background(), dto)
+	if err2 != nil {
+		log.Error(ctx, log.TagAppDef, err2, "copier.Copy error")
+	}
+	return rg.OkData(numberPg.Int64ToString(info.ID))
+}
+
+// Update 更新
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+//	@return rt
+func (c *BmToolCategoryService) Update(ctx *gin.Context, ct modBmToolCategory.UpdateCt) (rt rg.Rs[string]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	var info entityBm.BmToolCategoryEntity
+	err := copier.Copy(&info, &ct)
+	if err != nil {
+		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
+	}
+	if ct.ID < 1 {
+		return rt.ErrorMessage("id错误")
+	}
+	if "" == ct.Name {
+		return rt.ErrorMessage("名称不能为空")
+	}
+	if strPg.IsBlank(ct.Code) {
+		info.Code = ""
+	}
+	r := c.sv
+	if strPg.IsBlank(ct.Code) {
+		info.Code = ""
+	} else {
+		_, result := r.FindByCodeAndIdNot(ctx, ct.Code, ct.ID.ToString(), optionsPg.WithCtx(ctx))
+		if result {
+			return rt.ErrorMessage("标志已存在")
+		}
+	}
+	find, b := r.FindById(ctx, ct.ID.ToInt64())
+	if !b {
+		return rt.ErrorMessage("数据不存在")
+	}
+	//上级
+	parent := &entityBm.BmToolCategoryEntity{}
+	var childData []*entityBm.BmToolCategoryEntity
+	if strPg.IsNotBlank(ct.ParentNo) {
+		result := false
+		parent, result = r.FindByNo(ctx, ct.ParentNo, optionsPg.WithCtx(ctx))
+		if !result {
+			return rt.ErrorMessage("上级不存在")
+		}
+		if parent.ID == ct.ID.ToInt64() {
+			return rt.ErrorMessage("上级不能等于自己")
+		}
+		//新的ID 不等于 旧的上级时,检测是否已经 在新的子集已存在
+		if parent.No != find.ParentNo {
+			result2 := false
+			childData, result2 = r.FindAllByNoLink(ctx, find.No)
+			if result2 {
+				for _, item := range childData {
+					if item.No == parent.No {
+						return rt.ErrorMessage("无法保存，不能设置为自己的子集")
+					}
+				}
+			}
+		}
+	}
+
+	//设置上级 link
+	if strPg.IsNotBlank(ct.ParentNo) {
+		info.IdLink = constNodePg.NoLinkAssemble(parent.IdLink, numberPg.Int64ToString(find.ID))
+		info.NoLink = constNodePg.NoLinkAssemble(parent.NoLink, find.No)
+		info.ParentNo = parent.No
+		info.ParentId = numberPg.Int64ToString(parent.ID)
+	} else {
+		info.IdLink = constNodePg.NoLinkDefault(numberPg.Int64ToString(find.ID))
+		info.NoLink = constNodePg.NoLinkDefault(find.No)
+		info.ParentNo = ""
+		info.ParentId = ""
+	}
+	info.No = ""
+	//
+	err = r.Update(ctx, info, info.ID, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
+		arg.Db = arg.Db.Select("parent_no", "parent_id")
+	}))
+	if err != nil {
+		log.Error(ctx, log.TagAppDef, err, "update error")
+		return rt.ErrorMessage(err.Error())
+	}
+	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
+	//更改上级后，相关子集修改
+	if strPg.IsNotBlank(ct.ParentNo) && nil != childData {
+		maps := slicePg.ToMapArray(childData, func(t *entityBm.BmToolCategoryEntity) (string, *entityBm.BmToolCategoryEntity) {
+			if strPg.IsBlank(t.ParentNo) {
+				return constNodePg.ROOT, t
+			}
+			return t.ParentNo, t
+		})
+		if strPg.IsBlank(info.ParentNo) {
+			info.ParentNo = constNodePg.ROOT
+		}
+		for _, item := range maps[info.ParentNo] {
+			item.IdLink = constNodePg.NoLinkAssemble(info.IdLink, numberPg.Int64ToString(find.ID))
+			item.NoLink = constNodePg.NoLinkAssemble(info.NoLink, item.No)
+			c.childParentIdLink(maps, item)
+		}
+		//
+		for _, val := range maps {
+			for _, item := range val {
+				if item.ID == find.ID {
+					continue
+				}
+				r.Update(ctx, entityBm.BmToolCategoryEntity{IdLink: item.IdLink,
+					NoLink: item.NoLink},
+					item.ID)
+			}
+		}
+		maps = nil
+	}
+	// 异步缓存
+	dto := modEventBmToolCategory.CacheDto{
+		Nos: make([]string, 0),
+	}
+	dto.Nos = append(dto.Nos, info.No)
+	err2 := c.Bus.Publish(context.Background(), dto)
+	if err2 != nil {
+		log.Error(ctx, log.TagAppDef, err2, "copier.Copy error")
+	}
+	return rt.Ok()
+}
+
+// ChildParentIdLink 子集 上级 link更新
+//
+//	@Description:
+//	@receiver c
+//	@param id
+func (c *BmToolCategoryService) childParentIdLink(maps map[string][]*entityBm.BmToolCategoryEntity, parent *entityBm.BmToolCategoryEntity) {
+	key := parent.ParentNo
+	if strPg.IsBlank(parent.ParentNo) {
+		key = constNodePg.ROOT
+	}
+	entities := maps[key]
+	for _, item := range entities {
+		item.IdLink = constNodePg.NoLinkAssemble(parent.IdLink, numberPg.Int64ToString(item.ID))
+		item.NoLink = constNodePg.NoLinkAssemble(parent.NoLink, item.No)
+	}
+}
+
+// CacheAll 缓存重载
+//
+//	@Description:
+//	@receiver c
+func (c *BmToolCategoryService) CacheAll(ctx *gin.Context) {
+	//保存到数据库
+	err := c.Bus.Publish(context.Background(), modEventBmToolCategory.CacheDto{
+		IsThisTenantAll: true,
+	})
+	if err != nil {
+		log.Error(ctx, log.TagAppDef, err, "copier.Copy error")
+		return
+	}
+}
+
+// Detail 详情
+//
+//	@Description:
+//	@receiver c
+//	@param id
+func (c *BmToolCategoryService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modBmToolCategory.Vo]) {
+	if id < 1 {
+		return rt.ErrorMessage("id错误")
+	}
+	find, b := c.sv.FindById(ctx, id)
+	if !b {
+		return rt.ErrorMessage("数据不存在")
+	}
+	var info modBmToolCategory.Vo
+	copier.Copy(&info, &find)
+	return rt.OkData(info)
+}
+
+// Enable 启用
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *BmToolCategoryService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
+	return c.State(ctx, ct.Ids, enumStatePg.ENABLE)
+}
+
+// Disable 禁用
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *BmToolCategoryService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
+	return c.State(ctx, ct.Ids, enumStatePg.GetType(enumStatePg.DISABLE))
+}
+
+// State 状态 启用/禁用
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *BmToolCategoryService) State(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
+	if len(ids) < 1 {
+		return rt.ErrorMessage("id错误")
+	}
+	r := c.sv
+	finds, b := r.FindAllByIdStringIn(ctx, ids, optionsPg.WithCtx(ctx))
+	if !b {
+		return rt.ErrorMessage("数据不存在")
+	}
+	for _, info := range finds {
+		if info.State != state.IndexInt8() {
+			r.Update(ctx, entityBm.BmToolCategoryEntity{State: state.IndexInt8()}, info.ID)
+		}
+	}
+	return rt.Ok()
+}
+
+// StateEnableDisable 状态 设置 有效 停用
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *BmToolCategoryService) StateEnableDisable(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
+	if !state.IsEnableDisable() {
+		return rt.ErrorMessage("状态错误")
+	}
+	return c.State(ctx, ids, state)
+}
+
+// LogicalDeletion 逻辑删除
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *BmToolCategoryService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
+	if len(ids) < 1 {
+		return rt.ErrorMessage("id错误")
+	}
+	repository := c.sv
+	finds, b := repository.FindAllByIdStringIn(ctx, ids, optionsPg.WithCtx(ctx))
+	if !b {
+		return rt.ErrorMessage("数据不存在")
+	}
+	if c.sv.Config().Data.Delete {
+		for _, info := range finds {
+			log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
+		}
+		repository.DeleteByIdsString(ctx, ids)
+		//
+		c.chd.DeleteNos(ctx, ids)
+	} else {
+		for _, info := range finds {
+			enum := enumStatePg.State(info.State)
+			if ok, reverse := enum.ReverseEnableDisable(); ok {
+				repository.Update(ctx, entityBm.BmToolCategoryEntity{State: reverse.IndexInt8()}, info.ID)
+			}
+		}
+	}
+	return rt.Ok()
+}
+
+// LogicalRecovery 逻辑删除恢复
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *BmToolCategoryService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
+	if len(ids) < 1 {
+		return rt.ErrorMessage("id错误")
+	}
+	repository := c.sv
+	finds, b := repository.FindAllByIdStringIn(ctx, ids, optionsPg.WithCtx(ctx))
+	if !b {
+		return rt.ErrorMessage("数据不存在")
+	}
+	for _, info := range finds {
+		enum := enumStatePg.State(info.State)
+		if ok, reverse := enum.ReverseCancelLayAside(); ok {
+			repository.Update(ctx, entityBm.BmToolCategoryEntity{State: reverse.IndexInt8()}, info.ID)
+		}
+	}
+	return rt.Ok()
+}
+
+// PhysicalDeletion 物理删除
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *BmToolCategoryService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
+	if len(ids) < 1 {
+		return rt.ErrorMessage("id错误")
+	}
+	cn := c.sv
+	finds, b := cn.FindAllByIdStringIn(ctx, ids, optionsPg.WithCtx(ctx))
+	if !b {
+		return rt.ErrorMessage("数据不存在")
+	}
+	idsNew := make([]int64, 0)
+	keys := make([]string, 0)
+	for _, info := range finds {
+		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
+		idsNew = append(idsNew, info.ID)
+		//
+		keys = append(keys, info.No)
+	}
+	if len(idsNew) > 0 {
+		cn.DeleteByIds(ctx, idsNew)
+		//
+		c.chd.DeleteNos(ctx, keys)
+	}
+	return rt.Ok()
+}
+
+// Query 查询
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *BmToolCategoryService) Query(ctx *gin.Context, ct modBmToolCategory.QueryCt) (rt rg.Rs[pagePg.Paginator[modBmToolCategory.Vo]]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	var query entityBm.BmToolCategoryEntity
+	copier.Copy(&query, &ct)
+	slice := make([]modBmToolCategory.Vo, 0)
+	rt.Data.Data = slice
+	r := c.sv
+	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
+		if ct.PageSize < 1 {
+			ct.PageSize = 20
+		}
+		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
+		arg.Db = arg.Db.Order("create_at asc")
+		if strPg.IsNotBlank(ct.Wd) {
+			arg.Db = arg.Db.Where("name like ?", "%"+ct.Wd+"%")
+		}
+	}), optionsPg.WithCtx(ctx))
+	if nil != err {
+		return rt.Ok()
+	}
+
+	if page.Total > 0 && page.Data != nil && len(page.Data) > 0 {
+		pg := pagePg.NewPaginatorByPageable[modBmToolCategory.Vo](page.Pageable)
+		for _, item := range page.Data {
+			var vo modBmToolCategory.Vo
+			copier.Copy(&vo, &item)
+			slice = append(slice, vo)
+		}
+		pg.Data = slice
+		pg.Pageable = page.Pageable
+		rt.Data = pg
+		return rt.Ok()
+	}
+	return rt.Ok()
+}
+
+// QueryAll 查询
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *BmToolCategoryService) QueryAll(ctx *gin.Context, ct modBmToolCategory.QueryPublicCt) (rt rg.Rs[[]modBmToolCategory.Vo]) {
+	var query entityBm.BmToolCategoryEntity
+	copier.Copy(&query, &ct)
+	slice := make([]modBmToolCategory.Vo, 0)
+	rt.Data = slice
+	infos := c.sv.FindAll(ctx, query)
+	if len(infos) > 0 {
+		for _, item := range infos {
+			var vo modBmToolCategory.Vo
+			copier.Copy(&vo, &item)
+			slice = append(slice, vo)
+		}
+		rt.Data = slice
+	}
+	return rt.Ok()
+}
+
+// SelectNodeAll 查询
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *BmToolCategoryService) SelectNodeAll(ctx *gin.Context, ct modBmToolCategory.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+	var query entityBm.BmToolCategoryEntity
+	copier.Copy(&query, &ct)
+	slice := make([]model.BaseNodeNo, 0)
+	rt.Data = slice
+	infos := c.sv.FindAll(ctx, query)
+	if len(infos) > 0 {
+		for _, item := range infos {
+			var vo modBmToolCategory.Vo
+			copier.Copy(&vo, &item)
+			code := model.BaseNodeNo{
+				Value:    item.No,
+				Label:    item.Name,
+				ParentNo: item.ParentNo,
+				Extend:   vo,
+			}
+			slice = append(slice, code)
+		}
+		rt.Data = slice
+	}
+	return rt.Ok()
+}
+
+// SelectNodeAllPublic 查询
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *BmToolCategoryService) SelectNodeAllPublic(ctx *gin.Context, ct modBmToolCategory.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+	var query entityBm.BmToolCategoryEntity
+	copier.Copy(&query, &ct)
+	slice := make([]model.BaseNodeNo, 0)
+	rt.Data = slice
+	infos := c.sv.FindAll(ctx, query)
+	if len(infos) > 0 {
+		for _, item := range infos {
+			var vo modBmToolCategory.Vo
+			copier.Copy(&vo, &item)
+			code := model.BaseNodeNo{
+				Value:    item.No,
+				Label:    item.Name,
+				ParentNo: item.ParentNo,
+				Extend:   vo,
+			}
+			slice = append(slice, code)
+		}
+		rt.Data = slice
+	}
+	return rt.Ok()
+}
+
+// ExistName 查重
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *BmToolCategoryService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
+	if "" == ct.Wd {
+		return rt.ErrorMessage("关键词不能为空")
+	}
+	id := "0"
+	if strPg.IsNotBlank(ct.Id) {
+		id = ct.Id
+	}
+	_, result := c.sv.FindByNameAndIdNot(ctx, ct.Wd, id, optionsPg.WithCtx(ctx))
+	if result {
+		return rt.ErrorMessage("重复，已存在")
+	}
+	return rt.OkMessage("可以使用")
+}
+
+// ExistNo 查重
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *BmToolCategoryService) ExistNo(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
+	if "" == ct.Wd {
+		return rt.ErrorMessage("关键词不能为空")
+	}
+	id := "0"
+	if strPg.IsNotBlank(ct.Id) {
+		id = ct.Id
+	}
+	_, result := c.sv.FindByCodeAndIdNot(ctx, ct.Wd, id, optionsPg.WithCtx(ctx))
+	if result {
+		return rt.ErrorMessage("重复，已存在")
+	}
+	return rt.OkMessage("可以使用")
+}

@@ -1,4 +1,4 @@
-package typeSourcePg
+package articleModulePg
 
 import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumBasePg"

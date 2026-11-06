@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBookmark/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBm/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmark/modApiBmBookmark"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/blog/bookmarkTypeOwnerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"

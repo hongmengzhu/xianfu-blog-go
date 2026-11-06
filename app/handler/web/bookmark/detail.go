@@ -4,9 +4,9 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBookmark/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBm/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/utils/webPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cacheService/cacheBookmark"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cacheService/cacheBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
@@ -21,9 +21,9 @@ func init() {
 
 type DetailController struct {
 	routerPg.RouteRegistrar
-	Sp       *authPg.GroupWebMiddlewareSp         `autowire:"?"`
-	sv       *service.BmBookmarkWebService        `autowire:"?"`
-	catCache *cacheBookmark.CacheBookmarkCategory `autowire:"?"`
+	Sp       *authPg.GroupWebMiddlewareSp   `autowire:"?"`
+	sv       *service.BmBookmarkWebService  `autowire:"?"`
+	catCache *cacheBm.CacheBookmarkCategory `autowire:"?"`
 }
 
 // RegisterRoutes

@@ -1,0 +1,13 @@
+{{ define "nav/bookmark/detail.html" }}
+{{template "nav/bookmark/header.html" .}}
+{{template "nav/bookmark/left-aside.html" .}}
+<div class="app-main">
+    {{template "nav/bookmark/topbar.html" .}}
+
+    {{template "nav/bookmark/detail-main.html" .}}
+
+    {{template "nav/bookmark/main-footer.html" .}}
+</div>
+{{template "nav/bookmark/footer-mobile.html" .}}
+{{template "nav/bookmark/footer-js.html" .}}
+{{end}}

@@ -1,4 +1,4 @@
-package cacheBookmark
+package cacheBm
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/goccy/go-json"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkCategory"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmToolCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cachePg/bigCachePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBm"
@@ -16,12 +16,12 @@ import (
 )
 
 func init() {
-	gs.Provide(new(CacheBookmarkCategory))
+	gs.Provide(new(CacheToolCategory))
 }
 
-type CacheBookmarkCategory struct {
-	sv  *repositoryBm.BmBookmarkCategoryRepository `autowire:"?"`
-	rdt *bigCachePg.BatchString                    `autowire:"?"`
+type CacheToolCategory struct {
+	sv  *repositoryBm.BmToolCategoryRepository `autowire:"?"`
+	rdt *bigCachePg.BatchString                `autowire:"?"`
 }
 
 // GetAllByKeysRetMap
@@ -32,12 +32,12 @@ type CacheBookmarkCategory struct {
 //	@param tenantNo
 //	@return []*entityBlog.BlogArticleCategoryEntity
 //	@return bool
-func (c *CacheBookmarkCategory) GetAllByKeysRetMap(ctx context.Context, keys []string, tenantNo string) (map[string]*modBmBookmarkCategory.Cache, bool) {
-	data := make(map[string]*modBmBookmarkCategory.Cache, 0)
+func (c *CacheToolCategory) GetAllByKeysRetMap(ctx context.Context, keys []string, tenantNo string) (map[string]*modBmToolCategory.Cache, bool) {
+	data := make(map[string]*modBmToolCategory.Cache, 0)
 	tmps := make([]string, 0)
 	for _, item := range keys {
 		if strPg.IsNotBlank(item) {
-			tmps = append(tmps, bmKeyPg.BookmarkCategoryTenantNo(tenantNo, item))
+			tmps = append(tmps, bmKeyPg.ToolCategoryTenantNo(tenantNo, item))
 		}
 	}
 	if len(tmps) == 0 {
@@ -59,7 +59,7 @@ func (c *CacheBookmarkCategory) GetAllByKeysRetMap(ctx context.Context, keys []s
 				continue
 			}
 			// 可选：将 JSON 字符串解析为结构体
-			var category modBmBookmarkCategory.Cache
+			var category modBmToolCategory.Cache
 			if err := json.Unmarshal([]byte(valueStr), &category); err != nil {
 				fmt.Printf("解析键 JSON 失败: %v\n", err)
 				continue
@@ -78,9 +78,9 @@ func (c *CacheBookmarkCategory) GetAllByKeysRetMap(ctx context.Context, keys []s
 //	@param ctx
 //	@param keys 分类 code（也兼容 no）
 //	@param tenantNo
-//	@return *modBmBookmarkCategory.Cache
+//	@return *modBmToolCategory.Cache
 //	@return bool
-func (c *CacheBookmarkCategory) GetByKey(ctx context.Context, keys string, tenantNo string) (*modBmBookmarkCategory.Cache, bool) {
+func (c *CacheToolCategory) GetByKey(ctx context.Context, keys string, tenantNo string) (*modBmToolCategory.Cache, bool) {
 	if strPg.IsBlank(keys) {
 		return nil, false
 	}
@@ -89,16 +89,16 @@ func (c *CacheBookmarkCategory) GetByKey(ctx context.Context, keys string, tenan
 	//   bm:bmCateNoCode:<tenantNo>:<code> -> no
 	// 页面链接用 code，这里先按 code 换成 no；换不到就按 no 直接查。
 	no := strings.TrimSpace(keys)
-	if v, ok := c.rdt.Get(ctx, bmKeyPg.BookmarkCategoryTenantNoAndNoByCode(tenantNo, no)); ok && strPg.IsNotBlank(v) {
+	if v, ok := c.rdt.Get(ctx, bmKeyPg.ToolCategoryTenantNoAndNoByCode(tenantNo, no)); ok && strPg.IsNotBlank(v) {
 		no = strings.TrimSpace(v)
 	}
-	key := bmKeyPg.BookmarkCategoryTenantNo(tenantNo, no)
+	key := bmKeyPg.ToolCategoryTenantNo(tenantNo, no)
 	valueStr, ok := c.rdt.Get(ctx, key)
 	if !ok || strPg.IsBlank(valueStr) {
 		return nil, false
 	}
 	// 可选：将 JSON 字符串解析为结构体
-	var category modBmBookmarkCategory.Cache
+	var category modBmToolCategory.Cache
 	if err := json.Unmarshal([]byte(valueStr), &category); err != nil {
 		fmt.Printf("解析键 %s 的 JSON 失败: %v\n", key, err)
 		return nil, false
@@ -114,10 +114,10 @@ func (c *CacheBookmarkCategory) GetByKey(ctx context.Context, keys string, tenan
 //	@param tenantNo
 //	@return []*entityBlog.BlogArticleCategoryEntity
 //	@return bool
-func (c *CacheBookmarkCategory) GetAllByCache(ctx context.Context, tenantNo string) ([]*modBmBookmarkCategory.Cache, bool) {
-	data := make([]*modBmBookmarkCategory.Cache, 0)
+func (c *CacheToolCategory) GetAllByCache(ctx context.Context, tenantNo string) ([]*modBmToolCategory.Cache, bool) {
+	data := make([]*modBmToolCategory.Cache, 0)
 	// 原来是把集合 key 交给 Lua（SMEMBERS + MGET）；现在由 GetAllBySetKey 在进程内完成同样的两步。
-	setKey := bmKeyPg.BookmarkCategoryTenantNoKeys(tenantNo)
+	setKey := bmKeyPg.ToolCategoryTenantNoKeys(tenantNo)
 	result, b := c.rdt.GetAllBySetKey(ctx, setKey)
 	//fmt.Printf("获取缓存结果: %v\n", result)
 	if b {
@@ -133,7 +133,7 @@ func (c *CacheBookmarkCategory) GetAllByCache(ctx context.Context, tenantNo stri
 			}
 
 			// 可选：将 JSON 字符串解析为结构体
-			var category modBmBookmarkCategory.Cache
+			var category modBmToolCategory.Cache
 			if err := json.Unmarshal([]byte(valueStr), &category); err != nil {
 				fmt.Printf("解析键 %s 的 JSON 失败: %v\n", key, err)
 				continue
@@ -153,7 +153,7 @@ func (c *CacheBookmarkCategory) GetAllByCache(ctx context.Context, tenantNo stri
 //	@param tenantNo
 //	@return []model.BaseNodeTree
 //	@return bool
-func (c *CacheBookmarkCategory) FormatTree(ctx context.Context, tenantNo string) ([]model.BaseNodeTree, bool) {
+func (c *CacheToolCategory) FormatTree(ctx context.Context, tenantNo string) ([]model.BaseNodeTree, bool) {
 	cache, b := c.GetAllByCache(ctx, tenantNo)
 	if b {
 		tree := c.ConvertToTree(cache)
@@ -165,7 +165,7 @@ func (c *CacheBookmarkCategory) FormatTree(ctx context.Context, tenantNo string)
 // ConvertToTree 将 数组转换为 BaseNodeTree 树形结构
 //
 //	[]BaseNodeTree: 树形结构的根节点列表
-func (c *CacheBookmarkCategory) ConvertToTree(entities []*modBmBookmarkCategory.Cache) []model.BaseNodeTree {
+func (c *CacheToolCategory) ConvertToTree(entities []*modBmToolCategory.Cache) []model.BaseNodeTree {
 	// 初始化节点Map和根节点列表
 	nodeMap := make(map[string]*model.BaseNodeTree)
 	rootNodes := make([]model.BaseNodeTree, 0)

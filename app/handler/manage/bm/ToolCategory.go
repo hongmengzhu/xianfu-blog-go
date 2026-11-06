@@ -1,9 +1,9 @@
-package bookmark
+package bm
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBookmark/service"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkCategory"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBm/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmToolCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
@@ -14,15 +14,15 @@ import (
 )
 
 func init() {
-	gs.Provide(new(BookmarkCategoryController)).Name("ManageBookmarkCategoryController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(ToolCategoryController)).Name("ManageToolCategoryController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
-// BookmarkCategoryController 书签分类
+// ToolCategoryController 工具分类
 // @Description:
-type BookmarkCategoryController struct {
+type ToolCategoryController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupManageMiddlewareSp    `autowire:"?"`
-	sv *service.BmBookmarkCategoryService `autowire:"?"`
+	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
+	sv *service.BmToolCategoryService  `autowire:"?"`
 }
 
 // RegisterRoutes 注册路由
@@ -30,8 +30,8 @@ type BookmarkCategoryController struct {
 //	@Description:
 //	@receiver c
 //	@param e
-func (c *BookmarkCategoryController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/manage/blog/bookmark-category", authPg.GroupManageMiddleware(c.Sp))
+func (c *ToolCategoryController) RegisterRoutes(e *gin.Engine) {
+	group := e.Group("/xianfu/manage/bm/tool-category", authPg.GroupManageMiddleware(c.Sp))
 	group.POST("/create", c.Create)
 	group.POST("/update", c.Update)
 	group.GET("/detail/:id", c.Detail)
@@ -54,8 +54,8 @@ func (c *BookmarkCategoryController) RegisterRoutes(e *gin.Engine) {
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *BookmarkCategoryController) Create(ctx *gin.Context) {
-	var ct modBmBookmarkCategory.CreateCt
+func (c *ToolCategoryController) Create(ctx *gin.Context) {
+	var ct modBmToolCategory.CreateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -67,8 +67,8 @@ func (c *BookmarkCategoryController) Create(ctx *gin.Context) {
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *BookmarkCategoryController) Update(ctx *gin.Context) {
-	var ct modBmBookmarkCategory.UpdateCt
+func (c *ToolCategoryController) Update(ctx *gin.Context) {
+	var ct modBmToolCategory.UpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -80,7 +80,7 @@ func (c *BookmarkCategoryController) Update(ctx *gin.Context) {
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *BookmarkCategoryController) Delete(ctx *gin.Context) {
+func (c *ToolCategoryController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -93,7 +93,7 @@ func (c *BookmarkCategoryController) Delete(ctx *gin.Context) {
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *BookmarkCategoryController) Recovery(ctx *gin.Context) {
+func (c *ToolCategoryController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -106,7 +106,7 @@ func (c *BookmarkCategoryController) Recovery(ctx *gin.Context) {
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *BookmarkCategoryController) PhysicalDeletion(ctx *gin.Context) {
+func (c *ToolCategoryController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -119,7 +119,7 @@ func (c *BookmarkCategoryController) PhysicalDeletion(ctx *gin.Context) {
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *BookmarkCategoryController) Detail(ctx *gin.Context) {
+func (c *ToolCategoryController) Detail(ctx *gin.Context) {
 	param := ctx.Param("id")
 	if "" == param {
 		ctx.JSON(200, rg.Error[string]("id不能为空"))
@@ -133,7 +133,7 @@ func (c *BookmarkCategoryController) Detail(ctx *gin.Context) {
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *BookmarkCategoryController) Enable(ctx *gin.Context) {
+func (c *ToolCategoryController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -146,7 +146,7 @@ func (c *BookmarkCategoryController) Enable(ctx *gin.Context) {
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *BookmarkCategoryController) Disable(ctx *gin.Context) {
+func (c *ToolCategoryController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -159,7 +159,7 @@ func (c *BookmarkCategoryController) Disable(ctx *gin.Context) {
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *BookmarkCategoryController) State(ctx *gin.Context) {
+func (c *ToolCategoryController) State(ctx *gin.Context) {
 	var ct model.BaseStateIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -177,16 +177,16 @@ func (c *BookmarkCategoryController) State(ctx *gin.Context) {
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *BookmarkCategoryController) Query(ctx *gin.Context) {
-	var ct modBmBookmarkCategory.QueryCt
+func (c *ToolCategoryController) Query(ctx *gin.Context) {
+	var ct modBmToolCategory.QueryCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
 }
 
-func (c *BookmarkCategoryController) SelectNodeAll(ctx *gin.Context) {
-	var ct modBmBookmarkCategory.QueryPublicCt
+func (c *ToolCategoryController) SelectNodeAll(ctx *gin.Context) {
+	var ct modBmToolCategory.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -194,8 +194,8 @@ func (c *BookmarkCategoryController) SelectNodeAll(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.SelectNodeAll(ctx, ct))
 }
 
-func (c *BookmarkCategoryController) SelectNodeAllPublic(ctx *gin.Context) {
-	var ct modBmBookmarkCategory.QueryPublicCt
+func (c *ToolCategoryController) SelectNodeAllPublic(ctx *gin.Context) {
+	var ct modBmToolCategory.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -203,8 +203,8 @@ func (c *BookmarkCategoryController) SelectNodeAllPublic(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.SelectNodeAllPublic(ctx, ct))
 }
 
-func (c *BookmarkCategoryController) QueryAll(ctx *gin.Context) {
-	var ct modBmBookmarkCategory.QueryPublicCt
+func (c *ToolCategoryController) QueryAll(ctx *gin.Context) {
+	var ct modBmToolCategory.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -217,7 +217,7 @@ func (c *BookmarkCategoryController) QueryAll(ctx *gin.Context) {
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *BookmarkCategoryController) ExistName(ctx *gin.Context) {
+func (c *ToolCategoryController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -230,7 +230,7 @@ func (c *BookmarkCategoryController) ExistName(ctx *gin.Context) {
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *BookmarkCategoryController) ExistNo(ctx *gin.Context) {
+func (c *ToolCategoryController) ExistNo(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return

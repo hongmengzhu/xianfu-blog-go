@@ -3,11 +3,11 @@ package bookmark
 import (
 	"slices"
 
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBookmark/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBm/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/handlerVhost"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkWeb"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cacheService/cacheBookmark"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cacheService/cacheBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/staterEchoV5"
@@ -25,9 +25,9 @@ func init() {
 // CategoryController 书签分类（独立域名 bookmark.test）
 type CategoryController struct {
 	staterEchoV5.RouteRegistrar
-	Sp       *authPg.GroupWebVhostMiddlewareSp    `autowire:"?"`
-	sv       *service.BmBookmarkWebService        `autowire:"?"`
-	catCache *cacheBookmark.CacheBookmarkCategory `autowire:"?"`
+	Sp       *authPg.GroupWebVhostMiddlewareSp `autowire:"?"`
+	sv       *service.BmBookmarkWebService     `autowire:"?"`
+	catCache *cacheBm.CacheBookmarkCategory    `autowire:"?"`
 }
 
 // Host 模块绑定域名

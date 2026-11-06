@@ -37,10 +37,6 @@ func (b *AInitTable) Run(ctx context.Context) error {
 		entityData = append(entityData, &entityApi.ApiDiplCategoryEntity{})
 	}
 	{
-		entityData = append(entityData, &entityBasic.BasicAccountApplyDenyListEntity{})
-		entityData = append(entityData, &entityBasic.BasicAreaEntity{})
-		entityData = append(entityData, &entityBasic.BasicAttachmentEntity{})
-		entityData = append(entityData, &entityBasic.BasicCountryEntity{})
 		entityData = append(entityData, &entityB72.B72ConfigEntity{})
 		entityData = append(entityData, &entityB72.B72ConfigCategoryEntity{})
 		entityData = append(entityData, &entityB72.B72ConfigEventEntity{})
@@ -49,6 +45,12 @@ func (b *AInitTable) Run(ctx context.Context) error {
 		entityData = append(entityData, &entityB72.B72ConfigModelEntity{})
 		entityData = append(entityData, &entityB72.B72ConfigModelFieldsEntity{})
 		entityData = append(entityData, &entityB72.B72ConfigModelRulesEntity{})
+	}
+	{
+		entityData = append(entityData, &entityBasic.BasicAccountApplyDenyListEntity{})
+		entityData = append(entityData, &entityBasic.BasicAreaEntity{})
+		entityData = append(entityData, &entityBasic.BasicAttachmentEntity{})
+		entityData = append(entityData, &entityBasic.BasicCountryEntity{})
 		entityData = append(entityData, &entityBasic.BasicDataDictionaryEntity{})
 		entityData = append(entityData, &entityBasic.BasicDataSnapshotEntity{})
 		entityData = append(entityData, &entityBasic.BasicModelRulesEntity{})
@@ -61,14 +63,18 @@ func (b *AInitTable) Run(ctx context.Context) error {
 		entityData = append(entityData, &entityBlog.BlogArticleEntity{})
 		entityData = append(entityData, &entityBlog.BlogArticleCategoryEntity{})
 		entityData = append(entityData, &entityBlog.BlogArticleStatisticsEntity{})
-		entityData = append(entityData, &entityBm.BmBookmarkEntity{})
-		entityData = append(entityData, &entityBm.BmBookmarkCategoryEntity{})
 		entityData = append(entityData, &entityBlog.BlogCollectEntity{})
 		entityData = append(entityData, &entityBlog.BlogCollectCategoryEntity{})
 		entityData = append(entityData, &entityBlog.BlogTopicEntity{})
 		entityData = append(entityData, &entityBlog.BlogTopicCategoryEntity{})
 		entityData = append(entityData, &entityBlog.BlogTopicRelationEntity{})
 		entityData = append(entityData, &entityBlog.BlogTopicStatisticsEntity{})
+	}
+	{
+		entityData = append(entityData, &entityBm.BmBookmarkEntity{})
+		entityData = append(entityData, &entityBm.BmBookmarkCategoryEntity{})
+		entityData = append(entityData, &entityBm.BmToolEntity{})
+		entityData = append(entityData, &entityBm.BmToolCategoryEntity{})
 	}
 	//
 	{

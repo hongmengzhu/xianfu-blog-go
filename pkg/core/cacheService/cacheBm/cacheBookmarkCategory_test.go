@@ -1,4 +1,4 @@
-package cacheBookmark
+package cacheBm
 
 import (
 	"context"

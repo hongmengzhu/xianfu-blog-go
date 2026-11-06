@@ -6,7 +6,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/handlerVhost"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticleWeb"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cacheService/cacheBlog"
-	modulePg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/blog/articleModulePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/blog/articleModulePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/staterEchoV5"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
@@ -48,7 +48,7 @@ func (c *NewsController) List(ctx *echo.Context) error {
 		return echo.NewHTTPError(400, err.Error())
 	}
 	// 只查新闻模块
-	ct.Module = modulePg.NEW.String()
+	ct.Module = articleModulePg.NEW.String()
 	// 分页默认值：未传 pageSize 时 PageSize=0 会导致总页溢出且查不出数据
 	if ct.PageSize < 1 {
 		ct.PageSize = 20

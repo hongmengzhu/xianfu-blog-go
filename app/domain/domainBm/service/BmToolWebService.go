@@ -10,10 +10,10 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service/blogArticle"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/utils/webPg"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicTagsRelation"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkCategory"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkWeb"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmToolCategory"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmToolWeb"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cachePg/bigCachePg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cacheService/cacheBookmark"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cacheService/cacheBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constTags"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/blog/attachmentTypePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumApprovedPg"
@@ -21,8 +21,8 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
-	repositoryBm "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBm"
-	markdownPg "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/markdownPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBm"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/markdownPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/blog/key/blogKeyPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
@@ -34,16 +34,16 @@ import (
 )
 
 func init() {
-	gs.Provide(new(BmBookmarkWebService))
+	gs.Provide(new(BmToolWebService))
 }
 
-type BmBookmarkWebService struct {
-	sv        *repositoryBm.BmBookmarkRepository           `autowire:"?"`
-	catDb     *repositoryBm.BmBookmarkCategoryRepository   `autowire:"?"`
+type BmToolWebService struct {
+	sv        *repositoryBm.BmToolRepository               `autowire:"?"`
+	catDb     *repositoryBm.BmToolCategoryRepository       `autowire:"?"`
 	sp        *blogArticle.Sp                              `autowire:"?"`
 	tagsRelat *repositoryBasic.BasicTagsRelationRepository `autowire:"?"`
 	rdu       *bigCachePg.BatchString                      `autowire:"?"`
-	catCore   *cacheBookmark.CacheBookmarkCategory         `autowire:"?"`
+	catCore   *cacheBm.CacheToolCategory                   `autowire:"?"`
 }
 
 // Detail 详情
@@ -51,7 +51,7 @@ type BmBookmarkWebService struct {
 //	@Description:
 //	@receiver c
 //	@param id
-func (c *BmBookmarkWebService) Detail(ctx *gin.Context, id string) (rt rg.Rs[modBmBookmarkWeb.DetailVo]) {
+func (c *BmToolWebService) Detail(ctx *gin.Context, id string) (rt rg.Rs[modBmToolWeb.DetailVo]) {
 	return c.DetailByContext(ctx, webPg.GetTenantNo(ctx), id, false, false)
 }
 
@@ -60,7 +60,7 @@ func (c *BmBookmarkWebService) Detail(ctx *gin.Context, id string) (rt rg.Rs[mod
 //	@Description:
 //	@receiver c
 //	@param id
-func (c *BmBookmarkWebService) DetailNo(ctx *gin.Context, id string) (rt rg.Rs[modBmBookmarkWeb.DetailVo]) {
+func (c *BmToolWebService) DetailNo(ctx *gin.Context, id string) (rt rg.Rs[modBmToolWeb.DetailVo]) {
 	return c.DetailByContext(ctx, webPg.GetTenantNo(ctx), id, false, true)
 }
 
@@ -71,8 +71,8 @@ func (c *BmBookmarkWebService) DetailNo(ctx *gin.Context, id string) (rt rg.Rs[m
 //	@param ctx
 //	@param tenantNo 租户编号
 //	@param id
-func (c *BmBookmarkWebService) DetailByContext(ctx context.Context, tenantNo string, id string, isCode, isNo bool) (rt rg.Rs[modBmBookmarkWeb.DetailVo]) {
-	var find *entityBm.BmBookmarkEntity
+func (c *BmToolWebService) DetailByContext(ctx context.Context, tenantNo string, id string, isCode, isNo bool) (rt rg.Rs[modBmToolWeb.DetailVo]) {
+	var find *entityBm.BmToolEntity
 	b := false
 	id = strings.TrimSpace(id)
 	if isCode {
@@ -99,12 +99,12 @@ func (c *BmBookmarkWebService) DetailByContext(ctx context.Context, tenantNo str
 		return rt.ErrorMessage("数据不存在")
 	}
 	log.Info(ctx, log.TagAppDef, "find=%+v", log.Any("find", find))
-	var info modBmBookmarkWeb.DetailVo
+	var info modBmToolWeb.DetailVo
 	copier.Copy(&info, find)
 	//
 	catNo := make([]string, 0)
 	tags := make([]string, 0)
-	info.CategoryObj = make([]*modBmBookmarkCategory.Cache, 0)
+	info.CategoryObj = make([]*modBmToolCategory.Cache, 0)
 	info.Tags = make([]string, 0)
 	info.Where = make([]string, 0)
 	info.AttachmentsMap = make(map[string]string)
@@ -243,7 +243,7 @@ func (c *BmBookmarkWebService) DetailByContext(ctx context.Context, tenantNo str
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BmBookmarkWebService) Query(ctx *gin.Context, ct modBmBookmarkWeb.QueryCt) (rt rg.Rs[pagePg.Paginator[modBmBookmarkWeb.Vo]]) {
+func (c *BmToolWebService) Query(ctx *gin.Context, ct modBmToolWeb.QueryCt) (rt rg.Rs[pagePg.Paginator[modBmToolWeb.Vo]]) {
 	return c.QueryByContext(ctx, webPg.GetTenantNo(ctx), ct)
 }
 
@@ -254,9 +254,9 @@ func (c *BmBookmarkWebService) Query(ctx *gin.Context, ct modBmBookmarkWeb.Query
 //	@param ctx
 //	@param tenantNo 租户编号
 //	@param ct
-func (c *BmBookmarkWebService) QueryByContext(ctx context.Context, tenantNo string, ct modBmBookmarkWeb.QueryCt) (rt rg.Rs[pagePg.Paginator[modBmBookmarkWeb.Vo]]) {
+func (c *BmToolWebService) QueryByContext(ctx context.Context, tenantNo string, ct modBmToolWeb.QueryCt) (rt rg.Rs[pagePg.Paginator[modBmToolWeb.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityBm.BmBookmarkEntity
+	var query entityBm.BmToolEntity
 	copier.Copy(&query, &ct)
 	if strPg.IsNotBlank(tenantNo) {
 		query.TenantNo = tenantNo
@@ -265,7 +265,7 @@ func (c *BmBookmarkWebService) QueryByContext(ctx context.Context, tenantNo stri
 	query.State = enumStatePg.ENABLE.Index()
 	// 审批通过
 	query.PlatformApproved = enumApprovedPg.ApprovedStateApproved.Index()
-	slice := make([]modBmBookmarkWeb.Vo, 0)
+	slice := make([]modBmToolWeb.Vo, 0)
 	rt.Data.Data = slice
 	r := c.sv
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
@@ -322,7 +322,7 @@ func (c *BmBookmarkWebService) QueryByContext(ctx context.Context, tenantNo stri
 		return rt.Ok()
 	}
 	if page.Total > 0 && page.Data != nil && len(page.Data) > 0 {
-		pg := pagePg.NewPaginatorByPageable[modBmBookmarkWeb.Vo](page.Pageable)
+		pg := pagePg.NewPaginatorByPageable[modBmToolWeb.Vo](page.Pageable)
 		convert := c.DataConvert(ctx, tenantNo, page.Data)
 		if convert.SuccessIs() {
 			pg.Data = convert.Data
@@ -341,11 +341,11 @@ func (c *BmBookmarkWebService) QueryByContext(ctx context.Context, tenantNo stri
 //	@param ctx
 //	@param tenantNo 租户编号
 //	@param ct
-func (c *BmBookmarkWebService) DataConvert(ctx context.Context, tenantNo string, data []*entityBm.BmBookmarkEntity) (rt rg.Rs[[]modBmBookmarkWeb.Vo]) {
+func (c *BmToolWebService) DataConvert(ctx context.Context, tenantNo string, data []*entityBm.BmToolEntity) (rt rg.Rs[[]modBmToolWeb.Vo]) {
 	if data != nil && len(data) > 0 {
-		slice := make([]modBmBookmarkWeb.Vo, 0)
+		slice := make([]modBmToolWeb.Vo, 0)
 		ImgDefault := "/assets/imgs/shop/product-1-1.jpg"
-		mapCategory := make(map[string]*modBmBookmarkCategory.Cache)
+		mapCategory := make(map[string]*modBmToolCategory.Cache)
 		idsCategory := make([]string, 0)
 		idsNo := make([]string, 0)
 		tags := make([]string, 0)
@@ -455,12 +455,12 @@ func (c *BmBookmarkWebService) DataConvert(ctx context.Context, tenantNo string,
 		}
 		// 字段赋值
 		for _, item := range data {
-			var vo modBmBookmarkWeb.Vo
+			var vo modBmToolWeb.Vo
 			copier.Copy(&vo, &item)
 			vo.Tags = make([]string, 0)
 			vo.TagsStyle = make([]modBasicTagsRelation.AllVo, 0)
 			// vo.Categorys = make([]string, 0)
-			vo.CategoryObj = make([]*modBmBookmarkCategory.Cache, 0)
+			vo.CategoryObj = make([]*modBmToolCategory.Cache, 0)
 			//
 			if strPg.IsNotBlank(item.Attachments) {
 				json.Unmarshal([]byte(item.Attachments), &vo.AttachmentsMap)
@@ -521,8 +521,8 @@ func (c *BmBookmarkWebService) DataConvert(ctx context.Context, tenantNo string,
 }
 
 // QueryListBYCategory 根据分类查询列表
-func (c *BmBookmarkWebService) QueryListBYCategory(ctx context.Context, tenantNo string, categories []*model.BaseNodeDataTree, limitPerCat int) (rt rg.Rs[[]*model.BaseNodeDataTree]) {
-	// 注意：这里不能用 c.sv.DbModel()，它的 Model 是 nil 的 *entityBm.BmBookmarkEntity，
+func (c *BmToolWebService) QueryListBYCategory(ctx context.Context, tenantNo string, categories []*model.BaseNodeDataTree, limitPerCat int) (rt rg.Rs[[]*model.BaseNodeDataTree]) {
+	// 注意：这里不能用 c.sv.DbModel()，它的 Model 是 nil 的 *entityBm.BmToolEntity，
 	// Scan/Rows 在设置 Dest 之前就会执行语句，gorm 取到 nil 的 Model 会报
 	// "invalid value, should be pointer to struct or slice"；子查询同样需要非空 Model。
 	ids := make([]string, 0)
@@ -530,10 +530,10 @@ func (c *BmBookmarkWebService) QueryListBYCategory(ctx context.Context, tenantNo
 		ids = append(ids, item.No)
 	}
 	sub := c.sv.Db().WithContext(ctx).
-		Model(&entityBm.BmBookmarkEntity{}).
+		Model(&entityBm.BmToolEntity{}).
 		Select("*, ROW_NUMBER() OVER (PARTITION BY category_no ORDER BY create_at DESC) AS rn").
 		Where("category_no IN ?", ids).Where("tenant_no = ?", tenantNo)
-	list := make([]*entityBm.BmBookmarkEntity, 0)
+	list := make([]*entityBm.BmToolEntity, 0)
 	tx := c.sv.Db().WithContext(ctx).
 		Table("(?) AS t", sub).
 		Where("t.rn <= ?", limitPerCat).
@@ -543,9 +543,9 @@ func (c *BmBookmarkWebService) QueryListBYCategory(ctx context.Context, tenantNo
 		log.Error(ctx, log.TagAppDef, err, "查询失败")
 		return rt.Ok()
 	}
-	listMapTmp := make(map[string][]modBmBookmarkWeb.Vo)
+	listMapTmp := make(map[string][]modBmToolWeb.Vo)
 	for _, item := range categories {
-		listMapTmp[item.No] = make([]modBmBookmarkWeb.Vo, 0)
+		listMapTmp[item.No] = make([]modBmToolWeb.Vo, 0)
 	}
 	tmp := c.DataConvert(ctx, tenantNo, list)
 	if tmp.SuccessIs() {

@@ -1,0 +1,29 @@
+{{ define "nav/bookmark/footer-mobile.html" }}
+<nav class="mobile-bottom-nav" aria-label="移动端导航">
+    <a class="item" href="/">
+        <svg class="icon" aria-hidden="true">
+        <use href="/assets/static/nav-001/icons.svg#home"></use></svg>
+        <span>首页</span></a>
+    <a class="item" href="/category"><svg class="icon" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#grid"></use></svg>
+        <span>分类</span></a>
+    <button class="item" type="button" data-open-search><svg class="icon" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#search"></use></svg>
+        <span>搜索</span></button>
+    <a class="item" href="/news"><svg class="icon" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#sparkles"></use></svg>
+        <span>发现</span>
+    </a>
+    <a class="item" href="//my?from=nav">
+        <svg class="icon" aria-hidden="true">
+        <use href="/assets/static/nav-001/icons.svg#users"></use>
+        </svg><span>我的</span>
+    </a>
+</nav>
+<div class="offcanvas offcanvas-end search-offcanvas" tabindex="-1" id="searchOffcanvas" aria-labelledby="searchOffcanvasLabel">
+    <div class="offcanvas-header">
+        <h2 class="offcanvas-title" id="searchOffcanvasLabel">搜索 分宝呀</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="关闭"></button>
+    </div>
+    <div id="searchOffcanvasBody" hx-get="/partials/search-overlay.html" hx-trigger="load" hx-swap="innerHTML" hx-indicator="#searchLoading">
+        <div class="search-modal-inner"><span class="htmx-indicator" id="searchLoading">正在加载搜索面板…</span></div>
+    </div>
+</div>
+{{end}}

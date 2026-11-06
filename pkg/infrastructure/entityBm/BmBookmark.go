@@ -57,6 +57,7 @@ type BmBookmarkEntity struct {
 	TypeOwner        string                       `gorm:"column:type_owner;type:varchar(80);index;default:'general';comment:类型|普通|团队|个人" json:"type_owner" comment:"类型;普通;团队;个人" `
 	TeamNo           string                       `gorm:"column:team_no;type:varchar(80);index;default:;comment:团队编号" json:"team_no" comment:"团队编号" `
 	FinishReading    *time.Time                   `gorm:"column:finish_reading;comment:完成阅读时间" json:"finish_reading" comment:"完成阅读时间" `
+	Module           string                       `gorm:"column:module;type:varchar(80);index;default:;comment:模块" json:"module" comment:"模块" `
 }
 
 func (*BmBookmarkEntity) TableName() string {
