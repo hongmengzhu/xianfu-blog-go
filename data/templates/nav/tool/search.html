@@ -1,0 +1,13 @@
+{{ define "nav/tool/search.html" }}
+{{template "nav/tool/header.html" .}}
+{{template "nav/tool/left-aside.html" .}}
+<div class="app-main">
+    {{template "nav/tool/topbar.html" .}}
+
+    {{template "nav/tool/search-main.html" .}}
+
+    {{template "nav/tool/main-footer.html" .}}
+</div>
+{{template "nav/tool/footer-mobile.html" .}}
+{{template "nav/tool/footer-js.html" .}}
+{{end}}

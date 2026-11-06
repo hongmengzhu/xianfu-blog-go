@@ -1,10 +1,12 @@
-{{ define "nav/bookmark/block_pagination.html" }}
+{{ define "nav/tool/block_pagination.html" }}
 {{if and .dataIs (gt .data.Pageable.TotalPage 1)}}
 <nav class="pagination" aria-label="分页">
     {{$base := .ctxRequest.Path}}
     {{$pg := .data.Pageable}}
+    <!-- 搜索页需要把 q 参数带到页码链接上，其它页面不传 pageQuery -->
+    {{$q := ""}}{{if .pageQuery}}{{$q = .pageQuery}}{{end}}
     {{if gt $pg.PageNum 1}}
-    <a class="page-btn" rel="prev" aria-label="上一页" href="{{$base}}?pageNum={{$pg.FirstPage}}">上一页</a>
+    <a class="page-btn" rel="prev" aria-label="上一页" href="{{$base}}?{{$q}}pageNum={{$pg.FirstPage}}">上一页</a>
     {{else}}
     <span class="page-btn" aria-disabled="true">上一页</span>
     {{end}}
@@ -13,26 +15,26 @@
     {{$lastInWindow := false}}
     {{range $pages}}{{if eq . $pg.LastPage}}{{$lastInWindow = true}}{{end}}{{end}}
     {{if gt (index $pages 0) 1}}
-    <a class="page-btn" href="{{$base}}?pageNum=1" title="第 1 页">1</a>
+    <a class="page-btn" href="{{$base}}?{{$q}}pageNum=1" title="第 1 页">1</a>
     <span class="page-btn ellipsis" aria-hidden="true">…</span>
     {{end}}
     {{range $pages}}
     {{if eq . $pg.PageNum}}
     <span class="page-btn active" aria-current="page">{{.}}</span>
     {{else}}
-    <a class="page-btn" href="{{$base}}?pageNum={{.}}" title="第 {{.}} 页">{{.}}</a>
+    <a class="page-btn" href="{{$base}}?{{$q}}pageNum={{.}}" title="第 {{.}} 页">{{.}}</a>
     {{end}}
     {{end}}
     {{if not $lastInWindow}}
     <span class="page-btn ellipsis" aria-hidden="true">…</span>
-    <a class="page-btn" href="{{$base}}?pageNum={{$pg.LastPage}}" title="第 {{$pg.LastPage}} 页">{{$pg.LastPage}}</a>
+    <a class="page-btn" href="{{$base}}?{{$q}}pageNum={{$pg.LastPage}}" title="第 {{$pg.LastPage}} 页">{{$pg.LastPage}}</a>
     {{end}}
     {{end}}
     {{if lt $pg.PageNum $pg.TotalPage}}
-    <a class="page-btn" rel="next" aria-label="下一页" href="{{$base}}?pageNum={{$pg.NextPage}}">下一页 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#chevron-right"></use></svg></a>
+    <a class="page-btn" rel="next" aria-label="下一页" href="{{$base}}?{{$q}}pageNum={{$pg.NextPage}}">下一页 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#chevron-right"></use></svg></a>
     {{else}}
     <span class="page-btn" aria-disabled="true">下一页 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#chevron-right"></use></svg></span>
     {{end}}
 </nav>
 {{end}}
-{{ end }}
+{{end}}

@@ -1,67 +1,56 @@
-{{ define "nav/bookmark/category-code-main.html" }}
+{{ define "nav/tool/category-code-main.html" }}
+{{with .pageCategoryItem}}
 <main class="page-main">
     <div class="wrap">
         <nav class="breadcrumb-line" aria-label="面包屑">
-            <a href="/">首页</a><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#chevron-right"></use></svg><a href="/apps/">AI工具库</a><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#chevron-right"></use></svg><span class="current">AI聊天助手</span>
+            <a href="/">首页</a><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#chevron-right"></use></svg><a href="/category">工具库</a><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#chevron-right"></use></svg><span class="current">{{.Name}}</span>
         </nav>
         <header class="category-header">
             <div class="category-head-inner">
-                <span class="category-emoji">💬</span>
+                <span class="category-emoji" aria-hidden="true"><svg class="icon" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#grid"></use></svg></span>
                 <div>
-                    <h1>{{.pageCategoryItem.Name}}</h1>
-                    <p></p>
+                    <h1>{{.Name}}</h1>
+                    <p style="font-size: 12px">{{.Description}}</p>
                 </div>
             </div>
             <div class="toolbar category-toolbar">
                 <div class="toolbar-start">
-                    <span class="result-count">共找到 <strong id="categoryVisibleCount">{{if .dataIs}}{{.data.Total}}{{else}}0{{end}}</strong> 个工具</span>
-                    <span class="toolbar-label">筛选</span>
-                    <button class="filter-chip active" type="button" data-category-filter="all">全部</button>
+                    <span class="result-count">共找到 <strong>{{if $.dataIs}}{{$.data.Total}}{{else}}0{{end}}</strong> 个工具</span>
                 </div>
                 <div class="toolbar-end">
-                    <button class="sort-btn active" type="button" data-category-sort="default">综合排序</button>
-<!--                    <button class="sort-btn" type="button" data-category-sort="rating">评分最高</button>-->
-                    <button class="sort-btn" type="button" data-category-sort="new">最新上架</button>
+                    <a class="sort-btn" href="/search">搜索工具</a>
                 </div>
             </div>
         </header>
 
         <div class="tool-grid" id="categoryToolGrid" style="margin-top:20px">
-            {{if and .dataIs .data.Data }}
-            {{range .data.Data}}
-            <div class="tool-card" data-tool-card data-name="{{.Name}}" data-free="1" data-tutorial="1" data-rating="" data-fresh="0">
-                <div class="tool-card-head">
-                    <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/jasper.png" alt="{{.Name}} logo" loading="lazy">
-                    <div class="tool-card-main">
-                        <div class="tool-card-name"><h3>{{.Name}}</h3></div>
-                        <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
-                    </div>
-                </div>
-                <p class="tool-card-desc">{{.Description}}</p>
-                <div class="tool-card-foot">
-                    <a class="official" href="{{.UrlSource}}">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
-                    <span class="rating none">暂无评分</span>
-                </div>
-                <div class="tool-card-actions">
-<!--                    <a class="compare-mini" href="#" title="加入对比"><svg class="icon icon-sm" aria-hidden="true">-->
-<!--                        <use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span>-->
-<!--                    </a>-->
-                    <a href="#" title="收藏">
-                        <svg class="icon" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#heart"></use></svg>
-                    </a>
-                </div>
-            </div>
+            {{if and $.dataIs (gt $.data.Total 0)}}
+            {{range $.data.Data}}
+            {{template "nav/tool/tool-card.html" .}}
             {{end}}
             {{end}}
         </div>
+        {{if not (and $.dataIs (gt $.data.Total 0))}}
+        <div class="no-content">
+            <h3>该分类下暂无工具</h3>
+            <p>可以返回<a href="/category">工具库</a>浏览其它分类。</p>
+        </div>
+        {{end}}
 
-        {{template "nav/bookmark/block_pagination.html" .}}
-
-<!--        <section class="category-seo">-->
-
-<!--        </section>-->
-
-
+        {{template "nav/tool/block_pagination.html" $}}
     </div>
 </main>
+{{else}}
+<main class="page-main">
+    <div class="wrap">
+        <nav class="breadcrumb-line" aria-label="面包屑">
+            <a href="/">首页</a><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#chevron-right"></use></svg><a href="/category">工具库</a><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#chevron-right"></use></svg><span class="current">分类不存在</span>
+        </nav>
+        <div class="no-content">
+            <h3>分类不存在</h3>
+            <p>该分类可能已下线，或者链接有误。你可以返回<a href="/category">工具库</a>查看全部分类。</p>
+        </div>
+    </div>
+</main>
+{{end}}
 {{end}}

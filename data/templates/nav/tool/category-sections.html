@@ -1,0 +1,32 @@
+{{ define "nav/tool/category-sections.html" }}
+<!-- 分类区块：入参为页面数据，内部使用 .dataIs / .data（[]*model.BaseNodeDataTree，Data 为 []modBmToolWeb.Vo） -->
+<div id="appCategories">
+    {{if and .dataIs .data}}
+    {{range $g := .data}}
+    <section class="category-item app-category" id="cat-{{$g.Code}}">
+        <header class="category-header">
+            <div class="category-head-inner">
+                <span class="category-emoji" aria-hidden="true"><svg class="icon" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#grid"></use></svg></span>
+                <div>
+                    <h1><a href="/category/{{$g.Code}}">{{$g.Name}}</a></h1>
+                    <p style="font-size: 12px">{{with $g.Extend}}{{.Description}}{{end}}</p>
+                </div>
+            </div>
+            <a class="btn-soft" href="/category/{{$g.Code}}">查看全部 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#arrow-right"></use></svg></a>
+        </header>
+
+        <div class="tool-grid" id="categoryToolGrid-{{$g.No}}" style="margin-top:20px">
+            {{range $g.Data}}
+            {{template "nav/tool/tool-card.html" .}}
+            {{end}}
+        </div>
+    </section>
+    {{end}}
+    {{else}}
+    <div class="no-content">
+        <h3>暂无工具</h3>
+        <p>还没有收录工具，稍后再来看看。</p>
+    </div>
+    {{end}}
+</div>
+{{end}}

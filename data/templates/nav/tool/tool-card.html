@@ -1,0 +1,26 @@
+{{ define "nav/tool/tool-card.html" }}
+<!-- 工具卡片：入参为 modBmToolWeb.Vo。列表接口会把缺失的图集补成占位图，这里再做一次兜底。 -->
+{{$img := index .AttachmentsMap "list"}}
+{{if not $img}}{{$img = index .AttachmentsMap "main"}}{{end}}
+{{if eq $img "/assets/imgs/shop/product-1-1.jpg"}}{{$img = ""}}{{end}}
+{{if not $img}}{{$img = "/assets/static/nav-001/img/icon.png"}}{{end}}
+<div class="tool-card" data-tool-card data-name="{{.Name}}">
+    <div class="tool-card-head">
+        <img class="tool-icon" src="{{$img}}" alt="{{.Name}} logo" loading="lazy">
+        <div class="tool-card-main">
+            <div class="tool-card-name"><h3>{{.Name}}</h3></div>
+            <div class="tool-card-labels">
+                {{if .CategoryName}}<span class="tag">{{.CategoryName}}</span>{{end}}
+                {{range $i, $tag := .Tags}}{{if lt $i 2}}<span class="tag">{{$tag}}</span>{{end}}{{end}}
+            </div>
+        </div>
+    </div>
+    <p class="tool-card-desc">{{if .Description}}{{.Description}}{{else}}暂无介绍{{end}}</p>
+    <div class="tool-card-foot">
+        {{if .UrlSource}}
+        <a class="official" href="{{.UrlSource}}" target="_blank" rel="noopener nofollow">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
+        {{end}}
+        <a class="detail" href="/detail/{{.No}}">详情页 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#chevron-right"></use></svg></a>
+    </div>
+</div>
+{{end}}

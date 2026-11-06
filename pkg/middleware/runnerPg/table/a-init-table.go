@@ -112,6 +112,7 @@ func (b *AInitTable) Run(ctx context.Context) error {
 		entityData = append(entityData, &entityTc.TcLevelEntity{})
 		entityData = append(entityData, &entityTc.TcTenantEntity{})
 		entityData = append(entityData, &entityTc.TcTenantDomainEntity{})
+		entityData = append(entityData, &entityTc.TcTenantDomainModuleEntity{})
 	}
 
 	//初始化创建表

@@ -1,4 +1,4 @@
-{{ define "nav/bookmark/main-footer.html" }}
+{{ define "nav/tool/main-footer.html" }}
 <footer class="site-footer">
     <div class="footer-grid">
         <div class="footer-brand">
@@ -6,14 +6,14 @@
                 <img src="/assets/static/nav-001/img/icon.png" alt="分宝呀" width="36" height="36">
                 <div><strong>分宝呀</strong><span>分宝呀工具导航站</span></div>
             </div>
-            <p>分享自用工具包。</p>
+            <p>分享自用工具包，持续收录好用的 AI 应用与教程。</p>
         </div>
         <div class="footer-col">
             <h4>导航</h4>
             <ul>
                 <li><a href="/">首页</a></li>
                 <li><a href="/category">工具库</a></li>
-                <li><a href="//rankings">排行榜</a></li>
+                <li><a href="/search">搜索工具</a></li>
                 <li><a href="/news">每日 AI 快讯</a></li>
                 <li><a href="/tutorial">AI 教程资源</a></li>
             </ul>
@@ -21,13 +21,20 @@
         <div class="footer-col">
             <h4>分类</h4>
             <ul>
-                <li><a href="/category/ai">AI 聊天助手</a></li>
+                {{if .pageCategory}}
+                {{range $c := .pageCategory}}
+                {{with $c.Extend}}
+                <li><a href="/category/{{.Code}}">{{$c.Name}}</a></li>
+                {{end}}
+                {{end}}
+                {{else}}
+                <li><a href="/category">全部分类</a></li>
+                {{end}}
             </ul>
         </div>
     </div>
     <div class="footer-bottom">
         <div>© 2026 fenbaoya.com 保留所有权利。</div>
-        <div style="margin-top:6px">ICP备号 &nbsp;|&nbsp; <a href="//terms/">服务条款</a> &nbsp;|&nbsp; <a href="//disclaimer/">免责声明</a></div>
     </div>
 </footer>
 {{end}}

@@ -1,4 +1,4 @@
-{{ define "nav/bookmark/news-main.html" }}
+{{ define "nav/tool/news-main.html" }}
 <main class="page-main">
     <div class="wrap">
         <section class="page-hero news-hero">
@@ -16,38 +16,58 @@
         <div class="content-with-aside">
             <div class="content-main">
                 {{if and .dataIs (gt .data.Total 0)}}
-                <div class="news-groups"><section class="news-group">
-                    <div class="news-group-head"><span class="bar"></span><h2>全部快讯</h2><span>{{.data.Total}} 条</span><span class="line"></span></div>
-                    <div class="section-list">
-                        {{range .data.Data}}
-                        <article class="list-card news-card">
-                            <div class="list-thumb"><div class="list-thumb-inner"><svg class="icon" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#newspaper"></use></svg></div><span class="badge-float">快讯</span></div>
-                            <div class="list-content">
-                                <div class="list-title"><h3>{{.Name}}</h3></div>
-                                <p class="list-desc">{{.Description}}</p>
-                                <div class="list-meta">
-                                    {{if .Author}}<span class="news-source">{{.Author}}</span>{{end}}
-                                    {{if .CategoryName}}<span class="tag">{{.CategoryName}}</span>{{end}}
-                                    <span><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#clock"></use></svg> {{dateformat .CreateAt "2006-01-02"}}</span>
-                                    <span class="view"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#newspaper"></use></svg> 快讯</span>
+                <div class="news-groups">
+                    <section class="news-group">
+                        <div class="news-group-head"><span class="bar"></span><h2>全部快讯</h2><span>{{.data.Total}} 条</span><span class="line"></span></div>
+                        <div class="section-list">
+                            {{range .data.Data}}
+                            <article class="list-card news-card">
+                                <div class="list-thumb"><div class="list-thumb-inner"><svg class="icon" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#newspaper"></use></svg></div><span class="badge-float">快讯</span></div>
+                                <div class="list-content">
+                                    <div class="list-title"><h3>{{.Name}}</h3></div>
+                                    <p class="list-desc">{{.Description}}</p>
+                                    <div class="list-meta">
+                                        {{if .Author}}<span class="news-source">{{.Author}}</span>{{end}}
+                                        {{if .CategoryName}}<span class="tag">{{.CategoryName}}</span>{{end}}
+                                        <span><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#clock"></use></svg> {{dateformat .CreateAt "2006-01-02"}}</span>
+                                        <span class="view"><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#eye"></use></svg> {{.Statistics.Read}}</span>
+                                    </div>
                                 </div>
-                            </div>
-                            {{if .UrlSource}}<a class="news-original" href="{{.UrlSource}}" target="_blank" rel="noopener">原文 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>{{end}}
-                        </article>
-                        {{end}}
-                    </div>
-                </section></div>
+                                {{if .UrlSource}}<a class="news-original" href="{{.UrlSource}}" target="_blank" rel="noopener nofollow">原文 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>{{end}}
+                            </article>
+                            {{end}}
+                        </div>
+                    </section>
+                </div>
                 {{else}}
                 <div class="no-content">
                     <h3>暂无快讯</h3>
                     <p>还没有发布 AI 快讯，稍后再来看看。</p>
                 </div>
                 {{end}}
-                {{template "nav/bookmark/block_pagination.html" .}}
+                {{template "nav/tool/block_pagination.html" .}}
             </div>
             <aside class="aside-stack">
-                <div class="aside-panel"><h3>热门工具</h3><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/tool-8681.png" alt="Reecho logo" loading="lazy"><span>Reecho</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/pavo.png" alt="Pavo logo" loading="lazy"><span>Pavo</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/zaodian-ai.png" alt="千问创作 logo" loading="lazy"><span>千问创作</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/pixtv.png" alt="PixTV logo" loading="lazy"><span>PixTV</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/music-studio.png" alt="妙响 logo" loading="lazy"><span>妙响</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/laper.svg" alt="Laper logo" loading="lazy"><span>Laper</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/tool-70016.png" alt="Atoms logo" loading="lazy"><span>Atoms</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/youcom.png" alt="You.com logo" loading="lazy"><span>You.com</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/updream.png" alt="updream logo" loading="lazy"><span>updream</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/tool-6474.png" alt="LiblibAI·哩布哩布AI logo" loading="lazy"><span>LiblibAI·哩布哩布AI</span></a></div><div class="aside-panel"><h3>最新收录</h3><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/wron.png" alt="Wron logo" loading="lazy"><span>Wron</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/aliyun-cleversee.png" alt="CleverSee logo" loading="lazy"><span>CleverSee</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/letsmagic.png" alt="超级麦吉 logo" loading="lazy"><span>超级麦吉</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/gaohaole.png" alt="稿好了 logo" loading="lazy"><span>稿好了</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/eluai.png" alt="意流 eluai logo" loading="lazy"><span>意流 eluai</span></a></div><div class="aside-panel"><h3>📰 关于 AI 快讯</h3><div class="aside-note" style="margin-top:0;padding-top:0;border-top:0">每日更新的 AI 行业动态，涵盖新品发布、技术突破与融资并购，帮助你把握行业节奏。</div></div>
-                <div class="aside-panel"><h3>订阅 AI 快讯</h3><p class="aside-note" style="margin-top:0;padding-top:0;border-top:0">每个工作日早上 9 点，把最重要的 AI 动态发到你的邮箱。</p><form class="inline-subscribe" style="height:36px;margin-top:10px" hx-get="/partials/subscribed.html" hx-target="this" hx-swap="innerHTML"><input type="email" name="email" placeholder="你的邮箱" required aria-label="邮箱地址"><button style="height:28px;font-size:11px">订阅</button></form></div>
+                <div class="aside-panel">
+                    <h3>相关内容</h3>
+                    <div>
+                        <a class="aside-item" href="/category"><span>浏览工具库</span></a>
+                        <a class="aside-item" href="/search"><span>搜索工具</span></a>
+                        <a class="aside-item" href="/tutorial"><span>AI 教程资源</span></a>
+                    </div>
+                </div>
+                {{if .categorys}}
+                <div class="aside-panel">
+                    <h3>资讯分类</h3>
+                    <div class="tool-card-labels" style="margin-top:8px">
+                        {{range .categorys}}<span class="tag">{{.Name}}</span>{{end}}
+                    </div>
+                </div>
+                {{end}}
+                <div class="aside-panel">
+                    <h3>📰 关于 AI 快讯</h3>
+                    <div class="aside-note" style="margin-top:0;padding-top:0;border-top:0">每日更新的 AI 行业动态，涵盖新品发布、技术突破与融资并购，帮助你把握行业节奏。</div>
+                </div>
             </aside>
         </div>
     </div>

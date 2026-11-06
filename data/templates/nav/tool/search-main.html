@@ -1,0 +1,38 @@
+{{ define "nav/tool/search-main.html" }}
+<main class="page-main">
+    <div class="wrap">
+        <section class="page-hero">
+            <div class="page-hero-inner">
+                <div class="page-hero-copy">
+                    <h1>{{if .searchQuery}}“{{.searchQuery}}” 的搜索结果{{else}}搜索工具{{end}}</h1>
+                    <p>{{if .searchQuery}}共匹配 {{if .dataIs}}{{.data.Total}}{{else}}0{{end}} 个工具{{else}}输入关键词，按名称搜索已收录的 AI 工具{{end}}</p>
+                </div>
+                <div class="page-hero-stats">
+                    <div class="page-stat"><strong>{{if .dataIs}}{{.data.Total}}{{else}}0{{end}}</strong><span>个结果</span></div>
+                </div>
+            </div>
+            <form class="inline-subscribe" style="height:38px;margin-top:14px" action="/search" method="get" role="search">
+                <input type="search" name="q" placeholder="搜索工具名称..." aria-label="搜索工具名称" value="{{if .searchQuery}}{{.searchQuery}}{{end}}" autocomplete="off" style="height:34px">
+                <button style="height:30px">搜索</button>
+            </form>
+        </section>
+
+        <div class="tool-grid" id="categoryToolGrid" style="margin-top:20px">
+            {{if and .dataIs (gt .data.Total 0)}}
+            {{range .data.Data}}
+            {{template "nav/tool/tool-card.html" .}}
+            {{end}}
+            {{end}}
+        </div>
+
+        {{if not (and .dataIs (gt .data.Total 0))}}
+        <div class="no-content">
+            <h3>没有找到相关工具</h3>
+            <p>换个关键词试试，或者返回<a href="/category">工具库</a>按分类浏览。</p>
+        </div>
+        {{end}}
+
+        {{template "nav/tool/block_pagination.html" .}}
+    </div>
+</main>
+{{end}}

@@ -1,53 +1,31 @@
-{{ define "nav/bookmark/category-main.html" }}
+{{ define "nav/tool/category-main.html" }}
 <main class="page-main">
     <div class="wrap">
-        <header class="apps-head">
-            <h1>工具集</h1>
-            <p>发现和探索各类 应用/工具产品</p>
-        </header>
-                <div class="app-filters">
-                    <span class="toolbar-label">筛选</span>
-                    <button class="filter-chip active" type="button" data-app-filter="all">全部</button>
-                    <button class="filter-chip" type="button" data-app-filter="free">仅免费</button>
-                    <button class="filter-chip" type="button" data-app-filter="tutorial">有教程</button>
-                    <button class="filter-chip" type="button" data-app-filter="rated">4星以上</button>
+        <nav class="breadcrumb-line" aria-label="面包屑">
+            <a href="/">首页</a><svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#chevron-right"></use></svg><span class="current">工具库</span>
+        </nav>
+        <section class="page-hero">
+            <div class="page-hero-inner">
+                <div class="page-hero-copy">
+                    <h1>工具库</h1>
+                    <p>按分类浏览 AI 应用与工具，点击分类可查看该分类下的全部工具</p>
                 </div>
-        <div class="category-item app-category">
-            <header class="category-header">
-                <div class="category-head-inner">
-                    <span class="category-emoji">💬</span>
-                    <div>
-                        <h1>AI聊天助手</h1>
-                        <p style="font-size: 12px">精选 52 款 AI 聊天助手工具，包括 ChatGPT、文心一言、通义千问、Claude 等国内外主流 AI 对话工具。支持多轮对话、代码生成、文档分析，帮你找到最适合的 AI 聊天机器人。</p>
-                    </div>
-                </div>
-            </header>
-
-            <div class="tool-grid" id="categoryToolGrid" style="margin-top:20px">
-                <div class="tool-card" data-tool-card data-name="Jasper Chat" data-free="1" data-tutorial="1" data-rating="" data-fresh="0">
-                    <div class="tool-card-head">
-                        <img class="tool-icon" src="/assets/static/nav-001/img/tool-icons/jasper.png" alt="Jasper Chat logo" loading="lazy">
-                        <div class="tool-card-main">
-                            <div class="tool-card-name"><h3>Jasper Chat</h3></div>
-                            <div class="tool-card-labels"><span class="tag">AI聊天助手</span></div>
-                        </div>
-                    </div>
-                    <p class="tool-card-desc">Jasper Chat是面向营销团队的AI智能体工作空间，通过内置品牌上下文与专用智能体，自动化执行SEO、社媒及广告等端到端内容生产流程。</p>
-                    <div class="tool-card-foot">
-                        <a class="official" href="/apps/">访问官网 <svg class="icon icon-sm" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#external-link"></use></svg></a>
-                        <span class="rating none">暂无评分</span>
-                    </div>
-                    <div class="tool-card-actions">
-                        <a class="compare-mini" href="#" title="加入对比"><svg class="icon icon-sm" aria-hidden="true">
-                            <use href="/assets/static/nav-001/icons.svg#scale"></use></svg><span>对比</span>
-                        </a>
-                        <a href="#" title="收藏">
-                            <svg class="icon" aria-hidden="true"><use href="/assets/static/nav-001/icons.svg#heart"></use></svg>
-                        </a>
-                    </div>
+                <div class="page-hero-stats">
+                    <div class="page-stat"><strong>{{if .dataIs}}{{len .data}}{{else}}0{{end}}</strong><span>个分类</span></div>
                 </div>
             </div>
+        </section>
+
+        <div class="subcats" style="margin-bottom:22px">
+            <span class="subcats-label">快速定位：</span>
+            {{if .dataIs}}
+            {{range $g := .data}}
+            <a class="chip" href="/category/{{$g.Code}}">{{$g.Name}}</a>
+            {{end}}
+            {{end}}
         </div>
+
+        {{template "nav/tool/category-sections.html" .}}
     </div>
 </main>
 {{end}}

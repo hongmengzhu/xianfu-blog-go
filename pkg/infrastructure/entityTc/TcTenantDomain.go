@@ -19,8 +19,8 @@ type TcTenantDomainEntity struct {
 	Sort          int64      `gorm:"column:sort;type:bigint;not null;default:0;;comment:排序" json:"sort" comment:"排序" `
 	TenantNo      string     `gorm:"column:tenant_no;type:varchar(80);index;default:;comment:租户编号" json:"tenant_no" comment:"租户编号" `
 	Defaulted     int8       `gorm:"column:defaulted;type:int8;not null;index:defaulted,priority:2;default:2;comment:默认1是2否" json:"defaulted" comment:"默认1是2否" `
-	DomainType    string     `gorm:"column:domain_type;type:varchar(80);index;default:;comment:域名类型|租户|组织|客户|租户模块" json:"domain_type" comment:"域名类型" `
-	DomainTypeSub string     `gorm:"column:domain_type_sub;type:varchar(80);index;default:;comment:域名类型子类|普通|模块" json:"domain_type_sub" comment:"域名类型子类" `
+	DomainType    string     `gorm:"column:domain_type;type:varchar(80);index;default:'tenant';comment:域名类型|租户|组织|客户|租户模块" json:"domain_type" comment:"域名类型" `
+	DomainTypeSub string     `gorm:"column:domain_type_sub;type:varchar(80);index;default:'general';comment:域名类型子类|普通|模块" json:"domain_type_sub" comment:"域名类型子类" `
 	Module        string     `gorm:"column:module;type:varchar(80);index;default:;comment:模块" json:"module" comment:"模块" `
 	Theme         string     `gorm:"column:theme;type:varchar(80);index;default:;comment:主题" json:"theme" comment:"主题" `
 }

@@ -58,7 +58,7 @@ var TerminalCodeMap = map[string]enumBasePg.EnumString{
 	General.String():  enumBasePg.EnumString{General.String(), General.Name()},
 	System.String():   enumBasePg.EnumString{System.String(), System.Name()},
 	Merchant.String(): enumBasePg.EnumString{Merchant.String(), Merchant.Name()},
-	Tenant.String():   enumBasePg.EnumString{Tenant.String(), Merchant.Name()},
+	Tenant.String():   enumBasePg.EnumString{Tenant.String(), Tenant.Name()},
 	Shop.String():     enumBasePg.EnumString{Shop.String(), Shop.Name()},
 	Manage.String():   enumBasePg.EnumString{Manage.String(), Manage.Name()},
 	Customer.String(): enumBasePg.EnumString{Customer.String(), Customer.Name()},

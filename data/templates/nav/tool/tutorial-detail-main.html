@@ -1,4 +1,4 @@
-{{ define "nav/bookmark/tutorial-detail-main.html" }}
+{{ define "nav/tool/tutorial-detail-main.html" }}
 <main class="page-main">
     <div class="wrap">
         <nav class="breadcrumb-line" aria-label="面包屑">
@@ -24,10 +24,33 @@
             </article>
 
             <aside class="article-side">
-                <div class="side-card"><h3>配套工具</h3><img class="" src="/assets/static/nav-001/img/tool-icons/chatwiz.png" alt="小黄蕉 logo" loading="lazy"><div style="margin-top:8px"><strong style="font-size:13px">小黄蕉</strong><p style="font-size:11px;line-height:1.65;color:var(--text-secondary);margin-top:4px">字节跳动旗下 AI 虚拟交友聊天平台，内置多位性格各异的虚拟角色。</p><a class="btn-soft" style="width:100%;margin-top:10px;font-size:11px" href="/tool/chatwiz">查看工具详情</a></div></div>
-                <div class="side-card"><h3>热门工具</h3><div><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/tool-8681.png" alt="Reecho logo" loading="lazy"><span>Reecho</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/pavo.png" alt="Pavo logo" loading="lazy"><span>Pavo</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/zaodian-ai.png" alt="千问创作 logo" loading="lazy"><span>千问创作</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/pixtv.png" alt="PixTV logo" loading="lazy"><span>PixTV</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/music-studio.png" alt="妙响 logo" loading="lazy"><span>妙响</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/laper.svg" alt="Laper logo" loading="lazy"><span>Laper</span></a></div></div>
-                <div class="side-card"><h3>最新收录</h3><div><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/wron.png" alt="Wron logo" loading="lazy"><span>Wron</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/aliyun-cleversee.png" alt="CleverSee logo" loading="lazy"><span>CleverSee</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/letsmagic.png" alt="超级麦吉 logo" loading="lazy"><span>超级麦吉</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/gaohaole.png" alt="稿好了 logo" loading="lazy"><span>稿好了</span></a><a class="aside-item" href="/apps/"><img class="" src="/assets/static/nav-001/img/tool-icons/eluai.png" alt="意流 eluai logo" loading="lazy"><span>意流 eluai</span></a></div></div>
-                <div class="side-card"><h3>🎓 关于教程</h3><p style="font-size:11px;line-height:1.7;color:var(--text-secondary)">精选 AI 工具使用教程、视频课程与学习资料，从入门到进阶系统提升你的 AI 应用能力。</p></div>
+                {{if .data.UrlSource}}
+                <div class="side-card">
+                    <h3>原文链接</h3>
+                    <p style="font-size:11px;line-height:1.7;color:var(--text-secondary)">本教程整理自外部资料，可前往原文查看完整内容。</p>
+                    <a class="btn-soft" style="width:100%;margin-top:10px;font-size:11px" href="{{.data.UrlSource}}" target="_blank" rel="noopener nofollow">查看原文</a>
+                </div>
+                {{end}}
+                {{if .data.Tags}}
+                <div class="side-card">
+                    <h3>标签</h3>
+                    <div class="tool-card-labels" style="margin-top:8px">
+                        {{range .data.Tags}}<span class="tag">{{.}}</span>{{end}}
+                    </div>
+                </div>
+                {{end}}
+                <div class="side-card">
+                    <h3>相关内容</h3>
+                    <div>
+                        <a class="aside-item" href="/tutorial"><span>全部教程</span></a>
+                        <a class="aside-item" href="/category"><span>浏览工具库</span></a>
+                        <a class="aside-item" href="/news"><span>每日 AI 快讯</span></a>
+                    </div>
+                </div>
+                <div class="side-card">
+                    <h3>🎓 关于教程</h3>
+                    <p style="font-size:11px;line-height:1.7;color:var(--text-secondary)">精选 AI 工具使用教程、视频课程与学习资料，从入门到进阶系统提升你的 AI 应用能力。</p>
+                </div>
             </aside>
         </div>
         {{else}}

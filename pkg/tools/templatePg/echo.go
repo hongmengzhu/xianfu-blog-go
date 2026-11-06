@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"io"
 	"path/filepath"
+	"strings"
 
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constHeaderPg"
@@ -18,6 +19,10 @@ func DefaultFuncMap() template.FuncMap {
 	return template.FuncMap{
 		"unescaped":  Unescaped,
 		"dateformat": datetimePg.Format,
+		// 导航高亮与路径拼接需要判断当前地址前缀，模板内不能直接调用 strings 包。
+		"hasPrefix":  strings.HasPrefix,
+		"hasSuffix":  strings.HasSuffix,
+		"trimPrefix": strings.TrimPrefix,
 	}
 }
 
