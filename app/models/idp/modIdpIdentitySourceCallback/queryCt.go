@@ -1,4 +1,4 @@
-package modRamIdentitySourceCallback
+package modIdpIdentitySourceCallback
 
 import (
 	"time"

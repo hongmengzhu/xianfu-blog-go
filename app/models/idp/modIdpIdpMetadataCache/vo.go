@@ -1,4 +1,4 @@
-package modRamIdpMetadataCache
+package modIdpIdpMetadataCache
 
 import (
 	"time"

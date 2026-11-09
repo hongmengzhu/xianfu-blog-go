@@ -1,4 +1,4 @@
-package modRamLdap
+package modIdpLdap
 
 // LdapUserVo LDAP 用户信息视图
 type LdapUserVo struct {

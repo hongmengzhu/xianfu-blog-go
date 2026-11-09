@@ -1,4 +1,4 @@
-package modRamIdentitySource
+package modIdpIdentitySource
 
 import (
 	"time"

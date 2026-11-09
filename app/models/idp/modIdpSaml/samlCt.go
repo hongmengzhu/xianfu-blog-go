@@ -1,4 +1,4 @@
-package modRamSaml
+package modIdpSaml
 
 // SamlLoginCt SAML 登录请求参数
 type SamlLoginCt struct {

@@ -1,4 +1,4 @@
-package modRamIdentityProvider
+package modIdpIdentityProvider
 
 import (
 	"time"

@@ -1,4 +1,4 @@
-package modRamLdap
+package modIdpLdap
 
 // LdapLoginCt LDAP 登录请求
 type LdapLoginCt struct {

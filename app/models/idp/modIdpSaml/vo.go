@@ -1,4 +1,4 @@
-package modRamSaml
+package modIdpSaml
 
 // SamlRedirectVo SAML 登录重定向响应
 type SamlRedirectVo struct {

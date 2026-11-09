@@ -1,4 +1,4 @@
-package modRamIdentitySourceCallback
+package modIdpIdentitySourceCallback
 
 import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"

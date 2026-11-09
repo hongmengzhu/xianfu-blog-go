@@ -7,8 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	service2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modRamCas"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modRamSaml"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLogin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamMfa"
 	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"

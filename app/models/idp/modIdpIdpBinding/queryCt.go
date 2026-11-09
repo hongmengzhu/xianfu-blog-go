@@ -1,4 +1,4 @@
-package modRamIdpBinding
+package modIdpIdpBinding
 
 import (
 	"time"

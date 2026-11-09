@@ -1,4 +1,4 @@
-package modRamIdpMetadataCache
+package modIdpIdpMetadataCache
 
 import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"

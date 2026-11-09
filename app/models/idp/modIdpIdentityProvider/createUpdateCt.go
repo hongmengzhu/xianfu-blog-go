@@ -1,4 +1,4 @@
-package modRamIdentityProvider
+package modIdpIdentityProvider
 
 import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/typePg"

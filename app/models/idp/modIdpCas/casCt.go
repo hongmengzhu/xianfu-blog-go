@@ -1,4 +1,4 @@
-package modRamCas
+package modIdpCas
 
 // CasValidateCt CAS 验证请求
 type CasValidateCt struct {
