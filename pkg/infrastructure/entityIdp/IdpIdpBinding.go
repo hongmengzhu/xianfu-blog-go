@@ -1,9 +1,9 @@
-package entityRam
+package entityIdp
 
 import "time"
 
-// RamIdpBindingEntity 身份 身份绑定
-type RamIdpBindingEntity struct {
+// IdpIdpBindingEntity 身份 身份绑定
+type IdpIdpBindingEntity struct {
 	ID            int64      `gorm:"column:id;primaryKey;autoIncrement:true" json:"id" comment:""`
 	No            string     `gorm:"column:no;type:varchar(80);index;default:;comment:编号" json:"no" comment:"编号" `
 	Description   string     `gorm:"column:description;type:varchar(255);comment:描述" json:"description" comment:"描述" `
@@ -37,11 +37,11 @@ type RamIdpBindingEntity struct {
 	ExternalSub   string     `gorm:"column:external_sub;type:varchar(255);index;comment:外部身份唯一标识(sub/NameID/uid)" json:"external_sub" comment:"外部唯一身份标识"`
 }
 
-// TableName RamIdpBindingEntity's table name
-func (*RamIdpBindingEntity) TableName() string {
+// TableName IdpIdpBindingEntity's table name
+func (*IdpIdpBindingEntity) TableName() string {
 	return "ram_idp_binding"
 }
 
-func (*RamIdpBindingEntity) TableComment() string {
+func (*IdpIdpBindingEntity) TableComment() string {
 	return "身份 身份绑定"
 }

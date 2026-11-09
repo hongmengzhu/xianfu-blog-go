@@ -6,8 +6,8 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/automatedPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityIdp"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryIdp"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
@@ -28,13 +28,13 @@ func init() {
 // RamIdentityProviderService 身份提供商
 // @Description:
 type RamIdentityProviderService struct {
-	sv *repositoryRam.RamIdentityProviderRepository `autowire:"?"`
+	sv *repositoryIdp.RamIdentityProviderRepository `autowire:"?"`
 }
 
 // Create 新增
 func (c *RamIdentityProviderService) Create(ctx *gin.Context, ct modRamIdentityProvider.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var info entityRam.RamIdentityProviderEntity
+	var info entityIdp.IdpIdentityProviderEntity
 	copier.Copy(&info, &ct)
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
@@ -55,7 +55,7 @@ func (c *RamIdentityProviderService) Create(ctx *gin.Context, ct modRamIdentityP
 // Update 更新
 func (c *RamIdentityProviderService) Update(ctx *gin.Context, ct modRamIdentityProvider.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var info entityRam.RamIdentityProviderEntity
+	var info entityIdp.IdpIdentityProviderEntity
 	copier.Copy(&info, &ct)
 	r := c.sv
 	if ct.ID < 1 {
@@ -90,7 +90,7 @@ func (c *RamIdentityProviderService) CreateUpdate(ctx *gin.Context, ct modRamIde
 	//
 	holder := holderPg.GetContextAccount(ctx)
 	//
-	var info entityRam.RamIdentityProviderEntity
+	var info entityIdp.IdpIdentityProviderEntity
 	copier.Copy(&info, &ct)
 	//
 	r := c.sv
@@ -99,7 +99,7 @@ func (c *RamIdentityProviderService) CreateUpdate(ctx *gin.Context, ct modRamIde
 	b := false
 	id := "0"
 	//
-	find := &entityRam.RamIdentityProviderEntity{}
+	find := &entityIdp.IdpIdentityProviderEntity{}
 	//
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
@@ -216,7 +216,7 @@ func (c *RamIdentityProviderService) State(ctx *gin.Context, ids []string, state
 	}
 	for _, info := range finds {
 		if info.State != state.IndexInt8() {
-			r.Update(ctx, entityRam.RamIdentityProviderEntity{State: state.IndexInt8()}, info.ID)
+			r.Update(ctx, entityIdp.IdpIdentityProviderEntity{State: state.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -254,7 +254,7 @@ func (c *RamIdentityProviderService) LogicalDeletion(ctx *gin.Context, ids []str
 		for _, info := range finds {
 			enum := enumStatePg.State(info.State)
 			if ok, reverse := enum.ReverseEnableDisable(); ok {
-				repository.Update(ctx, entityRam.RamIdentityProviderEntity{State: reverse.IndexInt8()}, info.ID)
+				repository.Update(ctx, entityIdp.IdpIdentityProviderEntity{State: reverse.IndexInt8()}, info.ID)
 			}
 		}
 	}
@@ -279,7 +279,7 @@ func (c *RamIdentityProviderService) LogicalRecovery(ctx *gin.Context, ids []str
 	for _, info := range finds {
 		enum := enumStatePg.State(info.State)
 		if ok, reverse := enum.ReverseCancelLayAside(); ok {
-			repository.Update(ctx, entityRam.RamIdentityProviderEntity{State: reverse.IndexInt8()}, info.ID)
+			repository.Update(ctx, entityIdp.IdpIdentityProviderEntity{State: reverse.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -318,7 +318,7 @@ func (c *RamIdentityProviderService) PhysicalDeletion(ctx *gin.Context, ids []st
 //	@param ct
 func (c *RamIdentityProviderService) Query(ctx *gin.Context, ct modRamIdentityProvider.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdentityProvider.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam.RamIdentityProviderEntity
+	var query entityIdp.IdpIdentityProviderEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modRamIdentityProvider.Vo, 0)
 	rt.Data.Data = slice
@@ -356,7 +356,7 @@ func (c *RamIdentityProviderService) Query(ctx *gin.Context, ct modRamIdentityPr
 // SelectPublic 查询
 func (c *RamIdentityProviderService) SelectPublic(ctx *gin.Context, ct modRamIdentityProvider.QueryCt) (rt rg.Rs[[]modRamIdentityProvider.Vo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam.RamIdentityProviderEntity
+	var query entityIdp.IdpIdentityProviderEntity
 	copier.Copy(&query, &ct)
 	rt.Data = []modRamIdentityProvider.Vo{}
 	infos := c.sv.FindAll(ctx, query)
@@ -379,7 +379,7 @@ func (c *RamIdentityProviderService) SelectPublic(ctx *gin.Context, ct modRamIde
 //	@param ct
 func (c *RamIdentityProviderService) SelectNodeAll(ctx *gin.Context, ct modRamIdentityProvider.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam.RamIdentityProviderEntity
+	var query entityIdp.IdpIdentityProviderEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
 	rt.Data = slice
@@ -407,7 +407,7 @@ func (c *RamIdentityProviderService) SelectNodeAll(ctx *gin.Context, ct modRamId
 //	@param ct
 func (c *RamIdentityProviderService) SelectNodeAllPublic(ctx *gin.Context, ct modRamIdentityProvider.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam.RamIdentityProviderEntity
+	var query entityIdp.IdpIdentityProviderEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
 	rt.Data = slice

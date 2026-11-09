@@ -1,9 +1,9 @@
-package entityRam
+package entityIdp
 
 import "time"
 
-// RamIdentitySourceCallbackEntity 认证源回调白名单
-type RamIdentitySourceCallbackEntity struct {
+// IdpIdentitySourceCallbackEntity 认证源回调白名单
+type IdpIdentitySourceCallbackEntity struct {
 	ID          int64      `gorm:"column:id;primaryKey;autoIncrement:true" json:"id" comment:""`
 	No          string     `gorm:"column:no;type:varchar(80);index;default:;comment:编号" json:"no" comment:"编号" `
 	TenantNo    string     `gorm:"column:tenant_no;type:varchar(80);index;default:;comment:租户编号" json:"tenant_no" comment:"租户编号" ` // 租户
@@ -22,11 +22,11 @@ type RamIdentitySourceCallbackEntity struct {
 	Idp         string     `gorm:"column:idp;type:varchar(80);index;default:;comment:身份 提供商" json:"idp" comment:"身份 提供商" `
 }
 
-// TableName RamIdentitySourceCallbackEntity's table name
-func (*RamIdentitySourceCallbackEntity) TableName() string {
+// TableName IdpIdentitySourceCallbackEntity's table name
+func (*IdpIdentitySourceCallbackEntity) TableName() string {
 	return "ram_identity_source_callback"
 }
 
-func (*RamIdentitySourceCallbackEntity) TableComment() string {
+func (*IdpIdentitySourceCallbackEntity) TableComment() string {
 	return "认证源回调白名单"
 }

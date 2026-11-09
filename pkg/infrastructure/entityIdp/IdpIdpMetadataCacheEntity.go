@@ -1,11 +1,11 @@
-package entityRam
+package entityIdp
 
 import (
 	"time"
 )
 
-// RamIdpMetadataCacheEntity IdP OIDC/SAML元数据缓存
-type RamIdpMetadataCacheEntity struct {
+// IdpIdpMetadataCacheEntity IdP OIDC/SAML元数据缓存
+type IdpIdpMetadataCacheEntity struct {
 	ID         int64  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id" comment:"主键ID"`
 	No         string `gorm:"column:no;type:varchar(80);index;default:;comment:缓存编号" json:"no" comment:"缓存编号"`
 	TenantNo   string `gorm:"column:tenant_no;type:varchar(80);index;default:;comment:租户编号" json:"tenant_no" comment:"租户编号"`
@@ -34,11 +34,11 @@ type RamIdpMetadataCacheEntity struct {
 	UpdateAt *time.Time `gorm:"column:update_at;autoUpdateTime;comment:更新时间" json:"update_at" comment:"更新时间"`
 }
 
-// TableName RamIdpMetadataCacheEntity's table name
-func (*RamIdpMetadataCacheEntity) TableName() string {
+// TableName IdpIdpMetadataCacheEntity's table name
+func (*IdpIdpMetadataCacheEntity) TableName() string {
 	return "ram_idp_metadata_cache"
 }
 
-func (*RamIdpMetadataCacheEntity) TableComment() string {
+func (*IdpIdpMetadataCacheEntity) TableComment() string {
 	return "IdP OIDC/SAML元数据缓存表"
 }

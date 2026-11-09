@@ -7,7 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamCas"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityIdp"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryIdp"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	pkgcas "github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/idpPg/cas"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -22,7 +23,7 @@ func init() {
 // CasService CAS ST 管理 Service
 type CasService struct {
 	daoAccount *repositoryRam.RamAccountRepository        `autowire:"?"`
-	daoSource  *repositoryRam.RamIdentitySourceRepository `autowire:"?"`
+	daoSource  *repositoryIdp.RamIdentitySourceRepository `autowire:"?"`
 }
 
 // Login CAS 登录（生成 Service Ticket）
@@ -150,7 +151,7 @@ func queryUnescape(s string) string {
 }
 
 // findSourceByProtocol 查找 CAS 协议的认证源
-func (s *CasService) findSourceByProtocol(ctx *gin.Context, protocol string) (*entityRam.RamIdentitySourceEntity, bool) {
+func (s *CasService) findSourceByProtocol(ctx *gin.Context, protocol string) (*entityIdp.IdpIdentitySourceEntity, bool) {
 	// 简化实现：通过 protocol 查找认证源
 	// 实际可能需要更复杂的查找逻辑
 	_ = protocol

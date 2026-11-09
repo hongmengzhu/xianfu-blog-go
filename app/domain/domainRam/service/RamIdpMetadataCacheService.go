@@ -5,8 +5,8 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdpMetadataCache"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityIdp"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryIdp"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
@@ -27,13 +27,13 @@ func init() {
 // RamIdpMetadataCacheService IdP元数据缓存
 // @Description:
 type RamIdpMetadataCacheService struct {
-	sv *repositoryRam.RamIdpMetadataCacheRepository `autowire:"?"`
+	sv *repositoryIdp.RamIdpMetadataCacheRepository `autowire:"?"`
 }
 
 // Create 新增
 func (c *RamIdpMetadataCacheService) Create(ctx *gin.Context, ct modRamIdpMetadataCache.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var info entityRam.RamIdpMetadataCacheEntity
+	var info entityIdp.IdpIdpMetadataCacheEntity
 	copier.Copy(&info, &ct)
 	r := c.sv
 	holder := holderPg.GetContextAccount(ctx)
@@ -51,7 +51,7 @@ func (c *RamIdpMetadataCacheService) Create(ctx *gin.Context, ct modRamIdpMetada
 // Update 更新
 func (c *RamIdpMetadataCacheService) Update(ctx *gin.Context, ct modRamIdpMetadataCache.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var info entityRam.RamIdpMetadataCacheEntity
+	var info entityIdp.IdpIdpMetadataCacheEntity
 	copier.Copy(&info, &ct)
 	r := c.sv
 	if ct.ID < 1 {
@@ -83,7 +83,7 @@ func (c *RamIdpMetadataCacheService) CreateUpdate(ctx *gin.Context, ct modRamIdp
 	//
 	holder := holderPg.GetContextAccount(ctx)
 	//
-	var info entityRam.RamIdpMetadataCacheEntity
+	var info entityIdp.IdpIdpMetadataCacheEntity
 	copier.Copy(&info, &ct)
 	//
 	r := c.sv
@@ -91,7 +91,7 @@ func (c *RamIdpMetadataCacheService) CreateUpdate(ctx *gin.Context, ct modRamIdp
 	isUpdate := false
 	b := false
 	//
-	find := &entityRam.RamIdpMetadataCacheEntity{}
+	find := &entityIdp.IdpIdpMetadataCacheEntity{}
 	//
 	if ct.ID.ToInt64() > 0 {
 		isUpdate = true
@@ -183,7 +183,7 @@ func (c *RamIdpMetadataCacheService) State(ctx *gin.Context, ids []string, state
 	}
 	for _, info := range finds {
 		if info.State != state.IndexInt8() {
-			r.Update(ctx, entityRam.RamIdpMetadataCacheEntity{State: state.IndexInt8()}, info.ID)
+			r.Update(ctx, entityIdp.IdpIdpMetadataCacheEntity{State: state.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -222,7 +222,7 @@ func (c *RamIdpMetadataCacheService) LogicalDeletion(ctx *gin.Context, ids []str
 			enum := enumStatePg.State(info.State)
 			// 有效 停用，反转 为对应的 取消 弃置
 			if ok, reverse := enum.ReverseEnableDisable(); ok {
-				repository.Update(ctx, entityRam.RamIdpMetadataCacheEntity{State: reverse.IndexInt8()}, info.ID)
+				repository.Update(ctx, entityIdp.IdpIdpMetadataCacheEntity{State: reverse.IndexInt8()}, info.ID)
 			}
 		}
 	}
@@ -248,7 +248,7 @@ func (c *RamIdpMetadataCacheService) LogicalRecovery(ctx *gin.Context, ids []str
 		enum := enumStatePg.State(info.State)
 		//  取消 弃置 批量删除，反转 为对应的 有效 停用 停用
 		if ok, reverse := enum.ReverseCancelLayAside(); ok {
-			repository.Update(ctx, entityRam.RamIdpMetadataCacheEntity{State: reverse.IndexInt8()}, info.ID)
+			repository.Update(ctx, entityIdp.IdpIdpMetadataCacheEntity{State: reverse.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -287,7 +287,7 @@ func (c *RamIdpMetadataCacheService) PhysicalDeletion(ctx *gin.Context, ids []st
 //	@param ct
 func (c *RamIdpMetadataCacheService) Query(ctx *gin.Context, ct modRamIdpMetadataCache.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdpMetadataCache.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam.RamIdpMetadataCacheEntity
+	var query entityIdp.IdpIdpMetadataCacheEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modRamIdpMetadataCache.Vo, 0)
 	rt.Data.Data = slice
@@ -325,7 +325,7 @@ func (c *RamIdpMetadataCacheService) Query(ctx *gin.Context, ct modRamIdpMetadat
 // SelectPublic 查询
 func (c *RamIdpMetadataCacheService) SelectPublic(ctx *gin.Context, ct modRamIdpMetadataCache.QueryCt) (rt rg.Rs[[]modRamIdpMetadataCache.Vo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam.RamIdpMetadataCacheEntity
+	var query entityIdp.IdpIdpMetadataCacheEntity
 	copier.Copy(&query, &ct)
 	rt.Data = []modRamIdpMetadataCache.Vo{}
 	infos := c.sv.FindAll(ctx, query)
@@ -348,7 +348,7 @@ func (c *RamIdpMetadataCacheService) SelectPublic(ctx *gin.Context, ct modRamIdp
 //	@param ct
 func (c *RamIdpMetadataCacheService) SelectNodeAll(ctx *gin.Context, ct modRamIdpMetadataCache.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam.RamIdpMetadataCacheEntity
+	var query entityIdp.IdpIdpMetadataCacheEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
 	rt.Data = slice
@@ -376,7 +376,7 @@ func (c *RamIdpMetadataCacheService) SelectNodeAll(ctx *gin.Context, ct modRamId
 //	@param ct
 func (c *RamIdpMetadataCacheService) SelectNodeAllPublic(ctx *gin.Context, ct modRamIdpMetadataCache.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam.RamIdpMetadataCacheEntity
+	var query entityIdp.IdpIdpMetadataCacheEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
 	rt.Data = slice

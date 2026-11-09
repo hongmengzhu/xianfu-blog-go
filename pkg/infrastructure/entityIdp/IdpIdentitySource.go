@@ -1,11 +1,11 @@
-package entityRam
+package entityIdp
 
 import (
 	"time"
 )
 
-// RamIdentitySourceEntity 身份 认证源
-type RamIdentitySourceEntity struct {
+// IdpIdentitySourceEntity 身份 认证源
+type IdpIdentitySourceEntity struct {
 	ID                 int64      `gorm:"column:id;primaryKey;autoIncrement:true" json:"id" comment:""`
 	No                 string     `gorm:"column:no;type:varchar(80);index;default:;comment:编号" json:"no" comment:"编号" `
 	Name               string     `gorm:"column:name;type:varchar(255);comment:名称" json:"name" comment:"名称" `                                            // 名称
@@ -37,11 +37,11 @@ type RamIdentitySourceEntity struct {
 	AttributeMapping string `gorm:"column:attribute_mapping;type:text;comment:身份属性映射规则" json:"attribute_mapping"`
 }
 
-// TableName RamIdentitySourceEntity's table name
-func (*RamIdentitySourceEntity) TableName() string {
+// TableName IdpIdentitySourceEntity's table name
+func (*IdpIdentitySourceEntity) TableName() string {
 	return "ram_identity_source"
 }
 
-func (*RamIdentitySourceEntity) TableComment() string {
+func (*IdpIdentitySourceEntity) TableComment() string {
 	return "身份 认证源"
 }

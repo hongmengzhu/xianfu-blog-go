@@ -12,7 +12,9 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/clientPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityIdp"
 	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryIdp"
 	repositoryRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/idpPg/idp"
 	samlPkg "github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/idpPg/saml"
@@ -39,10 +41,10 @@ type samlSourceConfig struct {
 // SamlLoginService SAML 登录 Service
 type SamlLoginService struct {
 	daoAccount    *repositoryRam.RamAccountRepository           `autowire:"?"`
-	daoSource     *repositoryRam.RamIdentitySourceRepository    `autowire:"?"`
-	daoCredential *repositoryRam.RamIdpCredentialRepository     `autowire:"?"`
-	daoMetadata   *repositoryRam.RamIdpMetadataCacheRepository  `autowire:"?"`
-	daoBinding    *repositoryRam.RamIdpBindingRepository        `autowire:"?"`
+	daoSource     *repositoryIdp.RamIdentitySourceRepository    `autowire:"?"`
+	daoCredential *repositoryIdp.RamIdpCredentialRepository     `autowire:"?"`
+	daoMetadata   *repositoryIdp.RamIdpMetadataCacheRepository  `autowire:"?"`
+	daoBinding    *repositoryIdp.RamIdpBindingRepository        `autowire:"?"`
 	daoSessionLog *repositoryRam.RamAccountSessionLogRepository `autowire:"?"`
 	loginService  *AccountLoginService                          `autowire:"?"`
 	mfaService    *AccountMfaService                            `autowire:"?"`
@@ -154,7 +156,7 @@ func (c *SamlLoginService) HandleSamlCallback(ctx *gin.Context, ct modRamSaml.Sa
 }
 
 // buildSpFromSource 从认证源配置构建 SAML SP
-func (c *SamlLoginService) buildSpFromSource(ctx *gin.Context, source *entityRam.RamIdentitySourceEntity) (*samlPkg.SAMLServiceProvider, *samlPkg.SpConfig, error) {
+func (c *SamlLoginService) buildSpFromSource(ctx *gin.Context, source *entityIdp.IdpIdentitySourceEntity) (*samlPkg.SAMLServiceProvider, *samlPkg.SpConfig, error) {
 	// 解析 BaseConfig
 	var srcCfg samlSourceConfig
 	if strPg.IsNotBlank(source.BaseConfig) {
@@ -274,7 +276,7 @@ func (c *SamlLoginService) mapSamlAttributes(samlInfo *samlPkg.SpUserInfo, mappi
 // parseAndBindUser 解析用户信息并查找/创建绑定
 func (c *SamlLoginService) parseAndBindUser(
 	ctx *gin.Context,
-	source *entityRam.RamIdentitySourceEntity,
+	source *entityIdp.IdpIdentitySourceEntity,
 	nameID string,
 	userInfo *idp.UserInfo,
 ) (rt rg.Rs[modRamLogin.IdpLoginSuccess]) {
@@ -298,7 +300,7 @@ func (c *SamlLoginService) parseAndBindUser(
 
 		// 更新 binding 的登录时间
 		now := time.Now()
-		c.daoBinding.Update(ctx, entityRam.RamIdpBindingEntity{
+		c.daoBinding.Update(ctx, entityIdp.IdpIdpBindingEntity{
 			LastLoginTime: &now,
 			NickName:      userInfo.DisplayName,
 			Avatar:        userInfo.AvatarUrl,
@@ -328,7 +330,7 @@ func (c *SamlLoginService) parseAndBindUser(
 // createAccountAndBinding 自动创建账号和绑定记录
 func (c *SamlLoginService) createAccountAndBinding(
 	ctx *gin.Context,
-	source *entityRam.RamIdentitySourceEntity,
+	source *entityIdp.IdpIdentitySourceEntity,
 	userInfo *idp.UserInfo,
 	nameID string,
 ) (*entityRam.RamAccountEntity, error) {
@@ -370,7 +372,7 @@ func (c *SamlLoginService) createAccountAndBinding(
 
 	// 创建 RamIdpBinding
 	bindingNo := noPg.No()
-	binding := &entityRam.RamIdpBindingEntity{
+	binding := &entityIdp.IdpIdpBindingEntity{
 		No:            bindingNo,
 		TenantNo:      source.TenantNo,
 		OrgNo:         source.OrgNo,
@@ -403,7 +405,7 @@ func (c *SamlLoginService) createAccountAndBinding(
 func (c *SamlLoginService) checkMfaOrLoginSuccess(
 	ctx *gin.Context,
 	account *entityRam.RamAccountEntity,
-	source *entityRam.RamIdentitySourceEntity,
+	source *entityIdp.IdpIdentitySourceEntity,
 	userInfo *idp.UserInfo,
 	isSignup bool,
 ) (rt rg.Rs[modRamLogin.IdpLoginSuccess]) {
@@ -435,7 +437,7 @@ func (c *SamlLoginService) checkMfaOrLoginSuccess(
 func (c *SamlLoginService) loginSuccess(
 	ctx *gin.Context,
 	account *entityRam.RamAccountEntity,
-	source *entityRam.RamIdentitySourceEntity,
+	source *entityIdp.IdpIdentitySourceEntity,
 	userInfo *idp.UserInfo,
 	isSignup bool,
 ) (rt rg.Rs[modRamLogin.IdpLoginSuccess]) {
@@ -470,7 +472,7 @@ func (c *SamlLoginService) loginSuccess(
 func (c *SamlLoginService) saveSessionLog(
 	ctx *gin.Context,
 	account *entityRam.RamAccountEntity,
-	source *entityRam.RamIdentitySourceEntity,
+	source *entityIdp.IdpIdentitySourceEntity,
 	userInfo *idp.UserInfo,
 	eventResult int8,
 ) {

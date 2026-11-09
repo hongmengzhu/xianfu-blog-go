@@ -1,11 +1,11 @@
-package entityRam
+package entityIdp
 
 import (
 	"time"
 )
 
-// RamIdentityProviderEntity 身份 提供商
-type RamIdentityProviderEntity struct {
+// IdpIdentityProviderEntity 身份 提供商
+type IdpIdentityProviderEntity struct {
 	ID          int64      `gorm:"column:id;primaryKey;autoIncrement:true" json:"id" comment:""`
 	No          string     `gorm:"column:no;type:varchar(80);index;default:;comment:编号" json:"no" comment:"编号" `
 	Name        string     `gorm:"column:name;type:varchar(255);comment:名称" json:"name" comment:"名称" `                                            // 名称
@@ -27,11 +27,11 @@ type RamIdentityProviderEntity struct {
 	Protocol    string     `gorm:"column:protocol;type:varchar(80);index;default:;comment:协议|openid|oauth" json:"protocol" comment:"协议|openid|oauth" `
 }
 
-// TableName RamIdentityProviderEntity's table name
-func (*RamIdentityProviderEntity) TableName() string {
+// TableName IdpIdentityProviderEntity's table name
+func (*IdpIdentityProviderEntity) TableName() string {
 	return "ram_identity_provider"
 }
 
-func (*RamIdentityProviderEntity) TableComment() string {
+func (*IdpIdentityProviderEntity) TableComment() string {
 	return "身份 提供商"
 }

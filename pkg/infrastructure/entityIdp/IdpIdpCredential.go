@@ -1,9 +1,9 @@
-package entityRam
+package entityIdp
 
 import "time"
 
-// RamIdpCredentialEntity 身份 第三方认证凭证、证书密钥
-type RamIdpCredentialEntity struct {
+// IdpIdpCredentialEntity 身份 第三方认证凭证、证书密钥
+type IdpIdpCredentialEntity struct {
 	ID         int64      `gorm:"column:id;primaryKey;autoIncrement:true" json:"id" comment:""`
 	No         string     `gorm:"column:no;type:varchar(80);index;default:;comment:编号" json:"no" comment:"编号" `
 	TenantNo   string     `gorm:"column:tenant_no;type:varchar(80);index;default:;comment:租户编号" json:"tenant_no" comment:"租户编号" ` // 租户
@@ -20,11 +20,11 @@ type RamIdpCredentialEntity struct {
 	State      int8       `gorm:"column:state;not null;index;default:1;comment:状态|1启用|2禁用" json:"state" comment:"状态:1启用;2禁用" ` // 状态:1启用;2禁用
 }
 
-// TableName RamIdpCredentialEntity's table name
-func (*RamIdpCredentialEntity) TableName() string {
+// TableName IdpIdpCredentialEntity's table name
+func (*IdpIdpCredentialEntity) TableName() string {
 	return "ram_idp_credential"
 }
 
-func (*RamIdpCredentialEntity) TableComment() string {
+func (*IdpIdpCredentialEntity) TableComment() string {
 	return "认证源密钥证书凭证"
 }

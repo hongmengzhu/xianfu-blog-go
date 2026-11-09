@@ -11,7 +11,9 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/clientPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityIdp"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryIdp"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/idpPg/ldap"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
@@ -28,16 +30,16 @@ func init() {
 
 // LdapService LDAP 认证+同步 Service
 type LdapService struct {
-	daoSource     *repositoryRam.RamIdentitySourceRepository    `autowire:"?"`
-	daoProvider   *repositoryRam.RamIdentityProviderRepository  `autowire:"?"`
+	daoSource     *repositoryIdp.RamIdentitySourceRepository    `autowire:"?"`
+	daoProvider   *repositoryIdp.RamIdentityProviderRepository  `autowire:"?"`
 	daoAccount    *repositoryRam.RamAccountRepository           `autowire:"?"`
-	daoBinding    *repositoryRam.RamIdpBindingRepository        `autowire:"?"`
+	daoBinding    *repositoryIdp.RamIdpBindingRepository        `autowire:"?"`
 	daoSessionLog *repositoryRam.RamAccountSessionLogRepository `autowire:"?"`
 	loginService  *AccountLoginService                          `autowire:"?"`
 }
 
 // buildLdapConfig 从认证源配置构建 LDAP 连接配置
-func (s *LdapService) buildLdapConfig(source *entityRam.RamIdentitySourceEntity) (*ldap.LdapConfig, error) {
+func (s *LdapService) buildLdapConfig(source *entityIdp.IdpIdentitySourceEntity) (*ldap.LdapConfig, error) {
 	var baseCfg idpBaseConfig
 	if strPg.IsNotBlank(source.BaseConfig) {
 		if err := json.Unmarshal([]byte(source.BaseConfig), &baseCfg); err != nil {
@@ -243,7 +245,7 @@ func (s *LdapService) Login(ctx *gin.Context, ct modRamLdap.LdapLoginCt) (rt rg.
 
 		// 更新 binding 登录时间
 		now := time.Now()
-		s.daoBinding.Update(ctx, entityRam.RamIdpBindingEntity{
+		s.daoBinding.Update(ctx, entityIdp.IdpIdpBindingEntity{
 			LastLoginTime: &now,
 		}, binding.ID)
 
@@ -268,7 +270,7 @@ func (s *LdapService) Login(ctx *gin.Context, ct modRamLdap.LdapLoginCt) (rt rg.
 // createAccountFromLdap 从 LDAP 用户创建本地账号
 func (s *LdapService) createAccountFromLdap(
 	ctx *gin.Context,
-	source *entityRam.RamIdentitySourceEntity,
+	source *entityIdp.IdpIdentitySourceEntity,
 	ldapUser *ldap.LdapUser,
 ) (*entityRam.RamAccountEntity, error) {
 	now := time.Now()
@@ -310,7 +312,7 @@ func (s *LdapService) createAccountFromLdap(
 
 	// 创建绑定记录
 	bindingNo := noPg.No()
-	binding := &entityRam.RamIdpBindingEntity{
+	binding := &entityIdp.IdpIdpBindingEntity{
 		No:            bindingNo,
 		TenantNo:      source.TenantNo,
 		OrgNo:         source.OrgNo,
@@ -342,7 +344,7 @@ func (s *LdapService) createAccountFromLdap(
 func (s *LdapService) loginSuccess(
 	ctx *gin.Context,
 	account *entityRam.RamAccountEntity,
-	source *entityRam.RamIdentitySourceEntity,
+	source *entityIdp.IdpIdentitySourceEntity,
 	ldapUser *ldap.LdapUser,
 	isSignup bool,
 ) (rt rg.Rs[modRamLogin.IdpLoginSuccess]) {

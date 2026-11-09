@@ -14,7 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamWechat"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryIdp"
 	ldap "github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/idpPg/idp"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
@@ -54,8 +54,8 @@ var (
 
 // WechatOaService 微信公众号扫码登录 Service
 type WechatOaService struct {
-	daoSource   *repositoryRam.RamIdentitySourceRepository   `autowire:"?"`
-	daoProvider *repositoryRam.RamIdentityProviderRepository `autowire:"?"`
+	daoSource   *repositoryIdp.RamIdentitySourceRepository   `autowire:"?"`
+	daoProvider *repositoryIdp.RamIdentityProviderRepository `autowire:"?"`
 }
 
 // NewWechatOaService 构造函数

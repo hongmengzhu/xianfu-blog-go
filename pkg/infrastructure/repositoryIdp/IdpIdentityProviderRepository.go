@@ -1,7 +1,7 @@
-package repositoryRam
+package repositoryIdp
 
 import (
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityIdp"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/support"
 	"go-spring.org/spring/gs"
@@ -14,6 +14,6 @@ func init() {
 }
 
 type RamIdentityProviderRepository struct {
-	repositoryPg.BaseRepository[entityRam.RamIdentityProviderEntity, int64]
+	repositoryPg.BaseRepository[entityIdp.IdpIdentityProviderEntity, int64]
 	//
 }

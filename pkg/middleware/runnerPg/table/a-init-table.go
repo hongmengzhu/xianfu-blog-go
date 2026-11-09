@@ -11,6 +11,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityIdp"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityTc"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbMakePg"
@@ -111,12 +112,12 @@ func (b *AInitTable) Run(ctx context.Context) error {
 		entityData = append(entityData, &entityRam.RamAccountAuthWebauthnEntity{})
 		entityData = append(entityData, &entityRam.RamAccountSessionLogEntity{})
 		// 身份提供商 / 认证源 / 回调白名单 / 身份绑定 / 凭证 / 元数据缓存
-		entityData = append(entityData, &entityRam.RamIdentityProviderEntity{})
-		entityData = append(entityData, &entityRam.RamIdentitySourceEntity{})
-		entityData = append(entityData, &entityRam.RamIdentitySourceCallbackEntity{})
-		entityData = append(entityData, &entityRam.RamIdpBindingEntity{})
-		entityData = append(entityData, &entityRam.RamIdpCredentialEntity{})
-		entityData = append(entityData, &entityRam.RamIdpMetadataCacheEntity{})
+		entityData = append(entityData, &entityIdp.IdpIdentityProviderEntity{})
+		entityData = append(entityData, &entityIdp.IdpIdentitySourceEntity{})
+		entityData = append(entityData, &entityIdp.IdpIdentitySourceCallbackEntity{})
+		entityData = append(entityData, &entityIdp.IdpIdpBindingEntity{})
+		entityData = append(entityData, &entityIdp.IdpIdpCredentialEntity{})
+		entityData = append(entityData, &entityIdp.IdpIdpMetadataCacheEntity{})
 	}
 	//
 	{

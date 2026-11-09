@@ -5,8 +5,8 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdentitySourceCallback"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityIdp"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryIdp"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
@@ -27,13 +27,13 @@ func init() {
 // RamIdentitySourceCallbackService 认证源回调白名单
 // @Description:
 type RamIdentitySourceCallbackService struct {
-	sv *repositoryRam.RamIdentitySourceCallbackRepository `autowire:"?"`
+	sv *repositoryIdp.RamIdentitySourceCallbackRepository `autowire:"?"`
 }
 
 // Create 新增
 func (c *RamIdentitySourceCallbackService) Create(ctx *gin.Context, ct modRamIdentitySourceCallback.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var info entityRam.RamIdentitySourceCallbackEntity
+	var info entityIdp.IdpIdentitySourceCallbackEntity
 	copier.Copy(&info, &ct)
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
@@ -54,7 +54,7 @@ func (c *RamIdentitySourceCallbackService) Create(ctx *gin.Context, ct modRamIde
 // Update 更新
 func (c *RamIdentitySourceCallbackService) Update(ctx *gin.Context, ct modRamIdentitySourceCallback.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var info entityRam.RamIdentitySourceCallbackEntity
+	var info entityIdp.IdpIdentitySourceCallbackEntity
 	copier.Copy(&info, &ct)
 	r := c.sv
 	if ct.ID < 1 {
@@ -89,7 +89,7 @@ func (c *RamIdentitySourceCallbackService) CreateUpdate(ctx *gin.Context, ct mod
 	//
 	holder := holderPg.GetContextAccount(ctx)
 	//
-	var info entityRam.RamIdentitySourceCallbackEntity
+	var info entityIdp.IdpIdentitySourceCallbackEntity
 	copier.Copy(&info, &ct)
 	//
 	r := c.sv
@@ -97,7 +97,7 @@ func (c *RamIdentitySourceCallbackService) CreateUpdate(ctx *gin.Context, ct mod
 	isUpdate := false
 	b := false
 	//
-	find := &entityRam.RamIdentitySourceCallbackEntity{}
+	find := &entityIdp.IdpIdentitySourceCallbackEntity{}
 	//
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
@@ -192,7 +192,7 @@ func (c *RamIdentitySourceCallbackService) State(ctx *gin.Context, ids []string,
 	}
 	for _, info := range finds {
 		if info.State != state.IndexInt8() {
-			r.Update(ctx, entityRam.RamIdentitySourceCallbackEntity{State: state.IndexInt8()}, info.ID)
+			r.Update(ctx, entityIdp.IdpIdentitySourceCallbackEntity{State: state.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -230,7 +230,7 @@ func (c *RamIdentitySourceCallbackService) LogicalDeletion(ctx *gin.Context, ids
 		for _, info := range finds {
 			enum := enumStatePg.State(info.State)
 			if ok, reverse := enum.ReverseEnableDisable(); ok {
-				repository.Update(ctx, entityRam.RamIdentitySourceCallbackEntity{State: reverse.IndexInt8()}, info.ID)
+				repository.Update(ctx, entityIdp.IdpIdentitySourceCallbackEntity{State: reverse.IndexInt8()}, info.ID)
 			}
 		}
 	}
@@ -255,7 +255,7 @@ func (c *RamIdentitySourceCallbackService) LogicalRecovery(ctx *gin.Context, ids
 	for _, info := range finds {
 		enum := enumStatePg.State(info.State)
 		if ok, reverse := enum.ReverseCancelLayAside(); ok {
-			repository.Update(ctx, entityRam.RamIdentitySourceCallbackEntity{State: reverse.IndexInt8()}, info.ID)
+			repository.Update(ctx, entityIdp.IdpIdentitySourceCallbackEntity{State: reverse.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -294,7 +294,7 @@ func (c *RamIdentitySourceCallbackService) PhysicalDeletion(ctx *gin.Context, id
 //	@param ct
 func (c *RamIdentitySourceCallbackService) Query(ctx *gin.Context, ct modRamIdentitySourceCallback.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdentitySourceCallback.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam.RamIdentitySourceCallbackEntity
+	var query entityIdp.IdpIdentitySourceCallbackEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modRamIdentitySourceCallback.Vo, 0)
 	rt.Data.Data = slice
@@ -332,7 +332,7 @@ func (c *RamIdentitySourceCallbackService) Query(ctx *gin.Context, ct modRamIden
 // SelectPublic 查询
 func (c *RamIdentitySourceCallbackService) SelectPublic(ctx *gin.Context, ct modRamIdentitySourceCallback.QueryCt) (rt rg.Rs[[]modRamIdentitySourceCallback.Vo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam.RamIdentitySourceCallbackEntity
+	var query entityIdp.IdpIdentitySourceCallbackEntity
 	copier.Copy(&query, &ct)
 	rt.Data = []modRamIdentitySourceCallback.Vo{}
 	infos := c.sv.FindAll(ctx, query)
@@ -372,7 +372,7 @@ func (c *RamIdentitySourceCallbackService) ExistName(ctx *gin.Context, ct model.
 //	@param ct
 func (c *RamIdentitySourceCallbackService) SelectNodeAll(ctx *gin.Context, ct modRamIdentitySourceCallback.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam.RamIdentitySourceCallbackEntity
+	var query entityIdp.IdpIdentitySourceCallbackEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
 	rt.Data = slice
@@ -400,7 +400,7 @@ func (c *RamIdentitySourceCallbackService) SelectNodeAll(ctx *gin.Context, ct mo
 //	@param ct
 func (c *RamIdentitySourceCallbackService) SelectNodeAllPublic(ctx *gin.Context, ct modRamIdentitySourceCallback.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam.RamIdentitySourceCallbackEntity
+	var query entityIdp.IdpIdentitySourceCallbackEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
 	rt.Data = slice

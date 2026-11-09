@@ -11,7 +11,9 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/clientPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityIdp"
 	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryIdp"
 	repositoryRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/idpPg/idp"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
@@ -48,9 +50,9 @@ type idpBaseConfig struct {
 // @Description:
 type AccountLoginIdpService struct {
 	daoAccount    *repositoryRam.RamAccountRepository           `autowire:"?"`
-	daoSource     *repositoryRam.RamIdentitySourceRepository    `autowire:"?"`
-	daoProvider   *repositoryRam.RamIdentityProviderRepository  `autowire:"?"`
-	daoBinding    *repositoryRam.RamIdpBindingRepository        `autowire:"?"`
+	daoSource     *repositoryIdp.RamIdentitySourceRepository    `autowire:"?"`
+	daoProvider   *repositoryIdp.RamIdentityProviderRepository  `autowire:"?"`
+	daoBinding    *repositoryIdp.RamIdpBindingRepository        `autowire:"?"`
 	daoSessionLog *repositoryRam.RamAccountSessionLogRepository `autowire:"?"`
 	loginService  *AccountLoginService                          `autowire:"?"`
 	mfaService    *AccountMfaService                            `autowire:"?"`
@@ -155,7 +157,7 @@ func (c *AccountLoginIdpService) Login(ctx *gin.Context, ct modRamLogin.IdpLogin
 	log.Info(ctx, log.TagAppDef, "OAuth userInfo", log.Any("Id", userInfo.Id), log.Any("Username", userInfo.Username), log.Any("Email", userInfo.Email))
 
 	// 10. 查找绑定
-	var binding *entityRam.RamIdpBindingEntity
+	var binding *entityIdp.IdpIdpBindingEntity
 	bindingFound := false
 
 	// 优先按 ExternalSub 查找
@@ -188,7 +190,7 @@ func (c *AccountLoginIdpService) Login(ctx *gin.Context, ct modRamLogin.IdpLogin
 
 		// 12. 更新 binding 的 token 和登录时间
 		now := time.Now()
-		c.daoBinding.Update(ctx, entityRam.RamIdpBindingEntity{
+		c.daoBinding.Update(ctx, entityIdp.IdpIdpBindingEntity{
 			AccessToken:   oauthToken.AccessToken,
 			RefreshToken:  oauthToken.RefreshToken,
 			LastLoginTime: &now,
@@ -228,11 +230,11 @@ func (c *AccountLoginIdpService) Login(ctx *gin.Context, ct modRamLogin.IdpLogin
 // createAccountAndBinding 自动创建账号和绑定记录
 func (c *AccountLoginIdpService) createAccountAndBinding(
 	ctx *gin.Context,
-	source *entityRam.RamIdentitySourceEntity,
-	providerEntity *entityRam.RamIdentityProviderEntity,
+	source *entityIdp.IdpIdentitySourceEntity,
+	providerEntity *entityIdp.IdpIdentityProviderEntity,
 	userInfo *idp.UserInfo,
 	oauthToken *oauth2.Token,
-) (*entityRam.RamAccountEntity, *entityRam.RamIdpBindingEntity, error) {
+) (*entityRam.RamAccountEntity, *entityIdp.IdpIdpBindingEntity, error) {
 	now := time.Now()
 	accountNo := noPg.No()
 
@@ -273,7 +275,7 @@ func (c *AccountLoginIdpService) createAccountAndBinding(
 
 	// 创建 RamIdpBinding
 	bindingNo := noPg.No()
-	binding := &entityRam.RamIdpBindingEntity{
+	binding := &entityIdp.IdpIdpBindingEntity{
 		No:            bindingNo,
 		TenantNo:      source.TenantNo,
 		OrgNo:         source.OrgNo,
@@ -311,7 +313,7 @@ func (c *AccountLoginIdpService) createAccountAndBinding(
 func (c *AccountLoginIdpService) loginSuccess(
 	ctx *gin.Context,
 	account *entityRam.RamAccountEntity,
-	source *entityRam.RamIdentitySourceEntity,
+	source *entityIdp.IdpIdentitySourceEntity,
 	userInfo *idp.UserInfo,
 	oauthToken *oauth2.Token,
 	isSignup bool,
@@ -347,7 +349,7 @@ func (c *AccountLoginIdpService) loginSuccess(
 func (c *AccountLoginIdpService) saveSessionLog(
 	ctx *gin.Context,
 	account *entityRam.RamAccountEntity,
-	source *entityRam.RamIdentitySourceEntity,
+	source *entityIdp.IdpIdentitySourceEntity,
 	userInfo *idp.UserInfo,
 	eventResult int8,
 ) {
@@ -384,7 +386,7 @@ func (c *AccountLoginIdpService) saveSessionLog(
 func (c *AccountLoginIdpService) checkMfaOrLoginSuccess(
 	ctx *gin.Context,
 	account *entityRam.RamAccountEntity,
-	source *entityRam.RamIdentitySourceEntity,
+	source *entityIdp.IdpIdentitySourceEntity,
 	userInfo *idp.UserInfo,
 	oauthToken *oauth2.Token,
 	isSignup bool,

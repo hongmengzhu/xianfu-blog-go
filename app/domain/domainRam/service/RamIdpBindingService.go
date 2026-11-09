@@ -5,8 +5,8 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdpBinding"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityIdp"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryIdp"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
@@ -27,13 +27,13 @@ func init() {
 // RamIdpBindingService 身份绑定
 // @Description:
 type RamIdpBindingService struct {
-	sv *repositoryRam.RamIdpBindingRepository `autowire:"?"`
+	sv *repositoryIdp.RamIdpBindingRepository `autowire:"?"`
 }
 
 // Create 新增
 func (c *RamIdpBindingService) Create(ctx *gin.Context, ct modRamIdpBinding.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var info entityRam.RamIdpBindingEntity
+	var info entityIdp.IdpIdpBindingEntity
 	copier.Copy(&info, &ct)
 	r := c.sv
 	holder := holderPg.GetContextAccount(ctx)
@@ -51,7 +51,7 @@ func (c *RamIdpBindingService) Create(ctx *gin.Context, ct modRamIdpBinding.Crea
 // Update 更新
 func (c *RamIdpBindingService) Update(ctx *gin.Context, ct modRamIdpBinding.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var info entityRam.RamIdpBindingEntity
+	var info entityIdp.IdpIdpBindingEntity
 	copier.Copy(&info, &ct)
 	r := c.sv
 	if ct.ID < 1 {
@@ -83,7 +83,7 @@ func (c *RamIdpBindingService) CreateUpdate(ctx *gin.Context, ct modRamIdpBindin
 	//
 	holder := holderPg.GetContextAccount(ctx)
 	//
-	var info entityRam.RamIdpBindingEntity
+	var info entityIdp.IdpIdpBindingEntity
 	copier.Copy(&info, &ct)
 	//
 	r := c.sv
@@ -91,7 +91,7 @@ func (c *RamIdpBindingService) CreateUpdate(ctx *gin.Context, ct modRamIdpBindin
 	isUpdate := false
 	b := false
 	//
-	find := &entityRam.RamIdpBindingEntity{}
+	find := &entityIdp.IdpIdpBindingEntity{}
 	//
 	if ct.ID.ToInt64() > 0 {
 		isUpdate = true
@@ -183,7 +183,7 @@ func (c *RamIdpBindingService) State(ctx *gin.Context, ids []string, state enumS
 	}
 	for _, info := range finds {
 		if info.State != state.IndexInt8() {
-			r.Update(ctx, entityRam.RamIdpBindingEntity{State: state.IndexInt8()}, info.ID)
+			r.Update(ctx, entityIdp.IdpIdpBindingEntity{State: state.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -222,7 +222,7 @@ func (c *RamIdpBindingService) LogicalDeletion(ctx *gin.Context, ids []string) (
 			enum := enumStatePg.State(info.State)
 			// 有效 停用，反转 为对应的 取消 弃置
 			if ok, reverse := enum.ReverseEnableDisable(); ok {
-				repository.Update(ctx, entityRam.RamIdpBindingEntity{State: reverse.IndexInt8()}, info.ID)
+				repository.Update(ctx, entityIdp.IdpIdpBindingEntity{State: reverse.IndexInt8()}, info.ID)
 			}
 		}
 	}
@@ -248,7 +248,7 @@ func (c *RamIdpBindingService) LogicalRecovery(ctx *gin.Context, ids []string) (
 		enum := enumStatePg.State(info.State)
 		//  取消 弃置 批量删除，反转 为对应的 有效 停用 停用
 		if ok, reverse := enum.ReverseCancelLayAside(); ok {
-			repository.Update(ctx, entityRam.RamIdpBindingEntity{State: reverse.IndexInt8()}, info.ID)
+			repository.Update(ctx, entityIdp.IdpIdpBindingEntity{State: reverse.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -287,7 +287,7 @@ func (c *RamIdpBindingService) PhysicalDeletion(ctx *gin.Context, ids []string) 
 //	@param ct
 func (c *RamIdpBindingService) Query(ctx *gin.Context, ct modRamIdpBinding.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdpBinding.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam.RamIdpBindingEntity
+	var query entityIdp.IdpIdpBindingEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modRamIdpBinding.Vo, 0)
 	rt.Data.Data = slice
@@ -324,7 +324,7 @@ func (c *RamIdpBindingService) Query(ctx *gin.Context, ct modRamIdpBinding.Query
 // SelectPublic 查询
 func (c *RamIdpBindingService) SelectPublic(ctx *gin.Context, ct modRamIdpBinding.QueryCt) (rt rg.Rs[[]modRamIdpBinding.Vo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam.RamIdpBindingEntity
+	var query entityIdp.IdpIdpBindingEntity
 	copier.Copy(&query, &ct)
 	rt.Data = []modRamIdpBinding.Vo{}
 	infos := c.sv.FindAll(ctx, query)
@@ -347,7 +347,7 @@ func (c *RamIdpBindingService) SelectPublic(ctx *gin.Context, ct modRamIdpBindin
 //	@param ct
 func (c *RamIdpBindingService) SelectNodeAll(ctx *gin.Context, ct modRamIdpBinding.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam.RamIdpBindingEntity
+	var query entityIdp.IdpIdpBindingEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
 	rt.Data = slice
@@ -375,7 +375,7 @@ func (c *RamIdpBindingService) SelectNodeAll(ctx *gin.Context, ct modRamIdpBindi
 //	@param ct
 func (c *RamIdpBindingService) SelectNodeAllPublic(ctx *gin.Context, ct modRamIdpBinding.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityRam.RamIdpBindingEntity
+	var query entityIdp.IdpIdpBindingEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
 	rt.Data = slice
