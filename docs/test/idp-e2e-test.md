@@ -22,7 +22,7 @@
 | `../../app/handler/manage/idp/IdpCredential.go` | `/xianfu/manage/ram/idp-credential` | `ram_idp_credential` | `RamIdpCredentialService` |
 | `../../app/handler/manage/idp/IdpMetadataCache.go` | `/xianfu/manage/ram/idp-metadata-cache` | `ram_idp_metadata_cache` | `RamIdpMetadataCacheService` |
 | `../../app/handler/manage/idp/Ldap.go` | `/xianfu/manage/ram/ldap` | 复用认证源/账号/绑定 | `LdapService` |
-| `../../app/handler/manage/idp/Cas.go` | `/xianfu/auth/manage/cas` | 复用账号 | `CasService` |
+| `../../app/handler/manage/idp/AuthCas.go` | `/xianfu/auth/manage/cas` | 复用账号 | `CasService` |
 | `../../app/handler/manage/idp/authLoginIdp.go` | `/xianfu/auth/manage/idp` | 复用认证源/绑定/账号 | `AccountLoginIdpService`、`SamlLoginService`、`CasService` |
 
 协议 SDK：`pkg/sdk/auth/idpPg/idp`（Custom/OIDC 提供方）、`pkg/sdk/auth/idpPg/cas`、`pkg/sdk/auth/idpPg/saml`、`pkg/sdk/auth/idpPg/ldap`。

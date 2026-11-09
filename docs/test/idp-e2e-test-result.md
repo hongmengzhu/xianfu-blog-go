@@ -73,7 +73,7 @@
 | D2 | 中 | `IdentityProvider.Vo`、`IdentitySource.Vo` 没有 `no` 字段，而 IdP 登录必须用 `sourceNo`、认证源必须存 provider `No`；管理端无法从接口取得 No | `app/models/ram/modRamIdentityProvider/vo.go`、`modRamIdentitySource/vo.go` | Vo 增加 `no`；或 detail 返回 No；或提供 by-id 转 No 的接口 |
 | D3 | 中 | `pg.data.delete=true` 时 `LogicalDeletion` 实际物理删除，`recovery` 必然“数据不存在”，`physicalDeletion` 无实际作用 | 各 `Ram*Service.LogicalDeletion` 中 `if c.sv.Config().Data.Delete` 分支；默认配置 `data/config/app.toml` | 若需要回收站语义，应改为“删除只置 state，physicalDeletion 才删”；否则前端隐藏恢复入口并更名 |
 | D4 | 低 | 凭证模型有 `description`，实体/表没有该列：创建/更新描述不落库，详情描述恒为空 | `entityRam/RamIdpCredential.go` 与 `app/models/ram/modRamIdpCredential/*.go` | 实体补 `description` 列或模型删除该字段 |
-| D5 | 高 | CAS 登录路由未挂鉴权中间件，而 `CasService.Login` 依赖 `ctx.Get("ano")`，HTTP 直连永远返回“用户未登录” | `../../app/handler/manage/idp/Cas.go`、`authLoginIdp.go` 路由组；`../../app/domain/domainRam/service` | 给 `/cas/login`、`/idp/cas/login` 挂载管理端鉴权中间件，或改用 `holderPg` 读取登录上下文 |
+| D5 | 高 | CAS 登录路由未挂鉴权中间件，而 `CasService.Login` 依赖 `ctx.Get("ano")`，HTTP 直连永远返回“用户未登录” | `../../app/handler/manage/idp/AuthCas.go`、`authLoginIdp.go` 路由组；`../../app/domain/domainRam/service` | 给 `/cas/login`、`/idp/cas/login` 挂载管理端鉴权中间件，或改用 `holderPg` 读取登录上下文 |
 | D6 | 低 | LDAP 登录未校验 `source.Protocol == "ldap"`，非 LDAP 认证源也会走 LDAP 连接 | `../../app/domain/domainRam/service` `Login` | 增加协议校验，避免错误配置产生误导性错误 |
 | D7 | 低 | 回调白名单创建只校验 `name`，`callback` 可为空 | `RamIdentitySourceCallbackService.Create` | 补 `callback` 必填与 URL 格式校验 |
 | D8 | 中 | `Custom` provider 的 `UserMapping` 未从 `baseConfig` 填充；配置了 `userInfoURL` 的 Custom 源必然报 `cannot find id in userMapping`，只有 id_token 模式可用 | `AccountLoginIdpService.Login` 构造 `idp.ProviderInfo` 时未赋 `UserMapping`；`idp/custom.go` | 增加 `userMapping` 配置解析，或为 Custom 提供默认映射 |
@@ -81,7 +81,7 @@
 | D10 | 低 | 元数据缓存无法通过管理接口写入 `metadataRaw`（`CreateUpdateCt` 无该字段）；SAML 又把 `sp_cert` 当作 IdP 证书读取，凭证类型语义混用 | `modRamIdpMetadataCache/createUpdateCt.go`；`SamlLoginService.buildSpFromSource` | 提供元数据拉取/写入任务；区分 `idp_cert` 与 `sp_cert` 凭证类型 |
 | D11 | 中（风险） | 绑定/凭证/元数据的 `Query` 使用 `Where(...).Or(...)` 未分组，多租户 scope 的 `AND` 可能被 `OR` 破坏，存在跨租户数据泄漏风险（本次单租户未实测触发） | 三个 `Ram*Service.Query` 实现 | 使用 `Where("(a LIKE ? OR b LIKE ?)")` 或 `db.Group` 包裹 |
 | D12 | 低 | `Create`（区别于 `CreateUpdate`）不校验 `code` 格式与唯一性，provider/source 可创建重复 code | 各 `Ram*Service.Create` | 统一走 `CreateUpdate` 或补 code 校验 |
-| D13 | 低 | CAS `format` 参数被读取但未实现；无 PGT/代理票据能力；`service` 为空时被 `binding:"required"` 先拦下，提示通用“操作失败”而非服务层文案 | `Cas.go`、`CasService.go`、`modRamCas.CasLoginCt` | 实现 format 或移除参数；调整 binding tag/提示 |
+| D13 | 低 | CAS `format` 参数被读取但未实现；无 PGT/代理票据能力；`service` 为空时被 `binding:"required"` 先拦下，提示通用“操作失败”而非服务层文案 | `AuthCas.go`、`CasService.go`、`modRamCas.CasLoginCt` | 实现 format 或移除参数；调整 binding tag/提示 |
 | D14 | 信息 | `existName` 成功时“可以使用”放在 `message`，`data` 为空字符串（`rg.OkMessage`）；前端需按 message 判断 | `Ram*Service.ExistName`；用例 `existName` | 统一成功响应契约（data 返回布尔或文案） |
 
 ## 6. 复现
