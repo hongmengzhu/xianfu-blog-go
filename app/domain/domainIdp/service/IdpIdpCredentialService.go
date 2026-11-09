@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdpCredential"
+	modRamIdpCredential2 "github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modRamIdpCredential"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityIdp"
@@ -31,7 +31,7 @@ type IdpIdpCredentialService struct {
 }
 
 // Create 新增
-func (c *IdpIdpCredentialService) Create(ctx *gin.Context, ct modRamIdpCredential.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdpCredentialService) Create(ctx *gin.Context, ct modRamIdpCredential2.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityIdp.IdpIdpCredentialEntity
 	copier.Copy(&info, &ct)
@@ -49,7 +49,7 @@ func (c *IdpIdpCredentialService) Create(ctx *gin.Context, ct modRamIdpCredentia
 }
 
 // Update 更新
-func (c *IdpIdpCredentialService) Update(ctx *gin.Context, ct modRamIdpCredential.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdpCredentialService) Update(ctx *gin.Context, ct modRamIdpCredential2.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityIdp.IdpIdpCredentialEntity
 	copier.Copy(&info, &ct)
@@ -78,7 +78,7 @@ func (c *IdpIdpCredentialService) Update(ctx *gin.Context, ct modRamIdpCredentia
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *IdpIdpCredentialService) CreateUpdate(ctx *gin.Context, ct modRamIdpCredential.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdpCredentialService) CreateUpdate(ctx *gin.Context, ct modRamIdpCredential2.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
 	holder := holderPg.GetContextAccount(ctx)
@@ -134,7 +134,7 @@ func (c *IdpIdpCredentialService) CreateUpdate(ctx *gin.Context, ct modRamIdpCre
 //	@Description:
 //	@receiver c
 //	@param id
-func (c *IdpIdpCredentialService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamIdpCredential.Vo]) {
+func (c *IdpIdpCredentialService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamIdpCredential2.Vo]) {
 	if id < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -142,7 +142,7 @@ func (c *IdpIdpCredentialService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[m
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
-	var info modRamIdpCredential.Vo
+	var info modRamIdpCredential2.Vo
 	copier.Copy(&info, &find)
 	return rt.OkData(info)
 }
@@ -285,11 +285,11 @@ func (c *IdpIdpCredentialService) PhysicalDeletion(ctx *gin.Context, ids []strin
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *IdpIdpCredentialService) Query(ctx *gin.Context, ct modRamIdpCredential.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdpCredential.Vo]]) {
+func (c *IdpIdpCredentialService) Query(ctx *gin.Context, ct modRamIdpCredential2.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdpCredential2.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdpCredentialEntity
 	copier.Copy(&query, &ct)
-	slice := make([]modRamIdpCredential.Vo, 0)
+	slice := make([]modRamIdpCredential2.Vo, 0)
 	rt.Data.Data = slice
 	r := c.sv
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
@@ -308,9 +308,9 @@ func (c *IdpIdpCredentialService) Query(ctx *gin.Context, ct modRamIdpCredential
 	}
 
 	if page.Total > 0 && page.Data != nil && len(page.Data) > 0 {
-		pg := pagePg.NewPaginatorByPageable[modRamIdpCredential.Vo](page.Pageable)
+		pg := pagePg.NewPaginatorByPageable[modRamIdpCredential2.Vo](page.Pageable)
 		for _, item := range page.Data {
-			var vo modRamIdpCredential.Vo
+			var vo modRamIdpCredential2.Vo
 			copier.Copy(&vo, &item)
 			slice = append(slice, vo)
 		}
@@ -323,16 +323,16 @@ func (c *IdpIdpCredentialService) Query(ctx *gin.Context, ct modRamIdpCredential
 }
 
 // SelectPublic 查询
-func (c *IdpIdpCredentialService) SelectPublic(ctx *gin.Context, ct modRamIdpCredential.QueryCt) (rt rg.Rs[[]modRamIdpCredential.Vo]) {
+func (c *IdpIdpCredentialService) SelectPublic(ctx *gin.Context, ct modRamIdpCredential2.QueryCt) (rt rg.Rs[[]modRamIdpCredential2.Vo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdpCredentialEntity
 	copier.Copy(&query, &ct)
-	rt.Data = []modRamIdpCredential.Vo{}
+	rt.Data = []modRamIdpCredential2.Vo{}
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
-		slice := make([]modRamIdpCredential.Vo, 0)
+		slice := make([]modRamIdpCredential2.Vo, 0)
 		for _, item := range infos {
-			var vo modRamIdpCredential.Vo
+			var vo modRamIdpCredential2.Vo
 			copier.Copy(&vo, &item)
 			slice = append(slice, vo)
 		}
@@ -346,7 +346,7 @@ func (c *IdpIdpCredentialService) SelectPublic(ctx *gin.Context, ct modRamIdpCre
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *IdpIdpCredentialService) SelectNodeAll(ctx *gin.Context, ct modRamIdpCredential.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *IdpIdpCredentialService) SelectNodeAll(ctx *gin.Context, ct modRamIdpCredential2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdpCredentialEntity
 	copier.Copy(&query, &ct)
@@ -355,7 +355,7 @@ func (c *IdpIdpCredentialService) SelectNodeAll(ctx *gin.Context, ct modRamIdpCr
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
 		for _, item := range infos {
-			var vo modRamIdpCredential.Vo
+			var vo modRamIdpCredential2.Vo
 			copier.Copy(&vo, &item)
 			code := model.BaseNodeNo{
 				Value:  item.No,
@@ -374,7 +374,7 @@ func (c *IdpIdpCredentialService) SelectNodeAll(ctx *gin.Context, ct modRamIdpCr
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *IdpIdpCredentialService) SelectNodeAllPublic(ctx *gin.Context, ct modRamIdpCredential.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *IdpIdpCredentialService) SelectNodeAllPublic(ctx *gin.Context, ct modRamIdpCredential2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdpCredentialEntity
 	copier.Copy(&query, &ct)
@@ -383,7 +383,7 @@ func (c *IdpIdpCredentialService) SelectNodeAllPublic(ctx *gin.Context, ct modRa
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
 		for _, item := range infos {
-			var vo modRamIdpCredential.Vo
+			var vo modRamIdpCredential2.Vo
 			copier.Copy(&vo, &item)
 			code := model.BaseNodeNo{
 				Value:  item.No,

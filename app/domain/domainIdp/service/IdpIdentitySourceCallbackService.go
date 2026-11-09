@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdentitySourceCallback"
+	modRamIdentitySourceCallback2 "github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modRamIdentitySourceCallback"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityIdp"
@@ -31,7 +31,7 @@ type IdpIdentitySourceCallbackService struct {
 }
 
 // Create 新增
-func (c *IdpIdentitySourceCallbackService) Create(ctx *gin.Context, ct modRamIdentitySourceCallback.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceCallbackService) Create(ctx *gin.Context, ct modRamIdentitySourceCallback2.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityIdp.IdpIdentitySourceCallbackEntity
 	copier.Copy(&info, &ct)
@@ -52,7 +52,7 @@ func (c *IdpIdentitySourceCallbackService) Create(ctx *gin.Context, ct modRamIde
 }
 
 // Update 更新
-func (c *IdpIdentitySourceCallbackService) Update(ctx *gin.Context, ct modRamIdentitySourceCallback.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceCallbackService) Update(ctx *gin.Context, ct modRamIdentitySourceCallback2.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityIdp.IdpIdentitySourceCallbackEntity
 	copier.Copy(&info, &ct)
@@ -84,7 +84,7 @@ func (c *IdpIdentitySourceCallbackService) Update(ctx *gin.Context, ct modRamIde
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *IdpIdentitySourceCallbackService) CreateUpdate(ctx *gin.Context, ct modRamIdentitySourceCallback.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceCallbackService) CreateUpdate(ctx *gin.Context, ct modRamIdentitySourceCallback2.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
 	holder := holderPg.GetContextAccount(ctx)
@@ -143,7 +143,7 @@ func (c *IdpIdentitySourceCallbackService) CreateUpdate(ctx *gin.Context, ct mod
 //	@Description:
 //	@receiver c
 //	@param id
-func (c *IdpIdentitySourceCallbackService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamIdentitySourceCallback.Vo]) {
+func (c *IdpIdentitySourceCallbackService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamIdentitySourceCallback2.Vo]) {
 	if id < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -151,7 +151,7 @@ func (c *IdpIdentitySourceCallbackService) Detail(ctx *gin.Context, id int64) (r
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
-	var info modRamIdentitySourceCallback.Vo
+	var info modRamIdentitySourceCallback2.Vo
 	copier.Copy(&info, &find)
 	return rt.OkData(info)
 }
@@ -292,11 +292,11 @@ func (c *IdpIdentitySourceCallbackService) PhysicalDeletion(ctx *gin.Context, id
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *IdpIdentitySourceCallbackService) Query(ctx *gin.Context, ct modRamIdentitySourceCallback.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdentitySourceCallback.Vo]]) {
+func (c *IdpIdentitySourceCallbackService) Query(ctx *gin.Context, ct modRamIdentitySourceCallback2.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdentitySourceCallback2.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdentitySourceCallbackEntity
 	copier.Copy(&query, &ct)
-	slice := make([]modRamIdentitySourceCallback.Vo, 0)
+	slice := make([]modRamIdentitySourceCallback2.Vo, 0)
 	rt.Data.Data = slice
 	r := c.sv
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
@@ -315,9 +315,9 @@ func (c *IdpIdentitySourceCallbackService) Query(ctx *gin.Context, ct modRamIden
 	}
 
 	if page.Total > 0 && page.Data != nil && len(page.Data) > 0 {
-		pg := pagePg.NewPaginatorByPageable[modRamIdentitySourceCallback.Vo](page.Pageable)
+		pg := pagePg.NewPaginatorByPageable[modRamIdentitySourceCallback2.Vo](page.Pageable)
 		for _, item := range page.Data {
-			var vo modRamIdentitySourceCallback.Vo
+			var vo modRamIdentitySourceCallback2.Vo
 			copier.Copy(&vo, &item)
 			slice = append(slice, vo)
 		}
@@ -330,16 +330,16 @@ func (c *IdpIdentitySourceCallbackService) Query(ctx *gin.Context, ct modRamIden
 }
 
 // SelectPublic 查询
-func (c *IdpIdentitySourceCallbackService) SelectPublic(ctx *gin.Context, ct modRamIdentitySourceCallback.QueryCt) (rt rg.Rs[[]modRamIdentitySourceCallback.Vo]) {
+func (c *IdpIdentitySourceCallbackService) SelectPublic(ctx *gin.Context, ct modRamIdentitySourceCallback2.QueryCt) (rt rg.Rs[[]modRamIdentitySourceCallback2.Vo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdentitySourceCallbackEntity
 	copier.Copy(&query, &ct)
-	rt.Data = []modRamIdentitySourceCallback.Vo{}
+	rt.Data = []modRamIdentitySourceCallback2.Vo{}
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
-		slice := make([]modRamIdentitySourceCallback.Vo, 0)
+		slice := make([]modRamIdentitySourceCallback2.Vo, 0)
 		for _, item := range infos {
-			var vo modRamIdentitySourceCallback.Vo
+			var vo modRamIdentitySourceCallback2.Vo
 			copier.Copy(&vo, &item)
 			slice = append(slice, vo)
 		}
@@ -370,7 +370,7 @@ func (c *IdpIdentitySourceCallbackService) ExistName(ctx *gin.Context, ct model.
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *IdpIdentitySourceCallbackService) SelectNodeAll(ctx *gin.Context, ct modRamIdentitySourceCallback.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *IdpIdentitySourceCallbackService) SelectNodeAll(ctx *gin.Context, ct modRamIdentitySourceCallback2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdentitySourceCallbackEntity
 	copier.Copy(&query, &ct)
@@ -379,7 +379,7 @@ func (c *IdpIdentitySourceCallbackService) SelectNodeAll(ctx *gin.Context, ct mo
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
 		for _, item := range infos {
-			var vo modRamIdentitySourceCallback.Vo
+			var vo modRamIdentitySourceCallback2.Vo
 			copier.Copy(&vo, &item)
 			code := model.BaseNodeNo{
 				Value:  item.No,
@@ -398,7 +398,7 @@ func (c *IdpIdentitySourceCallbackService) SelectNodeAll(ctx *gin.Context, ct mo
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *IdpIdentitySourceCallbackService) SelectNodeAllPublic(ctx *gin.Context, ct modRamIdentitySourceCallback.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *IdpIdentitySourceCallbackService) SelectNodeAllPublic(ctx *gin.Context, ct modRamIdentitySourceCallback2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdentitySourceCallbackEntity
 	copier.Copy(&query, &ct)
@@ -407,7 +407,7 @@ func (c *IdpIdentitySourceCallbackService) SelectNodeAllPublic(ctx *gin.Context,
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
 		for _, item := range infos {
-			var vo modRamIdentitySourceCallback.Vo
+			var vo modRamIdentitySourceCallback2.Vo
 			copier.Copy(&vo, &item)
 			code := model.BaseNodeNo{
 				Value:  item.No,
