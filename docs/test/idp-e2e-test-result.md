@@ -70,9 +70,9 @@
 | ID | 严重度 | 现象 | 证据/位置 | 建议 |
 | --- | --- | --- | --- | --- |
 | D1 | 高（已修复） | 启动建表 runner 未注册 6 张 IdP 表，也未注册 `ram_account_session_log`、`ram_account_auth_mfa`、`ram_account_auth_webauthn`；新库启动后 IdP 接口报 `relation does not exist`（部分服务吞掉错误后返回空列表） | `pkg/middleware/runnerPg/table/a-init-table.go`；修复后 `go run .` 建表，`public` 表数 68 → 77 | 已补充 9 个实体到建表列表。建议补一条启动/CI 校验，确保实体与建表清单同步 |
-| D2 | 中 | `IdentityProvider.Vo`、`IdentitySource.Vo` 没有 `no` 字段，而 IdP 登录必须用 `sourceNo`、认证源必须存 provider `No`；管理端无法从接口取得 No | `app/models/ram/modRamIdentityProvider/vo.go`、`modRamIdentitySource/vo.go` | Vo 增加 `no`；或 detail 返回 No；或提供 by-id 转 No 的接口 |
+| D2 | 中 | `IdentityProvider.Vo`、`IdentitySource.Vo` 没有 `no` 字段，而 IdP 登录必须用 `sourceNo`、认证源必须存 provider `No`；管理端无法从接口取得 No | `../../app/models/idp/modRamIdentityProvider`、`modRamIdentitySource/vo.go` | Vo 增加 `no`；或 detail 返回 No；或提供 by-id 转 No 的接口 |
 | D3 | 中 | `pg.data.delete=true` 时 `LogicalDeletion` 实际物理删除，`recovery` 必然“数据不存在”，`physicalDeletion` 无实际作用 | 各 `Ram*Service.LogicalDeletion` 中 `if c.sv.Config().Data.Delete` 分支；默认配置 `data/config/app.toml` | 若需要回收站语义，应改为“删除只置 state，physicalDeletion 才删”；否则前端隐藏恢复入口并更名 |
-| D4 | 低 | 凭证模型有 `description`，实体/表没有该列：创建/更新描述不落库，详情描述恒为空 | `entityRam/RamIdpCredential.go` 与 `app/models/ram/modRamIdpCredential/*.go` | 实体补 `description` 列或模型删除该字段 |
+| D4 | 低 | 凭证模型有 `description`，实体/表没有该列：创建/更新描述不落库，详情描述恒为空 | `entityRam/RamIdpCredential.go` 与 `../../app/models/idp/modRamIdpCredential` | 实体补 `description` 列或模型删除该字段 |
 | D5 | 高 | CAS 登录路由未挂鉴权中间件，而 `CasService.Login` 依赖 `ctx.Get("ano")`，HTTP 直连永远返回“用户未登录” | `../../app/handler/manage/idp/AuthCas.go`、`authLoginIdp.go` 路由组；`../../app/domain/domainRam/service` | 给 `/cas/login`、`/idp/cas/login` 挂载管理端鉴权中间件，或改用 `holderPg` 读取登录上下文 |
 | D6 | 低 | LDAP 登录未校验 `source.Protocol == "ldap"`，非 LDAP 认证源也会走 LDAP 连接 | `../../app/domain/domainRam/service` `Login` | 增加协议校验，避免错误配置产生误导性错误 |
 | D7 | 低 | 回调白名单创建只校验 `name`，`callback` 可为空 | `RamIdentitySourceCallbackService.Create` | 补 `callback` 必填与 URL 格式校验 |

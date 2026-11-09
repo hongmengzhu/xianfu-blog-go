@@ -3,7 +3,7 @@ package idp
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLdap"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modRamLdap"
 	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"go-spring.org/spring/gs"
 )
@@ -29,7 +29,7 @@ func (c *LdapController) RegisterRoutes(e *gin.Engine) {
 
 // TestConnection 测试 LDAP 连接
 func (c *LdapController) TestConnection(ctx *gin.Context) {
-	var ct modRamLdap.LdapTestCt
+	var ct modIdpLdap.LdapTestCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -38,7 +38,7 @@ func (c *LdapController) TestConnection(ctx *gin.Context) {
 
 // SearchUsers 搜索 LDAP 用户
 func (c *LdapController) SearchUsers(ctx *gin.Context) {
-	var ct modRamLdap.LdapSearchCt
+	var ct modIdpLdap.LdapSearchCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -47,7 +47,7 @@ func (c *LdapController) SearchUsers(ctx *gin.Context) {
 
 // SyncUsers 同步 LDAP 用户
 func (c *LdapController) SyncUsers(ctx *gin.Context) {
-	var ct modRamLdap.LdapSyncCt
+	var ct modIdpLdap.LdapSyncCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -56,7 +56,7 @@ func (c *LdapController) SyncUsers(ctx *gin.Context) {
 
 // Login LDAP 登录
 func (c *LdapController) Login(ctx *gin.Context) {
-	var ct modRamLdap.LdapLoginCt
+	var ct modIdpLdap.LdapLoginCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}

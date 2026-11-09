@@ -1,4 +1,4 @@
-package modRamWechat
+package modIdpWechat
 
 // QRCodeVo 公众号扫码登录二维码响应
 type QRCodeVo struct {

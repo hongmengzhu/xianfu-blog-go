@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdentityProvider"
+	modRamIdentityProvider2 "github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modRamIdentityProvider"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/automatedPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
@@ -32,7 +32,7 @@ type IdpIdentityProviderService struct {
 }
 
 // Create 新增
-func (c *IdpIdentityProviderService) Create(ctx *gin.Context, ct modRamIdentityProvider.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdentityProviderService) Create(ctx *gin.Context, ct modRamIdentityProvider2.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityIdp.IdpIdentityProviderEntity
 	copier.Copy(&info, &ct)
@@ -53,7 +53,7 @@ func (c *IdpIdentityProviderService) Create(ctx *gin.Context, ct modRamIdentityP
 }
 
 // Update 更新
-func (c *IdpIdentityProviderService) Update(ctx *gin.Context, ct modRamIdentityProvider.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdentityProviderService) Update(ctx *gin.Context, ct modRamIdentityProvider2.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityIdp.IdpIdentityProviderEntity
 	copier.Copy(&info, &ct)
@@ -85,7 +85,7 @@ func (c *IdpIdentityProviderService) Update(ctx *gin.Context, ct modRamIdentityP
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *IdpIdentityProviderService) CreateUpdate(ctx *gin.Context, ct modRamIdentityProvider.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdentityProviderService) CreateUpdate(ctx *gin.Context, ct modRamIdentityProvider2.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
 	holder := holderPg.GetContextAccount(ctx)
@@ -167,7 +167,7 @@ func (c *IdpIdentityProviderService) CreateUpdate(ctx *gin.Context, ct modRamIde
 //	@Description:
 //	@receiver c
 //	@param id
-func (c *IdpIdentityProviderService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamIdentityProvider.Vo]) {
+func (c *IdpIdentityProviderService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamIdentityProvider2.Vo]) {
 	if id < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -175,7 +175,7 @@ func (c *IdpIdentityProviderService) Detail(ctx *gin.Context, id int64) (rt rg.R
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
-	var info modRamIdentityProvider.Vo
+	var info modRamIdentityProvider2.Vo
 	copier.Copy(&info, &find)
 	return rt.OkData(info)
 }
@@ -316,11 +316,11 @@ func (c *IdpIdentityProviderService) PhysicalDeletion(ctx *gin.Context, ids []st
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *IdpIdentityProviderService) Query(ctx *gin.Context, ct modRamIdentityProvider.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdentityProvider.Vo]]) {
+func (c *IdpIdentityProviderService) Query(ctx *gin.Context, ct modRamIdentityProvider2.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdentityProvider2.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdentityProviderEntity
 	copier.Copy(&query, &ct)
-	slice := make([]modRamIdentityProvider.Vo, 0)
+	slice := make([]modRamIdentityProvider2.Vo, 0)
 	rt.Data.Data = slice
 	r := c.sv
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
@@ -339,9 +339,9 @@ func (c *IdpIdentityProviderService) Query(ctx *gin.Context, ct modRamIdentityPr
 	}
 
 	if page.Total > 0 && page.Data != nil && len(page.Data) > 0 {
-		pg := pagePg.NewPaginatorByPageable[modRamIdentityProvider.Vo](page.Pageable)
+		pg := pagePg.NewPaginatorByPageable[modRamIdentityProvider2.Vo](page.Pageable)
 		for _, item := range page.Data {
-			var vo modRamIdentityProvider.Vo
+			var vo modRamIdentityProvider2.Vo
 			copier.Copy(&vo, &item)
 			slice = append(slice, vo)
 		}
@@ -354,16 +354,16 @@ func (c *IdpIdentityProviderService) Query(ctx *gin.Context, ct modRamIdentityPr
 }
 
 // SelectPublic 查询
-func (c *IdpIdentityProviderService) SelectPublic(ctx *gin.Context, ct modRamIdentityProvider.QueryCt) (rt rg.Rs[[]modRamIdentityProvider.Vo]) {
+func (c *IdpIdentityProviderService) SelectPublic(ctx *gin.Context, ct modRamIdentityProvider2.QueryCt) (rt rg.Rs[[]modRamIdentityProvider2.Vo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdentityProviderEntity
 	copier.Copy(&query, &ct)
-	rt.Data = []modRamIdentityProvider.Vo{}
+	rt.Data = []modRamIdentityProvider2.Vo{}
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
-		slice := make([]modRamIdentityProvider.Vo, 0)
+		slice := make([]modRamIdentityProvider2.Vo, 0)
 		for _, item := range infos {
-			var vo modRamIdentityProvider.Vo
+			var vo modRamIdentityProvider2.Vo
 			copier.Copy(&vo, &item)
 			slice = append(slice, vo)
 		}
@@ -377,7 +377,7 @@ func (c *IdpIdentityProviderService) SelectPublic(ctx *gin.Context, ct modRamIde
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *IdpIdentityProviderService) SelectNodeAll(ctx *gin.Context, ct modRamIdentityProvider.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *IdpIdentityProviderService) SelectNodeAll(ctx *gin.Context, ct modRamIdentityProvider2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdentityProviderEntity
 	copier.Copy(&query, &ct)
@@ -386,7 +386,7 @@ func (c *IdpIdentityProviderService) SelectNodeAll(ctx *gin.Context, ct modRamId
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
 		for _, item := range infos {
-			var vo modRamIdentityProvider.Vo
+			var vo modRamIdentityProvider2.Vo
 			copier.Copy(&vo, &item)
 			code := model.BaseNodeNo{
 				Value:  item.No,
@@ -405,7 +405,7 @@ func (c *IdpIdentityProviderService) SelectNodeAll(ctx *gin.Context, ct modRamId
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *IdpIdentityProviderService) SelectNodeAllPublic(ctx *gin.Context, ct modRamIdentityProvider.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *IdpIdentityProviderService) SelectNodeAllPublic(ctx *gin.Context, ct modRamIdentityProvider2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdentityProviderEntity
 	copier.Copy(&query, &ct)
@@ -414,7 +414,7 @@ func (c *IdpIdentityProviderService) SelectNodeAllPublic(ctx *gin.Context, ct mo
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
 		for _, item := range infos {
-			var vo modRamIdentityProvider.Vo
+			var vo modRamIdentityProvider2.Vo
 			copier.Copy(&vo, &item)
 			code := model.BaseNodeNo{
 				Value:  item.No,

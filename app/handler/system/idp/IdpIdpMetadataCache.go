@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdpMetadataCache"
+	modRamIdpMetadataCache2 "github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modRamIdpMetadataCache"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
@@ -41,7 +41,7 @@ func (c *IdpIdpMetadataCacheController) RegisterRoutes(e *gin.Engine) {
 }
 
 func (c *IdpIdpMetadataCacheController) CreateUpdate(ctx *gin.Context) {
-	var ct modRamIdpMetadataCache.CreateUpdateCt
+	var ct modRamIdpMetadataCache2.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -100,7 +100,7 @@ func (c *IdpIdpMetadataCacheController) Disable(ctx *gin.Context) {
 }
 
 func (c *IdpIdpMetadataCacheController) Query(ctx *gin.Context) {
-	var ct modRamIdpMetadataCache.QueryCt
+	var ct modRamIdpMetadataCache2.QueryCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -108,7 +108,7 @@ func (c *IdpIdpMetadataCacheController) Query(ctx *gin.Context) {
 }
 
 func (c *IdpIdpMetadataCacheController) SelectNodeAll(ctx *gin.Context) {
-	var ct modRamIdpMetadataCache.QueryPublicCt
+	var ct modRamIdpMetadataCache2.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -116,7 +116,7 @@ func (c *IdpIdpMetadataCacheController) SelectNodeAll(ctx *gin.Context) {
 }
 
 func (c *IdpIdpMetadataCacheController) SelectNodeAllPublic(ctx *gin.Context) {
-	var ct modRamIdpMetadataCache.QueryPublicCt
+	var ct modRamIdpMetadataCache2.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}

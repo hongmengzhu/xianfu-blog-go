@@ -1,4 +1,4 @@
-package modRamIdpCredential
+package modIdpIdpCredential
 
 import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"

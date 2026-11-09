@@ -7,10 +7,10 @@ import (
 	"github.com/gin-gonic/gin"
 	service2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamCas"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modRamCas"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modRamSaml"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLogin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamMfa"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamSaml"
 	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
@@ -134,7 +134,7 @@ func (c *AuthLoginIdpController) SamlLogin(ctx *gin.Context) {
 
 // SamlCallback SAML Response 回调端点（ACS）
 func (c *AuthLoginIdpController) SamlCallback(ctx *gin.Context) {
-	ct := modRamSaml.SamlCallbackCt{
+	ct := modIdpSaml.SamlCallbackCt{
 		SAMLResponse: ctx.PostForm("SAMLResponse"),
 		RelayState:   ctx.PostForm("RelayState"),
 	}
@@ -175,7 +175,7 @@ func (c *AuthLoginIdpController) FaceIdVerify(ctx *gin.Context) {
 
 // CasLogin CAS 登录（生成 Service Ticket）
 func (c *AuthLoginIdpController) CasLogin(ctx *gin.Context) {
-	var ct modRamCas.CasLoginCt
+	var ct modIdpCas.CasLoginCt
 	if err := ctx.ShouldBind(&ct); err != nil {
 		ctx.JSON(200, rg.ErrorDefault[string]())
 		return

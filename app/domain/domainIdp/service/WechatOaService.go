@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamWechat"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modRamWechat"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryIdp"
 	ldap "github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/idpPg/idp"
@@ -64,7 +64,7 @@ func NewWechatOaService() *WechatOaService {
 }
 
 // GetQRCode 获取扫码登录二维码
-func (s *WechatOaService) GetQRCode(ctx *gin.Context, sourceNo string) (rt rg.Rs[modRamWechat.QRCodeVo]) {
+func (s *WechatOaService) GetQRCode(ctx *gin.Context, sourceNo string) (rt rg.Rs[modIdpWechat.QRCodeVo]) {
 	if strPg.IsBlank(sourceNo) {
 		return rt.ErrorMessage("认证源编号不能为空")
 	}
@@ -100,7 +100,7 @@ func (s *WechatOaService) GetQRCode(ctx *gin.Context, sourceNo string) (rt rg.Rs
 		return rt.ErrorMessage("创建二维码失败: " + err.Error())
 	}
 
-	vo := modRamWechat.QRCodeVo{
+	vo := modIdpWechat.QRCodeVo{
 		Ticket:        qrResult.Ticket,
 		QRUrl:         ldap.WechatOaQRCodeShowURL(qrResult.Ticket),
 		ExpireSeconds: qrResult.ExpireSeconds,
@@ -109,18 +109,18 @@ func (s *WechatOaService) GetQRCode(ctx *gin.Context, sourceNo string) (rt rg.Rs
 }
 
 // PollScanStatus 轮询扫码状态
-func (s *WechatOaService) PollScanStatus(ctx *gin.Context, ticket string) (rt rg.Rs[modRamWechat.PollVo]) {
+func (s *WechatOaService) PollScanStatus(ctx *gin.Context, ticket string) (rt rg.Rs[modIdpWechat.PollVo]) {
 	if strPg.IsBlank(ticket) {
 		return rt.ErrorMessage("ticket 不能为空")
 	}
 
 	val, ok := wechatOaCacheMap.Load(ticket)
 	if !ok {
-		return rt.OkData(modRamWechat.PollVo{IsScanned: false})
+		return rt.OkData(modIdpWechat.PollVo{IsScanned: false})
 	}
 
 	cacheVal := val.(*wechatCacheValue)
-	vo := modRamWechat.PollVo{
+	vo := modIdpWechat.PollVo{
 		IsScanned:     cacheVal.IsScanned,
 		WechatUnionId: cacheVal.WechatUnionId,
 	}

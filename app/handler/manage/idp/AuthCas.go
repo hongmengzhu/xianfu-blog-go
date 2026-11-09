@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamCas"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modRamCas"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
@@ -36,7 +36,7 @@ func (c *AuthCasController) RegisterRoutes(e *gin.Engine) {
 
 // Login CAS 登录（生成 Service Ticket）
 func (c *AuthCasController) Login(ctx *gin.Context) {
-	var ct modRamCas.CasLoginCt
+	var ct modIdpCas.CasLoginCt
 	if err := ctx.ShouldBind(&ct); err != nil {
 		ctx.JSON(200, rg.ErrorDefault[string]())
 		return
@@ -46,7 +46,7 @@ func (c *AuthCasController) Login(ctx *gin.Context) {
 
 // Validate CAS 1.0 验证端点（返回纯文本 yes/no）
 func (c *AuthCasController) Validate(ctx *gin.Context) {
-	ct := modRamCas.CasValidateCt{
+	ct := modIdpCas.CasValidateCt{
 		Ticket:  ctx.Query("ticket"),
 		Service: ctx.Query("service"),
 	}
@@ -74,7 +74,7 @@ func (c *AuthCasController) Validate(ctx *gin.Context) {
 
 // ServiceValidate CAS 2.0 验证端点（返回 XML）
 func (c *AuthCasController) ServiceValidate(ctx *gin.Context) {
-	ct := modRamCas.CasValidateCt{
+	ct := modIdpCas.CasValidateCt{
 		Ticket:  ctx.Query("ticket"),
 		Service: ctx.Query("service"),
 		PgtUrl:  ctx.Query("pgtUrl"),
@@ -89,7 +89,7 @@ func (c *AuthCasController) ServiceValidate(ctx *gin.Context) {
 
 // P3ServiceValidate CAS 3.0 验证端点（返回 XML，包含更多属性）
 func (c *AuthCasController) P3ServiceValidate(ctx *gin.Context) {
-	ct := modRamCas.CasValidateCt{
+	ct := modIdpCas.CasValidateCt{
 		Ticket:  ctx.Query("ticket"),
 		Service: ctx.Query("service"),
 		PgtUrl:  ctx.Query("pgtUrl"),

@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdentitySource"
+	modRamIdentitySource2 "github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modRamIdentitySource"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
@@ -46,7 +46,7 @@ func (c *IdentitySourceController) RegisterRoutes(e *gin.Engine) {
 
 // Create 创建
 func (c *IdentitySourceController) Create(ctx *gin.Context) {
-	var ct modRamIdentitySource.CreateUpdateCt
+	var ct modRamIdentitySource2.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -55,7 +55,7 @@ func (c *IdentitySourceController) Create(ctx *gin.Context) {
 
 // Update 更新
 func (c *IdentitySourceController) Update(ctx *gin.Context) {
-	var ct modRamIdentitySource.CreateUpdateCt
+	var ct modRamIdentitySource2.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -134,7 +134,7 @@ func (c *IdentitySourceController) State(ctx *gin.Context) {
 
 // Query 查询列表
 func (c *IdentitySourceController) Query(ctx *gin.Context) {
-	var ct modRamIdentitySource.QueryCt
+	var ct modRamIdentitySource2.QueryCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -142,7 +142,7 @@ func (c *IdentitySourceController) Query(ctx *gin.Context) {
 }
 
 func (c *IdentitySourceController) SelectPublic(ctx *gin.Context) {
-	ct := modRamIdentitySource.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
+	ct := modRamIdentitySource2.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
 	ctx.JSON(200, c.sv.SelectPublic(ctx, ct))
 }
 

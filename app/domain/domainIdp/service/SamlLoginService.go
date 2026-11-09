@@ -7,8 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	service2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
+	modRamSaml2 "github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modRamSaml"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLogin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamSaml"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constHeaderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/clientPg"
@@ -56,7 +56,7 @@ func NewSamlLoginService() *SamlLoginService {
 }
 
 // GetSamlLoginUrl 生成 SAML 认证请求 URL
-func (c *SamlLoginService) GetSamlLoginUrl(ctx *gin.Context, sourceNo string) (rt rg.Rs[modRamSaml.SamlRedirectVo]) {
+func (c *SamlLoginService) GetSamlLoginUrl(ctx *gin.Context, sourceNo string) (rt rg.Rs[modRamSaml2.SamlRedirectVo]) {
 	if strPg.IsBlank(sourceNo) {
 		return rt.ErrorMessage("认证源编号不能为空")
 	}
@@ -96,7 +96,7 @@ func (c *SamlLoginService) GetSamlLoginUrl(ctx *gin.Context, sourceNo string) (r
 		return rt.ErrorMessage("生成 SAML 请求失败: " + err.Error())
 	}
 
-	vo := modRamSaml.SamlRedirectVo{
+	vo := modRamSaml2.SamlRedirectVo{
 		RedirectUrl: authURL,
 		Method:      method,
 	}
@@ -109,7 +109,7 @@ func (c *SamlLoginService) GetSamlLoginUrl(ctx *gin.Context, sourceNo string) (r
 }
 
 // HandleSamlCallback 处理 SAML Response 回调
-func (c *SamlLoginService) HandleSamlCallback(ctx *gin.Context, ct modRamSaml.SamlCallbackCt) (rt rg.Rs[modRamLogin.IdpLoginSuccess]) {
+func (c *SamlLoginService) HandleSamlCallback(ctx *gin.Context, ct modRamSaml2.SamlCallbackCt) (rt rg.Rs[modRamLogin.IdpLoginSuccess]) {
 	if strPg.IsBlank(ct.SAMLResponse) {
 		return rt.ErrorMessage("SAML Response 不能为空")
 	}

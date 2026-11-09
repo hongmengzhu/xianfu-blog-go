@@ -1,8 +1,9 @@
-package modRamIdpBinding
+package modIdpIdpBinding
 
 import (
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/typePg"
 	"time"
+
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/typePg"
 )
 
 type CreateUpdateCt struct {

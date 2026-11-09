@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdpBinding"
+	modRamIdpBinding2 "github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modRamIdpBinding"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityIdp"
@@ -31,7 +31,7 @@ type IdpIdpBindingService struct {
 }
 
 // Create 新增
-func (c *IdpIdpBindingService) Create(ctx *gin.Context, ct modRamIdpBinding.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdpBindingService) Create(ctx *gin.Context, ct modRamIdpBinding2.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityIdp.IdpIdpBindingEntity
 	copier.Copy(&info, &ct)
@@ -49,7 +49,7 @@ func (c *IdpIdpBindingService) Create(ctx *gin.Context, ct modRamIdpBinding.Crea
 }
 
 // Update 更新
-func (c *IdpIdpBindingService) Update(ctx *gin.Context, ct modRamIdpBinding.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdpBindingService) Update(ctx *gin.Context, ct modRamIdpBinding2.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityIdp.IdpIdpBindingEntity
 	copier.Copy(&info, &ct)
@@ -78,7 +78,7 @@ func (c *IdpIdpBindingService) Update(ctx *gin.Context, ct modRamIdpBinding.Crea
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *IdpIdpBindingService) CreateUpdate(ctx *gin.Context, ct modRamIdpBinding.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdpBindingService) CreateUpdate(ctx *gin.Context, ct modRamIdpBinding2.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
 	holder := holderPg.GetContextAccount(ctx)
@@ -134,7 +134,7 @@ func (c *IdpIdpBindingService) CreateUpdate(ctx *gin.Context, ct modRamIdpBindin
 //	@Description:
 //	@receiver c
 //	@param id
-func (c *IdpIdpBindingService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamIdpBinding.Vo]) {
+func (c *IdpIdpBindingService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamIdpBinding2.Vo]) {
 	if id < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -142,7 +142,7 @@ func (c *IdpIdpBindingService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modR
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
-	var info modRamIdpBinding.Vo
+	var info modRamIdpBinding2.Vo
 	copier.Copy(&info, &find)
 	return rt.OkData(info)
 }
@@ -285,11 +285,11 @@ func (c *IdpIdpBindingService) PhysicalDeletion(ctx *gin.Context, ids []string) 
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *IdpIdpBindingService) Query(ctx *gin.Context, ct modRamIdpBinding.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdpBinding.Vo]]) {
+func (c *IdpIdpBindingService) Query(ctx *gin.Context, ct modRamIdpBinding2.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdpBinding2.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdpBindingEntity
 	copier.Copy(&query, &ct)
-	slice := make([]modRamIdpBinding.Vo, 0)
+	slice := make([]modRamIdpBinding2.Vo, 0)
 	rt.Data.Data = slice
 	r := c.sv
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
@@ -307,9 +307,9 @@ func (c *IdpIdpBindingService) Query(ctx *gin.Context, ct modRamIdpBinding.Query
 	}
 
 	if page.Total > 0 && page.Data != nil && len(page.Data) > 0 {
-		pg := pagePg.NewPaginatorByPageable[modRamIdpBinding.Vo](page.Pageable)
+		pg := pagePg.NewPaginatorByPageable[modRamIdpBinding2.Vo](page.Pageable)
 		for _, item := range page.Data {
-			var vo modRamIdpBinding.Vo
+			var vo modRamIdpBinding2.Vo
 			copier.Copy(&vo, &item)
 			slice = append(slice, vo)
 		}
@@ -322,16 +322,16 @@ func (c *IdpIdpBindingService) Query(ctx *gin.Context, ct modRamIdpBinding.Query
 }
 
 // SelectPublic 查询
-func (c *IdpIdpBindingService) SelectPublic(ctx *gin.Context, ct modRamIdpBinding.QueryCt) (rt rg.Rs[[]modRamIdpBinding.Vo]) {
+func (c *IdpIdpBindingService) SelectPublic(ctx *gin.Context, ct modRamIdpBinding2.QueryCt) (rt rg.Rs[[]modRamIdpBinding2.Vo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdpBindingEntity
 	copier.Copy(&query, &ct)
-	rt.Data = []modRamIdpBinding.Vo{}
+	rt.Data = []modRamIdpBinding2.Vo{}
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
-		slice := make([]modRamIdpBinding.Vo, 0)
+		slice := make([]modRamIdpBinding2.Vo, 0)
 		for _, item := range infos {
-			var vo modRamIdpBinding.Vo
+			var vo modRamIdpBinding2.Vo
 			copier.Copy(&vo, &item)
 			slice = append(slice, vo)
 		}
@@ -345,7 +345,7 @@ func (c *IdpIdpBindingService) SelectPublic(ctx *gin.Context, ct modRamIdpBindin
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *IdpIdpBindingService) SelectNodeAll(ctx *gin.Context, ct modRamIdpBinding.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *IdpIdpBindingService) SelectNodeAll(ctx *gin.Context, ct modRamIdpBinding2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdpBindingEntity
 	copier.Copy(&query, &ct)
@@ -354,7 +354,7 @@ func (c *IdpIdpBindingService) SelectNodeAll(ctx *gin.Context, ct modRamIdpBindi
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
 		for _, item := range infos {
-			var vo modRamIdpBinding.Vo
+			var vo modRamIdpBinding2.Vo
 			copier.Copy(&vo, &item)
 			code := model.BaseNodeNo{
 				Value:  item.No,
@@ -373,7 +373,7 @@ func (c *IdpIdpBindingService) SelectNodeAll(ctx *gin.Context, ct modRamIdpBindi
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *IdpIdpBindingService) SelectNodeAllPublic(ctx *gin.Context, ct modRamIdpBinding.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *IdpIdpBindingService) SelectNodeAllPublic(ctx *gin.Context, ct modRamIdpBinding2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdpBindingEntity
 	copier.Copy(&query, &ct)
@@ -382,7 +382,7 @@ func (c *IdpIdpBindingService) SelectNodeAllPublic(ctx *gin.Context, ct modRamId
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
 		for _, item := range infos {
-			var vo modRamIdpBinding.Vo
+			var vo modRamIdpBinding2.Vo
 			copier.Copy(&vo, &item)
 			code := model.BaseNodeNo{
 				Value:  item.No,

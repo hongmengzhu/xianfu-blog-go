@@ -1,4 +1,4 @@
-package modRamIdpCredential
+package modIdpIdpCredential
 
 import (
 	"time"

@@ -1,4 +1,4 @@
-package modRamCas
+package modIdpCas
 
 // CasLoginVo CAS 登录响应（返回 ST）
 type CasLoginVo struct {
