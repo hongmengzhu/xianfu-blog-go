@@ -1,3 +1,8 @@
+## 测试文档
+
+- [RAM IdP 端到端测试说明](./test/idp-e2e-test.md)
+- [RAM IdP 端到端测试结果](./test/idp-e2e-test-result.md)
+
 
 
 

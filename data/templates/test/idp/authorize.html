@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>IdP E2E 授权页</title>
+</head>
+<body>
+<h1>E2E Mock OAuth2/OIDC 授权页</h1>
+<p>认证源 sourceNo={{.SourceNo}}</p>
+<p>客户端 clientId={{.ClientId}}</p>
+<p>回调地址 {{.RedirectUri}}</p>
+<form method="get" action="{{.RedirectUri}}">
+  <input type="hidden" name="code" value="{{.Code}}">
+  <input type="hidden" name="state" value="{{.State}}">
+  <button type="submit">同意授权</button>
+</form>
+</body>
+</html>
