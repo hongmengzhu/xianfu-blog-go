@@ -27,7 +27,7 @@ type IdpIdpBindingController struct {
 }
 
 func (c *IdpIdpBindingController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/sys/ram/idpBinding", authPg.GroupSystemMiddleware(c.Sp))
+	group := e.Group("/xianfu/sys/ram-idp/idpBinding", authPg.GroupSystemMiddleware(c.Sp))
 	group.POST("/createUpdate", c.CreateUpdate)
 	group.GET("/detail/:id", c.Detail)
 	group.POST("/enable", c.Enable)

@@ -20,7 +20,7 @@ type LdapController struct {
 
 // RegisterRoutes 注册路由
 func (c *LdapController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/manage/ram/ldap")
+	group := e.Group("/xianfu/manage/ram-idp/ldap")
 	group.POST("/test", c.TestConnection)
 	group.POST("/search", c.SearchUsers)
 	group.POST("/sync", c.SyncUsers)

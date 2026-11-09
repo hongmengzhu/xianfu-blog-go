@@ -27,7 +27,7 @@ type IdpIdpCredentialController struct {
 }
 
 func (c *IdpIdpCredentialController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/sys/ram/idpCredential", authPg.GroupSystemMiddleware(c.Sp))
+	group := e.Group("/xianfu/sys/ram-idp/idpCredential", authPg.GroupSystemMiddleware(c.Sp))
 	group.POST("/createUpdate", c.CreateUpdate)
 	group.GET("/detail/:id", c.Detail)
 	group.POST("/enable", c.Enable)

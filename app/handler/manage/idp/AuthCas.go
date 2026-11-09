@@ -12,17 +12,17 @@ import (
 )
 
 func init() {
-	gs.Provide(new(CasController)).Name("ManageIdpCasController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(AuthCasController)).Name("ManageIdpCasController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
-// CasController CAS 协议端点
-type CasController struct {
+// AuthCasController CAS 协议端点
+type AuthCasController struct {
 	routerPg.RouteRegistrar
 	sv *service.IdpCasService `autowire:"?"`
 }
 
 // RegisterRoutes 注册路由
-func (c *CasController) RegisterRoutes(e *gin.Engine) {
+func (c *AuthCasController) RegisterRoutes(e *gin.Engine) {
 	group := e.Group("/xianfu/auth/manage/cas")
 	// CAS 登录（生成 ST）
 	group.POST("/login", c.Login)
@@ -35,7 +35,7 @@ func (c *CasController) RegisterRoutes(e *gin.Engine) {
 }
 
 // Login CAS 登录（生成 Service Ticket）
-func (c *CasController) Login(ctx *gin.Context) {
+func (c *AuthCasController) Login(ctx *gin.Context) {
 	var ct modRamCas.CasLoginCt
 	if err := ctx.ShouldBind(&ct); err != nil {
 		ctx.JSON(200, rg.ErrorDefault[string]())
@@ -45,7 +45,7 @@ func (c *CasController) Login(ctx *gin.Context) {
 }
 
 // Validate CAS 1.0 验证端点（返回纯文本 yes/no）
-func (c *CasController) Validate(ctx *gin.Context) {
+func (c *AuthCasController) Validate(ctx *gin.Context) {
 	ct := modRamCas.CasValidateCt{
 		Ticket:  ctx.Query("ticket"),
 		Service: ctx.Query("service"),
@@ -73,7 +73,7 @@ func (c *CasController) Validate(ctx *gin.Context) {
 }
 
 // ServiceValidate CAS 2.0 验证端点（返回 XML）
-func (c *CasController) ServiceValidate(ctx *gin.Context) {
+func (c *AuthCasController) ServiceValidate(ctx *gin.Context) {
 	ct := modRamCas.CasValidateCt{
 		Ticket:  ctx.Query("ticket"),
 		Service: ctx.Query("service"),
@@ -88,7 +88,7 @@ func (c *CasController) ServiceValidate(ctx *gin.Context) {
 }
 
 // P3ServiceValidate CAS 3.0 验证端点（返回 XML，包含更多属性）
-func (c *CasController) P3ServiceValidate(ctx *gin.Context) {
+func (c *AuthCasController) P3ServiceValidate(ctx *gin.Context) {
 	ct := modRamCas.CasValidateCt{
 		Ticket:  ctx.Query("ticket"),
 		Service: ctx.Query("service"),

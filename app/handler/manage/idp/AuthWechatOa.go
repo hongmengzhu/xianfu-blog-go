@@ -13,12 +13,12 @@ import (
 )
 
 func init() {
-	gs.Provide(new(WechatOaController)).Name("ManageIdpWechatOaController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(AuthWechatOaController)).Name("ManageIdpWechatOaController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
-// WechatOaController 微信公众号扫码登录
+// AuthWechatOaController 微信公众号扫码登录
 // @Description:
-type WechatOaController struct {
+type AuthWechatOaController struct {
 	routerPg.RouteRegistrar
 	sv *service.WechatOaService `autowire:"?"`
 }
@@ -28,7 +28,7 @@ type WechatOaController struct {
 //	@Description:
 //	@receiver c
 //	@param e
-func (c *WechatOaController) RegisterRoutes(e *gin.Engine) {
+func (c *AuthWechatOaController) RegisterRoutes(e *gin.Engine) {
 	group := e.Group("/xianfu/auth/manage/wechat")
 	group.GET("/webhook", c.WebhookVerify)
 	group.POST("/webhook", c.WebhookEvent)
@@ -41,7 +41,7 @@ func (c *WechatOaController) RegisterRoutes(e *gin.Engine) {
 //	@Description: 微信服务器发送 GET 请求验证 URL 有效性，需原样返回 echostr
 //	@receiver c
 //	@param ctx
-func (c *WechatOaController) WebhookVerify(ctx *gin.Context) {
+func (c *AuthWechatOaController) WebhookVerify(ctx *gin.Context) {
 	signature := ctx.Query("signature")
 	timestamp := ctx.Query("timestamp")
 	nonce := ctx.Query("nonce")
@@ -77,7 +77,7 @@ func (c *WechatOaController) WebhookVerify(ctx *gin.Context) {
 //	@Description: 接收微信扫描事件推送（SCAN / SUBSCRIBE）
 //	@receiver c
 //	@param ctx
-func (c *WechatOaController) WebhookEvent(ctx *gin.Context) {
+func (c *AuthWechatOaController) WebhookEvent(ctx *gin.Context) {
 	bodyBytes, err := io.ReadAll(ctx.Request.Body)
 	if err != nil {
 		log.Error(ctx, log.TagAppDef, err, "读取微信 webhook body 失败")
@@ -100,7 +100,7 @@ func (c *WechatOaController) WebhookEvent(ctx *gin.Context) {
 //	@Description:
 //	@receiver c
 //	@param ctx
-func (c *WechatOaController) GetQRCode(ctx *gin.Context) {
+func (c *AuthWechatOaController) GetQRCode(ctx *gin.Context) {
 	sourceNo := ctx.Param("sourceNo")
 	ctx.JSON(http.StatusOK, c.sv.GetQRCode(ctx, sourceNo))
 }
@@ -110,7 +110,7 @@ func (c *WechatOaController) GetQRCode(ctx *gin.Context) {
 //	@Description: 前端定时查询扫码状态
 //	@receiver c
 //	@param ctx
-func (c *WechatOaController) PollScanStatus(ctx *gin.Context) {
+func (c *AuthWechatOaController) PollScanStatus(ctx *gin.Context) {
 	ticket := ctx.Param("ticket")
 	result := c.sv.PollScanStatus(ctx, ticket)
 	ctx.JSON(http.StatusOK, result)

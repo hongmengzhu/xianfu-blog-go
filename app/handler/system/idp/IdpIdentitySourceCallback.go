@@ -27,7 +27,7 @@ type IdpIdentitySourceCallbackController struct {
 }
 
 func (c *IdpIdentitySourceCallbackController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/sys/ram/identitySourceCallback", authPg.GroupSystemMiddleware(c.Sp))
+	group := e.Group("/xianfu/sys/ram-idp/identitySourceCallback", authPg.GroupSystemMiddleware(c.Sp))
 	group.POST("/createUpdate", c.CreateUpdate)
 	group.GET("/detail/:id", c.Detail)
 	group.POST("/enable", c.Enable)

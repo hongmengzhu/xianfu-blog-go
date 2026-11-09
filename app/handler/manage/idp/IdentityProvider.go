@@ -29,7 +29,7 @@ type IdentityProviderController struct {
 
 // RegisterRoutes 注册路由
 func (c *IdentityProviderController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/manage/ram/identity-provider", authPg.GroupManageMiddleware(c.Sp))
+	group := e.Group("/xianfu/manage/ram-idp/identity-provider", authPg.GroupManageMiddleware(c.Sp))
 	group.POST("/create", c.Create)
 	group.POST("/update", c.Update)
 	group.GET("/detail/:id", c.Detail)

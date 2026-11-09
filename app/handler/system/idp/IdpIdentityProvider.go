@@ -27,7 +27,7 @@ type IdpIdentityProviderController struct {
 }
 
 func (c *IdpIdentityProviderController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/sys/ram/identityProvider", authPg.GroupSystemMiddleware(c.Sp))
+	group := e.Group("/xianfu/sys/ram-idp/identityProvider", authPg.GroupSystemMiddleware(c.Sp))
 	group.POST("/createUpdate", c.CreateUpdate)
 	group.GET("/detail/:id", c.Detail)
 	group.POST("/enable", c.Enable)

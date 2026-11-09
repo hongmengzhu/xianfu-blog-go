@@ -86,7 +86,7 @@ type idpStack struct {
 	Credential *idp.IdpCredentialController          `autowire:"?"`
 	Metadata   *idp.IdpMetadataCacheController       `autowire:"?"`
 	Ldap       *idp.LdapController                   `autowire:"?"`
-	Cas        *idp.CasController                    `autowire:"?"`
+	Cas        *idp.AuthCasController                `autowire:"?"`
 	AuthIdp    *idp.AuthLoginIdpController           `autowire:"?"`
 
 	Manager *dbManagerPg.Manager                          `autowire:"?"`

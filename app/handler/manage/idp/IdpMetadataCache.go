@@ -29,7 +29,7 @@ type IdpMetadataCacheController struct {
 
 // RegisterRoutes 注册路由
 func (c *IdpMetadataCacheController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/manage/ram/idp-metadata-cache", authPg.GroupManageMiddleware(c.Sp))
+	group := e.Group("/xianfu/manage/ram-idp/idp-metadata-cache", authPg.GroupManageMiddleware(c.Sp))
 	group.POST("/create", c.Create)
 	group.POST("/update", c.Update)
 	group.GET("/detail/:id", c.Detail)
