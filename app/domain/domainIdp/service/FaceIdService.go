@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 
 	"github.com/gin-gonic/gin"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modIdpFace"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modIdpLogin"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryIdp"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/idpPg/faceid"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -16,14 +18,6 @@ func init() {
 	gs.Provide(new(FaceIdService))
 }
 
-// FaceIdVerifyCt Face ID 验证请求
-type FaceIdVerifyCt struct {
-	SourceNo string `json:"sourceNo" form:"sourceNo" label:"认证源编号"`
-	UserId   string `json:"userId" form:"userId" label:"用户ID"`
-	ImageA   string `json:"imageA" form:"imageA" label:"人脸图片A(Base64)"`
-	ImageB   string `json:"imageB" form:"imageB" label:"人脸图片B(Base64)"`
-}
-
 // FaceIdService Face ID 登录验证
 type FaceIdService struct {
 	daoSource   *repositoryIdp.IdpIdentitySourceRepository   `autowire:"?"`
@@ -31,7 +25,7 @@ type FaceIdService struct {
 }
 
 // Begin 开始 Face ID 验证（返回 Face ID 提供商类型及配置信息）
-func (s *FaceIdService) Begin(ctx *gin.Context, ct IdpFaceIdBeginCt) (rt rg.Rs[map[string]string]) {
+func (s *FaceIdService) Begin(ctx *gin.Context, ct modIdpFace.IdpFaceIdBeginCt) (rt rg.Rs[map[string]string]) {
 	if strPg.IsBlank(ct.SourceNo) {
 		return rt.ErrorMessage("认证源编号不能为空")
 	}
@@ -47,7 +41,7 @@ func (s *FaceIdService) Begin(ctx *gin.Context, ct IdpFaceIdBeginCt) (rt rg.Rs[m
 	}
 
 	// 解析 BaseConfig
-	var baseCfg IdpBaseConfig
+	var baseCfg modIdpLogin.IdpBaseConfig
 	if strPg.IsNotBlank(source.BaseConfig) {
 		if err := json.Unmarshal([]byte(source.BaseConfig), &baseCfg); err != nil {
 			return rt.ErrorMessage("认证源配置解析失败")
@@ -63,7 +57,7 @@ func (s *FaceIdService) Begin(ctx *gin.Context, ct IdpFaceIdBeginCt) (rt rg.Rs[m
 }
 
 // Verify 验证 Face ID（对比两张人脸图片）
-func (s *FaceIdService) Verify(ctx *gin.Context, ct FaceIdVerifyCt) (rt rg.Rs[bool]) {
+func (s *FaceIdService) Verify(ctx *gin.Context, ct modIdpFace.FaceIdVerifyCt) (rt rg.Rs[bool]) {
 	if strPg.IsBlank(ct.SourceNo) {
 		return rt.ErrorMessage("认证源编号不能为空")
 	}
@@ -82,7 +76,7 @@ func (s *FaceIdService) Verify(ctx *gin.Context, ct FaceIdVerifyCt) (rt rg.Rs[bo
 	}
 
 	// 解析 BaseConfig
-	var baseCfg IdpBaseConfig
+	var baseCfg modIdpLogin.IdpBaseConfig
 	if strPg.IsNotBlank(source.BaseConfig) {
 		if err := json.Unmarshal([]byte(source.BaseConfig), &baseCfg); err != nil {
 			return rt.ErrorMessage("认证源配置解析失败")

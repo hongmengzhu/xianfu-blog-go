@@ -6,7 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	service2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
-	modRamLdap2 "github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modRamLdap"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modIdpLdap"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modIdpLogin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLogin"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constHeaderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
@@ -41,7 +42,7 @@ type LdapService struct {
 
 // buildLdapConfig 从认证源配置构建 LDAP 连接配置
 func (s *LdapService) buildLdapConfig(source *entityIdp.IdpIdentitySourceEntity) (*ldap.LdapConfig, error) {
-	var baseCfg IdpBaseConfig
+	var baseCfg modIdpLogin.IdpBaseConfig
 	if strPg.IsNotBlank(source.BaseConfig) {
 		if err := json.Unmarshal([]byte(source.BaseConfig), &baseCfg); err != nil {
 			return nil, err
@@ -87,7 +88,7 @@ func (s *LdapService) buildLdapConfig(source *entityIdp.IdpIdentitySourceEntity)
 }
 
 // TestConnection 测试 LDAP 连接
-func (s *LdapService) TestConnection(ctx *gin.Context, ct modRamLdap2.LdapTestCt) (rt rg.Rs[modRamLdap2.LdapTestVo]) {
+func (s *LdapService) TestConnection(ctx *gin.Context, ct modIdpLdap.LdapTestCt) (rt rg.Rs[modIdpLdap.LdapTestVo]) {
 	source, found := s.daoSource.FindByNo(ctx, ct.SourceNo)
 	if !found {
 		return rt.ErrorMessage("认证源不存在")
@@ -100,7 +101,7 @@ func (s *LdapService) TestConnection(ctx *gin.Context, ct modRamLdap2.LdapTestCt
 
 	conn, err := ldap.GetLdapConn(cfg)
 	if err != nil {
-		return rt.OkData(modRamLdap2.LdapTestVo{
+		return rt.OkData(modIdpLdap.LdapTestVo{
 			Connected: false,
 			Message:   "连接失败: " + err.Error(),
 		})
@@ -110,14 +111,14 @@ func (s *LdapService) TestConnection(ctx *gin.Context, ct modRamLdap2.LdapTestCt
 	// 统计用户数量
 	users, err := conn.SearchUsers(cfg)
 	if err != nil {
-		return rt.OkData(modRamLdap2.LdapTestVo{
+		return rt.OkData(modIdpLdap.LdapTestVo{
 			Connected: true,
 			IsAD:      conn.IsAD,
 			Message:   "连接成功，但搜索用户失败: " + err.Error(),
 		})
 	}
 
-	return rt.OkData(modRamLdap2.LdapTestVo{
+	return rt.OkData(modIdpLdap.LdapTestVo{
 		Connected: true,
 		IsAD:      conn.IsAD,
 		Message:   "连接成功",
@@ -126,7 +127,7 @@ func (s *LdapService) TestConnection(ctx *gin.Context, ct modRamLdap2.LdapTestCt
 }
 
 // SearchUsers 搜索 LDAP 用户
-func (s *LdapService) SearchUsers(ctx *gin.Context, ct modRamLdap2.LdapSearchCt) (rt rg.Rs[[]modRamLdap2.LdapUserVo]) {
+func (s *LdapService) SearchUsers(ctx *gin.Context, ct modIdpLdap.LdapSearchCt) (rt rg.Rs[[]modIdpLdap.LdapUserVo]) {
 	source, found := s.daoSource.FindByNo(ctx, ct.SourceNo)
 	if !found {
 		return rt.ErrorMessage("认证源不存在")
@@ -152,9 +153,9 @@ func (s *LdapService) SearchUsers(ctx *gin.Context, ct modRamLdap2.LdapSearchCt)
 		return rt.ErrorMessage("搜索用户失败: " + err.Error())
 	}
 
-	var result []modRamLdap2.LdapUserVo
+	var result []modIdpLdap.LdapUserVo
 	for _, u := range users {
-		result = append(result, modRamLdap2.LdapUserVo{
+		result = append(result, modIdpLdap.LdapUserVo{
 			Uid:         u.Uid,
 			Cn:          u.Cn,
 			DisplayName: u.DisplayName,
@@ -169,7 +170,7 @@ func (s *LdapService) SearchUsers(ctx *gin.Context, ct modRamLdap2.LdapSearchCt)
 }
 
 // SyncUsers 同步 LDAP 用户
-func (s *LdapService) SyncUsers(ctx *gin.Context, ct modRamLdap2.LdapSyncCt) (rt rg.Rs[modRamLdap2.LdapSyncVo]) {
+func (s *LdapService) SyncUsers(ctx *gin.Context, ct modIdpLdap.LdapSyncCt) (rt rg.Rs[modIdpLdap.LdapSyncVo]) {
 	source, found := s.daoSource.FindByNo(ctx, ct.SourceNo)
 	if !found {
 		return rt.ErrorMessage("认证源不存在")
@@ -191,7 +192,7 @@ func (s *LdapService) SyncUsers(ctx *gin.Context, ct modRamLdap2.LdapSyncCt) (rt
 		return rt.ErrorMessage("同步失败: " + err.Error())
 	}
 
-	return rt.OkData(modRamLdap2.LdapSyncVo{
+	return rt.OkData(modIdpLdap.LdapSyncVo{
 		NewUsers:     syncResult.NewUsers,
 		UpdatedUsers: syncResult.UpdatedUsers,
 		FailedUsers:  syncResult.FailedUsers,
@@ -200,7 +201,7 @@ func (s *LdapService) SyncUsers(ctx *gin.Context, ct modRamLdap2.LdapSyncCt) (rt
 }
 
 // Login LDAP 登录认证
-func (s *LdapService) Login(ctx *gin.Context, ct modRamLdap2.LdapLoginCt) (rt rg.Rs[modRamLogin.IdpLoginSuccess]) {
+func (s *LdapService) Login(ctx *gin.Context, ct modIdpLdap.LdapLoginCt) (rt rg.Rs[modRamLogin.IdpLoginSuccess]) {
 	source, found := s.daoSource.FindByNo(ctx, ct.SourceNo)
 	if !found {
 		return rt.ErrorMessage("认证源不存在")

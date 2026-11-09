@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	service2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modIdpLogin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLogin"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constHeaderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
@@ -28,23 +29,6 @@ import (
 
 func init() {
 	gs.Provide(NewAccountLoginIdpService)
-}
-
-// IdpBaseConfig 认证源基础配置（从 BaseConfig JSON 解析）
-type IdpBaseConfig struct {
-	ClientId        string `json:"clientId"`
-	ClientSecret    string `json:"clientSecret"`
-	ClientId2       string `json:"clientId2"`
-	ClientSecret2   string `json:"clientSecret2"`
-	AppId           string `json:"appId"`
-	HostUrl         string `json:"hostUrl"`
-	RedirectUrl     string `json:"redirectUrl"`
-	DisableSsl      bool   `json:"disableSsl"`
-	TokenURL        string `json:"tokenURL"`
-	AuthURL         string `json:"authURL"`
-	UserInfoURL     string `json:"userInfoURL"`
-	AppCertificate  string `json:"appCertificate"`
-	RootCertificate string `json:"rootCertificate"`
 }
 
 // AccountLoginIdpService IDP OAuth 登录
@@ -94,7 +78,7 @@ func (c *AccountLoginIdpService) Login(ctx *gin.Context, ct modRamLogin.IdpLogin
 	}
 
 	// 4. 解析 BaseConfig JSON
-	var baseCfg IdpBaseConfig
+	var baseCfg modIdpLogin.IdpBaseConfig
 	if strPg.IsNotBlank(source.BaseConfig) {
 		if err := json.Unmarshal([]byte(source.BaseConfig), &baseCfg); err != nil {
 			log.Error(ctx, log.TagAppDef, err, "解析 BaseConfig 失败")

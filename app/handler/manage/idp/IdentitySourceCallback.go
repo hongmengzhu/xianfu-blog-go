@@ -5,10 +5,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
-	modRamIdentitySourceCallback2 "github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modRamIdentitySourceCallback"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modIdpIdentitySourceCallback"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
@@ -46,7 +46,7 @@ func (c *IdentitySourceCallbackController) RegisterRoutes(e *gin.Engine) {
 
 // Create 创建
 func (c *IdentitySourceCallbackController) Create(ctx *gin.Context) {
-	var ct modRamIdentitySourceCallback2.CreateUpdateCt
+	var ct modIdpIdentitySourceCallback.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -55,7 +55,7 @@ func (c *IdentitySourceCallbackController) Create(ctx *gin.Context) {
 
 // Update 更新
 func (c *IdentitySourceCallbackController) Update(ctx *gin.Context) {
-	var ct modRamIdentitySourceCallback2.CreateUpdateCt
+	var ct modIdpIdentitySourceCallback.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -134,7 +134,7 @@ func (c *IdentitySourceCallbackController) State(ctx *gin.Context) {
 
 // Query 查询列表
 func (c *IdentitySourceCallbackController) Query(ctx *gin.Context) {
-	var ct modRamIdentitySourceCallback2.QueryCt
+	var ct modIdpIdentitySourceCallback.QueryCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -142,7 +142,7 @@ func (c *IdentitySourceCallbackController) Query(ctx *gin.Context) {
 }
 
 func (c *IdentitySourceCallbackController) SelectPublic(ctx *gin.Context) {
-	ct := modRamIdentitySourceCallback2.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
+	ct := modIdpIdentitySourceCallback.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
 	ctx.JSON(200, c.sv.SelectPublic(ctx, ct))
 }
 

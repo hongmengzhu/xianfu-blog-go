@@ -1,4 +1,4 @@
-package service
+package modIdpFace
 
 // IdpFaceIdBeginCt Face ID 开始验证请求
 type IdpFaceIdBeginCt struct {

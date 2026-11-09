@@ -5,10 +5,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
-	modRamIdpBinding2 "github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modRamIdpBinding"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modIdpIdpBinding"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
@@ -45,7 +45,7 @@ func (c *IdpBindingController) RegisterRoutes(e *gin.Engine) {
 
 // Create 创建
 func (c *IdpBindingController) Create(ctx *gin.Context) {
-	var ct modRamIdpBinding2.CreateUpdateCt
+	var ct modIdpIdpBinding.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -54,7 +54,7 @@ func (c *IdpBindingController) Create(ctx *gin.Context) {
 
 // Update 更新
 func (c *IdpBindingController) Update(ctx *gin.Context) {
-	var ct modRamIdpBinding2.CreateUpdateCt
+	var ct modIdpIdpBinding.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -133,7 +133,7 @@ func (c *IdpBindingController) State(ctx *gin.Context) {
 
 // Query 查询列表
 func (c *IdpBindingController) Query(ctx *gin.Context) {
-	var ct modRamIdpBinding2.QueryCt
+	var ct modIdpIdpBinding.QueryCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -141,6 +141,6 @@ func (c *IdpBindingController) Query(ctx *gin.Context) {
 }
 
 func (c *IdpBindingController) SelectPublic(ctx *gin.Context) {
-	ct := modRamIdpBinding2.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
+	ct := modIdpIdpBinding.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
 	ctx.JSON(200, c.sv.SelectPublic(ctx, ct))
 }

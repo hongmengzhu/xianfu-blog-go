@@ -7,9 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 	service2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modIdpCas"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modIdpFace"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modIdpSaml"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLogin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamMfa"
-	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
 )
@@ -153,7 +156,7 @@ func (c *AuthLoginIdpController) SamlCallback(ctx *gin.Context) {
 
 // FaceIdBegin Face ID 开始验证
 func (c *AuthLoginIdpController) FaceIdBegin(ctx *gin.Context) {
-	var ct service2.IdpFaceIdBeginCt
+	var ct modIdpFace.IdpFaceIdBeginCt
 	if err := ctx.ShouldBind(&ct); err != nil {
 		ctx.JSON(200, rg.ErrorDefault[string]())
 		return
@@ -163,7 +166,7 @@ func (c *AuthLoginIdpController) FaceIdBegin(ctx *gin.Context) {
 
 // FaceIdVerify Face ID 验证
 func (c *AuthLoginIdpController) FaceIdVerify(ctx *gin.Context) {
-	var ct service2.FaceIdVerifyCt
+	var ct modIdpFace.FaceIdVerifyCt
 	if err := ctx.ShouldBind(&ct); err != nil {
 		ctx.JSON(200, rg.ErrorDefault[string]())
 		return

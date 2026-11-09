@@ -3,7 +3,8 @@ package idp
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
-	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modIdpLdap"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"go-spring.org/spring/gs"
 )
 

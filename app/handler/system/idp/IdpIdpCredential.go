@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
-	modRamIdpCredential2 "github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modRamIdpCredential"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modIdpIdpCredential"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
@@ -41,7 +41,7 @@ func (c *IdpIdpCredentialController) RegisterRoutes(e *gin.Engine) {
 }
 
 func (c *IdpIdpCredentialController) CreateUpdate(ctx *gin.Context) {
-	var ct modRamIdpCredential2.CreateUpdateCt
+	var ct modIdpIdpCredential.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -100,7 +100,7 @@ func (c *IdpIdpCredentialController) Disable(ctx *gin.Context) {
 }
 
 func (c *IdpIdpCredentialController) Query(ctx *gin.Context) {
-	var ct modRamIdpCredential2.QueryCt
+	var ct modIdpIdpCredential.QueryCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -108,7 +108,7 @@ func (c *IdpIdpCredentialController) Query(ctx *gin.Context) {
 }
 
 func (c *IdpIdpCredentialController) SelectNodeAll(ctx *gin.Context) {
-	var ct modRamIdpCredential2.QueryPublicCt
+	var ct modIdpIdpCredential.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -116,7 +116,7 @@ func (c *IdpIdpCredentialController) SelectNodeAll(ctx *gin.Context) {
 }
 
 func (c *IdpIdpCredentialController) SelectNodeAllPublic(ctx *gin.Context) {
-	var ct modRamIdpCredential2.QueryPublicCt
+	var ct modIdpIdpCredential.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}

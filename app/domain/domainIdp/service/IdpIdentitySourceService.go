@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	modRamIdentitySource2 "github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modRamIdentitySource"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modIdpIdentitySource"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/automatedPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
@@ -32,7 +32,7 @@ type IdpIdentitySourceService struct {
 }
 
 // Create 新增
-func (c *IdpIdentitySourceService) Create(ctx *gin.Context, ct modRamIdentitySource2.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceService) Create(ctx *gin.Context, ct modIdpIdentitySource.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityIdp.IdpIdentitySourceEntity
 	copier.Copy(&info, &ct)
@@ -53,7 +53,7 @@ func (c *IdpIdentitySourceService) Create(ctx *gin.Context, ct modRamIdentitySou
 }
 
 // Update 更新
-func (c *IdpIdentitySourceService) Update(ctx *gin.Context, ct modRamIdentitySource2.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceService) Update(ctx *gin.Context, ct modIdpIdentitySource.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityIdp.IdpIdentitySourceEntity
 	copier.Copy(&info, &ct)
@@ -85,7 +85,7 @@ func (c *IdpIdentitySourceService) Update(ctx *gin.Context, ct modRamIdentitySou
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *IdpIdentitySourceService) CreateUpdate(ctx *gin.Context, ct modRamIdentitySource2.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceService) CreateUpdate(ctx *gin.Context, ct modIdpIdentitySource.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
 	holder := holderPg.GetContextAccount(ctx)
@@ -167,7 +167,7 @@ func (c *IdpIdentitySourceService) CreateUpdate(ctx *gin.Context, ct modRamIdent
 //	@Description:
 //	@receiver c
 //	@param id
-func (c *IdpIdentitySourceService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamIdentitySource2.Vo]) {
+func (c *IdpIdentitySourceService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modIdpIdentitySource.Vo]) {
 	if id < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -175,7 +175,7 @@ func (c *IdpIdentitySourceService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
-	var info modRamIdentitySource2.Vo
+	var info modIdpIdentitySource.Vo
 	copier.Copy(&info, &find)
 	return rt.OkData(info)
 }
@@ -316,11 +316,11 @@ func (c *IdpIdentitySourceService) PhysicalDeletion(ctx *gin.Context, ids []stri
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *IdpIdentitySourceService) Query(ctx *gin.Context, ct modRamIdentitySource2.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdentitySource2.Vo]]) {
+func (c *IdpIdentitySourceService) Query(ctx *gin.Context, ct modIdpIdentitySource.QueryCt) (rt rg.Rs[pagePg.Paginator[modIdpIdentitySource.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdentitySourceEntity
 	copier.Copy(&query, &ct)
-	slice := make([]modRamIdentitySource2.Vo, 0)
+	slice := make([]modIdpIdentitySource.Vo, 0)
 	rt.Data.Data = slice
 	r := c.sv
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
@@ -339,9 +339,9 @@ func (c *IdpIdentitySourceService) Query(ctx *gin.Context, ct modRamIdentitySour
 	}
 
 	if page.Total > 0 && page.Data != nil && len(page.Data) > 0 {
-		pg := pagePg.NewPaginatorByPageable[modRamIdentitySource2.Vo](page.Pageable)
+		pg := pagePg.NewPaginatorByPageable[modIdpIdentitySource.Vo](page.Pageable)
 		for _, item := range page.Data {
-			var vo modRamIdentitySource2.Vo
+			var vo modIdpIdentitySource.Vo
 			copier.Copy(&vo, &item)
 			slice = append(slice, vo)
 		}
@@ -354,16 +354,16 @@ func (c *IdpIdentitySourceService) Query(ctx *gin.Context, ct modRamIdentitySour
 }
 
 // SelectPublic 查询
-func (c *IdpIdentitySourceService) SelectPublic(ctx *gin.Context, ct modRamIdentitySource2.QueryCt) (rt rg.Rs[[]modRamIdentitySource2.Vo]) {
+func (c *IdpIdentitySourceService) SelectPublic(ctx *gin.Context, ct modIdpIdentitySource.QueryCt) (rt rg.Rs[[]modIdpIdentitySource.Vo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdentitySourceEntity
 	copier.Copy(&query, &ct)
-	rt.Data = []modRamIdentitySource2.Vo{}
+	rt.Data = []modIdpIdentitySource.Vo{}
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
-		slice := make([]modRamIdentitySource2.Vo, 0)
+		slice := make([]modIdpIdentitySource.Vo, 0)
 		for _, item := range infos {
-			var vo modRamIdentitySource2.Vo
+			var vo modIdpIdentitySource.Vo
 			copier.Copy(&vo, &item)
 			slice = append(slice, vo)
 		}
@@ -377,7 +377,7 @@ func (c *IdpIdentitySourceService) SelectPublic(ctx *gin.Context, ct modRamIdent
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *IdpIdentitySourceService) SelectNodeAll(ctx *gin.Context, ct modRamIdentitySource2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *IdpIdentitySourceService) SelectNodeAll(ctx *gin.Context, ct modIdpIdentitySource.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdentitySourceEntity
 	copier.Copy(&query, &ct)
@@ -386,7 +386,7 @@ func (c *IdpIdentitySourceService) SelectNodeAll(ctx *gin.Context, ct modRamIden
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
 		for _, item := range infos {
-			var vo modRamIdentitySource2.Vo
+			var vo modIdpIdentitySource.Vo
 			copier.Copy(&vo, &item)
 			code := model.BaseNodeNo{
 				Value:  item.No,
@@ -405,7 +405,7 @@ func (c *IdpIdentitySourceService) SelectNodeAll(ctx *gin.Context, ct modRamIden
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *IdpIdentitySourceService) SelectNodeAllPublic(ctx *gin.Context, ct modRamIdentitySource2.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *IdpIdentitySourceService) SelectNodeAllPublic(ctx *gin.Context, ct modIdpIdentitySource.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdentitySourceEntity
 	copier.Copy(&query, &ct)
@@ -414,7 +414,7 @@ func (c *IdpIdentitySourceService) SelectNodeAllPublic(ctx *gin.Context, ct modR
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
 		for _, item := range infos {
-			var vo modRamIdentitySource2.Vo
+			var vo modIdpIdentitySource.Vo
 			copier.Copy(&vo, &item)
 			code := model.BaseNodeNo{
 				Value:  item.No,
