@@ -106,6 +106,17 @@ func (b *AInitTable) Run(ctx context.Context) error {
 		entityData = append(entityData, &entityRam.RamResourceRelationEntity{})
 		entityData = append(entityData, &entityRam.RamRoleEntity{})
 		entityData = append(entityData, &entityRam.RamTeamEntity{})
+		// 多因素认证 / 通行密钥 / 身份认证会话审计
+		entityData = append(entityData, &entityRam.RamAccountAuthMfaEntity{})
+		entityData = append(entityData, &entityRam.RamAccountAuthWebauthnEntity{})
+		entityData = append(entityData, &entityRam.RamAccountSessionLogEntity{})
+		// 身份提供商 / 认证源 / 回调白名单 / 身份绑定 / 凭证 / 元数据缓存
+		entityData = append(entityData, &entityRam.RamIdentityProviderEntity{})
+		entityData = append(entityData, &entityRam.RamIdentitySourceEntity{})
+		entityData = append(entityData, &entityRam.RamIdentitySourceCallbackEntity{})
+		entityData = append(entityData, &entityRam.RamIdpBindingEntity{})
+		entityData = append(entityData, &entityRam.RamIdpCredentialEntity{})
+		entityData = append(entityData, &entityRam.RamIdpMetadataCacheEntity{})
 	}
 	//
 	{
