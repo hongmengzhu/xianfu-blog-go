@@ -1,10 +1,10 @@
-package ram
+package idp
 
 import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamCas"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
@@ -12,13 +12,13 @@ import (
 )
 
 func init() {
-	gs.Provide(new(CasController)).Name("ManageCasController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(CasController)).Name("ManageIdpCasController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 // CasController CAS 协议端点
 type CasController struct {
 	routerPg.RouteRegistrar
-	sv *service.CasService `autowire:"?"`
+	sv *service.IdpCasService `autowire:"?"`
 }
 
 // RegisterRoutes 注册路由

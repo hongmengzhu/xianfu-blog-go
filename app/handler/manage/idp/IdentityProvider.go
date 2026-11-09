@@ -1,10 +1,10 @@
-package ram
+package idp
 
 import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdentityProvider"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
@@ -16,7 +16,7 @@ import (
 )
 
 func init() {
-	gs.Provide(new(IdentityProviderController)).Name("ManageIdentityProviderController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(IdentityProviderController)).Name("ManageIdpIdentityProviderController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 // IdentityProviderController 身份提供商
@@ -24,7 +24,7 @@ func init() {
 type IdentityProviderController struct {
 	routerPg.RouteRegistrar
 	Sp *authPg.GroupManageMiddlewareSp     `autowire:"?"`
-	sv *service.RamIdentityProviderService `autowire:"?"`
+	sv *service.IdpIdentityProviderService `autowire:"?"`
 }
 
 // RegisterRoutes 注册路由

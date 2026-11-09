@@ -1,11 +1,11 @@
-package ram
+package idp
 
 import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdentitySource"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdpBinding"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
@@ -16,20 +16,20 @@ import (
 )
 
 func init() {
-	gs.Provide(new(IdentitySourceController)).Name("ManageIdentitySourceController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(IdpBindingController)).Name("ManageIdpIdpBindingController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
-// IdentitySourceController 身份认证源
+// IdpBindingController 身份绑定
 // @Description:
-type IdentitySourceController struct {
+type IdpBindingController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupManageMiddlewareSp   `autowire:"?"`
-	sv *service.RamIdentitySourceService `autowire:"?"`
+	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
+	sv *service.IdpIdpBindingService   `autowire:"?"`
 }
 
 // RegisterRoutes 注册路由
-func (c *IdentitySourceController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/manage/ram/identity-source", authPg.GroupManageMiddleware(c.Sp))
+func (c *IdpBindingController) RegisterRoutes(e *gin.Engine) {
+	group := e.Group("/xianfu/manage/ram/idp-binding", authPg.GroupManageMiddleware(c.Sp))
 	group.POST("/create", c.Create)
 	group.POST("/update", c.Update)
 	group.GET("/detail/:id", c.Detail)
@@ -41,12 +41,11 @@ func (c *IdentitySourceController) RegisterRoutes(e *gin.Engine) {
 	group.POST("/physicalDeletion", c.PhysicalDeletion)
 	group.POST("/query", c.Query)
 	group.POST("/selectPublic", c.SelectPublic)
-	group.POST("/existName", c.ExistName)
 }
 
 // Create 创建
-func (c *IdentitySourceController) Create(ctx *gin.Context) {
-	var ct modRamIdentitySource.CreateUpdateCt
+func (c *IdpBindingController) Create(ctx *gin.Context) {
+	var ct modRamIdpBinding.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -54,8 +53,8 @@ func (c *IdentitySourceController) Create(ctx *gin.Context) {
 }
 
 // Update 更新
-func (c *IdentitySourceController) Update(ctx *gin.Context) {
-	var ct modRamIdentitySource.CreateUpdateCt
+func (c *IdpBindingController) Update(ctx *gin.Context) {
+	var ct modRamIdpBinding.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -63,7 +62,7 @@ func (c *IdentitySourceController) Update(ctx *gin.Context) {
 }
 
 // Delete 逻辑删除
-func (c *IdentitySourceController) Delete(ctx *gin.Context) {
+func (c *IdpBindingController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -72,7 +71,7 @@ func (c *IdentitySourceController) Delete(ctx *gin.Context) {
 }
 
 // Recovery 逻辑删除恢复
-func (c *IdentitySourceController) Recovery(ctx *gin.Context) {
+func (c *IdpBindingController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -81,7 +80,7 @@ func (c *IdentitySourceController) Recovery(ctx *gin.Context) {
 }
 
 // PhysicalDeletion 物理删除
-func (c *IdentitySourceController) PhysicalDeletion(ctx *gin.Context) {
+func (c *IdpBindingController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -90,7 +89,7 @@ func (c *IdentitySourceController) PhysicalDeletion(ctx *gin.Context) {
 }
 
 // Detail 详情
-func (c *IdentitySourceController) Detail(ctx *gin.Context) {
+func (c *IdpBindingController) Detail(ctx *gin.Context) {
 	param := ctx.Param("id")
 	fmt.Println(param)
 	if "" == param {
@@ -101,7 +100,7 @@ func (c *IdentitySourceController) Detail(ctx *gin.Context) {
 }
 
 // Enable 启用
-func (c *IdentitySourceController) Enable(ctx *gin.Context) {
+func (c *IdpBindingController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -110,7 +109,7 @@ func (c *IdentitySourceController) Enable(ctx *gin.Context) {
 }
 
 // Disable 禁用
-func (c *IdentitySourceController) Disable(ctx *gin.Context) {
+func (c *IdpBindingController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -119,7 +118,7 @@ func (c *IdentitySourceController) Disable(ctx *gin.Context) {
 }
 
 // State 状态
-func (c *IdentitySourceController) State(ctx *gin.Context) {
+func (c *IdpBindingController) State(ctx *gin.Context) {
 	var ct model.BaseStateIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -133,24 +132,15 @@ func (c *IdentitySourceController) State(ctx *gin.Context) {
 }
 
 // Query 查询列表
-func (c *IdentitySourceController) Query(ctx *gin.Context) {
-	var ct modRamIdentitySource.QueryCt
+func (c *IdpBindingController) Query(ctx *gin.Context) {
+	var ct modRamIdpBinding.QueryCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
 }
 
-func (c *IdentitySourceController) SelectPublic(ctx *gin.Context) {
-	ct := modRamIdentitySource.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
+func (c *IdpBindingController) SelectPublic(ctx *gin.Context) {
+	ct := modRamIdpBinding.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
 	ctx.JSON(200, c.sv.SelectPublic(ctx, ct))
-}
-
-// ExistName 查重
-func (c *IdentitySourceController) ExistName(ctx *gin.Context) {
-	var ct model.BaseExistWdCt[string]
-	if !routerPg.BindJson(ctx, &ct) {
-		return
-	}
-	ctx.JSON(200, c.sv.ExistName(ctx, ct))
 }

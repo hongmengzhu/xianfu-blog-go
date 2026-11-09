@@ -1,10 +1,11 @@
-package ram
+package idp
 
 import (
 	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	service2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamCas"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLogin"
@@ -16,18 +17,18 @@ import (
 )
 
 func init() {
-	gs.Provide(new(AuthLoginIdpController)).Name("ManageAuthLoginIdpController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(AuthLoginIdpController)).Name("ManageIdpAuthLoginIdpController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 // AuthLoginIdpController IDP OAuth 登录
 // @Description:
 type AuthLoginIdpController struct {
 	routerPg.RouteRegistrar
-	sv            *service.AccountLoginIdpService `autowire:"?"`
-	samlService   *service.SamlLoginService       `autowire:"?"`
-	mfaService    *service.AccountMfaService      `autowire:"?"`
-	faceIdService *service.FaceIdService          `autowire:"?"`
-	casService    *service.CasService             `autowire:"?"`
+	sv            *service2.AccountLoginIdpService `autowire:"?"`
+	samlService   *service2.SamlLoginService       `autowire:"?"`
+	mfaService    *service.AccountMfaService       `autowire:"?"`
+	faceIdService *service2.FaceIdService          `autowire:"?"`
+	casService    *service2.IdpCasService          `autowire:"?"`
 }
 
 // RegisterRoutes 注册路由
@@ -154,7 +155,7 @@ func (c *AuthLoginIdpController) SamlCallback(ctx *gin.Context) {
 
 // FaceIdBegin Face ID 开始验证
 func (c *AuthLoginIdpController) FaceIdBegin(ctx *gin.Context) {
-	var ct service.FaceIdBeginCt
+	var ct service2.IdpFaceIdBeginCt
 	if err := ctx.ShouldBind(&ct); err != nil {
 		ctx.JSON(200, rg.ErrorDefault[string]())
 		return
@@ -164,7 +165,7 @@ func (c *AuthLoginIdpController) FaceIdBegin(ctx *gin.Context) {
 
 // FaceIdVerify Face ID 验证
 func (c *AuthLoginIdpController) FaceIdVerify(ctx *gin.Context) {
-	var ct service.FaceIdVerifyCt
+	var ct service2.FaceIdVerifyCt
 	if err := ctx.ShouldBind(&ct); err != nil {
 		ctx.JSON(200, rg.ErrorDefault[string]())
 		return

@@ -1,15 +1,15 @@
-package ram
+package idp
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLdap"
 	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(LdapController)).Name("ManageLdapController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(LdapController)).Name("ManageIdpLdapController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 // LdapController LDAP 管理

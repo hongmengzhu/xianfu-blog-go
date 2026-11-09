@@ -1,14 +1,14 @@
-package ram
+package idp
 
 import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdentitySource"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdentityProvider"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg/controllerPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -17,17 +17,17 @@ import (
 )
 
 func init() {
-	gs.Provide(new(RamIdentitySourceController)).Name("SystemRamIdentitySourceController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(IdpIdentityProviderController)).Name("SystemRamIdentityProviderController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
-type RamIdentitySourceController struct {
+type IdpIdentityProviderController struct {
 	routerPg.RouteRegistrar
 	controllerPg.SpSystemAuth
-	sv *service.RamIdentitySourceService `autowire:"?"`
+	sv *service.IdpIdentityProviderService `autowire:"?"`
 }
 
-func (c *RamIdentitySourceController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/sys/ram/identitySource", authPg.GroupSystemMiddleware(c.Sp))
+func (c *IdpIdentityProviderController) RegisterRoutes(e *gin.Engine) {
+	group := e.Group("/xianfu/sys/ram/identityProvider", authPg.GroupSystemMiddleware(c.Sp))
 	group.POST("/createUpdate", c.CreateUpdate)
 	group.GET("/detail/:id", c.Detail)
 	group.POST("/enable", c.Enable)
@@ -41,15 +41,15 @@ func (c *RamIdentitySourceController) RegisterRoutes(e *gin.Engine) {
 	group.POST("/existName", c.ExistName)
 }
 
-func (c *RamIdentitySourceController) CreateUpdate(ctx *gin.Context) {
-	var ct modRamIdentitySource.CreateUpdateCt
+func (c *IdpIdentityProviderController) CreateUpdate(ctx *gin.Context) {
+	var ct modRamIdentityProvider.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.CreateUpdate(ctx, ct))
 }
 
-func (c *RamIdentitySourceController) Delete(ctx *gin.Context) {
+func (c *IdpIdentityProviderController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -57,7 +57,7 @@ func (c *RamIdentitySourceController) Delete(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
 }
 
-func (c *RamIdentitySourceController) Recovery(ctx *gin.Context) {
+func (c *IdpIdentityProviderController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -65,7 +65,7 @@ func (c *RamIdentitySourceController) Recovery(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
 }
 
-func (c *RamIdentitySourceController) PhysicalDeletion(ctx *gin.Context) {
+func (c *IdpIdentityProviderController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -73,7 +73,7 @@ func (c *RamIdentitySourceController) PhysicalDeletion(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
 }
 
-func (c *RamIdentitySourceController) Detail(ctx *gin.Context) {
+func (c *IdpIdentityProviderController) Detail(ctx *gin.Context) {
 	param := ctx.Param("id")
 
 	fmt.Println(param)
@@ -84,7 +84,7 @@ func (c *RamIdentitySourceController) Detail(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.Detail(ctx, strPg.ToInt64(param)))
 }
 
-func (c *RamIdentitySourceController) Enable(ctx *gin.Context) {
+func (c *IdpIdentityProviderController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -92,7 +92,7 @@ func (c *RamIdentitySourceController) Enable(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
 }
 
-func (c *RamIdentitySourceController) Disable(ctx *gin.Context) {
+func (c *IdpIdentityProviderController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -100,24 +100,24 @@ func (c *RamIdentitySourceController) Disable(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
 }
 
-func (c *RamIdentitySourceController) Query(ctx *gin.Context) {
-	var ct modRamIdentitySource.QueryCt
+func (c *IdpIdentityProviderController) Query(ctx *gin.Context) {
+	var ct modRamIdentityProvider.QueryCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
 }
 
-func (c *RamIdentitySourceController) SelectNodeAll(ctx *gin.Context) {
-	var ct modRamIdentitySource.QueryPublicCt
+func (c *IdpIdentityProviderController) SelectNodeAll(ctx *gin.Context) {
+	var ct modRamIdentityProvider.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.SelectNodeAll(ctx, ct))
 }
 
-func (c *RamIdentitySourceController) SelectNodeAllPublic(ctx *gin.Context) {
-	var ct modRamIdentitySource.QueryPublicCt
+func (c *IdpIdentityProviderController) SelectNodeAllPublic(ctx *gin.Context) {
+	var ct modRamIdentityProvider.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -125,7 +125,7 @@ func (c *RamIdentitySourceController) SelectNodeAllPublic(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.SelectNodeAllPublic(ctx, ct))
 }
 
-func (c *RamIdentitySourceController) ExistName(ctx *gin.Context) {
+func (c *IdpIdentityProviderController) ExistName(ctx *gin.Context) {
 	var ct model.BaseExistWdCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return

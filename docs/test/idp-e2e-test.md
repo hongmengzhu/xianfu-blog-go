@@ -15,15 +15,15 @@
 
 | 控制器 | 路由前缀 | 库表 | 服务 |
 | --- | --- | --- | --- |
-| `app/handler/manage/ram/IdentityProvider.go` | `/xianfu/manage/ram/identity-provider` | `ram_identity_provider` | `RamIdentityProviderService` |
-| `app/handler/manage/ram/IdentitySource.go` | `/xianfu/manage/ram/identity-source` | `ram_identity_source` | `RamIdentitySourceService` |
-| `app/handler/manage/ram/IdentitySourceCallback.go` | `/xianfu/manage/ram/identity-source-callback` | `ram_identity_source_callback` | `RamIdentitySourceCallbackService` |
-| `app/handler/manage/ram/IdpBinding.go` | `/xianfu/manage/ram/idp-binding` | `ram_idp_binding` | `RamIdpBindingService` |
-| `app/handler/manage/ram/IdpCredential.go` | `/xianfu/manage/ram/idp-credential` | `ram_idp_credential` | `RamIdpCredentialService` |
-| `app/handler/manage/ram/IdpMetadataCache.go` | `/xianfu/manage/ram/idp-metadata-cache` | `ram_idp_metadata_cache` | `RamIdpMetadataCacheService` |
-| `app/handler/manage/ram/Ldap.go` | `/xianfu/manage/ram/ldap` | 复用认证源/账号/绑定 | `LdapService` |
-| `app/handler/manage/ram/Cas.go` | `/xianfu/auth/manage/cas` | 复用账号 | `CasService` |
-| `app/handler/manage/ram/authLoginIdp.go` | `/xianfu/auth/manage/idp` | 复用认证源/绑定/账号 | `AccountLoginIdpService`、`SamlLoginService`、`CasService` |
+| `../../app/handler/manage/idp/IdentityProvider.go` | `/xianfu/manage/ram/identity-provider` | `ram_identity_provider` | `RamIdentityProviderService` |
+| `../../app/handler/manage/idp/IdentitySource.go` | `/xianfu/manage/ram/identity-source` | `ram_identity_source` | `RamIdentitySourceService` |
+| `../../app/handler/manage/idp/IdentitySourceCallback.go` | `/xianfu/manage/ram/identity-source-callback` | `ram_identity_source_callback` | `RamIdentitySourceCallbackService` |
+| `../../app/handler/manage/idp/IdpBinding.go` | `/xianfu/manage/ram/idp-binding` | `ram_idp_binding` | `RamIdpBindingService` |
+| `../../app/handler/manage/idp/IdpCredential.go` | `/xianfu/manage/ram/idp-credential` | `ram_idp_credential` | `RamIdpCredentialService` |
+| `../../app/handler/manage/idp/IdpMetadataCache.go` | `/xianfu/manage/ram/idp-metadata-cache` | `ram_idp_metadata_cache` | `RamIdpMetadataCacheService` |
+| `../../app/handler/manage/idp/Ldap.go` | `/xianfu/manage/ram/ldap` | 复用认证源/账号/绑定 | `LdapService` |
+| `../../app/handler/manage/idp/Cas.go` | `/xianfu/auth/manage/cas` | 复用账号 | `CasService` |
+| `../../app/handler/manage/idp/authLoginIdp.go` | `/xianfu/auth/manage/idp` | 复用认证源/绑定/账号 | `AccountLoginIdpService`、`SamlLoginService`、`CasService` |
 
 协议 SDK：`pkg/sdk/auth/idpPg/idp`（Custom/OIDC 提供方）、`pkg/sdk/auth/idpPg/cas`、`pkg/sdk/auth/idpPg/saml`、`pkg/sdk/auth/idpPg/ldap`。
 

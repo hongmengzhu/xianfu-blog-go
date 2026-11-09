@@ -35,7 +35,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	ram "github.com/hongmengzhu/xianfu-blog-go/app/handler/manage/ram"
+	"github.com/hongmengzhu/xianfu-blog-go/app/handler/manage/idp"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg/pg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cacheService/cacheRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
@@ -79,23 +79,23 @@ func init() {
 
 // idpStack go-spring 注入的控制器、仓库与缓存对象。
 type idpStack struct {
-	Provider   *ram.IdentityProviderController       `autowire:"?"`
-	Source     *ram.IdentitySourceController         `autowire:"?"`
-	Callback   *ram.IdentitySourceCallbackController `autowire:"?"`
-	Binding    *ram.IdpBindingController             `autowire:"?"`
-	Credential *ram.IdpCredentialController          `autowire:"?"`
-	Metadata   *ram.IdpMetadataCacheController       `autowire:"?"`
-	Ldap       *ram.LdapController                   `autowire:"?"`
-	Cas        *ram.CasController                    `autowire:"?"`
-	AuthIdp    *ram.AuthLoginIdpController           `autowire:"?"`
+	Provider   *idp.IdentityProviderController       `autowire:"?"`
+	Source     *idp.IdentitySourceController         `autowire:"?"`
+	Callback   *idp.IdentitySourceCallbackController `autowire:"?"`
+	Binding    *idp.IdpBindingController             `autowire:"?"`
+	Credential *idp.IdpCredentialController          `autowire:"?"`
+	Metadata   *idp.IdpMetadataCacheController       `autowire:"?"`
+	Ldap       *idp.LdapController                   `autowire:"?"`
+	Cas        *idp.CasController                    `autowire:"?"`
+	AuthIdp    *idp.AuthLoginIdpController           `autowire:"?"`
 
 	Manager *dbManagerPg.Manager                          `autowire:"?"`
 	Session *cacheRam.CacheSessionPubPrive                `autowire:"?"`
-	SourceR *repositoryIdp.RamIdentitySourceRepository    `autowire:"?"`
-	ProvR   *repositoryIdp.RamIdentityProviderRepository  `autowire:"?"`
-	BindR   *repositoryIdp.RamIdpBindingRepository        `autowire:"?"`
-	CredR   *repositoryIdp.RamIdpCredentialRepository     `autowire:"?"`
-	MetaR   *repositoryIdp.RamIdpMetadataCacheRepository  `autowire:"?"`
+	SourceR *repositoryIdp.IdpIdentitySourceRepository    `autowire:"?"`
+	ProvR   *repositoryIdp.IdpIdentityProviderRepository  `autowire:"?"`
+	BindR   *repositoryIdp.IdpIdpBindingRepository        `autowire:"?"`
+	CredR   *repositoryIdp.IdpIdpCredentialRepository     `autowire:"?"`
+	MetaR   *repositoryIdp.IdpIdpMetadataCacheRepository  `autowire:"?"`
 	AccR    *repositoryRam.RamAccountRepository           `autowire:"?"`
 	LogR    *repositoryRam.RamAccountSessionLogRepository `autowire:"?"`
 }

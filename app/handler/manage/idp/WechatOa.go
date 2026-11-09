@@ -1,4 +1,4 @@
-package ram
+package idp
 
 import (
 	"io"
@@ -6,14 +6,14 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
 )
 
 func init() {
-	gs.Provide(new(WechatOaController)).Name("ManageWechatOaController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(WechatOaController)).Name("ManageIdpWechatOaController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 // WechatOaController 微信公众号扫码登录

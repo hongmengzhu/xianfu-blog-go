@@ -1,14 +1,14 @@
-package ram
+package idp
 
 import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdpMetadataCache"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdpBinding"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
-	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg/controllerPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -17,17 +17,17 @@ import (
 )
 
 func init() {
-	gs.Provide(new(RamIdpMetadataCacheController)).Name("SystemRamIdpMetadataCacheController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(IdpIdpBindingController)).Name("SystemRamIdpBindingController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
-type RamIdpMetadataCacheController struct {
+type IdpIdpBindingController struct {
 	routerPg.RouteRegistrar
 	controllerPg.SpSystemAuth
-	sv *service.RamIdpMetadataCacheService `autowire:"?"`
+	sv *service.IdpIdpBindingService `autowire:"?"`
 }
 
-func (c *RamIdpMetadataCacheController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/sys/ram/idpMetadataCache", authPg.GroupSystemMiddleware(c.Sp))
+func (c *IdpIdpBindingController) RegisterRoutes(e *gin.Engine) {
+	group := e.Group("/xianfu/sys/ram/idpBinding", authPg.GroupSystemMiddleware(c.Sp))
 	group.POST("/createUpdate", c.CreateUpdate)
 	group.GET("/detail/:id", c.Detail)
 	group.POST("/enable", c.Enable)
@@ -40,15 +40,15 @@ func (c *RamIdpMetadataCacheController) RegisterRoutes(e *gin.Engine) {
 	group.POST("/selectNodeAllPublic", c.SelectNodeAllPublic)
 }
 
-func (c *RamIdpMetadataCacheController) CreateUpdate(ctx *gin.Context) {
-	var ct modRamIdpMetadataCache.CreateUpdateCt
+func (c *IdpIdpBindingController) CreateUpdate(ctx *gin.Context) {
+	var ct modRamIdpBinding.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.CreateUpdate(ctx, ct))
 }
 
-func (c *RamIdpMetadataCacheController) Delete(ctx *gin.Context) {
+func (c *IdpIdpBindingController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -56,7 +56,7 @@ func (c *RamIdpMetadataCacheController) Delete(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.LogicalDeletion(ctx, ct.Ids))
 }
 
-func (c *RamIdpMetadataCacheController) Recovery(ctx *gin.Context) {
+func (c *IdpIdpBindingController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -64,7 +64,7 @@ func (c *RamIdpMetadataCacheController) Recovery(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.LogicalRecovery(ctx, ct.Ids))
 }
 
-func (c *RamIdpMetadataCacheController) PhysicalDeletion(ctx *gin.Context) {
+func (c *IdpIdpBindingController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -72,7 +72,7 @@ func (c *RamIdpMetadataCacheController) PhysicalDeletion(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.PhysicalDeletion(ctx, ct.Ids))
 }
 
-func (c *RamIdpMetadataCacheController) Detail(ctx *gin.Context) {
+func (c *IdpIdpBindingController) Detail(ctx *gin.Context) {
 	param := ctx.Param("id")
 
 	fmt.Println(param)
@@ -83,7 +83,7 @@ func (c *RamIdpMetadataCacheController) Detail(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.Detail(ctx, strPg.ToInt64(param)))
 }
 
-func (c *RamIdpMetadataCacheController) Enable(ctx *gin.Context) {
+func (c *IdpIdpBindingController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -91,7 +91,7 @@ func (c *RamIdpMetadataCacheController) Enable(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.Enable(ctx, ct))
 }
 
-func (c *RamIdpMetadataCacheController) Disable(ctx *gin.Context) {
+func (c *IdpIdpBindingController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -99,24 +99,24 @@ func (c *RamIdpMetadataCacheController) Disable(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.Disable(ctx, ct))
 }
 
-func (c *RamIdpMetadataCacheController) Query(ctx *gin.Context) {
-	var ct modRamIdpMetadataCache.QueryCt
+func (c *IdpIdpBindingController) Query(ctx *gin.Context) {
+	var ct modRamIdpBinding.QueryCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
 }
 
-func (c *RamIdpMetadataCacheController) SelectNodeAll(ctx *gin.Context) {
-	var ct modRamIdpMetadataCache.QueryPublicCt
+func (c *IdpIdpBindingController) SelectNodeAll(ctx *gin.Context) {
+	var ct modRamIdpBinding.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.SelectNodeAll(ctx, ct))
 }
 
-func (c *RamIdpMetadataCacheController) SelectNodeAllPublic(ctx *gin.Context) {
-	var ct modRamIdpMetadataCache.QueryPublicCt
+func (c *IdpIdpBindingController) SelectNodeAllPublic(ctx *gin.Context) {
+	var ct modRamIdpBinding.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}

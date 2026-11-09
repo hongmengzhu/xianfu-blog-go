@@ -1,11 +1,11 @@
-package ram
+package idp
 
 import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdpMetadataCache"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdentitySource"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
@@ -16,20 +16,20 @@ import (
 )
 
 func init() {
-	gs.Provide(new(IdpMetadataCacheController)).Name("ManageIdpMetadataCacheController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(IdentitySourceController)).Name("ManageIdpIdentitySourceController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
-// IdpMetadataCacheController IdP元数据缓存
+// IdentitySourceController 身份认证源
 // @Description:
-type IdpMetadataCacheController struct {
+type IdentitySourceController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupManageMiddlewareSp     `autowire:"?"`
-	sv *service.RamIdpMetadataCacheService `autowire:"?"`
+	Sp *authPg.GroupManageMiddlewareSp   `autowire:"?"`
+	sv *service.IdpIdentitySourceService `autowire:"?"`
 }
 
 // RegisterRoutes 注册路由
-func (c *IdpMetadataCacheController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/manage/ram/idp-metadata-cache", authPg.GroupManageMiddleware(c.Sp))
+func (c *IdentitySourceController) RegisterRoutes(e *gin.Engine) {
+	group := e.Group("/xianfu/manage/ram/identity-source", authPg.GroupManageMiddleware(c.Sp))
 	group.POST("/create", c.Create)
 	group.POST("/update", c.Update)
 	group.GET("/detail/:id", c.Detail)
@@ -41,11 +41,12 @@ func (c *IdpMetadataCacheController) RegisterRoutes(e *gin.Engine) {
 	group.POST("/physicalDeletion", c.PhysicalDeletion)
 	group.POST("/query", c.Query)
 	group.POST("/selectPublic", c.SelectPublic)
+	group.POST("/existName", c.ExistName)
 }
 
 // Create 创建
-func (c *IdpMetadataCacheController) Create(ctx *gin.Context) {
-	var ct modRamIdpMetadataCache.CreateUpdateCt
+func (c *IdentitySourceController) Create(ctx *gin.Context) {
+	var ct modRamIdentitySource.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -53,8 +54,8 @@ func (c *IdpMetadataCacheController) Create(ctx *gin.Context) {
 }
 
 // Update 更新
-func (c *IdpMetadataCacheController) Update(ctx *gin.Context) {
-	var ct modRamIdpMetadataCache.CreateUpdateCt
+func (c *IdentitySourceController) Update(ctx *gin.Context) {
+	var ct modRamIdentitySource.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -62,7 +63,7 @@ func (c *IdpMetadataCacheController) Update(ctx *gin.Context) {
 }
 
 // Delete 逻辑删除
-func (c *IdpMetadataCacheController) Delete(ctx *gin.Context) {
+func (c *IdentitySourceController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -71,7 +72,7 @@ func (c *IdpMetadataCacheController) Delete(ctx *gin.Context) {
 }
 
 // Recovery 逻辑删除恢复
-func (c *IdpMetadataCacheController) Recovery(ctx *gin.Context) {
+func (c *IdentitySourceController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -80,7 +81,7 @@ func (c *IdpMetadataCacheController) Recovery(ctx *gin.Context) {
 }
 
 // PhysicalDeletion 物理删除
-func (c *IdpMetadataCacheController) PhysicalDeletion(ctx *gin.Context) {
+func (c *IdentitySourceController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -89,7 +90,7 @@ func (c *IdpMetadataCacheController) PhysicalDeletion(ctx *gin.Context) {
 }
 
 // Detail 详情
-func (c *IdpMetadataCacheController) Detail(ctx *gin.Context) {
+func (c *IdentitySourceController) Detail(ctx *gin.Context) {
 	param := ctx.Param("id")
 	fmt.Println(param)
 	if "" == param {
@@ -100,7 +101,7 @@ func (c *IdpMetadataCacheController) Detail(ctx *gin.Context) {
 }
 
 // Enable 启用
-func (c *IdpMetadataCacheController) Enable(ctx *gin.Context) {
+func (c *IdentitySourceController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -109,7 +110,7 @@ func (c *IdpMetadataCacheController) Enable(ctx *gin.Context) {
 }
 
 // Disable 禁用
-func (c *IdpMetadataCacheController) Disable(ctx *gin.Context) {
+func (c *IdentitySourceController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -118,7 +119,7 @@ func (c *IdpMetadataCacheController) Disable(ctx *gin.Context) {
 }
 
 // State 状态
-func (c *IdpMetadataCacheController) State(ctx *gin.Context) {
+func (c *IdentitySourceController) State(ctx *gin.Context) {
 	var ct model.BaseStateIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -132,15 +133,24 @@ func (c *IdpMetadataCacheController) State(ctx *gin.Context) {
 }
 
 // Query 查询列表
-func (c *IdpMetadataCacheController) Query(ctx *gin.Context) {
-	var ct modRamIdpMetadataCache.QueryCt
+func (c *IdentitySourceController) Query(ctx *gin.Context) {
+	var ct modRamIdentitySource.QueryCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
 }
 
-func (c *IdpMetadataCacheController) SelectPublic(ctx *gin.Context) {
-	ct := modRamIdpMetadataCache.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
+func (c *IdentitySourceController) SelectPublic(ctx *gin.Context) {
+	ct := modRamIdentitySource.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
 	ctx.JSON(200, c.sv.SelectPublic(ctx, ct))
+}
+
+// ExistName 查重
+func (c *IdentitySourceController) ExistName(ctx *gin.Context) {
+	var ct model.BaseExistWdCt[string]
+	if !routerPg.BindJson(ctx, &ct) {
+		return
+	}
+	ctx.JSON(200, c.sv.ExistName(ctx, ct))
 }

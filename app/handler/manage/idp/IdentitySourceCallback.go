@@ -1,10 +1,10 @@
-package ram
+package idp
 
 import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdentitySourceCallback"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
@@ -16,7 +16,7 @@ import (
 )
 
 func init() {
-	gs.Provide(new(IdentitySourceCallbackController)).Name("ManageIdentitySourceCallbackController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(IdentitySourceCallbackController)).Name("ManageIdpIdentitySourceCallbackController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
 // IdentitySourceCallbackController 认证源回调白名单
@@ -24,7 +24,7 @@ func init() {
 type IdentitySourceCallbackController struct {
 	routerPg.RouteRegistrar
 	Sp *authPg.GroupManageMiddlewareSp           `autowire:"?"`
-	sv *service.RamIdentitySourceCallbackService `autowire:"?"`
+	sv *service.IdpIdentitySourceCallbackService `autowire:"?"`
 }
 
 // RegisterRoutes 注册路由

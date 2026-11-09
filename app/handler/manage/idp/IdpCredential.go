@@ -1,11 +1,11 @@
-package ram
+package idp
 
 import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdpBinding"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdpCredential"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
@@ -16,20 +16,20 @@ import (
 )
 
 func init() {
-	gs.Provide(new(IdpBindingController)).Name("ManageIdpBindingController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(IdpCredentialController)).Name("ManageIdpIdpCredentialController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
-// IdpBindingController 身份绑定
+// IdpCredentialController 认证源密钥证书凭证
 // @Description:
-type IdpBindingController struct {
+type IdpCredentialController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
-	sv *service.RamIdpBindingService   `autowire:"?"`
+	Sp *authPg.GroupManageMiddlewareSp  `autowire:"?"`
+	sv *service.IdpIdpCredentialService `autowire:"?"`
 }
 
 // RegisterRoutes 注册路由
-func (c *IdpBindingController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/manage/ram/idp-binding", authPg.GroupManageMiddleware(c.Sp))
+func (c *IdpCredentialController) RegisterRoutes(e *gin.Engine) {
+	group := e.Group("/xianfu/manage/ram/idp-credential", authPg.GroupManageMiddleware(c.Sp))
 	group.POST("/create", c.Create)
 	group.POST("/update", c.Update)
 	group.GET("/detail/:id", c.Detail)
@@ -44,8 +44,8 @@ func (c *IdpBindingController) RegisterRoutes(e *gin.Engine) {
 }
 
 // Create 创建
-func (c *IdpBindingController) Create(ctx *gin.Context) {
-	var ct modRamIdpBinding.CreateUpdateCt
+func (c *IdpCredentialController) Create(ctx *gin.Context) {
+	var ct modRamIdpCredential.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -53,8 +53,8 @@ func (c *IdpBindingController) Create(ctx *gin.Context) {
 }
 
 // Update 更新
-func (c *IdpBindingController) Update(ctx *gin.Context) {
-	var ct modRamIdpBinding.CreateUpdateCt
+func (c *IdpCredentialController) Update(ctx *gin.Context) {
+	var ct modRamIdpCredential.CreateUpdateCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
@@ -62,7 +62,7 @@ func (c *IdpBindingController) Update(ctx *gin.Context) {
 }
 
 // Delete 逻辑删除
-func (c *IdpBindingController) Delete(ctx *gin.Context) {
+func (c *IdpCredentialController) Delete(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -71,7 +71,7 @@ func (c *IdpBindingController) Delete(ctx *gin.Context) {
 }
 
 // Recovery 逻辑删除恢复
-func (c *IdpBindingController) Recovery(ctx *gin.Context) {
+func (c *IdpCredentialController) Recovery(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -80,7 +80,7 @@ func (c *IdpBindingController) Recovery(ctx *gin.Context) {
 }
 
 // PhysicalDeletion 物理删除
-func (c *IdpBindingController) PhysicalDeletion(ctx *gin.Context) {
+func (c *IdpCredentialController) PhysicalDeletion(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -89,7 +89,7 @@ func (c *IdpBindingController) PhysicalDeletion(ctx *gin.Context) {
 }
 
 // Detail 详情
-func (c *IdpBindingController) Detail(ctx *gin.Context) {
+func (c *IdpCredentialController) Detail(ctx *gin.Context) {
 	param := ctx.Param("id")
 	fmt.Println(param)
 	if "" == param {
@@ -100,7 +100,7 @@ func (c *IdpBindingController) Detail(ctx *gin.Context) {
 }
 
 // Enable 启用
-func (c *IdpBindingController) Enable(ctx *gin.Context) {
+func (c *IdpCredentialController) Enable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -109,7 +109,7 @@ func (c *IdpBindingController) Enable(ctx *gin.Context) {
 }
 
 // Disable 禁用
-func (c *IdpBindingController) Disable(ctx *gin.Context) {
+func (c *IdpCredentialController) Disable(ctx *gin.Context) {
 	var ct model.BaseIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -118,7 +118,7 @@ func (c *IdpBindingController) Disable(ctx *gin.Context) {
 }
 
 // State 状态
-func (c *IdpBindingController) State(ctx *gin.Context) {
+func (c *IdpCredentialController) State(ctx *gin.Context) {
 	var ct model.BaseStateIdsCt[string]
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -132,15 +132,15 @@ func (c *IdpBindingController) State(ctx *gin.Context) {
 }
 
 // Query 查询列表
-func (c *IdpBindingController) Query(ctx *gin.Context) {
-	var ct modRamIdpBinding.QueryCt
+func (c *IdpCredentialController) Query(ctx *gin.Context) {
+	var ct modRamIdpCredential.QueryCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ctx.JSON(200, c.sv.Query(ctx, ct))
 }
 
-func (c *IdpBindingController) SelectPublic(ctx *gin.Context) {
-	ct := modRamIdpBinding.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
+func (c *IdpCredentialController) SelectPublic(ctx *gin.Context) {
+	ct := modRamIdpCredential.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
 	ctx.JSON(200, c.sv.SelectPublic(ctx, ct))
 }
