@@ -2,7 +2,8 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdpMetadataCache"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdentitySource"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/automatedPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityIdp"
@@ -21,20 +22,23 @@ import (
 )
 
 func init() {
-	gs.Provide(new(RamIdpMetadataCacheService))
+	gs.Provide(new(IdpIdentitySourceService))
 }
 
-// RamIdpMetadataCacheService IdP元数据缓存
+// IdpIdentitySourceService 身份认证源
 // @Description:
-type RamIdpMetadataCacheService struct {
-	sv *repositoryIdp.RamIdpMetadataCacheRepository `autowire:"?"`
+type IdpIdentitySourceService struct {
+	sv *repositoryIdp.IdpIdentitySourceRepository `autowire:"?"`
 }
 
 // Create 新增
-func (c *RamIdpMetadataCacheService) Create(ctx *gin.Context, ct modRamIdpMetadataCache.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceService) Create(ctx *gin.Context, ct modRamIdentitySource.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var info entityIdp.IdpIdpMetadataCacheEntity
+	var info entityIdp.IdpIdentitySourceEntity
 	copier.Copy(&info, &ct)
+	if "" == ct.Name {
+		return rt.ErrorMessage("名称不能为空")
+	}
 	r := c.sv
 	holder := holderPg.GetContextAccount(ctx)
 	info.TenantNo = holder.GetTenantNo()
@@ -49,13 +53,16 @@ func (c *RamIdpMetadataCacheService) Create(ctx *gin.Context, ct modRamIdpMetada
 }
 
 // Update 更新
-func (c *RamIdpMetadataCacheService) Update(ctx *gin.Context, ct modRamIdpMetadataCache.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceService) Update(ctx *gin.Context, ct modRamIdentitySource.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var info entityIdp.IdpIdpMetadataCacheEntity
+	var info entityIdp.IdpIdentitySourceEntity
 	copier.Copy(&info, &ct)
 	r := c.sv
 	if ct.ID < 1 {
 		return rt.ErrorMessage("id错误")
+	}
+	if "" == ct.Name {
+		return rt.ErrorMessage("名称不能为空")
 	}
 	find, b := r.FindById(ctx, ct.ID.ToInt64())
 	if !b {
@@ -78,22 +85,27 @@ func (c *RamIdpMetadataCacheService) Update(ctx *gin.Context, ct modRamIdpMetada
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *RamIdpMetadataCacheService) CreateUpdate(ctx *gin.Context, ct modRamIdpMetadataCache.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceService) CreateUpdate(ctx *gin.Context, ct modRamIdentitySource.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
 	holder := holderPg.GetContextAccount(ctx)
 	//
-	var info entityIdp.IdpIdpMetadataCacheEntity
+	var info entityIdp.IdpIdentitySourceEntity
 	copier.Copy(&info, &ct)
 	//
 	r := c.sv
 	//是否是更新
 	isUpdate := false
 	b := false
+	id := "0"
 	//
-	find := &entityIdp.IdpIdpMetadataCacheEntity{}
+	find := &entityIdp.IdpIdentitySourceEntity{}
 	//
+	if "" == ct.Name {
+		return rt.ErrorMessage("名称不能为空")
+	}
 	if ct.ID.ToInt64() > 0 {
+		id = ct.ID.ToString()
 		isUpdate = true
 		///
 		find, b = r.FindById(ctx, ct.ID.ToInt64())
@@ -101,13 +113,34 @@ func (c *RamIdpMetadataCacheService) CreateUpdate(ctx *gin.Context, ct modRamIdp
 			return rt.ErrorMessage("数据不存在")
 		}
 	}
-	if strPg.IsBlank(info.No) {
-		info.No = noPg.No()
+	if strPg.IsBlank(ct.Code) {
+		info.Code = automatedPg.CREATE_CODE
+	} else {
+		_, result := r.FindByCodeAndIdNot(ctx, info.Code, id, optionsPg.WithCtx(ctx))
+		if result {
+			return rt.ErrorMessage("码值已存在")
+		}
+	}
+	//判断是否是自动,不是自动
+	if !automatedPg.IsCreateCode(info.Code) {
+		//判断格式是否满足要求
+		if !automatedPg.FormatVerify(info.Code) {
+			return rt.ErrorMessage("标志格式不能为空")
+		}
+		//不是自动
+		_, result := r.FindByCodeAndIdNot(ctx, info.Code, id, optionsPg.WithCtx(ctx))
+		if result {
+			return rt.ErrorMessage("码值已存在")
+		}
+	} else {
+		info.Code = noPg.No()
 	}
 	if isUpdate {
 		info.ID = 0
+		info.No = ""
 	} else {
 		info.TenantNo = holder.GetTenantNo()
+		info.No = noPg.No()
 		info.State = enumStatePg.ENABLE.Index()
 	}
 
@@ -134,7 +167,7 @@ func (c *RamIdpMetadataCacheService) CreateUpdate(ctx *gin.Context, ct modRamIdp
 //	@Description:
 //	@receiver c
 //	@param id
-func (c *RamIdpMetadataCacheService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamIdpMetadataCache.Vo]) {
+func (c *IdpIdentitySourceService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamIdentitySource.Vo]) {
 	if id < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -142,7 +175,7 @@ func (c *RamIdpMetadataCacheService) Detail(ctx *gin.Context, id int64) (rt rg.R
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
-	var info modRamIdpMetadataCache.Vo
+	var info modRamIdentitySource.Vo
 	copier.Copy(&info, &find)
 	return rt.OkData(info)
 }
@@ -152,7 +185,7 @@ func (c *RamIdpMetadataCacheService) Detail(ctx *gin.Context, id int64) (rt rg.R
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpMetadataCacheService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.ENABLE)
 }
@@ -162,7 +195,7 @@ func (c *RamIdpMetadataCacheService) Enable(ctx *gin.Context, ct model.BaseIdsCt
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpMetadataCacheService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.GetType(enumStatePg.DISABLE))
 }
@@ -172,7 +205,7 @@ func (c *RamIdpMetadataCacheService) Disable(ctx *gin.Context, ct model.BaseIdsC
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpMetadataCacheService) State(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceService) State(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -183,14 +216,14 @@ func (c *RamIdpMetadataCacheService) State(ctx *gin.Context, ids []string, state
 	}
 	for _, info := range finds {
 		if info.State != state.IndexInt8() {
-			r.Update(ctx, entityIdp.IdpIdpMetadataCacheEntity{State: state.IndexInt8()}, info.ID)
+			r.Update(ctx, entityIdp.IdpIdentitySourceEntity{State: state.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
 }
 
 // StateEnableDisable 状态 设置 有效 停用
-func (c *RamIdpMetadataCacheService) StateEnableDisable(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceService) StateEnableDisable(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
 	if !state.IsEnableDisable() {
 		return rt.ErrorMessage("状态错误")
 	}
@@ -202,7 +235,7 @@ func (c *RamIdpMetadataCacheService) StateEnableDisable(ctx *gin.Context, ids []
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpMetadataCacheService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
@@ -220,9 +253,8 @@ func (c *RamIdpMetadataCacheService) LogicalDeletion(ctx *gin.Context, ids []str
 	} else {
 		for _, info := range finds {
 			enum := enumStatePg.State(info.State)
-			// 有效 停用，反转 为对应的 取消 弃置
 			if ok, reverse := enum.ReverseEnableDisable(); ok {
-				repository.Update(ctx, entityIdp.IdpIdpMetadataCacheEntity{State: reverse.IndexInt8()}, info.ID)
+				repository.Update(ctx, entityIdp.IdpIdentitySourceEntity{State: reverse.IndexInt8()}, info.ID)
 			}
 		}
 	}
@@ -234,7 +266,7 @@ func (c *RamIdpMetadataCacheService) LogicalDeletion(ctx *gin.Context, ids []str
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpMetadataCacheService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
@@ -246,9 +278,8 @@ func (c *RamIdpMetadataCacheService) LogicalRecovery(ctx *gin.Context, ids []str
 	}
 	for _, info := range finds {
 		enum := enumStatePg.State(info.State)
-		//  取消 弃置 批量删除，反转 为对应的 有效 停用 停用
 		if ok, reverse := enum.ReverseCancelLayAside(); ok {
-			repository.Update(ctx, entityIdp.IdpIdpMetadataCacheEntity{State: reverse.IndexInt8()}, info.ID)
+			repository.Update(ctx, entityIdp.IdpIdentitySourceEntity{State: reverse.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -259,7 +290,7 @@ func (c *RamIdpMetadataCacheService) LogicalRecovery(ctx *gin.Context, ids []str
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpMetadataCacheService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
@@ -285,11 +316,11 @@ func (c *RamIdpMetadataCacheService) PhysicalDeletion(ctx *gin.Context, ids []st
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpMetadataCacheService) Query(ctx *gin.Context, ct modRamIdpMetadataCache.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdpMetadataCache.Vo]]) {
+func (c *IdpIdentitySourceService) Query(ctx *gin.Context, ct modRamIdentitySource.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdentitySource.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityIdp.IdpIdpMetadataCacheEntity
+	var query entityIdp.IdpIdentitySourceEntity
 	copier.Copy(&query, &ct)
-	slice := make([]modRamIdpMetadataCache.Vo, 0)
+	slice := make([]modRamIdentitySource.Vo, 0)
 	rt.Data.Data = slice
 	r := c.sv
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
@@ -300,7 +331,7 @@ func (c *RamIdpMetadataCacheService) Query(ctx *gin.Context, ct modRamIdpMetadat
 		arg.Db = arg.Db.Order("create_at desc")
 		//自定义查询
 		if strPg.IsNotBlank(ct.Wd) {
-			arg.Db = arg.Db.Where("idp_no like ?", "%"+ct.Wd+"%").Or("protocol like ?", "%"+ct.Wd+"%")
+			arg.Db = arg.Db.Where("name like ?", "%"+ct.Wd+"%")
 		}
 	}), optionsPg.WithCtx(ctx))
 	if nil != err {
@@ -308,9 +339,9 @@ func (c *RamIdpMetadataCacheService) Query(ctx *gin.Context, ct modRamIdpMetadat
 	}
 
 	if page.Total > 0 && page.Data != nil && len(page.Data) > 0 {
-		pg := pagePg.NewPaginatorByPageable[modRamIdpMetadataCache.Vo](page.Pageable)
+		pg := pagePg.NewPaginatorByPageable[modRamIdentitySource.Vo](page.Pageable)
 		for _, item := range page.Data {
-			var vo modRamIdpMetadataCache.Vo
+			var vo modRamIdentitySource.Vo
 			copier.Copy(&vo, &item)
 			slice = append(slice, vo)
 		}
@@ -323,16 +354,16 @@ func (c *RamIdpMetadataCacheService) Query(ctx *gin.Context, ct modRamIdpMetadat
 }
 
 // SelectPublic 查询
-func (c *RamIdpMetadataCacheService) SelectPublic(ctx *gin.Context, ct modRamIdpMetadataCache.QueryCt) (rt rg.Rs[[]modRamIdpMetadataCache.Vo]) {
+func (c *IdpIdentitySourceService) SelectPublic(ctx *gin.Context, ct modRamIdentitySource.QueryCt) (rt rg.Rs[[]modRamIdentitySource.Vo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityIdp.IdpIdpMetadataCacheEntity
+	var query entityIdp.IdpIdentitySourceEntity
 	copier.Copy(&query, &ct)
-	rt.Data = []modRamIdpMetadataCache.Vo{}
+	rt.Data = []modRamIdentitySource.Vo{}
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
-		slice := make([]modRamIdpMetadataCache.Vo, 0)
+		slice := make([]modRamIdentitySource.Vo, 0)
 		for _, item := range infos {
-			var vo modRamIdpMetadataCache.Vo
+			var vo modRamIdentitySource.Vo
 			copier.Copy(&vo, &item)
 			slice = append(slice, vo)
 		}
@@ -346,20 +377,20 @@ func (c *RamIdpMetadataCacheService) SelectPublic(ctx *gin.Context, ct modRamIdp
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpMetadataCacheService) SelectNodeAll(ctx *gin.Context, ct modRamIdpMetadataCache.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *IdpIdentitySourceService) SelectNodeAll(ctx *gin.Context, ct modRamIdentitySource.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityIdp.IdpIdpMetadataCacheEntity
+	var query entityIdp.IdpIdentitySourceEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
 	rt.Data = slice
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
 		for _, item := range infos {
-			var vo modRamIdpMetadataCache.Vo
+			var vo modRamIdentitySource.Vo
 			copier.Copy(&vo, &item)
 			code := model.BaseNodeNo{
 				Value:  item.No,
-				Label:  item.Protocol,
+				Label:  item.Name,
 				Extend: vo,
 			}
 			slice = append(slice, code)
@@ -374,20 +405,20 @@ func (c *RamIdpMetadataCacheService) SelectNodeAll(ctx *gin.Context, ct modRamId
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpMetadataCacheService) SelectNodeAllPublic(ctx *gin.Context, ct modRamIdpMetadataCache.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *IdpIdentitySourceService) SelectNodeAllPublic(ctx *gin.Context, ct modRamIdentitySource.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityIdp.IdpIdpMetadataCacheEntity
+	var query entityIdp.IdpIdentitySourceEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
 	rt.Data = slice
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
 		for _, item := range infos {
-			var vo modRamIdpMetadataCache.Vo
+			var vo modRamIdentitySource.Vo
 			copier.Copy(&vo, &item)
 			code := model.BaseNodeNo{
 				Value:  item.No,
-				Label:  item.Protocol,
+				Label:  item.Name,
 				Extend: vo,
 			}
 			slice = append(slice, code)
@@ -395,4 +426,25 @@ func (c *RamIdpMetadataCacheService) SelectNodeAllPublic(ctx *gin.Context, ct mo
 		rt.Data = slice
 	}
 	return rt.Ok()
+}
+
+// ExistName 查重
+//
+//	@Description:
+//	@receiver c
+//	@param ct
+func (c *IdpIdentitySourceService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	if "" == ct.Wd {
+		return rt.ErrorMessage("查询内容不能为空")
+	}
+	id := "0"
+	if strPg.IsNotBlank(ct.Id) {
+		id = ct.Id
+	}
+	_, result := c.sv.FindByNameAndIdNot(ctx, ct.Wd, id, optionsPg.WithCtx(ctx))
+	if result {
+		return rt.ErrorMessage("重复，已存在")
+	}
+	return rt.OkMessage("可以使用")
 }

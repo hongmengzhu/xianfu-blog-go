@@ -26,8 +26,8 @@ func init() {
 	gs.Provide(NewWechatOaService)
 }
 
-// wechatOaBaseConfig 微信公众号认证源基础配置（从 BaseConfig JSON 解析）
-type wechatOaBaseConfig struct {
+// IdpWechatOaBaseConfig 微信公众号认证源基础配置（从 BaseConfig JSON 解析）
+type IdpWechatOaBaseConfig struct {
 	ClientId2     string `json:"clientId2"`
 	ClientSecret2 string `json:"clientSecret2"`
 	WechatToken   string `json:"wechatToken"`
@@ -54,8 +54,8 @@ var (
 
 // WechatOaService 微信公众号扫码登录 Service
 type WechatOaService struct {
-	daoSource   *repositoryIdp.RamIdentitySourceRepository   `autowire:"?"`
-	daoProvider *repositoryIdp.RamIdentityProviderRepository `autowire:"?"`
+	daoSource   *repositoryIdp.IdpIdentitySourceRepository   `autowire:"?"`
+	daoProvider *repositoryIdp.IdpIdentityProviderRepository `autowire:"?"`
 }
 
 // NewWechatOaService 构造函数
@@ -79,7 +79,7 @@ func (s *WechatOaService) GetQRCode(ctx *gin.Context, sourceNo string) (rt rg.Rs
 	}
 
 	// 解析 BaseConfig
-	var cfg wechatOaBaseConfig
+	var cfg IdpWechatOaBaseConfig
 	if strPg.IsNotBlank(source.BaseConfig) {
 		if err := json.Unmarshal([]byte(source.BaseConfig), &cfg); err != nil {
 			log.Error(ctx, log.TagAppDef, err, "解析 BaseConfig 失败")
@@ -165,7 +165,7 @@ func (s *WechatOaService) HandleEvent(ctx *gin.Context, bodyBytes []byte, source
 	// 通过 EventKey（即 scene_str）查找认证源
 	// scene_str 格式: sourceNo_randomId
 	sceneStr := eventData.EventKey
-	var cfg wechatOaBaseConfig
+	var cfg IdpWechatOaBaseConfig
 
 	// 优先从 scene_str 中提取 sourceNo 查找
 	if strPg.IsNotBlank(sceneStr) {
@@ -213,7 +213,7 @@ func (s *WechatOaService) GetWechatOaToken(ctx *gin.Context, sourceNo string) st
 	if !found {
 		return ""
 	}
-	var cfg wechatOaBaseConfig
+	var cfg IdpWechatOaBaseConfig
 	if strPg.IsNotBlank(source.BaseConfig) {
 		_ = json.Unmarshal([]byte(source.BaseConfig), &cfg)
 	}

@@ -6,15 +6,16 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	service2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLogin"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constHeaderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/clientPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityIdp"
-	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryIdp"
-	repositoryRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/idpPg/idp"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
@@ -29,8 +30,8 @@ func init() {
 	gs.Provide(NewAccountLoginIdpService)
 }
 
-// idpBaseConfig 认证源基础配置（从 BaseConfig JSON 解析）
-type idpBaseConfig struct {
+// IdpBaseConfig 认证源基础配置（从 BaseConfig JSON 解析）
+type IdpBaseConfig struct {
 	ClientId        string `json:"clientId"`
 	ClientSecret    string `json:"clientSecret"`
 	ClientId2       string `json:"clientId2"`
@@ -50,12 +51,12 @@ type idpBaseConfig struct {
 // @Description:
 type AccountLoginIdpService struct {
 	daoAccount    *repositoryRam.RamAccountRepository           `autowire:"?"`
-	daoSource     *repositoryIdp.RamIdentitySourceRepository    `autowire:"?"`
-	daoProvider   *repositoryIdp.RamIdentityProviderRepository  `autowire:"?"`
-	daoBinding    *repositoryIdp.RamIdpBindingRepository        `autowire:"?"`
+	daoSource     *repositoryIdp.IdpIdentitySourceRepository    `autowire:"?"`
+	daoProvider   *repositoryIdp.IdpIdentityProviderRepository  `autowire:"?"`
+	daoBinding    *repositoryIdp.IdpIdpBindingRepository        `autowire:"?"`
 	daoSessionLog *repositoryRam.RamAccountSessionLogRepository `autowire:"?"`
-	loginService  *AccountLoginService                          `autowire:"?"`
-	mfaService    *AccountMfaService                            `autowire:"?"`
+	loginService  *service2.AccountLoginService                 `autowire:"?"`
+	mfaService    *service2.AccountMfaService                   `autowire:"?"`
 }
 
 func NewAccountLoginIdpService() *AccountLoginIdpService {
@@ -93,7 +94,7 @@ func (c *AccountLoginIdpService) Login(ctx *gin.Context, ct modRamLogin.IdpLogin
 	}
 
 	// 4. 解析 BaseConfig JSON
-	var baseCfg idpBaseConfig
+	var baseCfg IdpBaseConfig
 	if strPg.IsNotBlank(source.BaseConfig) {
 		if err := json.Unmarshal([]byte(source.BaseConfig), &baseCfg); err != nil {
 			log.Error(ctx, log.TagAppDef, err, "解析 BaseConfig 失败")

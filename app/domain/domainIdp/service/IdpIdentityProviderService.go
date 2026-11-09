@@ -22,17 +22,17 @@ import (
 )
 
 func init() {
-	gs.Provide(new(RamIdentityProviderService))
+	gs.Provide(new(IdpIdentityProviderService))
 }
 
-// RamIdentityProviderService 身份提供商
+// IdpIdentityProviderService 身份提供商
 // @Description:
-type RamIdentityProviderService struct {
-	sv *repositoryIdp.RamIdentityProviderRepository `autowire:"?"`
+type IdpIdentityProviderService struct {
+	sv *repositoryIdp.IdpIdentityProviderRepository `autowire:"?"`
 }
 
 // Create 新增
-func (c *RamIdentityProviderService) Create(ctx *gin.Context, ct modRamIdentityProvider.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdentityProviderService) Create(ctx *gin.Context, ct modRamIdentityProvider.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityIdp.IdpIdentityProviderEntity
 	copier.Copy(&info, &ct)
@@ -53,7 +53,7 @@ func (c *RamIdentityProviderService) Create(ctx *gin.Context, ct modRamIdentityP
 }
 
 // Update 更新
-func (c *RamIdentityProviderService) Update(ctx *gin.Context, ct modRamIdentityProvider.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdentityProviderService) Update(ctx *gin.Context, ct modRamIdentityProvider.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityIdp.IdpIdentityProviderEntity
 	copier.Copy(&info, &ct)
@@ -85,7 +85,7 @@ func (c *RamIdentityProviderService) Update(ctx *gin.Context, ct modRamIdentityP
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *RamIdentityProviderService) CreateUpdate(ctx *gin.Context, ct modRamIdentityProvider.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdentityProviderService) CreateUpdate(ctx *gin.Context, ct modRamIdentityProvider.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
 	holder := holderPg.GetContextAccount(ctx)
@@ -167,7 +167,7 @@ func (c *RamIdentityProviderService) CreateUpdate(ctx *gin.Context, ct modRamIde
 //	@Description:
 //	@receiver c
 //	@param id
-func (c *RamIdentityProviderService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamIdentityProvider.Vo]) {
+func (c *IdpIdentityProviderService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamIdentityProvider.Vo]) {
 	if id < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -185,7 +185,7 @@ func (c *RamIdentityProviderService) Detail(ctx *gin.Context, id int64) (rt rg.R
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdentityProviderService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
+func (c *IdpIdentityProviderService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.ENABLE)
 }
@@ -195,7 +195,7 @@ func (c *RamIdentityProviderService) Enable(ctx *gin.Context, ct model.BaseIdsCt
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdentityProviderService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
+func (c *IdpIdentityProviderService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.GetType(enumStatePg.DISABLE))
 }
@@ -205,7 +205,7 @@ func (c *RamIdentityProviderService) Disable(ctx *gin.Context, ct model.BaseIdsC
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdentityProviderService) State(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
+func (c *IdpIdentityProviderService) State(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -223,7 +223,7 @@ func (c *RamIdentityProviderService) State(ctx *gin.Context, ids []string, state
 }
 
 // StateEnableDisable 状态 设置 有效 停用
-func (c *RamIdentityProviderService) StateEnableDisable(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
+func (c *IdpIdentityProviderService) StateEnableDisable(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
 	if !state.IsEnableDisable() {
 		return rt.ErrorMessage("状态错误")
 	}
@@ -235,7 +235,7 @@ func (c *RamIdentityProviderService) StateEnableDisable(ctx *gin.Context, ids []
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdentityProviderService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+func (c *IdpIdentityProviderService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
@@ -266,7 +266,7 @@ func (c *RamIdentityProviderService) LogicalDeletion(ctx *gin.Context, ids []str
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdentityProviderService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+func (c *IdpIdentityProviderService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
@@ -290,7 +290,7 @@ func (c *RamIdentityProviderService) LogicalRecovery(ctx *gin.Context, ids []str
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdentityProviderService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+func (c *IdpIdentityProviderService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
@@ -316,7 +316,7 @@ func (c *RamIdentityProviderService) PhysicalDeletion(ctx *gin.Context, ids []st
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdentityProviderService) Query(ctx *gin.Context, ct modRamIdentityProvider.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdentityProvider.Vo]]) {
+func (c *IdpIdentityProviderService) Query(ctx *gin.Context, ct modRamIdentityProvider.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdentityProvider.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdentityProviderEntity
 	copier.Copy(&query, &ct)
@@ -354,7 +354,7 @@ func (c *RamIdentityProviderService) Query(ctx *gin.Context, ct modRamIdentityPr
 }
 
 // SelectPublic 查询
-func (c *RamIdentityProviderService) SelectPublic(ctx *gin.Context, ct modRamIdentityProvider.QueryCt) (rt rg.Rs[[]modRamIdentityProvider.Vo]) {
+func (c *IdpIdentityProviderService) SelectPublic(ctx *gin.Context, ct modRamIdentityProvider.QueryCt) (rt rg.Rs[[]modRamIdentityProvider.Vo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdentityProviderEntity
 	copier.Copy(&query, &ct)
@@ -377,7 +377,7 @@ func (c *RamIdentityProviderService) SelectPublic(ctx *gin.Context, ct modRamIde
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdentityProviderService) SelectNodeAll(ctx *gin.Context, ct modRamIdentityProvider.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *IdpIdentityProviderService) SelectNodeAll(ctx *gin.Context, ct modRamIdentityProvider.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdentityProviderEntity
 	copier.Copy(&query, &ct)
@@ -405,7 +405,7 @@ func (c *RamIdentityProviderService) SelectNodeAll(ctx *gin.Context, ct modRamId
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdentityProviderService) SelectNodeAllPublic(ctx *gin.Context, ct modRamIdentityProvider.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *IdpIdentityProviderService) SelectNodeAllPublic(ctx *gin.Context, ct modRamIdentityProvider.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdentityProviderEntity
 	copier.Copy(&query, &ct)
@@ -433,7 +433,7 @@ func (c *RamIdentityProviderService) SelectNodeAllPublic(ctx *gin.Context, ct mo
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdentityProviderService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
+func (c *IdpIdentityProviderService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	if "" == ct.Wd {
 		return rt.ErrorMessage("查询内容不能为空")

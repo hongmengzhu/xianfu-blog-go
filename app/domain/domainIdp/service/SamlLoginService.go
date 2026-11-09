@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	service2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLogin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamSaml"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constHeaderPg"
@@ -13,9 +14,9 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/clientPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityIdp"
-	entityRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryIdp"
-	repositoryRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/idpPg/idp"
 	samlPkg "github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/idpPg/saml"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
@@ -30,8 +31,8 @@ func init() {
 	gs.Provide(NewSamlLoginService)
 }
 
-// samlSourceConfig SAML 认证源 BaseConfig JSON 结构
-type samlSourceConfig struct {
+// IdpSamlSourceConfig SAML 认证源 BaseConfig JSON 结构
+type IdpSamlSourceConfig struct {
 	IdpSsoURL  string `json:"idpSsoUrl"`  // IdP SSO 地址
 	IdpIssuer  string `json:"idpIssuer"`  // IdP EntityID
 	SpIssuer   string `json:"spIssuer"`   // SP EntityID（可选，默认使用 ACS URL）
@@ -41,13 +42,13 @@ type samlSourceConfig struct {
 // SamlLoginService SAML 登录 Service
 type SamlLoginService struct {
 	daoAccount    *repositoryRam.RamAccountRepository           `autowire:"?"`
-	daoSource     *repositoryIdp.RamIdentitySourceRepository    `autowire:"?"`
-	daoCredential *repositoryIdp.RamIdpCredentialRepository     `autowire:"?"`
-	daoMetadata   *repositoryIdp.RamIdpMetadataCacheRepository  `autowire:"?"`
-	daoBinding    *repositoryIdp.RamIdpBindingRepository        `autowire:"?"`
+	daoSource     *repositoryIdp.IdpIdentitySourceRepository    `autowire:"?"`
+	daoCredential *repositoryIdp.IdpIdpCredentialRepository     `autowire:"?"`
+	daoMetadata   *repositoryIdp.IdpIdpMetadataCacheRepository  `autowire:"?"`
+	daoBinding    *repositoryIdp.IdpIdpBindingRepository        `autowire:"?"`
 	daoSessionLog *repositoryRam.RamAccountSessionLogRepository `autowire:"?"`
-	loginService  *AccountLoginService                          `autowire:"?"`
-	mfaService    *AccountMfaService                            `autowire:"?"`
+	loginService  *service2.AccountLoginService                 `autowire:"?"`
+	mfaService    *service2.AccountMfaService                   `autowire:"?"`
 }
 
 func NewSamlLoginService() *SamlLoginService {
@@ -158,7 +159,7 @@ func (c *SamlLoginService) HandleSamlCallback(ctx *gin.Context, ct modRamSaml.Sa
 // buildSpFromSource 从认证源配置构建 SAML SP
 func (c *SamlLoginService) buildSpFromSource(ctx *gin.Context, source *entityIdp.IdpIdentitySourceEntity) (*samlPkg.SAMLServiceProvider, *samlPkg.SpConfig, error) {
 	// 解析 BaseConfig
-	var srcCfg samlSourceConfig
+	var srcCfg IdpSamlSourceConfig
 	if strPg.IsNotBlank(source.BaseConfig) {
 		if err := json.Unmarshal([]byte(source.BaseConfig), &srcCfg); err != nil {
 			return nil, nil, fmt.Errorf("解析 BaseConfig 失败: %w", err)

@@ -16,8 +16,8 @@ func init() {
 	gs.Provide(new(FaceIdService))
 }
 
-// FaceIdBeginCt Face ID 开始验证请求
-type FaceIdBeginCt struct {
+// IdpFaceIdBeginCt Face ID 开始验证请求
+type IdpFaceIdBeginCt struct {
 	SourceNo string `json:"sourceNo" form:"sourceNo" label:"认证源编号"`
 	UserId   string `json:"userId" form:"userId" label:"用户ID"`
 }
@@ -32,12 +32,12 @@ type FaceIdVerifyCt struct {
 
 // FaceIdService Face ID 登录验证
 type FaceIdService struct {
-	daoSource   *repositoryIdp.RamIdentitySourceRepository   `autowire:"?"`
-	daoProvider *repositoryIdp.RamIdentityProviderRepository `autowire:"?"`
+	daoSource   *repositoryIdp.IdpIdentitySourceRepository   `autowire:"?"`
+	daoProvider *repositoryIdp.IdpIdentityProviderRepository `autowire:"?"`
 }
 
 // Begin 开始 Face ID 验证（返回 Face ID 提供商类型及配置信息）
-func (s *FaceIdService) Begin(ctx *gin.Context, ct FaceIdBeginCt) (rt rg.Rs[map[string]string]) {
+func (s *FaceIdService) Begin(ctx *gin.Context, ct IdpFaceIdBeginCt) (rt rg.Rs[map[string]string]) {
 	if strPg.IsBlank(ct.SourceNo) {
 		return rt.ErrorMessage("认证源编号不能为空")
 	}
@@ -53,7 +53,7 @@ func (s *FaceIdService) Begin(ctx *gin.Context, ct FaceIdBeginCt) (rt rg.Rs[map[
 	}
 
 	// 解析 BaseConfig
-	var baseCfg idpBaseConfig
+	var baseCfg IdpBaseConfig
 	if strPg.IsNotBlank(source.BaseConfig) {
 		if err := json.Unmarshal([]byte(source.BaseConfig), &baseCfg); err != nil {
 			return rt.ErrorMessage("认证源配置解析失败")
@@ -88,7 +88,7 @@ func (s *FaceIdService) Verify(ctx *gin.Context, ct FaceIdVerifyCt) (rt rg.Rs[bo
 	}
 
 	// 解析 BaseConfig
-	var baseCfg idpBaseConfig
+	var baseCfg IdpBaseConfig
 	if strPg.IsNotBlank(source.BaseConfig) {
 		if err := json.Unmarshal([]byte(source.BaseConfig), &baseCfg); err != nil {
 			return rt.ErrorMessage("认证源配置解析失败")

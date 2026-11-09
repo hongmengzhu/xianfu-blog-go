@@ -17,17 +17,17 @@ import (
 )
 
 func init() {
-	gs.Provide(new(CasService))
+	gs.Provide(new(IdpCasService))
 }
 
-// CasService CAS ST 管理 Service
-type CasService struct {
+// IdpCasService CAS ST 管理 Service
+type IdpCasService struct {
 	daoAccount *repositoryRam.RamAccountRepository        `autowire:"?"`
-	daoSource  *repositoryIdp.RamIdentitySourceRepository `autowire:"?"`
+	daoSource  *repositoryIdp.IdpIdentitySourceRepository `autowire:"?"`
 }
 
 // Login CAS 登录（生成 Service Ticket）
-func (s *CasService) Login(ctx *gin.Context, ct modRamCas.CasLoginCt) (rt rg.Rs[modRamCas.CasLoginVo]) {
+func (s *IdpCasService) Login(ctx *gin.Context, ct modRamCas.CasLoginCt) (rt rg.Rs[modRamCas.CasLoginVo]) {
 	if strPg.IsBlank(ct.Service) {
 		return rt.ErrorMessage("service 参数不能为空")
 	}
@@ -75,7 +75,7 @@ func (s *CasService) Login(ctx *gin.Context, ct modRamCas.CasLoginCt) (rt rg.Rs[
 }
 
 // Validate CAS 1.0 验证（/validate）
-func (s *CasService) Validate(ctx *gin.Context, ct modRamCas.CasValidateCt) (rt rg.Rs[modRamCas.CasValidateVo]) {
+func (s *IdpCasService) Validate(ctx *gin.Context, ct modRamCas.CasValidateCt) (rt rg.Rs[modRamCas.CasValidateVo]) {
 	if strPg.IsBlank(ct.Ticket) || strPg.IsBlank(ct.Service) {
 		return rt.OkData(modRamCas.CasValidateVo{
 			Valid:   false,
@@ -107,7 +107,7 @@ func (s *CasService) Validate(ctx *gin.Context, ct modRamCas.CasValidateCt) (rt 
 }
 
 // ServiceValidate CAS 2.0/3.0 验证（/serviceValidate, /p3/serviceValidate）
-func (s *CasService) ServiceValidate(ctx *gin.Context, ct modRamCas.CasValidateCt) string {
+func (s *IdpCasService) ServiceValidate(ctx *gin.Context, ct modRamCas.CasValidateCt) string {
 	if strPg.IsBlank(ct.Ticket) || strPg.IsBlank(ct.Service) {
 		return s.buildXmlError(pkgcas.InvalidRequest, "service 和 ticket 参数不能为空")
 	}
@@ -136,7 +136,7 @@ func (s *CasService) ServiceValidate(ctx *gin.Context, ct modRamCas.CasValidateC
 }
 
 // buildXmlError 构建 XML 错误响应
-func (s *CasService) buildXmlError(code string, message string) string {
+func (s *IdpCasService) buildXmlError(code string, message string) string {
 	xmlBytes, err := pkgcas.BuildFailureResponse(code, message)
 	if err != nil {
 		return fmt.Sprintf(`<cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas"><cas:authenticationFailure code="INTERNAL_ERROR">%s</cas:authenticationFailure></cas:serviceResponse>`, message)
@@ -151,7 +151,7 @@ func queryUnescape(s string) string {
 }
 
 // findSourceByProtocol 查找 CAS 协议的认证源
-func (s *CasService) findSourceByProtocol(ctx *gin.Context, protocol string) (*entityIdp.IdpIdentitySourceEntity, bool) {
+func (s *IdpCasService) findSourceByProtocol(ctx *gin.Context, protocol string) (*entityIdp.IdpIdentitySourceEntity, bool) {
 	// 简化实现：通过 protocol 查找认证源
 	// 实际可能需要更复杂的查找逻辑
 	_ = protocol

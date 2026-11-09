@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdpBinding"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamIdentitySourceCallback"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityIdp"
@@ -21,20 +21,23 @@ import (
 )
 
 func init() {
-	gs.Provide(new(RamIdpBindingService))
+	gs.Provide(new(IdpIdentitySourceCallbackService))
 }
 
-// RamIdpBindingService 身份绑定
+// IdpIdentitySourceCallbackService 认证源回调白名单
 // @Description:
-type RamIdpBindingService struct {
-	sv *repositoryIdp.RamIdpBindingRepository `autowire:"?"`
+type IdpIdentitySourceCallbackService struct {
+	sv *repositoryIdp.IdpIdentitySourceCallbackRepository `autowire:"?"`
 }
 
 // Create 新增
-func (c *RamIdpBindingService) Create(ctx *gin.Context, ct modRamIdpBinding.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceCallbackService) Create(ctx *gin.Context, ct modRamIdentitySourceCallback.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var info entityIdp.IdpIdpBindingEntity
+	var info entityIdp.IdpIdentitySourceCallbackEntity
 	copier.Copy(&info, &ct)
+	if "" == ct.Name {
+		return rt.ErrorMessage("名称不能为空")
+	}
 	r := c.sv
 	holder := holderPg.GetContextAccount(ctx)
 	info.TenantNo = holder.GetTenantNo()
@@ -49,13 +52,16 @@ func (c *RamIdpBindingService) Create(ctx *gin.Context, ct modRamIdpBinding.Crea
 }
 
 // Update 更新
-func (c *RamIdpBindingService) Update(ctx *gin.Context, ct modRamIdpBinding.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceCallbackService) Update(ctx *gin.Context, ct modRamIdentitySourceCallback.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var info entityIdp.IdpIdpBindingEntity
+	var info entityIdp.IdpIdentitySourceCallbackEntity
 	copier.Copy(&info, &ct)
 	r := c.sv
 	if ct.ID < 1 {
 		return rt.ErrorMessage("id错误")
+	}
+	if "" == ct.Name {
+		return rt.ErrorMessage("名称不能为空")
 	}
 	find, b := r.FindById(ctx, ct.ID.ToInt64())
 	if !b {
@@ -78,12 +84,12 @@ func (c *RamIdpBindingService) Update(ctx *gin.Context, ct modRamIdpBinding.Crea
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *RamIdpBindingService) CreateUpdate(ctx *gin.Context, ct modRamIdpBinding.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceCallbackService) CreateUpdate(ctx *gin.Context, ct modRamIdentitySourceCallback.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
 	holder := holderPg.GetContextAccount(ctx)
 	//
-	var info entityIdp.IdpIdpBindingEntity
+	var info entityIdp.IdpIdentitySourceCallbackEntity
 	copier.Copy(&info, &ct)
 	//
 	r := c.sv
@@ -91,8 +97,11 @@ func (c *RamIdpBindingService) CreateUpdate(ctx *gin.Context, ct modRamIdpBindin
 	isUpdate := false
 	b := false
 	//
-	find := &entityIdp.IdpIdpBindingEntity{}
+	find := &entityIdp.IdpIdentitySourceCallbackEntity{}
 	//
+	if "" == ct.Name {
+		return rt.ErrorMessage("名称不能为空")
+	}
 	if ct.ID.ToInt64() > 0 {
 		isUpdate = true
 		///
@@ -134,7 +143,7 @@ func (c *RamIdpBindingService) CreateUpdate(ctx *gin.Context, ct modRamIdpBindin
 //	@Description:
 //	@receiver c
 //	@param id
-func (c *RamIdpBindingService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamIdpBinding.Vo]) {
+func (c *IdpIdentitySourceCallbackService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamIdentitySourceCallback.Vo]) {
 	if id < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -142,7 +151,7 @@ func (c *RamIdpBindingService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modR
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
-	var info modRamIdpBinding.Vo
+	var info modRamIdentitySourceCallback.Vo
 	copier.Copy(&info, &find)
 	return rt.OkData(info)
 }
@@ -152,7 +161,7 @@ func (c *RamIdpBindingService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modR
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpBindingService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceCallbackService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.ENABLE)
 }
@@ -162,7 +171,7 @@ func (c *RamIdpBindingService) Enable(ctx *gin.Context, ct model.BaseIdsCt[strin
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpBindingService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceCallbackService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.GetType(enumStatePg.DISABLE))
 }
@@ -172,7 +181,7 @@ func (c *RamIdpBindingService) Disable(ctx *gin.Context, ct model.BaseIdsCt[stri
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpBindingService) State(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceCallbackService) State(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -183,14 +192,14 @@ func (c *RamIdpBindingService) State(ctx *gin.Context, ids []string, state enumS
 	}
 	for _, info := range finds {
 		if info.State != state.IndexInt8() {
-			r.Update(ctx, entityIdp.IdpIdpBindingEntity{State: state.IndexInt8()}, info.ID)
+			r.Update(ctx, entityIdp.IdpIdentitySourceCallbackEntity{State: state.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
 }
 
 // StateEnableDisable 状态 设置 有效 停用
-func (c *RamIdpBindingService) StateEnableDisable(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceCallbackService) StateEnableDisable(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
 	if !state.IsEnableDisable() {
 		return rt.ErrorMessage("状态错误")
 	}
@@ -202,7 +211,7 @@ func (c *RamIdpBindingService) StateEnableDisable(ctx *gin.Context, ids []string
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpBindingService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceCallbackService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
@@ -220,9 +229,8 @@ func (c *RamIdpBindingService) LogicalDeletion(ctx *gin.Context, ids []string) (
 	} else {
 		for _, info := range finds {
 			enum := enumStatePg.State(info.State)
-			// 有效 停用，反转 为对应的 取消 弃置
 			if ok, reverse := enum.ReverseEnableDisable(); ok {
-				repository.Update(ctx, entityIdp.IdpIdpBindingEntity{State: reverse.IndexInt8()}, info.ID)
+				repository.Update(ctx, entityIdp.IdpIdentitySourceCallbackEntity{State: reverse.IndexInt8()}, info.ID)
 			}
 		}
 	}
@@ -234,7 +242,7 @@ func (c *RamIdpBindingService) LogicalDeletion(ctx *gin.Context, ids []string) (
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpBindingService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceCallbackService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
@@ -246,9 +254,8 @@ func (c *RamIdpBindingService) LogicalRecovery(ctx *gin.Context, ids []string) (
 	}
 	for _, info := range finds {
 		enum := enumStatePg.State(info.State)
-		//  取消 弃置 批量删除，反转 为对应的 有效 停用 停用
 		if ok, reverse := enum.ReverseCancelLayAside(); ok {
-			repository.Update(ctx, entityIdp.IdpIdpBindingEntity{State: reverse.IndexInt8()}, info.ID)
+			repository.Update(ctx, entityIdp.IdpIdentitySourceCallbackEntity{State: reverse.IndexInt8()}, info.ID)
 		}
 	}
 	return rt.Ok()
@@ -259,7 +266,7 @@ func (c *RamIdpBindingService) LogicalRecovery(ctx *gin.Context, ids []string) (
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpBindingService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+func (c *IdpIdentitySourceCallbackService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
@@ -285,11 +292,11 @@ func (c *RamIdpBindingService) PhysicalDeletion(ctx *gin.Context, ids []string) 
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpBindingService) Query(ctx *gin.Context, ct modRamIdpBinding.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdpBinding.Vo]]) {
+func (c *IdpIdentitySourceCallbackService) Query(ctx *gin.Context, ct modRamIdentitySourceCallback.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdentitySourceCallback.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityIdp.IdpIdpBindingEntity
+	var query entityIdp.IdpIdentitySourceCallbackEntity
 	copier.Copy(&query, &ct)
-	slice := make([]modRamIdpBinding.Vo, 0)
+	slice := make([]modRamIdentitySourceCallback.Vo, 0)
 	rt.Data.Data = slice
 	r := c.sv
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
@@ -298,8 +305,9 @@ func (c *RamIdpBindingService) Query(ctx *gin.Context, ct modRamIdpBinding.Query
 		}
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		arg.Db = arg.Db.Order("create_at desc")
+		//自定义查询
 		if strPg.IsNotBlank(ct.Wd) {
-			arg.Db = arg.Db.Where("idp like ?", "%"+ct.Wd+"%").Or("description like ?", "%"+ct.Wd+"%")
+			arg.Db = arg.Db.Where("name like ?", "%"+ct.Wd+"%")
 		}
 	}), optionsPg.WithCtx(ctx))
 	if nil != err {
@@ -307,9 +315,9 @@ func (c *RamIdpBindingService) Query(ctx *gin.Context, ct modRamIdpBinding.Query
 	}
 
 	if page.Total > 0 && page.Data != nil && len(page.Data) > 0 {
-		pg := pagePg.NewPaginatorByPageable[modRamIdpBinding.Vo](page.Pageable)
+		pg := pagePg.NewPaginatorByPageable[modRamIdentitySourceCallback.Vo](page.Pageable)
 		for _, item := range page.Data {
-			var vo modRamIdpBinding.Vo
+			var vo modRamIdentitySourceCallback.Vo
 			copier.Copy(&vo, &item)
 			slice = append(slice, vo)
 		}
@@ -322,16 +330,16 @@ func (c *RamIdpBindingService) Query(ctx *gin.Context, ct modRamIdpBinding.Query
 }
 
 // SelectPublic 查询
-func (c *RamIdpBindingService) SelectPublic(ctx *gin.Context, ct modRamIdpBinding.QueryCt) (rt rg.Rs[[]modRamIdpBinding.Vo]) {
+func (c *IdpIdentitySourceCallbackService) SelectPublic(ctx *gin.Context, ct modRamIdentitySourceCallback.QueryCt) (rt rg.Rs[[]modRamIdentitySourceCallback.Vo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityIdp.IdpIdpBindingEntity
+	var query entityIdp.IdpIdentitySourceCallbackEntity
 	copier.Copy(&query, &ct)
-	rt.Data = []modRamIdpBinding.Vo{}
+	rt.Data = []modRamIdentitySourceCallback.Vo{}
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
-		slice := make([]modRamIdpBinding.Vo, 0)
+		slice := make([]modRamIdentitySourceCallback.Vo, 0)
 		for _, item := range infos {
-			var vo modRamIdpBinding.Vo
+			var vo modRamIdentitySourceCallback.Vo
 			copier.Copy(&vo, &item)
 			slice = append(slice, vo)
 		}
@@ -340,25 +348,42 @@ func (c *RamIdpBindingService) SelectPublic(ctx *gin.Context, ct modRamIdpBindin
 	return rt.Ok()
 }
 
+// ExistName 查重
+func (c *IdpIdentitySourceCallbackService) ExistName(ctx *gin.Context, ct model.BaseExistWdCt[string]) (rt rg.Rs[string]) {
+	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
+	if "" == ct.Wd {
+		return rt.ErrorMessage("查询内容不能为空")
+	}
+	id := "0"
+	if strPg.IsNotBlank(ct.Id) {
+		id = ct.Id
+	}
+	_, result := c.sv.FindByNameAndIdNot(ctx, ct.Wd, id, optionsPg.WithCtx(ctx))
+	if result {
+		return rt.ErrorMessage("重复，已存在")
+	}
+	return rt.OkMessage("可以使用")
+}
+
 // SelectNodeAll 查询
 //
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpBindingService) SelectNodeAll(ctx *gin.Context, ct modRamIdpBinding.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *IdpIdentitySourceCallbackService) SelectNodeAll(ctx *gin.Context, ct modRamIdentitySourceCallback.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityIdp.IdpIdpBindingEntity
+	var query entityIdp.IdpIdentitySourceCallbackEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
 	rt.Data = slice
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
 		for _, item := range infos {
-			var vo modRamIdpBinding.Vo
+			var vo modRamIdentitySourceCallback.Vo
 			copier.Copy(&vo, &item)
 			code := model.BaseNodeNo{
 				Value:  item.No,
-				Label:  item.Description,
+				Label:  item.Name,
 				Extend: vo,
 			}
 			slice = append(slice, code)
@@ -373,20 +398,20 @@ func (c *RamIdpBindingService) SelectNodeAll(ctx *gin.Context, ct modRamIdpBindi
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpBindingService) SelectNodeAllPublic(ctx *gin.Context, ct modRamIdpBinding.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *IdpIdentitySourceCallbackService) SelectNodeAllPublic(ctx *gin.Context, ct modRamIdentitySourceCallback.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	var query entityIdp.IdpIdpBindingEntity
+	var query entityIdp.IdpIdentitySourceCallbackEntity
 	copier.Copy(&query, &ct)
 	slice := make([]model.BaseNodeNo, 0)
 	rt.Data = slice
 	infos := c.sv.FindAll(ctx, query)
 	if len(infos) > 0 {
 		for _, item := range infos {
-			var vo modRamIdpBinding.Vo
+			var vo modRamIdentitySourceCallback.Vo
 			copier.Copy(&vo, &item)
 			code := model.BaseNodeNo{
 				Value:  item.No,
-				Label:  item.Description,
+				Label:  item.Name,
 				Extend: vo,
 			}
 			slice = append(slice, code)

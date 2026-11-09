@@ -21,17 +21,17 @@ import (
 )
 
 func init() {
-	gs.Provide(new(RamIdpCredentialService))
+	gs.Provide(new(IdpIdpCredentialService))
 }
 
-// RamIdpCredentialService 认证源密钥证书凭证
+// IdpIdpCredentialService 认证源密钥证书凭证
 // @Description:
-type RamIdpCredentialService struct {
-	sv *repositoryIdp.RamIdpCredentialRepository `autowire:"?"`
+type IdpIdpCredentialService struct {
+	sv *repositoryIdp.IdpIdpCredentialRepository `autowire:"?"`
 }
 
 // Create 新增
-func (c *RamIdpCredentialService) Create(ctx *gin.Context, ct modRamIdpCredential.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdpCredentialService) Create(ctx *gin.Context, ct modRamIdpCredential.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityIdp.IdpIdpCredentialEntity
 	copier.Copy(&info, &ct)
@@ -49,7 +49,7 @@ func (c *RamIdpCredentialService) Create(ctx *gin.Context, ct modRamIdpCredentia
 }
 
 // Update 更新
-func (c *RamIdpCredentialService) Update(ctx *gin.Context, ct modRamIdpCredential.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdpCredentialService) Update(ctx *gin.Context, ct modRamIdpCredential.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var info entityIdp.IdpIdpCredentialEntity
 	copier.Copy(&info, &ct)
@@ -78,7 +78,7 @@ func (c *RamIdpCredentialService) Update(ctx *gin.Context, ct modRamIdpCredentia
 //	@receiver c
 //	@param ct
 //	@return rt
-func (c *RamIdpCredentialService) CreateUpdate(ctx *gin.Context, ct modRamIdpCredential.CreateUpdateCt) (rt rg.Rs[string]) {
+func (c *IdpIdpCredentialService) CreateUpdate(ctx *gin.Context, ct modRamIdpCredential.CreateUpdateCt) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
 	holder := holderPg.GetContextAccount(ctx)
@@ -134,7 +134,7 @@ func (c *RamIdpCredentialService) CreateUpdate(ctx *gin.Context, ct modRamIdpCre
 //	@Description:
 //	@receiver c
 //	@param id
-func (c *RamIdpCredentialService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamIdpCredential.Vo]) {
+func (c *IdpIdpCredentialService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modRamIdpCredential.Vo]) {
 	if id < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -152,7 +152,7 @@ func (c *RamIdpCredentialService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[m
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpCredentialService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
+func (c *IdpIdpCredentialService) Enable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.ENABLE)
 }
@@ -162,7 +162,7 @@ func (c *RamIdpCredentialService) Enable(ctx *gin.Context, ct model.BaseIdsCt[st
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpCredentialService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
+func (c *IdpIdpCredentialService) Disable(ctx *gin.Context, ct model.BaseIdsCt[string]) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	return c.State(ctx, ct.Ids, enumStatePg.GetType(enumStatePg.DISABLE))
 }
@@ -172,7 +172,7 @@ func (c *RamIdpCredentialService) Disable(ctx *gin.Context, ct model.BaseIdsCt[s
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpCredentialService) State(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
+func (c *IdpIdpCredentialService) State(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
@@ -190,7 +190,7 @@ func (c *RamIdpCredentialService) State(ctx *gin.Context, ids []string, state en
 }
 
 // StateEnableDisable 状态 设置 有效 停用
-func (c *RamIdpCredentialService) StateEnableDisable(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
+func (c *IdpIdpCredentialService) StateEnableDisable(ctx *gin.Context, ids []string, state enumStatePg.State) (rt rg.Rs[string]) {
 	if !state.IsEnableDisable() {
 		return rt.ErrorMessage("状态错误")
 	}
@@ -202,7 +202,7 @@ func (c *RamIdpCredentialService) StateEnableDisable(ctx *gin.Context, ids []str
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpCredentialService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+func (c *IdpIdpCredentialService) LogicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
@@ -234,7 +234,7 @@ func (c *RamIdpCredentialService) LogicalDeletion(ctx *gin.Context, ids []string
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpCredentialService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+func (c *IdpIdpCredentialService) LogicalRecovery(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
@@ -259,7 +259,7 @@ func (c *RamIdpCredentialService) LogicalRecovery(ctx *gin.Context, ids []string
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpCredentialService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
+func (c *IdpIdpCredentialService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ids", ids))
 	if len(ids) < 1 {
 		return rt.ErrorMessage("id错误")
@@ -285,7 +285,7 @@ func (c *RamIdpCredentialService) PhysicalDeletion(ctx *gin.Context, ids []strin
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpCredentialService) Query(ctx *gin.Context, ct modRamIdpCredential.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdpCredential.Vo]]) {
+func (c *IdpIdpCredentialService) Query(ctx *gin.Context, ct modRamIdpCredential.QueryCt) (rt rg.Rs[pagePg.Paginator[modRamIdpCredential.Vo]]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdpCredentialEntity
 	copier.Copy(&query, &ct)
@@ -323,7 +323,7 @@ func (c *RamIdpCredentialService) Query(ctx *gin.Context, ct modRamIdpCredential
 }
 
 // SelectPublic 查询
-func (c *RamIdpCredentialService) SelectPublic(ctx *gin.Context, ct modRamIdpCredential.QueryCt) (rt rg.Rs[[]modRamIdpCredential.Vo]) {
+func (c *IdpIdpCredentialService) SelectPublic(ctx *gin.Context, ct modRamIdpCredential.QueryCt) (rt rg.Rs[[]modRamIdpCredential.Vo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdpCredentialEntity
 	copier.Copy(&query, &ct)
@@ -346,7 +346,7 @@ func (c *RamIdpCredentialService) SelectPublic(ctx *gin.Context, ct modRamIdpCre
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpCredentialService) SelectNodeAll(ctx *gin.Context, ct modRamIdpCredential.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *IdpIdpCredentialService) SelectNodeAll(ctx *gin.Context, ct modRamIdpCredential.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdpCredentialEntity
 	copier.Copy(&query, &ct)
@@ -374,7 +374,7 @@ func (c *RamIdpCredentialService) SelectNodeAll(ctx *gin.Context, ct modRamIdpCr
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamIdpCredentialService) SelectNodeAllPublic(ctx *gin.Context, ct modRamIdpCredential.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
+func (c *IdpIdpCredentialService) SelectNodeAllPublic(ctx *gin.Context, ct modRamIdpCredential.QueryPublicCt) (rt rg.Rs[[]model.BaseNodeNo]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	var query entityIdp.IdpIdpCredentialEntity
 	copier.Copy(&query, &ct)

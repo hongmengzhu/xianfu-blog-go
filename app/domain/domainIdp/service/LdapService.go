@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	service2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLdap"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLogin"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constHeaderPg"
@@ -30,17 +31,17 @@ func init() {
 
 // LdapService LDAP 认证+同步 Service
 type LdapService struct {
-	daoSource     *repositoryIdp.RamIdentitySourceRepository    `autowire:"?"`
-	daoProvider   *repositoryIdp.RamIdentityProviderRepository  `autowire:"?"`
+	daoSource     *repositoryIdp.IdpIdentitySourceRepository    `autowire:"?"`
+	daoProvider   *repositoryIdp.IdpIdentityProviderRepository  `autowire:"?"`
 	daoAccount    *repositoryRam.RamAccountRepository           `autowire:"?"`
-	daoBinding    *repositoryIdp.RamIdpBindingRepository        `autowire:"?"`
+	daoBinding    *repositoryIdp.IdpIdpBindingRepository        `autowire:"?"`
 	daoSessionLog *repositoryRam.RamAccountSessionLogRepository `autowire:"?"`
-	loginService  *AccountLoginService                          `autowire:"?"`
+	loginService  *service2.AccountLoginService                 `autowire:"?"`
 }
 
 // buildLdapConfig 从认证源配置构建 LDAP 连接配置
 func (s *LdapService) buildLdapConfig(source *entityIdp.IdpIdentitySourceEntity) (*ldap.LdapConfig, error) {
-	var baseCfg idpBaseConfig
+	var baseCfg IdpBaseConfig
 	if strPg.IsNotBlank(source.BaseConfig) {
 		if err := json.Unmarshal([]byte(source.BaseConfig), &baseCfg); err != nil {
 			return nil, err
