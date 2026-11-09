@@ -10,18 +10,18 @@ import (
 )
 
 func init() {
-	gs.Provide(new(RamIdpBindingRepository))
+	gs.Provide(new(IdpIdpBindingRepository))
 
-	gs.Provide(new(support.BaseService[RamIdpBindingRepository]))
+	gs.Provide(new(support.BaseService[IdpIdpBindingRepository]))
 }
 
-type RamIdpBindingRepository struct {
+type IdpIdpBindingRepository struct {
 	repositoryPg.BaseRepository[entityIdp.IdpIdpBindingEntity, int64]
 	//
 }
 
 // FindByIdpAndExternalSub 按提供商+外部身份标识查找绑定
-func (c *RamIdpBindingRepository) FindByIdpAndExternalSub(ctx context.Context, idp, externalSub string) (info *entityIdp.IdpIdpBindingEntity, result bool) {
+func (c *IdpIdpBindingRepository) FindByIdpAndExternalSub(ctx context.Context, idp, externalSub string) (info *entityIdp.IdpIdpBindingEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("idp=? AND external_sub=?", idp, externalSub).First(&info)
 	if tx.Error != nil {
 		return nil, false
@@ -33,7 +33,7 @@ func (c *RamIdpBindingRepository) FindByIdpAndExternalSub(ctx context.Context, i
 }
 
 // FindByIdpAndOpenId 按提供商+OpenId查找绑定
-func (c *RamIdpBindingRepository) FindByIdpAndOpenId(ctx context.Context, idp, openId string) (info *entityIdp.IdpIdpBindingEntity, result bool) {
+func (c *IdpIdpBindingRepository) FindByIdpAndOpenId(ctx context.Context, idp, openId string) (info *entityIdp.IdpIdpBindingEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("idp=? AND open_id=?", idp, openId).First(&info)
 	if tx.Error != nil {
 		return nil, false
@@ -45,7 +45,7 @@ func (c *RamIdpBindingRepository) FindByIdpAndOpenId(ctx context.Context, idp, o
 }
 
 // FindByIdpAndUnionId 按提供商+UnionId查找绑定
-func (c *RamIdpBindingRepository) FindByIdpAndUnionId(ctx context.Context, idp, unionId string) (info *entityIdp.IdpIdpBindingEntity, result bool) {
+func (c *IdpIdpBindingRepository) FindByIdpAndUnionId(ctx context.Context, idp, unionId string) (info *entityIdp.IdpIdpBindingEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("idp=? AND union_id=?", idp, unionId).First(&info)
 	if tx.Error != nil {
 		return nil, false

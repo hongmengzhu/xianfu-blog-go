@@ -8,12 +8,12 @@ import (
 )
 
 func init() {
-	gs.Provide(new(RamIdentitySourceCallbackRepository))
+	gs.Provide(new(IdpIdentitySourceCallbackRepository))
 
-	gs.Provide(new(support.BaseService[RamIdentitySourceCallbackRepository]))
+	gs.Provide(new(support.BaseService[IdpIdentitySourceCallbackRepository]))
 }
 
-type RamIdentitySourceCallbackRepository struct {
+type IdpIdentitySourceCallbackRepository struct {
 	repositoryPg.BaseRepository[entityIdp.IdpIdentitySourceCallbackEntity, int64]
 	//
 }

@@ -10,18 +10,18 @@ import (
 )
 
 func init() {
-	gs.Provide(new(RamIdpMetadataCacheRepository))
+	gs.Provide(new(IdpIdpMetadataCacheRepository))
 
-	gs.Provide(new(support.BaseService[RamIdpMetadataCacheRepository]))
+	gs.Provide(new(support.BaseService[IdpIdpMetadataCacheRepository]))
 }
 
-type RamIdpMetadataCacheRepository struct {
+type IdpIdpMetadataCacheRepository struct {
 	repositoryPg.BaseRepository[entityIdp.IdpIdpMetadataCacheEntity, int64]
 	//
 }
 
 // FindBySourceNo 按认证源编号查找元数据缓存
-func (c *RamIdpMetadataCacheRepository) FindBySourceNo(ctx context.Context, sourceNo string) (info *entityIdp.IdpIdpMetadataCacheEntity, result bool) {
+func (c *IdpIdpMetadataCacheRepository) FindBySourceNo(ctx context.Context, sourceNo string) (info *entityIdp.IdpIdpMetadataCacheEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("source_no=?", sourceNo).First(&info)
 	if tx.Error != nil || tx.RowsAffected == 0 {
 		return nil, false

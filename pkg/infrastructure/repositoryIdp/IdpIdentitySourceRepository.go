@@ -8,12 +8,12 @@ import (
 )
 
 func init() {
-	gs.Provide(new(RamIdentitySourceRepository))
+	gs.Provide(new(IdpIdentitySourceRepository))
 
-	gs.Provide(new(support.BaseService[RamIdentitySourceRepository]))
+	gs.Provide(new(support.BaseService[IdpIdentitySourceRepository]))
 }
 
-type RamIdentitySourceRepository struct {
+type IdpIdentitySourceRepository struct {
 	repositoryPg.BaseRepository[entityIdp.IdpIdentitySourceEntity, int64]
 	//
 }

@@ -10,18 +10,18 @@ import (
 )
 
 func init() {
-	gs.Provide(new(RamIdpCredentialRepository))
+	gs.Provide(new(IdpIdpCredentialRepository))
 
-	gs.Provide(new(support.BaseService[RamIdpCredentialRepository]))
+	gs.Provide(new(support.BaseService[IdpIdpCredentialRepository]))
 }
 
-type RamIdpCredentialRepository struct {
+type IdpIdpCredentialRepository struct {
 	repositoryPg.BaseRepository[entityIdp.IdpIdpCredentialEntity, int64]
 	//
 }
 
 // FindBySourceNoAndCredType 按认证源编号+凭证类型查找
-func (c *RamIdpCredentialRepository) FindBySourceNoAndCredType(ctx context.Context, sourceNo, credType string) (info *entityIdp.IdpIdpCredentialEntity, result bool) {
+func (c *IdpIdpCredentialRepository) FindBySourceNoAndCredType(ctx context.Context, sourceNo, credType string) (info *entityIdp.IdpIdpCredentialEntity, result bool) {
 	tx := c.DbModel().WithContext(ctx).Where("source_no=? AND cred_type=?", sourceNo, credType).First(&info)
 	if tx.Error != nil || tx.RowsAffected == 0 {
 		return nil, false
