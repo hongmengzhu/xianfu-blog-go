@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmark"
@@ -19,6 +20,7 @@ import (
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
+	"gorm.io/datatypes"
 )
 
 func init() {
@@ -28,8 +30,10 @@ func init() {
 // BmBookmarkService 书签
 // @Description:
 type BmBookmarkService struct {
-	sv    *repositoryBm.BmBookmarkRepository         `autowire:"?"`
-	catDb *repositoryBm.BmBookmarkCategoryRepository `autowire:"?"`
+	sv        *repositoryBm.BmBookmarkRepository         `autowire:"?"`
+	catDb     *repositoryBm.BmBookmarkCategoryRepository `autowire:"?"`
+	toolDb    *repositoryBm.BmToolRepository             `autowire:"?"`
+	toolCatDb *repositoryBm.BmToolCategoryRepository     `autowire:"?"`
 }
 
 // Create 新增
@@ -466,4 +470,97 @@ func (c *BmBookmarkService) ExistNo(ctx *gin.Context, ct model.BaseExistWdCt[str
 		return rt.ErrorMessage("重复，已存在")
 	}
 	return rt.OkMessage("可以使用")
+}
+
+// Push 批量推送到工具模块
+// @Description: 把选中的书签复制为工具，可指定目的分类与目的标签
+// @receiver c
+// @param ct
+func (c *BmBookmarkService) Push(ctx *gin.Context, ct modBmBookmark.PushCt) (rt rg.Rs[modBmBookmark.PushVo]) {
+	log.Info(ctx, log.TagAppDef, "push", log.Any("ct", ct))
+	vo := modBmBookmark.PushVo{
+		IDs:    make([]string, 0),
+		Errors: make([]string, 0),
+	}
+	if len(ct.IDs) < 1 {
+		return rt.ErrorMessage("请选择要推送的书签")
+	}
+	if strPg.IsBlank(ct.CategoryNo) {
+		return rt.ErrorMessage("目的分类不能为空")
+	}
+	category, categoryFound := c.toolCatDb.FindByNo(ctx, ct.CategoryNo, optionsPg.WithCtx(ctx))
+	if !categoryFound {
+		return rt.ErrorMessage("目的分类不存在")
+	}
+	finds, result := c.sv.FindAllByIdStringIn(ctx, ct.IDs, optionsPg.WithCtx(ctx))
+	if !result {
+		return rt.ErrorMessage("书签不存在")
+	}
+	holder := holderPg.GetContextAccount(ctx)
+	tenantNo := holder.GetTenantNo()
+	vo.Total = len(finds)
+	for _, item := range finds {
+		if item.State > 10 {
+			vo.Failed++
+			vo.Errors = append(vo.Errors, fmt.Sprintf("[%s] 已删除，跳过", item.Name))
+			continue
+		}
+		//同一个来源地址只推送一次，避免重复生成
+		if strPg.IsNotBlank(item.UrlSourceMd5) {
+			if exists, has := c.toolDb.FindAllByUrlSourceMd5(ctx, item.UrlSourceMd5); has && len(exists) > 0 {
+				vo.Skipped++
+				vo.Errors = append(vo.Errors, fmt.Sprintf("[%s] 已存在对应工具，跳过", item.Name))
+				continue
+			}
+		}
+		var tool entityBm.BmToolEntity
+		if err := copier.Copy(&tool, item); err != nil {
+			vo.Failed++
+			vo.Errors = append(vo.Errors, fmt.Sprintf("[%s] 复制失败：%s", item.Name, err.Error()))
+			continue
+		}
+		//不可继承的字段
+		tool.ID = 0
+		tool.No = noPg.No()
+		tool.TenantNo = tenantNo
+		tool.CategoryNo = category.No
+		//模块：优先弹窗选择的模块，其次分类所属模块，最后继承书签
+		module := ct.Module
+		if strPg.IsBlank(module) {
+			module = category.Module
+		}
+		if strPg.IsBlank(module) {
+			module = item.Module
+		}
+		tool.Module = module
+		tool.State = enumStatePg.ENABLE.IndexInt8()
+		tool.CreateAt = nil
+		tool.UpdateAt = nil
+		//目的标签：未选择时继承原书签标签
+		tags := ct.Tags
+		if len(tags) < 1 {
+			tags = item.Tags.Data()
+		}
+		if nil == tags {
+			tags = make([]string, 0)
+		}
+		tool.Tags = datatypes.NewJSONType(tags)
+		where := item.Where.Data()
+		if nil == where {
+			where = make([]string, 0)
+		}
+		tool.Where = datatypes.NewJSONType(where)
+		//附件保留
+		tool.Attachments = item.Attachments
+		err, _ := c.toolDb.Create(ctx, &tool)
+		if err != nil {
+			vo.Failed++
+			vo.Errors = append(vo.Errors, fmt.Sprintf("[%s] 保存失败：%s", item.Name, err.Error()))
+			continue
+		}
+		vo.Success++
+		vo.IDs = append(vo.IDs, numberPg.Int64ToString(tool.ID))
+	}
+	log.Info(ctx, log.TagAppDef, "push result", log.Any("vo", vo))
+	return rt.OkData(vo)
 }

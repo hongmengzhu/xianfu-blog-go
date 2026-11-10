@@ -41,6 +41,7 @@ func (c *BookmarkController) RegisterRoutes(e *gin.Engine) {
 	group.POST("/recovery", c.Recovery)
 	group.POST("/physicalDeletion", c.PhysicalDeletion)
 	group.POST("/query", c.Query)
+	group.POST("/push", c.Push)
 	group.POST("/selectNodePublic", c.SelectNodePublic)
 	group.POST("/selectNodeAllPublic", c.SelectNodeAllPublic)
 	group.POST("/existName", c.ExistName)
@@ -62,6 +63,19 @@ func (c *BookmarkController) CreateUpdate(ctx *gin.Context) {
 	} else {
 		ctx.JSON(200, c.sv.Create(ctx, ct))
 	}
+}
+
+// Push 批量推送到工具模块
+//
+//	@Description:
+//	@receiver c
+//	@param ctx
+func (c *BookmarkController) Push(ctx *gin.Context) {
+	var ct modBmBookmark.PushCt
+	if !routerPg.BindJson(ctx, &ct) {
+		return
+	}
+	ctx.JSON(200, c.sv.Push(ctx, ct))
 }
 
 // Delete 逻辑删除

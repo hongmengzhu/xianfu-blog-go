@@ -2,7 +2,9 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/goccy/go-json"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicTags"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicTagsRelation"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/automatedPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
@@ -18,6 +20,7 @@ import (
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
+	"gorm.io/datatypes"
 )
 
 func init() {
@@ -56,6 +59,8 @@ func (c *BasicTagsService) Create(ctx *gin.Context, ct modBasicTags.CreateUpdate
 	}
 	//标签继承分类的模块
 	info.Module = categoryInfo.Module
+	//显示属性
+	info.Attribute = datatypes.NewJSONType(newTagAttribute(ct.AttributeMap))
 	if strPg.IsBlank(info.Code) {
 		info.Code = automatedPg.CREATE_CODE
 	}
@@ -121,6 +126,8 @@ func (c *BasicTagsService) Update(ctx *gin.Context, ct modBasicTags.CreateUpdate
 	}
 	//标签继承分类的模块
 	info.Module = categoryInfo.Module
+	//显示属性
+	info.Attribute = datatypes.NewJSONType(newTagAttribute(ct.AttributeMap))
 	find, b := r.FindById(ctx, ct.ID.ToInt64())
 	if !b {
 		return rt.ErrorMessage("数据不存在")
@@ -151,6 +158,7 @@ func (c *BasicTagsService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modBasic
 	}
 	var info modBasicTags.Vo
 	copier.Copy(&info, &find)
+	info.AttributeMap = tagAttributeMap(find.Attribute)
 	return rt.OkData(info)
 }
 
@@ -324,6 +332,7 @@ func (c *BasicTagsService) Query(ctx *gin.Context, ct modBasicTags.QueryCt) (rt 
 		for _, item := range page.Data {
 			var vo modBasicTags.Vo
 			copier.Copy(&vo, &item)
+			vo.AttributeMap = tagAttributeMap(item.Attribute)
 			slice = append(slice, vo)
 		}
 		pg.Data = slice
@@ -371,6 +380,7 @@ func (c *BasicTagsService) SelectNodeAllPublic(ctx *gin.Context, ct modBasicTags
 		for _, item := range infos {
 			var vo modBasicTags.Vo
 			copier.Copy(&vo, &item)
+			vo.AttributeMap = tagAttributeMap(item.Attribute)
 			slice = append(slice, model.BaseNode{Key: numberPg.Int64ToString(item.ID), Label: item.Name, Extend: vo})
 		}
 		rt.Data = slice
@@ -393,6 +403,7 @@ func (c *BasicTagsService) SelectPublic(ctx *gin.Context, ct modBasicTags.QueryC
 		for _, item := range infos {
 			var vo modBasicTags.Vo
 			copier.Copy(&vo, &item)
+			vo.AttributeMap = tagAttributeMap(item.Attribute)
 			slice = append(slice, vo)
 		}
 		rt.Data = slice
@@ -438,4 +449,51 @@ func (c *BasicTagsService) ExistCode(ctx *gin.Context, ct model.BaseExistWdCt[st
 		return rt.ErrorMessage("重复，已存在")
 	}
 	return rt.OkMessage("可以使用")
+}
+
+// newTagAttribute 入参 -> 实体显示属性（补齐默认值）
+func newTagAttribute(vo modBasicTagsRelation.AttributeVo) entityBasic.BasicTagsJsonAttribute {
+	if strPg.IsBlank(vo.Type) {
+		vo.Type = "default"
+	}
+	if strPg.IsBlank(vo.Size) {
+		vo.Size = "medium"
+	}
+	return entityBasic.BasicTagsJsonAttribute{
+		Type:     vo.Type,
+		Bordered: vo.Bordered,
+		Color:    vo.Color,
+		Size:     vo.Size,
+		Strong:   vo.Strong,
+		Round:    vo.Round,
+	}
+}
+
+// tagAttributeMap 实体显示属性 -> 前端展示结构
+// color 字段兼容两种历史格式：JSON 字符串（{color,textColor}）与纯色值
+func tagAttributeMap(attribute datatypes.JSONType[entityBasic.BasicTagsJsonAttribute]) map[string]interface{} {
+	attr := attribute.Data()
+	if strPg.IsBlank(attr.Type) {
+		attr.Type = "default"
+	}
+	if strPg.IsBlank(attr.Size) {
+		attr.Size = "medium"
+	}
+	m := map[string]interface{}{
+		"type":     attr.Type,
+		"bordered": attr.Bordered,
+		"size":     attr.Size,
+		"strong":   attr.Strong,
+		"round":    attr.Round,
+		"color":    map[string]interface{}{},
+	}
+	if strPg.IsNotBlank(attr.Color) {
+		color := make(map[string]interface{})
+		if err := json.Unmarshal([]byte(attr.Color), &color); err == nil && len(color) > 0 {
+			m["color"] = color
+		} else {
+			m["color"] = map[string]interface{}{"color": attr.Color}
+		}
+	}
+	return m
 }
