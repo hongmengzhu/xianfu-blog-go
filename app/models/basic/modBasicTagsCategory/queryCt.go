@@ -20,4 +20,5 @@ type QueryCt struct {
 	CreateBy    string              `json:"createBy" label:"创建人" `     // 创建人
 	CreateAt    *time.Time          `json:"createAt" label:"创建时间" `    // 创建时间
 	ParentId    string              `json:"parentId" label:"上级" `
+	Module      string              `json:"module" label:"模块" `
 }

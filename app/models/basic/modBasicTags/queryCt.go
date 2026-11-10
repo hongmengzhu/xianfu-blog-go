@@ -19,4 +19,5 @@ type QueryCt struct {
 	State       typePg.Int8         `json:"state" label:"状态:1启用;2禁用" ` // 状态:1启用;2禁用
 	CreateAt    *time.Time          `json:"createAt" label:"创建时间" `    // 创建时间
 	CategoryNo  string              `json:"categoryNo" label:"分类" `
+	Module      string              `json:"module" label:"模块" `
 }

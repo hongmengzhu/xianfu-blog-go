@@ -64,7 +64,8 @@ func (c *BasicTagsRelationService) Create(ctx *gin.Context, ct modBasicTagsRelat
 	if _, ok := typeSysPg.IsExistTypeSys(ct.TypeSys); !ok {
 		return rt.ErrorMessage("类型错误")
 	}
-	if _, result := c.categoryRep.FindByNo(ctx, ct.Category); !result {
+	categoryInfo, categoryFound := c.categoryRep.FindByNo(ctx, ct.Category)
+	if !categoryFound {
 		return rt.ErrorMessage("分类不存在")
 	}
 	if strPg.IsBlank(ct.NameShort) {
@@ -88,6 +89,11 @@ func (c *BasicTagsRelationService) Create(ctx *gin.Context, ct modBasicTagsRelat
 	holder := holderPg.GetContextAccount(ctx)
 	var info entityBasic.BasicTagsRelationEntity
 	copier.Copy(&info, &ct)
+	info.CategoryNo = categoryInfo.No
+	info.CategoryRoot = c.categoryRootNo(ctx, categoryInfo)
+	info.Module = categoryInfo.Module
+	info.TagNo = ct.No
+	info.Code = ct.No
 	toJson, err2 := jsonPg.ObjToJson(attributeVo)
 	if nil != err2 {
 		log.Info(ctx, log.TagAppDef, "jsonPg.ObjToJson err", log.Any("err", err2))
@@ -137,7 +143,8 @@ func (c *BasicTagsRelationService) Update(ctx *gin.Context, ct modBasicTagsRelat
 	if _, ok := typeSysPg.IsExistTypeSys(ct.TypeSys); !ok {
 		return rt.ErrorMessage("类型错误")
 	}
-	if _, result := c.categoryRep.FindByNo(ctx, ct.Category); !result {
+	categoryInfo, categoryFound := c.categoryRep.FindByNo(ctx, ct.Category)
+	if !categoryFound {
 		return rt.ErrorMessage("分类不存在")
 	}
 	if strPg.IsBlank(ct.NameShort) {
@@ -149,7 +156,7 @@ func (c *BasicTagsRelationService) Update(ctx *gin.Context, ct modBasicTagsRelat
 	if result {
 		return rt.ErrorMessage("标签已存在")
 	}
-	_, b := r.FindById(ctx, ct.ID.ToInt64())
+	find, b := r.FindById(ctx, ct.ID.ToInt64())
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
@@ -164,6 +171,15 @@ func (c *BasicTagsRelationService) Update(ctx *gin.Context, ct modBasicTagsRelat
 	}
 	var info entityBasic.BasicTagsRelationEntity
 	copier.Copy(&info, &ct)
+	info.CategoryNo = categoryInfo.No
+	info.CategoryRoot = c.categoryRootNo(ctx, categoryInfo)
+	info.Module = categoryInfo.Module
+	info.Code = ct.No
+	//标签编号保持稳定，避免已引用的文章标签失效
+	info.TagNo = find.TagNo
+	if strPg.IsBlank(info.TagNo) {
+		info.TagNo = ct.No
+	}
 	toJson, err2 := jsonPg.ObjToJson(attributeVo)
 	if nil != err2 {
 		log.Info(ctx, log.TagAppDef, "jsonPg.ObjToJson err", log.Any("err", err2))
@@ -173,6 +189,24 @@ func (c *BasicTagsRelationService) Update(ctx *gin.Context, ct modBasicTagsRelat
 	}
 	r.Update(ctx, info, info.ID)
 	return rt.Ok()
+}
+
+// categoryRootNo 获取分类的根分类编号
+//
+//	@Description:
+//	@receiver c
+//	@param ctx
+//	@param category
+func (c *BasicTagsRelationService) categoryRootNo(ctx *gin.Context, category *entityBasic.BasicTagsCategoryEntity) string {
+	root := category
+	for i := 0; i < 100 && strPg.IsNotBlank(root.ParentNo); i++ {
+		parent, ok := c.categoryRep.FindByNo(ctx, root.ParentNo)
+		if !ok {
+			break
+		}
+		root = parent
+	}
+	return root.No
 }
 
 // Detail 详情
@@ -361,6 +395,13 @@ func (c *BasicTagsRelationService) Query(ctx *gin.Context, ct modBasicTagsRelati
 		for _, item := range page.Data {
 			var vo modBasicTagsRelation.Vo
 			copier.Copy(&vo, &item)
+			vo.AttributeMap = make(map[string]interface{})
+			if strPg.IsNotBlank(item.Attribute) {
+				err := json.Unmarshal([]byte(item.Attribute), &vo.AttributeMap)
+				if err != nil {
+					log.Error(ctx, log.TagAppDef, err, "json解析失败")
+				}
+			}
 			slice = append(slice, vo)
 		}
 		pg.Data = slice

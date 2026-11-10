@@ -95,6 +95,7 @@ func (c *SaveByCategory) Processor() error {
 				save.No = noPg.No()
 				save.Code = save.No
 				save.CategoryNo = info.No
+				save.Module = info.Module
 				save.TenantNo = c.dto.Holder.GetTenantNo()
 				save.CreateBy = c.dto.Holder.GetAccountNo()
 				c.sp.TagsDb.Create(context.Background(), save)
@@ -109,7 +110,7 @@ func (c *SaveByCategory) Processor() error {
 				save = tagsEntity[save.No]
 				rel := entityBasic.BasicTagsRelationEntity{}
 				rel.TagNo = save.No
-				rel.CategoryNo = save.No
+				rel.CategoryNo = info.No
 				rel.State = enumStatePg.ENABLE.Index()
 				rel.Name = save.Name
 				rel.NameFl = save.NameFl
@@ -117,7 +118,7 @@ func (c *SaveByCategory) Processor() error {
 				rel.Code = save.Code
 				rel.TenantNo = save.TenantNo
 				rel.TypeSys = save.TypeSys
-				rel.Module = save.Module
+				rel.Module = info.Module
 				//rel.Attribute = save.Attribute
 				rel.CategoryRoot = c.dto.Category
 				c.sp.TagRela.Create(context.Background(), &rel)

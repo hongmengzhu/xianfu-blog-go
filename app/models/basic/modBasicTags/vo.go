@@ -21,4 +21,5 @@ type Vo struct {
 	Type        string              `json:"type" label:"类型" validate:"required,min=1,max=255"`
 	Url         string              `json:"url" label:"建议url" validate:"required,min=1,max=255"`
 	CategoryNo  string              `json:"categoryNo" label:"分类" `
+	Module      string              `json:"module" label:"模块" `
 }

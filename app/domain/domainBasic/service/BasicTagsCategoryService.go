@@ -32,7 +32,8 @@ func init() {
 // BasicTagsCategoryService 模块
 // @Description:
 type BasicTagsCategoryService struct {
-	sv *repositoryBasic.BasicTagsCategoryRepository `autowire:"?"`
+	sv        *repositoryBasic.BasicTagsCategoryRepository `autowire:"?"`
+	moduleRep *repositoryBasic.BasicModuleRepository       `autowire:"?"`
 }
 
 // Create 新增
@@ -51,6 +52,14 @@ func (c *BasicTagsCategoryService) Create(ctx *gin.Context, ct modBasicTagsCateg
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
 	}
+	if strPg.IsBlank(ct.Module) {
+		return rt.ErrorMessage("模块不能为空")
+	}
+	moduleInfo, moduleFound := c.moduleRep.FindByNo(ctx, ct.Module, optionsPg.WithCtx(ctx))
+	if !moduleFound {
+		return rt.ErrorMessage("模块不存在")
+	}
+	info.Module = moduleInfo.No
 	if strPg.IsBlank(ct.Code) {
 		info.Code = automatedPg.CREATE_CODE
 	}
@@ -137,6 +146,16 @@ func (c *BasicTagsCategoryService) Update(ctx *gin.Context, ct modBasicTagsCateg
 	find, b := r.FindById(ctx, ct.ID.ToInt64())
 	if !b {
 		return rt.ErrorMessage("数据不存在")
+	}
+	//模块：编辑时未传则保留原值
+	if strPg.IsNotBlank(ct.Module) {
+		moduleInfo, moduleFound := c.moduleRep.FindByNo(ctx, ct.Module, optionsPg.WithCtx(ctx))
+		if !moduleFound {
+			return rt.ErrorMessage("模块不存在")
+		}
+		info.Module = moduleInfo.No
+	} else {
+		info.Module = find.Module
 	}
 	//上级
 	parent := &entityBasic.BasicTagsCategoryEntity{}

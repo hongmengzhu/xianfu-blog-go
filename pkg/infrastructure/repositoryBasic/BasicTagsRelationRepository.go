@@ -23,7 +23,7 @@ type BasicTagsRelationRepository struct {
 }
 
 func (c *BasicTagsRelationRepository) FindByNameAndIdNotAndCategoryNot(ctx context.Context, name string, id int64, category string) (info *entityBasic.BasicTagsRelationEntity, result bool) {
-	tx := c.DbModel().WithContext(ctx).Where("name=?", name).Where("category=?", category).Where("id <> ?", id).First(&info)
+	tx := c.DbModel().WithContext(ctx).Where("name=?", name).Where("category_no=?", category).Where("id <> ?", id).First(&info)
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
@@ -38,7 +38,7 @@ func (c *BasicTagsRelationRepository) FindByNameAndIdNotAndCategoryNot(ctx conte
 }
 
 func (c *BasicTagsRelationRepository) FindByCodeAndIdNotAndCategoryNot(ctx context.Context, name string, id int64, category string) (info *entityBasic.BasicTagsRelationEntity, result bool) {
-	tx := c.DbModel().WithContext(ctx).Where("code=?", name).Where("category=?", category).Where("id <> ?", id).First(&info)
+	tx := c.DbModel().WithContext(ctx).Where("code=?", name).Where("category_no=?", category).Where("id <> ?", id).First(&info)
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {

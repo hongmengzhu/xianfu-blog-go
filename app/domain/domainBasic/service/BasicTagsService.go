@@ -47,18 +47,15 @@ func (c *BasicTagsService) Create(ctx *gin.Context, ct modBasicTags.CreateUpdate
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
 	}
-	if strPg.IsBlank(ct.Url) {
-		return rt.ErrorMessage("url不能为空")
-	}
 	if strPg.IsBlank(ct.CategoryNo) {
 		return rt.ErrorMessage("分类不能为空")
 	}
-	if strPg.IsNotBlank(ct.CategoryNo) {
-		_, result := c.categoryRep.FindByNo(ctx, ct.CategoryNo)
-		if !result {
-			return rt.ErrorMessage("分类不存在")
-		}
+	categoryInfo, categoryFound := c.categoryRep.FindByNo(ctx, ct.CategoryNo)
+	if !categoryFound {
+		return rt.ErrorMessage("分类不存在")
 	}
+	//标签继承分类的模块
+	info.Module = categoryInfo.Module
 	if strPg.IsBlank(info.Code) {
 		info.Code = automatedPg.CREATE_CODE
 	}
@@ -107,9 +104,6 @@ func (c *BasicTagsService) Update(ctx *gin.Context, ct modBasicTags.CreateUpdate
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
 	}
-	if strPg.IsBlank(ct.Url) {
-		return rt.ErrorMessage("url不能为空")
-	}
 	if strPg.IsBlank(ct.Code) {
 		info.Code = ""
 	} else {
@@ -121,12 +115,12 @@ func (c *BasicTagsService) Update(ctx *gin.Context, ct modBasicTags.CreateUpdate
 	if strPg.IsBlank(ct.CategoryNo) {
 		return rt.ErrorMessage("分类不能为空")
 	}
-	if strPg.IsNotBlank(ct.CategoryNo) {
-		_, result := c.categoryRep.FindByNo(ctx, ct.CategoryNo)
-		if !result {
-			return rt.ErrorMessage("分类不存在")
-		}
+	categoryInfo, categoryFound := c.categoryRep.FindByNo(ctx, ct.CategoryNo)
+	if !categoryFound {
+		return rt.ErrorMessage("分类不存在")
 	}
+	//标签继承分类的模块
+	info.Module = categoryInfo.Module
 	find, b := r.FindById(ctx, ct.ID.ToInt64())
 	if !b {
 		return rt.ErrorMessage("数据不存在")

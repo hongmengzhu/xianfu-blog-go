@@ -69,7 +69,8 @@ generate:
 run: generate
 	@echo "===== 启动项目 ====="
 	go env -w GOEXPERIMENT=jsonv2
-	go run main.go
+	# 必须编译整个 main 包（go run .），否则 auto_import.go 中的控制器不会被注册
+	go run .
 
 # 智能编译当前平台
 build:
