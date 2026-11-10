@@ -32,6 +32,7 @@ type QueryCt struct {
 	TypeDomain     string              `json:"typeDomain" label:"领域" `
 	TypeOwner      string              `json:"typeOwner" label:"类型" `
 	TeamNo         string              `json:"teamNo" label:"团队编号" `
+	Module         string              `json:"module" label:"模块" `
 	Tags           []string            `json:"tags" label:"标签" `
 	TagsQuery      []string            `json:"tagsQuery" label:"标签" `
 }

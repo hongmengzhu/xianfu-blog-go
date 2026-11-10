@@ -30,6 +30,7 @@ type CreateUpdateCt struct {
 	PageTitle      string              `json:"pageTitle" label:"网页标题" `
 	TypeOwner      string              `json:"typeOwner" label:"类型" `
 	TeamNo         string              `json:"teamNo" label:"团队编号" `
+	Module         string              `json:"module" label:"模块" `
 	UrlSource      string              `json:"urlSource" label:"来源网址" `
 	UrlRewriting   string              `json:"urlRewriting" label:"URL重写" `
 	OperationTime  *typePg.Time        `json:"operationTime" label:"操作时间" `

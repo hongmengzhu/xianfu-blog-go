@@ -51,6 +51,12 @@ func (c *BmToolService) Create(ctx *gin.Context, ct modBmTool.CreateUpdateCt) (r
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
 	}
+	//模块：优先继承所属分类，未选分类时取提交的模块
+	moduleNo := c.moduleOfCategory(ctx, ct.CategoryNo)
+	if strPg.IsBlank(moduleNo) {
+		moduleNo = ct.Module
+	}
+	info.Module = moduleNo
 	holder := holderPg.GetContextAccount(ctx)
 	info.No = noPg.No()
 	info.TenantNo = holder.GetTenantNo()
@@ -94,11 +100,36 @@ func (c *BmToolService) Update(ctx *gin.Context, ct modBmTool.CreateUpdateCt) (r
 	//清除不可更新字段
 	info.ID = 0
 	info.No = ""
+	//模块：优先继承所属分类，未选分类时取提交的模块（为空时保留原值）
+	moduleNo := c.moduleOfCategory(ctx, ct.CategoryNo)
+	if strPg.IsBlank(moduleNo) {
+		moduleNo = ct.Module
+	}
+	if strPg.IsNotBlank(moduleNo) {
+		info.Module = moduleNo
+	}
 	err = c.sv.Update(ctx, info, find.ID)
 	if err != nil {
 		return rt.ErrorMessage(err.Error())
 	}
 	return rt.Ok()
+}
+
+// moduleOfCategory 读取分类所属模块；分类不存在或未设置模块时返回空
+//
+//	@Description:
+//	@receiver c
+//	@param categoryNo
+//	@return moduleNo
+func (c *BmToolService) moduleOfCategory(ctx *gin.Context, categoryNo string) string {
+	if strPg.IsBlank(categoryNo) {
+		return ""
+	}
+	category, found := c.catDb.FindByNo(ctx, categoryNo, optionsPg.WithCtx(ctx))
+	if !found {
+		return ""
+	}
+	return category.Module
 }
 
 // Detail 详情
@@ -284,6 +315,8 @@ func (c *BmToolService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt rg.
 func (c *BmToolService) Query(ctx *gin.Context, ct modBmTool.QueryCt) (rt rg.Rs[pagePg.Paginator[modBmTool.Vo]]) {
 	var query entityBm.BmToolEntity
 	copier.Copy(&query, &ct)
+	//模块过滤按分类归属处理，这里清空避免变成 tool.module 的强条件
+	query.Module = ""
 	slice := make([]modBmTool.Vo, 0)
 	rt.Data.Data = slice
 	r := c.sv
@@ -295,6 +328,19 @@ func (c *BmToolService) Query(ctx *gin.Context, ct modBmTool.QueryCt) (rt rg.Rs[
 		arg.Db = arg.Db.Order("create_at desc")
 		if strPg.IsNotBlank(ct.Wd) {
 			arg.Db = arg.Db.Where("name like ?", "%"+ct.Wd+"%")
+		}
+		//模块：分类归属于该模块，或工具自身标记为该模块
+		if strPg.IsNotBlank(ct.Module) {
+			categoryNos := make([]string, 0)
+			categories := c.catDb.FindAll(ctx, entityBm.BmToolCategoryEntity{Module: ct.Module}, optionsPg.WithCtx(ctx))
+			for _, category := range categories {
+				categoryNos = append(categoryNos, category.No)
+			}
+			if len(categoryNos) > 0 {
+				arg.Db = arg.Db.Where("(category_no IN ? OR module = ?)", categoryNos, ct.Module)
+			} else {
+				arg.Db = arg.Db.Where("module = ?", ct.Module)
+			}
 		}
 		//可用范围
 		if nil != ct.Where && len(ct.Where) > 0 {
