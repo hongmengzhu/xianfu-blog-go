@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 
 	"github.com/gin-gonic/gin"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicTagsRelation"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmTool"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
@@ -28,8 +30,9 @@ func init() {
 // BmToolService 工具
 // @Description:
 type BmToolService struct {
-	sv    *repositoryBm.BmToolRepository         `autowire:"?"`
-	catDb *repositoryBm.BmToolCategoryRepository `autowire:"?"`
+	sv        *repositoryBm.BmToolRepository               `autowire:"?"`
+	catDb     *repositoryBm.BmToolCategoryRepository       `autowire:"?"`
+	tagsRelat *repositoryBasic.BasicTagsRelationRepository `autowire:"?"`
 }
 
 // Create 新增
@@ -128,6 +131,7 @@ func (c *BmToolService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modBmTool.D
 	if nil != find.Tags.Data() {
 		info.Tags = find.Tags.Data()
 	}
+	info.TagsStyle = tagStylesOf(ctx, c.tagsRelat, info.Tags)
 	//可用范围
 	if nil != find.Where.Data() {
 		info.Where = find.Where.Data()
@@ -327,6 +331,14 @@ func (c *BmToolService) Query(ctx *gin.Context, ct modBmTool.QueryCt) (rt rg.Rs[
 				}
 			}
 		}
+		//标签显示数据
+		idsTags := make([]string, 0)
+		for _, item := range page.Data {
+			if nil != item.Tags.Data() {
+				idsTags = append(idsTags, item.Tags.Data()...)
+			}
+		}
+		mapTagsStyle := loadTagStyles(ctx, c.tagsRelat, idsTags)
 		//字段赋值
 		for _, item := range page.Data {
 			var vo modBmTool.Vo
@@ -342,8 +354,16 @@ func (c *BmToolService) Query(ctx *gin.Context, ct modBmTool.QueryCt) (rt rg.Rs[
 				vo.Attachments = make(map[string]string)
 			}
 			//标签
+			vo.TagsStyle = make([]modBasicTagsRelation.AllVo, 0)
 			if nil != item.Tags.Data() {
 				vo.Tags = item.Tags.Data()
+				for _, code := range item.Tags.Data() {
+					if obj, ok := mapTagsStyle[code]; ok {
+						vo.TagsStyle = append(vo.TagsStyle, obj)
+					} else {
+						vo.TagsStyle = append(vo.TagsStyle, defaultTagStyle(code))
+					}
+				}
 			}
 			//可用范围
 			if nil != item.Where.Data() {

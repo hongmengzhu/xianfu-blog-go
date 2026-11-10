@@ -19,6 +19,7 @@ type TcTenantDomainModuleEntity struct {
 	Sort        int64      `gorm:"column:sort;type:bigint;not null;default:0;;comment:排序" json:"sort" comment:"排序" `
 	Defaulted   int8       `gorm:"column:defaulted;type:int8;not null;index:defaulted,priority:2;default:2;comment:默认1是2否" json:"defaulted" comment:"默认1是2否" `
 	Theme       string     `gorm:"column:theme;type:varchar(80);index;default:;comment:主题" json:"theme" comment:"主题" `
+	Module      string     `gorm:"column:module;type:varchar(80);index;comment:模块" json:"module" comment:"模块" `
 }
 
 func (*TcTenantDomainModuleEntity) TableName() string {

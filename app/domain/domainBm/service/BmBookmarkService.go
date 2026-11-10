@@ -5,10 +5,12 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicTagsRelation"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmark"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	entityBm "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
 	repositoryBm "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
@@ -30,10 +32,11 @@ func init() {
 // BmBookmarkService 书签
 // @Description:
 type BmBookmarkService struct {
-	sv        *repositoryBm.BmBookmarkRepository         `autowire:"?"`
-	catDb     *repositoryBm.BmBookmarkCategoryRepository `autowire:"?"`
-	toolDb    *repositoryBm.BmToolRepository             `autowire:"?"`
-	toolCatDb *repositoryBm.BmToolCategoryRepository     `autowire:"?"`
+	sv        *repositoryBm.BmBookmarkRepository           `autowire:"?"`
+	catDb     *repositoryBm.BmBookmarkCategoryRepository   `autowire:"?"`
+	toolDb    *repositoryBm.BmToolRepository               `autowire:"?"`
+	toolCatDb *repositoryBm.BmToolCategoryRepository       `autowire:"?"`
+	tagsRelat *repositoryBasic.BasicTagsRelationRepository `autowire:"?"`
 }
 
 // Create 新增
@@ -60,6 +63,11 @@ func (c *BmBookmarkService) Create(ctx *gin.Context, ct modBmBookmark.CreateUpda
 		bytes, _ := json.Marshal(ct.Attachment)
 		info.Attachments = string(bytes)
 	}
+	tags := make([]string, 0)
+	if nil != ct.Tags && len(ct.Tags) > 0 {
+		tags = ct.Tags
+	}
+	info.Tags = datatypes.NewJSONType(tags)
 	err, _ = c.sv.Create(ctx, &info)
 	if err != nil {
 		return rt.ErrorMessage("保存失败 " + err.Error())
@@ -92,9 +100,14 @@ func (c *BmBookmarkService) Update(ctx *gin.Context, ct modBmBookmark.CreateUpda
 		bytes, _ := json.Marshal(ct.Attachment)
 		info.Attachments = string(bytes)
 	}
+	tags := make([]string, 0)
+	if nil != ct.Tags && len(ct.Tags) > 0 {
+		tags = ct.Tags
+	}
 	//清除不可更新字段
 	info.ID = 0
 	info.No = ""
+	info.Tags = datatypes.NewJSONType(tags)
 	err = c.sv.Update(ctx, info, find.ID)
 	if err != nil {
 		return rt.ErrorMessage(err.Error())
@@ -132,6 +145,7 @@ func (c *BmBookmarkService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modBmBo
 	if nil != find.Tags.Data() {
 		info.Tags = find.Tags.Data()
 	}
+	info.TagsStyle = tagStylesOf(ctx, c.tagsRelat, info.Tags)
 	//可用范围
 	if nil != find.Where.Data() {
 		info.Where = find.Where.Data()
@@ -331,6 +345,14 @@ func (c *BmBookmarkService) Query(ctx *gin.Context, ct modBmBookmark.QueryCt) (r
 				}
 			}
 		}
+		//标签显示数据
+		idsTags := make([]string, 0)
+		for _, item := range page.Data {
+			if nil != item.Tags.Data() {
+				idsTags = append(idsTags, item.Tags.Data()...)
+			}
+		}
+		mapTagsStyle := loadTagStyles(ctx, c.tagsRelat, idsTags)
 		//字段赋值
 		for _, item := range page.Data {
 			var vo modBmBookmark.Vo
@@ -346,8 +368,16 @@ func (c *BmBookmarkService) Query(ctx *gin.Context, ct modBmBookmark.QueryCt) (r
 				vo.Attachments = make(map[string]string)
 			}
 			//标签
+			vo.TagsStyle = make([]modBasicTagsRelation.AllVo, 0)
 			if nil != item.Tags.Data() {
 				vo.Tags = item.Tags.Data()
+				for _, code := range item.Tags.Data() {
+					if obj, ok := mapTagsStyle[code]; ok {
+						vo.TagsStyle = append(vo.TagsStyle, obj)
+					} else {
+						vo.TagsStyle = append(vo.TagsStyle, defaultTagStyle(code))
+					}
+				}
 			}
 			//可用范围
 			if nil != item.Where.Data() {
