@@ -54,4 +54,5 @@ type Vo struct {
 	TenantNo         string                       `json:"tenantNo" label:"租户编号" `
 	TenantNoName     string                       `json:"tenantNoName" label:"租户" `
 	PlatformApproved string                       `json:"platformApproved" label:"平台审批状态" `
+	Module           string                       `json:"module" label:"模块" `
 }

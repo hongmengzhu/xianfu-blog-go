@@ -55,6 +55,12 @@ func (c *BmBookmarkService) Create(ctx *gin.Context, ct modBmBookmark.CreateUpda
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
 	}
+	//模块：优先继承所属分类，未选分类时取提交的模块
+	moduleNo := c.moduleOfCategory(ctx, ct.CategoryNo)
+	if strPg.IsBlank(moduleNo) {
+		moduleNo = ct.Module
+	}
+	info.Module = moduleNo
 	holder := holderPg.GetContextAccount(ctx)
 	info.No = noPg.No()
 	info.TenantNo = holder.GetTenantNo()
@@ -108,11 +114,36 @@ func (c *BmBookmarkService) Update(ctx *gin.Context, ct modBmBookmark.CreateUpda
 	info.ID = 0
 	info.No = ""
 	info.Tags = datatypes.NewJSONType(tags)
+	//模块：优先继承所属分类，未选分类时取提交的模块（为空时保留原值）
+	moduleNo := c.moduleOfCategory(ctx, ct.CategoryNo)
+	if strPg.IsBlank(moduleNo) {
+		moduleNo = ct.Module
+	}
+	if strPg.IsNotBlank(moduleNo) {
+		info.Module = moduleNo
+	}
 	err = c.sv.Update(ctx, info, find.ID)
 	if err != nil {
 		return rt.ErrorMessage(err.Error())
 	}
 	return rt.Ok()
+}
+
+// moduleOfCategory 读取分类所属模块；分类不存在或未设置模块时返回空
+//
+//	@Description:
+//	@receiver c
+//	@param categoryNo
+//	@return moduleNo
+func (c *BmBookmarkService) moduleOfCategory(ctx *gin.Context, categoryNo string) string {
+	if strPg.IsBlank(categoryNo) {
+		return ""
+	}
+	category, found := c.catDb.FindByNo(ctx, categoryNo, optionsPg.WithCtx(ctx))
+	if !found {
+		return ""
+	}
+	return category.Module
 }
 
 // Detail 详情
@@ -298,6 +329,8 @@ func (c *BmBookmarkService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt
 func (c *BmBookmarkService) Query(ctx *gin.Context, ct modBmBookmark.QueryCt) (rt rg.Rs[pagePg.Paginator[modBmBookmark.Vo]]) {
 	var query entityBm.BmBookmarkEntity
 	copier.Copy(&query, &ct)
+	//模块过滤按分类归属处理，这里清空避免变成 bookmark.module 的强条件
+	query.Module = ""
 	slice := make([]modBmBookmark.Vo, 0)
 	rt.Data.Data = slice
 	r := c.sv
@@ -307,6 +340,19 @@ func (c *BmBookmarkService) Query(ctx *gin.Context, ct modBmBookmark.QueryCt) (r
 		}
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		arg.Db = arg.Db.Order("create_at desc")
+		//模块：分类归属于该模块，或书签自身标记为该模块
+		if strPg.IsNotBlank(ct.Module) {
+			categoryNos := make([]string, 0)
+			categories := c.catDb.FindAll(ctx, entityBm.BmBookmarkCategoryEntity{Module: ct.Module}, optionsPg.WithCtx(ctx))
+			for _, category := range categories {
+				categoryNos = append(categoryNos, category.No)
+			}
+			if len(categoryNos) > 0 {
+				arg.Db = arg.Db.Where("(category_no IN ? OR module = ?)", categoryNos, ct.Module)
+			} else {
+				arg.Db = arg.Db.Where("module = ?", ct.Module)
+			}
+		}
 		if strPg.IsNotBlank(ct.Wd) {
 			arg.Db = arg.Db.Where("name like ?", "%"+ct.Wd+"%")
 		}

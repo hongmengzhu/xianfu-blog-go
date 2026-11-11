@@ -21,4 +21,5 @@ type Vo struct {
 	ParentId    string              `json:"parentId" label:"上级" `
 	TypeOwner   string              `json:"typeOwner" label:"类型" `
 	TeamNo      string              `json:"teamNo" label:"团队编号" `
+	Module      string              `json:"module" label:"模块" `
 }

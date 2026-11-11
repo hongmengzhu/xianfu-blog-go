@@ -27,6 +27,7 @@ type BlogCollectCategoryEntity struct {
 	TypeSys           string     `gorm:"column:type_sys;type:varchar(80);index;default:'general';comment:类型|普通|系统;" json:"type_sys" comment:"类型;普通;系统;" `
 	Ano               string     `gorm:"column:ano;type:varchar(80);index;default:'';comment:操作员" json:"ano" comment:"操作员" `
 	ArticleCategoryNo string     `gorm:"column:article_category_no;type:varchar(80);index;comment:绑定文章分类编号" json:"article_category_no" comment:"绑定文章分类编号" `
+	Module            string     `gorm:"column:module;type:varchar(80);index;default:;comment:模块" json:"module" comment:"模块" `
 }
 
 func (*BlogCollectCategoryEntity) TableName() string {

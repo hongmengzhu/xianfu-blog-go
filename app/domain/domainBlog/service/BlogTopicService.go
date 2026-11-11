@@ -333,6 +333,8 @@ func (c *BlogTopicService) PhysicalDeletion(ctx *gin.Context, ids []string) (rt 
 func (c *BlogTopicService) Query(ctx *gin.Context, ct modBlogTopic.QueryCt) (rt rg.Rs[pagePg.Paginator[modBlogTopic.Vo]]) {
 	var query entityBlog.BlogTopicEntity
 	copier.Copy(&query, &ct)
+	//模块过滤按分类归属处理，这里清空避免变成 topic.module 的强条件
+	query.Module = ""
 	slice := make([]modBlogTopic.Vo, 0)
 	rt.Data.Data = slice
 	r := c.sv
@@ -343,6 +345,19 @@ func (c *BlogTopicService) Query(ctx *gin.Context, ct modBlogTopic.QueryCt) (rt 
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		//自定义查询
 		arg.Db = arg.Db.Order("create_at desc")
+		//模块：分类归属于该模块，或专题自身标记为该模块
+		if strPg.IsNotBlank(ct.Module) {
+			categoryNos := make([]string, 0)
+			categories := c.catDb.FindAll(ctx, entityBlog.BlogTopicCategoryEntity{Module: ct.Module}, optionsPg.WithCtx(ctx))
+			for _, category := range categories {
+				categoryNos = append(categoryNos, category.No)
+			}
+			if len(categoryNos) > 0 {
+				arg.Db = arg.Db.Where("(category_no IN ? OR module = ?)", categoryNos, ct.Module)
+			} else {
+				arg.Db = arg.Db.Where("module = ?", ct.Module)
+			}
+		}
 		//自定义查询
 		if strPg.IsNotBlank(ct.Wd) {
 			arg.Db = arg.Db.Where("name like ?", "%"+ct.Wd+"%")

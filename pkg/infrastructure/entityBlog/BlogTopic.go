@@ -45,6 +45,7 @@ type BlogTopicEntity struct {
 	TypeComment      string                       `gorm:"column:type_comment;type:varchar(80);index;default:no;comment:评论类型|允许评论|不允许评论;" json:"type_comment" comment:"评论类型|允许评论|不允许评论" `
 	OperationTime    *time.Time                   `gorm:"column:operation_time;comment:操作时间" json:"operation_time" comment:"操作时间" `
 	TypeReading      string                       `gorm:"column:type_reading;type:varchar(80);index;default:no;comment:阅读类型|未看|在看|已看;" json:"type_reading" comment:"阅读类型||未看|在看|已看" `
+	Module           string                       `gorm:"column:module;type:varchar(80);index;default:;comment:模块" json:"module" comment:"模块" `
 }
 
 func (*BlogTopicEntity) TableName() string {

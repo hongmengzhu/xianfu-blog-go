@@ -19,4 +19,5 @@ type Vo struct {
 	Ano         string              `json:"ano" label:"操作员" `
 	ParentNo    string              `json:"parentNo" label:"上级" `
 	ParentId    string              `json:"parentId" label:"上级" `
+	Module      string              `json:"module" label:"模块" `
 }

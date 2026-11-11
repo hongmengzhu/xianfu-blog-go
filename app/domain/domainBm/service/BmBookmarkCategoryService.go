@@ -11,6 +11,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/event"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
@@ -34,9 +35,11 @@ func init() {
 // BmBookmarkCategoryService 书签分类
 // @Description:
 type BmBookmarkCategoryService struct {
-	sv  *repositoryBm.BmBookmarkCategoryRepository `autowire:"?"`
-	Bus event.Bus                                  `autowire:"?"`
-	chd *cacheBmBookmarkCategory.Cache             `autowire:"?"`
+	sv         *repositoryBm.BmBookmarkCategoryRepository `autowire:"?"`
+	bookmarkDb *repositoryBm.BmBookmarkRepository         `autowire:"?"`
+	Bus        event.Bus                                  `autowire:"?"`
+	chd        *cacheBmBookmarkCategory.Cache             `autowire:"?"`
+	moduleRep  *repositoryBasic.BasicModuleRepository     `autowire:"?"`
 }
 
 // Create 新增
@@ -80,6 +83,19 @@ func (c *BmBookmarkCategoryService) Create(ctx *gin.Context, ct modBmBookmarkCat
 			return rt.ErrorMessage("上级不存在")
 		}
 	}
+	//模块：优先继承上级分类的模块
+	moduleNo := ct.Module
+	if strPg.IsNotBlank(parent.Module) {
+		moduleNo = parent.Module
+	}
+	if strPg.IsBlank(moduleNo) {
+		return rt.ErrorMessage("模块不能为空")
+	}
+	moduleInfo, moduleFound := c.moduleRep.FindByNo(ctx, moduleNo, optionsPg.WithCtx(ctx))
+	if !moduleFound {
+		return rt.ErrorMessage("模块不存在")
+	}
+	info.Module = moduleInfo.No
 	info.No = noPg.No()
 	//自动设置编号
 	if automatedPg.IsCreateCode(info.Code) {
@@ -180,6 +196,23 @@ func (c *BmBookmarkCategoryService) Update(ctx *gin.Context, ct modBmBookmarkCat
 		}
 	}
 
+	//模块：优先继承上级分类的模块，其次取提交值，未提交则保留原值
+	moduleNo := ct.Module
+	if strPg.IsNotBlank(parent.Module) {
+		moduleNo = parent.Module
+	}
+	if strPg.IsBlank(moduleNo) {
+		moduleNo = find.Module
+	}
+	if strPg.IsBlank(moduleNo) {
+		return rt.ErrorMessage("模块不能为空")
+	}
+	moduleInfo, moduleFound := c.moduleRep.FindByNo(ctx, moduleNo, optionsPg.WithCtx(ctx))
+	if !moduleFound {
+		return rt.ErrorMessage("模块不存在")
+	}
+	info.Module = moduleInfo.No
+
 	//设置上级 link
 	if strPg.IsNotBlank(ct.ParentNo) {
 		info.IdLink = constNodePg.NoLinkAssemble(parent.IdLink, numberPg.Int64ToString(find.ID))
@@ -202,6 +235,33 @@ func (c *BmBookmarkCategoryService) Update(ctx *gin.Context, ct modBmBookmarkCat
 		return rt.ErrorMessage(err.Error())
 	}
 	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
+	//模块字段单独更新（上面的 Update 仅选择更新上级字段）
+	if strPg.IsNotBlank(info.Module) && info.Module != find.Module {
+		err = r.Update(ctx, entityBm.BmBookmarkCategoryEntity{Module: info.Module}, info.ID)
+		if err != nil {
+			log.Error(ctx, log.TagAppDef, err, "update module error")
+			return rt.ErrorMessage(err.Error())
+		}
+		//子分类同步模块，保证分类树按模块过滤时不出现跨模块层级
+		children, childFound := r.FindAllByNoLink(ctx, find.No)
+		categoryNos := []string{find.No}
+		if childFound {
+			for _, item := range children {
+				if item.ID == find.ID {
+					continue
+				}
+				categoryNos = append(categoryNos, item.No)
+				r.Update(ctx, entityBm.BmBookmarkCategoryEntity{Module: info.Module}, item.ID)
+			}
+		}
+		//书签同步模块，避免书签仍挂在旧模块下
+		for _, categoryNo := range categoryNos {
+			bookmarks := c.bookmarkDb.FindAll(ctx, entityBm.BmBookmarkEntity{CategoryNo: categoryNo}, optionsPg.WithCtx(ctx))
+			for _, bookmark := range bookmarks {
+				c.bookmarkDb.Update(ctx, entityBm.BmBookmarkEntity{Module: info.Module}, bookmark.ID)
+			}
+		}
+	}
 	//更改上级后，相关子集修改
 	if strPg.IsNotBlank(ct.ParentNo) && nil != childData {
 		maps := slicePg.ToMapArray(childData, func(t *entityBm.BmBookmarkCategoryEntity) (string, *entityBm.BmBookmarkCategoryEntity) {

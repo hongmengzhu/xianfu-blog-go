@@ -30,4 +30,5 @@ type QueryCt struct {
 	TypeComment    string              `json:"typeComment" label:"评论类型" `
 	TypeReading    string              `json:"typeReading" label:"阅读类型" `
 	TagsQuery      []string            `json:"tagsQuery" label:"标签" `
+	Module         string              `json:"module" label:"模块" `
 }

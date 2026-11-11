@@ -7,4 +7,5 @@ type CreateCt struct {
 	NameFull    string `json:"nameFull" label:"全称" `
 	Description string `json:"description" label:"描述" `
 	ParentNo    string `json:"parentNo" label:"上级" `
+	Module      string `json:"module" label:"模块" `
 }

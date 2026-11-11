@@ -39,4 +39,5 @@ type Vo struct {
 	TenantNoName   string                       `json:"tenantNoName" label:"租户" `
 	Statistics     StatisticsVo                 `json:"statistics" label:"统计" `
 	TagsStyle      []modBasicTagsRelation.AllVo `json:"tagsStyle" label:"标签" `
+	Module         string                       `json:"module" label:"模块" `
 }

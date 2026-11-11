@@ -34,4 +34,5 @@ type QueryCt struct {
 	TeamNo         string              `json:"teamNo" label:"团队编号" `
 	Tags           []string            `json:"tags" label:"标签" `
 	TagsQuery      []string            `json:"tagsQuery" label:"标签" `
+	Module         string              `json:"module" label:"模块" `
 }

@@ -29,4 +29,5 @@ type CreateUpdateCt struct {
 	OperationTime  *typePg.Time        `json:"operationTime" label:"操作时间" `
 	Attachment     map[string]string   `json:"attachment" label:"图集" `
 	Topics         []string            `json:"topics" label:"专题" `
+	Module         string              `json:"module" label:"模块" `
 }

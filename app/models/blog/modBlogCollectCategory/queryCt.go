@@ -14,4 +14,5 @@ type QueryCt struct {
 	ParentId    string              `json:"parentId" label:"上级" `
 	No          string              `json:"no" label:"编号代号" `
 	ParentNo    string              `json:"parentNo" label:"上级" `
+	Module      string              `json:"module" label:"模块" `
 }

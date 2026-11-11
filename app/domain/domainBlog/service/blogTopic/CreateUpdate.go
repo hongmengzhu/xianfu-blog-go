@@ -234,9 +234,13 @@ func (c CreateUpdate) save(ctx *gin.Context) (rt rg.Rs[string]) {
 	c.entitySave.Tags = datatypes.NewJSONType(tags)
 	catDb := c.sp.catDb
 	if strPg.IsNotBlank(ct.CategoryNo) {
-		_, result := catDb.FindByNo(ctx, ct.CategoryNo, optionsPg.WithCtx(ctx))
+		category, result := catDb.FindByNo(ctx, ct.CategoryNo, optionsPg.WithCtx(ctx))
 		if !result {
 			return rt.ErrorMessage("分类不存在")
+		}
+		//模块：优先继承所属分类，未选分类时取提交的模块
+		if strPg.IsNotBlank(category.Module) {
+			c.entitySave.Module = category.Module
 		}
 	}
 	statistics := entityBlog.BlogTopicStatisticsEntity{}

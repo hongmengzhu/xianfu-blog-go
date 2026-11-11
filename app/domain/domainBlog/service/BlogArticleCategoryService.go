@@ -12,6 +12,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBlog"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/event"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
@@ -32,12 +33,26 @@ func init() {
 	gs.Provide(new(BlogArticleCategoryService))
 }
 
+// articleModuleNo 规范化模块编号：历史数据默认值 no 视为未设置
+//
+//	@Description:
+//	@param module
+//	@return moduleNo
+func articleModuleNo(module string) string {
+	if strPg.IsBlank(module) || module == "no" {
+		return ""
+	}
+	return module
+}
+
 // BlogArticleCategoryService 分类
 // @Description:
 type BlogArticleCategoryService struct {
-	sv  *repositoryBlog.BlogArticleCategoryRepository `autowire:"?"`
-	Bus event.Bus                                     `autowire:"?"`
-	chd *cacheBlogArticleCategoryPg.Cache             `autowire:"?"`
+	sv        *repositoryBlog.BlogArticleCategoryRepository `autowire:"?"`
+	articleDb *repositoryBlog.BlogArticleRepository         `autowire:"?"`
+	Bus       event.Bus                                     `autowire:"?"`
+	chd       *cacheBlogArticleCategoryPg.Cache             `autowire:"?"`
+	moduleRep *repositoryBasic.BasicModuleRepository        `autowire:"?"`
 }
 
 // Create 新增
@@ -81,6 +96,19 @@ func (c *BlogArticleCategoryService) Create(ctx *gin.Context, ct modBlogArticleC
 			return rt.ErrorMessage("上级不存在")
 		}
 	}
+	//模块：优先继承上级分类的模块（历史默认值 no 视为未设置）
+	moduleNo := articleModuleNo(ct.Module)
+	if parentModuleNo := articleModuleNo(parent.Module); strPg.IsNotBlank(parentModuleNo) {
+		moduleNo = parentModuleNo
+	}
+	if strPg.IsBlank(moduleNo) {
+		return rt.ErrorMessage("模块不能为空")
+	}
+	moduleInfo, moduleFound := c.moduleRep.FindByNo(ctx, moduleNo, optionsPg.WithCtx(ctx))
+	if !moduleFound {
+		return rt.ErrorMessage("模块不存在")
+	}
+	info.Module = moduleInfo.No
 	info.No = noPg.No()
 	//自动设置编号
 	if automatedPg.IsCreateCode(info.Code) {
@@ -182,6 +210,23 @@ func (c *BlogArticleCategoryService) Update(ctx *gin.Context, ct modBlogArticleC
 		}
 	}
 
+	//模块：优先继承上级分类的模块，其次取提交值，未提交则保留原值
+	moduleNo := articleModuleNo(ct.Module)
+	if parentModuleNo := articleModuleNo(parent.Module); strPg.IsNotBlank(parentModuleNo) {
+		moduleNo = parentModuleNo
+	}
+	if strPg.IsBlank(moduleNo) {
+		moduleNo = articleModuleNo(find.Module)
+	}
+	if strPg.IsBlank(moduleNo) {
+		return rt.ErrorMessage("模块不能为空")
+	}
+	moduleInfo, moduleFound := c.moduleRep.FindByNo(ctx, moduleNo, optionsPg.WithCtx(ctx))
+	if !moduleFound {
+		return rt.ErrorMessage("模块不存在")
+	}
+	info.Module = moduleInfo.No
+
 	info.TypeSys = typeSysPg.General.Index()
 	//设置上级 link
 	if strPg.IsNotBlank(ct.ParentNo) {
@@ -205,6 +250,33 @@ func (c *BlogArticleCategoryService) Update(ctx *gin.Context, ct modBlogArticleC
 		return rt.ErrorMessage(err.Error())
 	}
 	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
+	//模块字段单独更新（上面的 Update 仅选择更新上级字段）
+	if strPg.IsNotBlank(info.Module) && info.Module != find.Module {
+		err = r.Update(ctx, entityBlog.BlogArticleCategoryEntity{Module: info.Module}, info.ID)
+		if err != nil {
+			log.Error(ctx, log.TagAppDef, err, "update module error")
+			return rt.ErrorMessage(err.Error())
+		}
+		//子分类同步模块，保证分类树按模块过滤时不出现跨模块层级
+		children, childFound := r.FindAllByNoLink(ctx, find.No)
+		categoryNos := []string{find.No}
+		if childFound {
+			for _, item := range children {
+				if item.ID == find.ID {
+					continue
+				}
+				categoryNos = append(categoryNos, item.No)
+				r.Update(ctx, entityBlog.BlogArticleCategoryEntity{Module: info.Module}, item.ID)
+			}
+		}
+		//文章同步模块，避免文章仍挂在旧模块下
+		for _, categoryNo := range categoryNos {
+			articles := c.articleDb.FindAll(ctx, entityBlog.BlogArticleEntity{CategoryNo: categoryNo}, optionsPg.WithCtx(ctx))
+			for _, article := range articles {
+				c.articleDb.Update(ctx, entityBlog.BlogArticleEntity{Module: info.Module}, article.ID)
+			}
+		}
+	}
 	//更改上级后，相关子集修改
 	if strPg.IsNotBlank(ct.ParentNo) && nil != childData {
 		maps := slicePg.ToMapArray(childData, func(t *entityBlog.BlogArticleCategoryEntity) (string, *entityBlog.BlogArticleCategoryEntity) {
