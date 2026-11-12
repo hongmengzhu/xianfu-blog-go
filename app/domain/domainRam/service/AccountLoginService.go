@@ -13,6 +13,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg/pg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cacheService/cacheRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constHeaderPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/clientPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
@@ -166,9 +167,16 @@ func (c *AccountLoginService) LoginBySystem(ctx *gin.Context, ct modRamLogin.Log
 	if logingEn, ok := c.authLogin.LoginEncrypt["default"]; ok && logingEn {
 		login := c.cacheSessionPubPrive.DecodeByLoginSystem(ctx, pwd)
 		if login.ErrorIs() {
-			return rt.ErrorMessage(login.Message)
+			//兼容历史前端：旧版 /xianfu/pub/config 默认返回管理域公钥，客户端仍用它加密
+			legacy := c.cacheSessionPubPrive.DecodeByLoginManage(ctx, pwd, clientPg.Browser, constsPg.ACCOUNT_MANAGE_No)
+			if legacy.ErrorIs() {
+				return rt.ErrorMessage(login.Message)
+			}
+			log.Debug(ctx, log.TagBizDef, "系统登录使用管理域密钥解密成功，建议前端改用 typeDomain=system 获取公钥", nil)
+			pwd = legacy.Data
+		} else {
+			pwd = login.Data
 		}
-		pwd = login.Data
 	}
 	log.Info(context.Background(), log.TagAppDef, "pwd", log.Any("pwd", pwd))
 

@@ -64,7 +64,7 @@ func (c *SM2Util) DecodeHex(text string) (rt rg.Rs[string]) {
 	// 4. 使用加载的私钥解密
 	decryptedData, err := sm2.Decrypt(privateKey, ciphertext, 0)
 	if err != nil {
-		log.Fatal(context.Background(), log.TagAppDef, "解密失败", log.Any("err", err.Error()))
+		log.Warn(context.Background(), log.TagAppDef, "解密失败", log.Any("err", err.Error()))
 		return rt.ErrorMessage("解密失败")
 	}
 	return rt.OkData(string(decryptedData))

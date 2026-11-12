@@ -2,6 +2,7 @@ package cacheRam
 
 import (
 	"context"
+	"strconv"
 	"strings"
 
 	"github.com/goccy/go-json"
@@ -128,7 +129,7 @@ func (c *CacheSessionPubPrive) DecodeByLogin(ctx context.Context, pwd string, ty
 	keyType sessionKeyTypePg.SessionKeyType) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagBizDef, "ct", log.Any("len", len(pwd)), log.Any("pwd", pwd))
 	if len(pwd) < 194 {
-		return rt.ErrorMessage("密文过短，可能已损坏，实际长度：" + string(rune(len(pwd))))
+		return rt.ErrorMessage("密文过短，可能已损坏，实际长度：" + strconv.Itoa(len(pwd)))
 	}
 	key := c.LoginPubPriveKey(ctx, typeDomain, client, tenantNo, keyType)
 	if !strings.HasPrefix(pwd, "04") {
