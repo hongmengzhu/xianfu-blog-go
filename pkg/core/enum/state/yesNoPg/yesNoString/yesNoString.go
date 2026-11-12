@@ -28,7 +28,7 @@ func (this String) String() string {
 	return string(this)
 }
 
-func (this String) Index() string {
+func (this String) Code() string {
 	return string(this)
 }
 
@@ -49,8 +49,8 @@ func (this String) IsEnableDisable() bool {
 }
 
 var StringMap = map[string]enumBasePg.EnumString{
-	Yes.Index(): enumBasePg.EnumString{Yes.Index(), Yes.String()},
-	No.Index():  enumBasePg.EnumString{Yes.Index(), Yes.String()},
+	Yes.Code(): enumBasePg.EnumString{Yes.Code(), Yes.String()},
+	No.Code():  enumBasePg.EnumString{Yes.Code(), Yes.String()},
 }
 
 func IsExistString(id string) (enumBasePg.EnumString, bool) {
