@@ -11,21 +11,21 @@ import (
 )
 
 func init() {
-	gs.Provide(new(LoginController)).Name("SystemLoginController").Export(gs.As[routerPg.RouteRegistrar]())
+	gs.Provide(new(AuthLoginController)).Name("SystemAuthLoginController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
-type LoginController struct {
+type AuthLoginController struct {
 	routerPg.RouteRegistrar
 	sv *service.AccountLoginService `autowire:"?"`
 }
 
-func (c *LoginController) RegisterRoutes(e *gin.Engine) {
+func (c *AuthLoginController) RegisterRoutes(e *gin.Engine) {
 	group := e.Group("/xianfu/auth/sys")
 	group.POST("/login", c.Login)
 	group.POST("/refresh", c.RefreshToken)
 }
 
-func (c *LoginController) Login(ctx *gin.Context) {
+func (c *AuthLoginController) Login(ctx *gin.Context) {
 	var ct modRamLogin.LoginCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
@@ -33,7 +33,7 @@ func (c *LoginController) Login(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.LoginBySystem(ctx, ct, typeDomainPg.System, typeDomainPg.System.Code()))
 }
 
-func (c *LoginController) RefreshToken(ctx *gin.Context) {
+func (c *AuthLoginController) RefreshToken(ctx *gin.Context) {
 	var ct modRamLogin.TokenRefreshCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return

@@ -87,7 +87,7 @@ func (c *AccountLoginService) Login(ctx *gin.Context, ct modRamLogin.LoginManage
 	md5 := cryptPg.Md5(ct.Account)
 	info, b, err := c.dao.FindByTenantNoAccountMd5AndTypeDomain(ctx, ct.OrgCode, md5, tp.Code())
 	if nil != err {
-		return rt.Error()
+		return rt.ErrorMessage("账号不存在.")
 	}
 	if !b {
 		return rt.ErrorMessage("账号不存在")
@@ -175,7 +175,7 @@ func (c *AccountLoginService) LoginBySystem(ctx *gin.Context, ct modRamLogin.Log
 	md5 := cryptPg.Md5(ct.Account)
 	info, b, err := c.dao.FindByAccountMd5AndTypeDomainAndTenantNo(ctx, md5, tp.Code(), tenantNo)
 	if nil != err {
-		return rt.Error()
+		return rt.ErrorMessage("账号不存在.")
 	}
 	if !b {
 		return rt.ErrorMessage("账号不存在")

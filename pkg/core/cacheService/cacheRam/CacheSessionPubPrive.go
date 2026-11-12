@@ -123,7 +123,9 @@ func (c *CacheSessionPubPrive) LoginPubPriveKeyByNew(ctx context.Context,
 }
 
 func (c *CacheSessionPubPrive) DecodeByLogin(ctx context.Context, pwd string, typeDomain typeDomainPg.TypeDomain,
-	client clientPg.Client, tenantNo string, keyType sessionKeyTypePg.SessionKeyType) (rt rg.Rs[string]) {
+	client clientPg.Client,
+	tenantNo string,
+	keyType sessionKeyTypePg.SessionKeyType) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagBizDef, "ct", log.Any("len", len(pwd)), log.Any("pwd", pwd))
 	if len(pwd) < 194 {
 		return rt.ErrorMessage("密文过短，可能已损坏，实际长度：" + string(rune(len(pwd))))
