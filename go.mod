@@ -190,6 +190,7 @@ require (
 replace (
 	github.com/bytedance/mockey => ../go-spring-mockey-lucky-qu
 	go-spring.org/cloud => ../go-spring/cloud
+	go-spring.org/gs-mock => ../go-spring/gs/gs-mock
 	go-spring.org/log => ../go-spring/log
 	go-spring.org/spring => ../go-spring/spring
 	go-spring.org/starter-bigcache => ../go-spring/starter/starter-bigcache
