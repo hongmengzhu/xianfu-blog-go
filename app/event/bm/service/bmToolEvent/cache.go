@@ -6,7 +6,7 @@ import (
 
 	"github.com/goccy/go-json"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmToolCategory"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/cache/bm/modEventBmToolCategory"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/event/bm/modEventBmToolCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/bm/key/bmKeyPg"

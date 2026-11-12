@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/gin-gonic/gin"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBasic/utilsBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicTagsRelation"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmTool"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
@@ -162,7 +163,7 @@ func (c *BmToolService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modBmTool.D
 	if nil != find.Tags.Data() {
 		info.Tags = find.Tags.Data()
 	}
-	info.TagsStyle = tagStylesOf(ctx, c.tagsRelat, info.Tags)
+	info.TagsStyle = utilsBasic.TagStylesOf(ctx, c.tagsRelat, info.Tags)
 	//可用范围
 	if nil != find.Where.Data() {
 		info.Where = find.Where.Data()
@@ -384,7 +385,7 @@ func (c *BmToolService) Query(ctx *gin.Context, ct modBmTool.QueryCt) (rt rg.Rs[
 				idsTags = append(idsTags, item.Tags.Data()...)
 			}
 		}
-		mapTagsStyle := loadTagStyles(ctx, c.tagsRelat, idsTags)
+		mapTagsStyle := utilsBasic.LoadTagStyles(ctx, c.tagsRelat, idsTags)
 		//字段赋值
 		for _, item := range page.Data {
 			var vo modBmTool.Vo
@@ -407,7 +408,7 @@ func (c *BmToolService) Query(ctx *gin.Context, ct modBmTool.QueryCt) (rt rg.Rs[
 					if obj, ok := mapTagsStyle[code]; ok {
 						vo.TagsStyle = append(vo.TagsStyle, obj)
 					} else {
-						vo.TagsStyle = append(vo.TagsStyle, defaultTagStyle(code))
+						vo.TagsStyle = append(vo.TagsStyle, utilsBasic.DefaultTagStyle(code))
 					}
 				}
 			}

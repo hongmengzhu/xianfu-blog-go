@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/hongmengzhu/xianfu-blog-go/app/event/blog/service/articleBlogEvent"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/cache/blog/modEventBlogArticleCategory"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/event/blog/modEventBlogArticleCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/event"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"

@@ -48,6 +48,7 @@ type BasicExplainEntity struct {
 	SeoDescription   string                       `gorm:"column:seo_description;type:varchar(255);default:;comment:seo描述" json:"seo_description" comment:"seo描述" `
 	PageTitle        string                       `gorm:"column:page_title;type:varchar(255);comment:网页标题" json:"page_title" comment:"网页标题" `
 	TypeOwner        string                       `gorm:"column:type_owner;type:varchar(80);index;default:'general';comment:类型|普通|团队|个人" json:"type_owner" comment:"类型;普通;团队;个人" `
+	Module           string                       `gorm:"column:module;type:varchar(80);index;default:;comment:模块" json:"module" comment:"模块" `
 }
 
 func (*BasicExplainEntity) TableName() string {

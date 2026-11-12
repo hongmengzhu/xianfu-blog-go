@@ -6,7 +6,7 @@ import (
 
 	"github.com/goccy/go-json"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/blog/modBlogArticleCategory"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/cache/blog/modEventBlogArticleCategory"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/event/blog/modEventBlogArticleCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBlog"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/blog/key/blogKeyPg"

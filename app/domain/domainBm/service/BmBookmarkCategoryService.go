@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkCategory"
-	"github.com/hongmengzhu/xianfu-blog-go/app/models/cache/bm/modEventBmBookmarkCategory"
+	"github.com/hongmengzhu/xianfu-blog-go/app/models/event/bm/modEventBmBookmarkCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/automatedPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constNodePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"

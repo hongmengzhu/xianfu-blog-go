@@ -1,4 +1,4 @@
-package service
+package utilsBasic
 
 import (
 	"encoding/json"
@@ -11,8 +11,8 @@ import (
 	"github.com/pangu-2/go-tools/tools/strPg"
 )
 
-// loadTagStyles 批量加载标签显示数据（含 attributeMap 颜色对象）
-func loadTagStyles(ctx *gin.Context, tagsRelat *repositoryBasic.BasicTagsRelationRepository, codes []string) map[string]modBasicTagsRelation.AllVo {
+// LoadTagStyles 批量加载标签显示数据（含 attributeMap 颜色对象）
+func LoadTagStyles(ctx *gin.Context, tagsRelat *repositoryBasic.BasicTagsRelationRepository, codes []string) map[string]modBasicTagsRelation.AllVo {
 	result := make(map[string]modBasicTagsRelation.AllVo)
 	if tagsRelat == nil || len(codes) < 1 {
 		return result
@@ -43,25 +43,25 @@ func loadTagStyles(ctx *gin.Context, tagsRelat *repositoryBasic.BasicTagsRelatio
 	return result
 }
 
-// tagStylesOf 按顺序组装标签显示数据，查不到的标签用默认样式兜底
-func tagStylesOf(ctx *gin.Context, tagsRelat *repositoryBasic.BasicTagsRelationRepository, codes []string) []modBasicTagsRelation.AllVo {
+// TagStylesOf 按顺序组装标签显示数据，查不到的标签用默认样式兜底
+func TagStylesOf(ctx *gin.Context, tagsRelat *repositoryBasic.BasicTagsRelationRepository, codes []string) []modBasicTagsRelation.AllVo {
 	styles := make([]modBasicTagsRelation.AllVo, 0)
 	if len(codes) < 1 {
 		return styles
 	}
-	result := loadTagStyles(ctx, tagsRelat, codes)
+	result := LoadTagStyles(ctx, tagsRelat, codes)
 	for _, code := range codes {
 		if obj, ok := result[code]; ok {
 			styles = append(styles, obj)
 		} else {
-			styles = append(styles, defaultTagStyle(code))
+			styles = append(styles, DefaultTagStyle(code))
 		}
 	}
 	return styles
 }
 
-// defaultTagStyle 默认标签显示数据
-func defaultTagStyle(code string) modBasicTagsRelation.AllVo {
+// DefaultTagStyle 默认标签显示数据
+func DefaultTagStyle(code string) modBasicTagsRelation.AllVo {
 	return modBasicTagsRelation.AllVo{
 		Code:         code,
 		Name:         code,

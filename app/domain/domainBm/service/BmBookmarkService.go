@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBasic/utilsBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/basic/modBasicTagsRelation"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmark"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
@@ -176,7 +177,7 @@ func (c *BmBookmarkService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modBmBo
 	if nil != find.Tags.Data() {
 		info.Tags = find.Tags.Data()
 	}
-	info.TagsStyle = tagStylesOf(ctx, c.tagsRelat, info.Tags)
+	info.TagsStyle = utilsBasic.TagStylesOf(ctx, c.tagsRelat, info.Tags)
 	//可用范围
 	if nil != find.Where.Data() {
 		info.Where = find.Where.Data()
@@ -398,7 +399,7 @@ func (c *BmBookmarkService) Query(ctx *gin.Context, ct modBmBookmark.QueryCt) (r
 				idsTags = append(idsTags, item.Tags.Data()...)
 			}
 		}
-		mapTagsStyle := loadTagStyles(ctx, c.tagsRelat, idsTags)
+		mapTagsStyle := utilsBasic.LoadTagStyles(ctx, c.tagsRelat, idsTags)
 		//字段赋值
 		for _, item := range page.Data {
 			var vo modBmBookmark.Vo
@@ -421,7 +422,7 @@ func (c *BmBookmarkService) Query(ctx *gin.Context, ct modBmBookmark.QueryCt) (r
 					if obj, ok := mapTagsStyle[code]; ok {
 						vo.TagsStyle = append(vo.TagsStyle, obj)
 					} else {
-						vo.TagsStyle = append(vo.TagsStyle, defaultTagStyle(code))
+						vo.TagsStyle = append(vo.TagsStyle, utilsBasic.DefaultTagStyle(code))
 					}
 				}
 			}
