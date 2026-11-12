@@ -39,6 +39,7 @@ func (c *TenantDomainModuleController) RegisterRoutes(e *gin.Engine) {
 	group.POST("/selectNodeAll", c.SelectNodeAll)
 	group.POST("/selectNodeAllPublic", c.SelectNodeAllPublic)
 	group.POST("/existName", c.ExistName)
+	group.POST("/existCode", c.ExistCode)
 }
 
 func (c *TenantDomainModuleController) CreateUpdate(ctx *gin.Context) {
@@ -131,4 +132,12 @@ func (c *TenantDomainModuleController) ExistName(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(200, c.sv.ExistName(ctx, ct))
+}
+
+func (c *TenantDomainModuleController) ExistCode(ctx *gin.Context) {
+	var ct model.BaseExistWdCt[string]
+	if !routerPg.BindJson(ctx, &ct) {
+		return
+	}
+	ctx.JSON(200, c.sv.ExistCode(ctx, ct))
 }

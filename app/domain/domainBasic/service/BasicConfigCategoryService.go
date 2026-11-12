@@ -56,7 +56,7 @@ func (c *BasicConfigCategoryService) Create(ctx *gin.Context, ct modBasicConfigC
 		}
 		exist, ok := r.FindByCode(ctx, info.Code)
 		if ok && exist.TenantNo == info.TenantNo {
-			return rt.ErrorMessage("标志已存在")
+			return rt.ErrorMessage("码值已存在")
 		}
 	}
 	parent := &entityB72.B72ConfigCategoryEntity{}
@@ -153,7 +153,7 @@ func (c *BasicConfigCategoryService) Update(ctx *gin.Context, ct modBasicConfigC
 	} else {
 		exist, exists := c.sv.FindByCodeAndIdNot(ctx, info.Code, ct.ID.ToString())
 		if exists && exist.TenantNo == holder.GetTenantNo() {
-			return rt.ErrorMessage("标志已存在")
+			return rt.ErrorMessage("码值已存在")
 		}
 	}
 	if parentMoved {

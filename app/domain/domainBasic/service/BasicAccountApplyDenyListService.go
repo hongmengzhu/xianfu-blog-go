@@ -81,7 +81,7 @@ func (c *BasicAccountApplyDenyListService) Create(ctx *gin.Context, ct modBasicA
 	if strPg.IsNotBlank(ct.Expr) {
 		_, result := r.FindByExprAndIdNot(ctx, ct.Expr, "0")
 		if result {
-			return rt.ErrorMessage("标志已存在")
+			return rt.ErrorMessage("码值已存在")
 		}
 	}
 
@@ -143,7 +143,7 @@ func (c *BasicAccountApplyDenyListService) Update(ctx *gin.Context, ct modBasicA
 	if strPg.IsNotBlank(ct.Expr) {
 		_, result := r.FindByExprAndIdNot(ctx, ct.Expr, ct.ID.ToString())
 		if result {
-			return rt.ErrorMessage("标志已存在")
+			return rt.ErrorMessage("码值已存在")
 		}
 	}
 	find, b := r.FindById(ctx, ct.ID.ToInt64())

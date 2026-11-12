@@ -152,12 +152,12 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 	if !automatedPg.IsCreateCode(c.entitySave.Code) {
 		//判断格式是否满足要求
 		if !automatedPg.FormatVerify(c.entitySave.Code) {
-			return rt.ErrorMessage("标志格式不能为空")
+			return rt.ErrorMessage("码值格式不能为空")
 		}
 		//不是自动
 		_, result := c.sp.sv.FindByCode(ctx, c.entitySave.Code, optionsPg.WithCtx(ctx))
 		if result {
-			return rt.ErrorMessage("标志已存在")
+			return rt.ErrorMessage("码值已存在")
 		}
 	}
 	c.entitySave.Name = strings.TrimSpace(c.entitySave.Name)

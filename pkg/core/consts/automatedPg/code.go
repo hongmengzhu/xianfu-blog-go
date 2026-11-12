@@ -23,6 +23,15 @@ func FormatVerify(str string) bool {
 	return regexp.MustCompile("^[a-zA-Z0-9:#@\\-]+$").MatchString(str)
 }
 
+// FormatVerifyByModule 格式验证
+//
+//	@Description: 字母数字,:,#,@,-
+//	@param str
+//	@return bool
+func FormatVerifyByModule(str string) bool {
+	return regexp.MustCompile("^[a-zA-Z0-9:#@\\-\\.]+$").MatchString(str)
+}
+
 // VerifyMax100 长度不能大于100
 //
 //	@Description: 字母数字,:,#,@,-

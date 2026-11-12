@@ -54,12 +54,12 @@ func (c *TenantDomainModuleService) Create(ctx *gin.Context, ct modTcTenantDomai
 	if !automatedPg.IsCreateCode(info.Code) {
 		//判断格式是否满足要求
 		if !automatedPg.FormatVerify(info.Code) {
-			return rt.ErrorMessage("标志格式不能为空")
+			return rt.ErrorMessage("码值格式不能为空")
 		}
 		//不是自动
 		_, result := r.FindByCode(ctx, info.Code, optionsPg.WithCtx(ctx))
 		if result {
-			return rt.ErrorMessage("标志已存在")
+			return rt.ErrorMessage("码值已存在")
 		}
 	}
 	//holder := holderPg.GetContextAccount(ctx)
@@ -99,7 +99,7 @@ func (c *TenantDomainModuleService) Update(ctx *gin.Context, ct modTcTenantDomai
 	} else {
 		_, result := r.FindByCodeAndIdNot(ctx, info.Code, ct.ID.ToString())
 		if result {
-			return rt.ErrorMessage("标志已存在")
+			return rt.ErrorMessage("码值已存在")
 		}
 	}
 	find, b := r.FindById(ctx, ct.ID.ToInt64())
@@ -163,7 +163,7 @@ func (c *TenantDomainModuleService) CreateUpdate(ctx *gin.Context, ct modTcTenan
 	if !automatedPg.IsCreateCode(info.Code) {
 		//判断格式是否满足要求
 		if !automatedPg.FormatVerify(info.Code) {
-			return rt.ErrorMessage("标志格式不能为空")
+			return rt.ErrorMessage("码值格式不能为空")
 		}
 		//不是自动
 		_, result := r.FindByCodeAndIdNot(ctx, info.Code, id, optionsPg.WithCtx(ctx))

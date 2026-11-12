@@ -34,7 +34,7 @@ func init() {
 // BasicModuleService 模块
 // @Description:
 type BasicModuleService struct {
-	sv *repositoryBasic.BasicModuleRepository        `autowire:"?"`
+	sv *repositoryBasic.BasicModuleRepository       `autowire:"?"`
 	dm *repositoryTc.TcTenantDomainModuleRepository `autowire:"?"`
 }
 
@@ -63,13 +63,13 @@ func (c *BasicModuleService) Create(ctx *gin.Context, ct modBasicModule.CreateUp
 	//判断是否是自动,不是自动
 	if !automatedPg.IsCreateCode(info.Code) {
 		//判断格式是否满足要求
-		if !automatedPg.FormatVerify(info.Code) {
-			return rt.ErrorMessage("标志格式不能为空")
+		if !automatedPg.FormatVerifyByModule(info.Code) {
+			return rt.ErrorMessage("码值格式不能为空")
 		}
 		//不是自动
 		_, result := r.FindByCode(ctx, info.Code, optionsPg.WithCtx(ctx))
 		if result {
-			return rt.ErrorMessage("标志已存在")
+			return rt.ErrorMessage("码值已存在")
 		}
 	}
 	result := false
@@ -146,7 +146,7 @@ func (c *BasicModuleService) Update(ctx *gin.Context, ct modBasicModule.CreateUp
 	if strPg.IsNotBlank(ct.Code) {
 		_, result := r.FindByCodeAndIdNot(ctx, ct.Code, ct.ID.ToString(), optionsPg.WithCtx(ctx))
 		if result {
-			return rt.ErrorMessage("标志已存在")
+			return rt.ErrorMessage("码值已存在")
 		}
 	}
 	find, b := r.FindById(ctx, ct.ID.ToInt64())
@@ -203,9 +203,10 @@ func (c *BasicModuleService) Update(ctx *gin.Context, ct modBasicModule.CreateUp
 		info.Vhost = find.Vhost
 	}
 	//更新模块自身字段；parent_no/parent_code 需要支持置空，因此显式 Select
+	//code/code_link/no_link 由创建与上级变更流程维护，这里不参与更新，避免破坏层级链
 	err = r.Update(ctx, info, info.ID, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
 		arg.Db = arg.Db.Select("parent_no", "parent_code", "name", "name_fl", "name_full",
-			"code", "description", "sort", "vhost")
+			"description", "sort", "vhost")
 	}))
 	if err != nil {
 		log.Error(ctx, log.TagAppDef, err, "update error")
@@ -242,6 +243,8 @@ func (c *BasicModuleService) Update(ctx *gin.Context, ct modBasicModule.CreateUp
 		maps = nil
 	}
 	//vhost=yes 时同步域名模块；改为 no 时删除域名模块
+	//code 不参与更新，域名模块统一以库中 code 作为 Module 关联键
+	info.Code = find.Code
 	if yesNoString.Yes.IsEqual(info.Vhost) {
 		c.upsertDomainModule(ctx, &info, find.State)
 	} else {
@@ -650,4 +653,86 @@ func (c *BasicModuleService) ExistCode(ctx *gin.Context, ct model.BaseExistWdCt[
 		return rt.ErrorMessage("重复，已存在")
 	}
 	return rt.OkMessage("可以使用")
+}
+
+// domainModuleState 模块状态 转换 为域名模块状态
+//
+//	@Description: 1启用 2禁用
+//	@param state
+//	@return int8
+func domainModuleState(state int8) int8 {
+	if enumStatePg.ENABLE.IndexInt8() == state {
+		return enumStatePg.ENABLE.IndexInt8()
+	}
+	return enumStatePg.DISABLE.IndexInt8()
+}
+
+// upsertDomainModule 同步模块到域名模块
+//
+//	@Description: 判断域名模块中 Module(模块Code) 是否已存在，存在则更新，不存在则插入
+//	@receiver c
+//	@param ctx
+//	@param info
+//	@param state
+func (c *BasicModuleService) upsertDomainModule(ctx *gin.Context, info *entityBasic.BasicModuleEntity, state int8) {
+	if nil == c.dm || nil == info || strPg.IsBlank(info.Code) {
+		return
+	}
+	holder := holderPg.GetContextAccount(ctx)
+	domainState := domainModuleState(state)
+	//判断域名模块中 Module(模块Code) 是否已存在
+	finds := c.dm.FindAll(ctx, entityTc.TcTenantDomainModuleEntity{Module: info.Code})
+	if len(finds) > 0 {
+		for _, item := range finds {
+			err := c.dm.Update(ctx, entityTc.TcTenantDomainModuleEntity{
+				Name:        info.Name,
+				Code:        info.Code,
+				Description: info.Description,
+				Sort:        info.Sort,
+				State:       domainState,
+				Module:      info.Code,
+				UpdateBy:    holder.GetAccountNo(),
+			}, item.ID, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
+				arg.Db = arg.Db.Select("name", "code", "description", "sort", "state", "module", "update_by")
+			}))
+			if err != nil {
+				log.Error(ctx, log.TagAppDef, err, "更新域名模块失败")
+			}
+		}
+		return
+	}
+	//不存在则插入
+	dst := entityTc.TcTenantDomainModuleEntity{
+		No:          noPg.No(),
+		Name:        info.Name,
+		Code:        info.Code,
+		Module:      info.Code,
+		Description: info.Description,
+		Sort:        info.Sort,
+		State:       domainState,
+		Defaulted:   yesNoIntPg.No.IndexInt8(),
+		CreateBy:    holder.GetAccountNo(),
+	}
+	err, _ := c.dm.Create(ctx, &dst)
+	if err != nil {
+		log.Error(ctx, log.TagAppDef, err, "新增域名模块失败")
+	}
+}
+
+// deleteDomainModule 删除域名模块
+//
+//	@Description: 删除域名模块中 Module(模块Code) 对应的数据
+//	@receiver c
+//	@param ctx
+//	@param code
+func (c *BasicModuleService) deleteDomainModule(ctx *gin.Context, code string) {
+	if nil == c.dm || strPg.IsBlank(code) {
+		return
+	}
+	finds := c.dm.FindAll(ctx, entityTc.TcTenantDomainModuleEntity{Module: code})
+	for _, item := range finds {
+		if err := c.dm.DeleteById(ctx, item.ID); err != nil {
+			log.Error(ctx, log.TagAppDef, err, "删除域名模块失败")
+		}
+	}
 }
