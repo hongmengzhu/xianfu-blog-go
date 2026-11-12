@@ -7,9 +7,13 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constNodePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/enumCommonPg/typeSysPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/yesNoPg/yesNoIntPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/yesNoPg/yesNoString"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityTc"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryTc"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
@@ -30,7 +34,8 @@ func init() {
 // BasicModuleService 模块
 // @Description:
 type BasicModuleService struct {
-	sv *repositoryBasic.BasicModuleRepository `autowire:"?"`
+	sv *repositoryBasic.BasicModuleRepository        `autowire:"?"`
+	dm *repositoryTc.TcTenantDomainModuleRepository `autowire:"?"`
 }
 
 // Create 新增
@@ -79,6 +84,12 @@ func (c *BasicModuleService) Create(ctx *gin.Context, ct modBasicModule.CreateUp
 	if automatedPg.IsCreateCode(info.Code) {
 		info.Code = strPg.GenerateNumberId22()
 	}
+	if strPg.IsBlank(info.Vhost) {
+		info.Vhost = yesNoString.No.Code()
+	}
+	if _, b := yesNoString.IsExistString(info.Vhost); !b {
+		info.Vhost = yesNoString.No.Code()
+	}
 	info.TenantNo = holder.GetTenantNo()
 	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	err, _ = r.Create(ctx, &info)
@@ -100,6 +111,14 @@ func (c *BasicModuleService) Create(ctx *gin.Context, ct modBasicModule.CreateUp
 	err = r.Update(ctx, info, info.ID)
 	if err != nil {
 		return rt.ErrorMessage(err.Error())
+	}
+	//vhost=yes 时，同步到域名模块表
+	if yesNoString.Yes.IsEqual(info.Vhost) {
+		state := info.State
+		if !enumStatePg.State(state).IsEnableDisable() {
+			state = enumStatePg.ENABLE.IndexInt8()
+		}
+		c.upsertDomainModule(ctx, &info, state)
 	}
 	return rg.OkData(numberPg.Int64ToString(info.ID))
 }
@@ -123,13 +142,8 @@ func (c *BasicModuleService) Update(ctx *gin.Context, ct modBasicModule.CreateUp
 	if "" == ct.Name {
 		return rt.ErrorMessage("名称不能为空")
 	}
-	if strPg.IsBlank(ct.Code) {
-		info.Code = ""
-	}
 	r := c.sv
-	if strPg.IsBlank(ct.Code) {
-		info.Code = ""
-	} else {
+	if strPg.IsNotBlank(ct.Code) {
 		_, result := r.FindByCodeAndIdNot(ctx, ct.Code, ct.ID.ToString(), optionsPg.WithCtx(ctx))
 		if result {
 			return rt.ErrorMessage("标志已存在")
@@ -138,6 +152,10 @@ func (c *BasicModuleService) Update(ctx *gin.Context, ct modBasicModule.CreateUp
 	find, b := r.FindById(ctx, ct.ID.ToInt64())
 	if !b {
 		return rt.ErrorMessage("数据不存在")
+	}
+	//标志为空时沿用原值，保证上下级链与同步数据正确
+	if strPg.IsBlank(ct.Code) {
+		info.Code = find.Code
 	}
 	//上级
 	parent := &entityBasic.BasicModuleEntity{}
@@ -180,9 +198,14 @@ func (c *BasicModuleService) Update(ctx *gin.Context, ct modBasicModule.CreateUp
 		info.ParentCode = ""
 	}
 	info.No = ""
-	//
+	//未传虚拟域名时沿用原值，避免更新时误解绑
+	if _, b2 := yesNoString.IsExistString(info.Vhost); strPg.IsBlank(info.Vhost) || !b2 {
+		info.Vhost = find.Vhost
+	}
+	//更新模块自身字段；parent_no/parent_code 需要支持置空，因此显式 Select
 	err = r.Update(ctx, info, info.ID, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
-		arg.Db = arg.Db.Select("parent_no", "parent_code")
+		arg.Db = arg.Db.Select("parent_no", "parent_code", "name", "name_fl", "name_full",
+			"code", "description", "sort", "vhost")
 	}))
 	if err != nil {
 		log.Error(ctx, log.TagAppDef, err, "update error")
@@ -217,6 +240,12 @@ func (c *BasicModuleService) Update(ctx *gin.Context, ct modBasicModule.CreateUp
 			}
 		}
 		maps = nil
+	}
+	//vhost=yes 时同步域名模块；改为 no 时删除域名模块
+	if yesNoString.Yes.IsEqual(info.Vhost) {
+		c.upsertDomainModule(ctx, &info, find.State)
+	} else {
+		c.deleteDomainModule(ctx, info.Code)
 	}
 	return rt.Ok()
 }
@@ -325,6 +354,10 @@ func (c *BasicModuleService) State(ctx *gin.Context, ids []string, state enumSta
 		if info.State != state.IndexInt8() {
 			r.Update(ctx, entityBasic.BasicModuleEntity{State: state.IndexInt8()}, info.ID)
 		}
+		//vhost=yes 时，同步域名模块状态
+		if yesNoString.Yes.IsEqual(info.Vhost) {
+			c.upsertDomainModule(ctx, info, state.IndexInt8())
+		}
 	}
 	return rt.Ok()
 }
@@ -370,6 +403,10 @@ func (c *BasicModuleService) LogicalDeletion(ctx *gin.Context, ids []string) (rt
 			}
 		}
 	}
+	//删除对应的域名模块
+	for _, info := range finds {
+		c.deleteDomainModule(ctx, info.Code)
+	}
 
 	return rt.Ok()
 }
@@ -394,6 +431,10 @@ func (c *BasicModuleService) LogicalRecovery(ctx *gin.Context, ids []string) (rt
 		//  取消 弃置 批量删除，反转 为对应的 有效 停用 停用
 		if ok, reverse := enum.ReverseCancelLayAside(); ok {
 			repository.Update(ctx, entityBasic.BasicModuleEntity{State: reverse.IndexInt8()}, info.ID)
+			//vhost=yes 时，恢复域名模块
+			if yesNoString.Yes.IsEqual(info.Vhost) {
+				c.upsertDomainModule(ctx, info, reverse.IndexInt8())
+			}
 		}
 	}
 	return rt.Ok()
@@ -421,6 +462,10 @@ func (c *BasicModuleService) PhysicalDeletion(ctx *gin.Context, ids []string) (r
 	}
 	if len(idsNew) > 0 {
 		cn.DeleteByIds(ctx, idsNew)
+	}
+	//删除对应的域名模块
+	for _, info := range finds {
+		c.deleteDomainModule(ctx, info.Code)
 	}
 	return rt.Ok()
 }
@@ -545,12 +590,12 @@ func (c *BasicModuleService) SelectNodeAllPublic(ctx *gin.Context, ct modBasicMo
 	return rt.Ok()
 }
 
-// SelectPublic 查询
+// QueryAll 查询
 //
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *BasicModuleService) SelectPublic(ctx *gin.Context, ct modBasicModule.QueryPublicCt) (rt rg.Rs[[]modBasicModule.Vo]) {
+func (c *BasicModuleService) QueryAll(ctx *gin.Context, ct modBasicModule.QueryPublicCt) (rt rg.Rs[[]modBasicModule.Vo]) {
 	var query entityBasic.BasicModuleEntity
 	copier.Copy(&query, &ct)
 	slice := make([]modBasicModule.Vo, 0)

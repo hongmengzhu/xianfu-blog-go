@@ -26,6 +26,7 @@ type BasicModuleEntity struct {
 	TypeSys     string     `gorm:"column:type_sys;type:varchar(80);index;default:'general';comment:类型|普通|系统;" json:"type_sys" comment:"类型;普通;系统;" `
 	TenantNo    string     `gorm:"column:tenant_no;type:varchar(80);index;default:;comment:租户编号" json:"tenant_no" comment:"租户编号" `
 	MerchantNo  string     `gorm:"column:merchant_no;type:varchar(80);index;default:;comment:商户" json:"merchant_no" comment:"商户" `
+	Vhost       string     `gorm:"column:vhost;type:varchar(80);index;default:'no';comment:虚拟域名" json:"vhost" comment:"虚拟域名" `
 }
 
 func (*BasicModuleEntity) TableName() string {

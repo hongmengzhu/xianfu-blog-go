@@ -32,15 +32,7 @@ type ModuleController struct {
 //	@param e
 func (c *ModuleController) RegisterRoutes(e *gin.Engine) {
 	group := e.Group("/xianfu/manage/basic/module", authPg.GroupManageMiddleware(c.Sp))
-	group.POST("/create", c.Create)
-	group.POST("/update", c.Update)
 	group.GET("/detail/:id", c.Detail)
-	group.POST("/enable", c.Enable)
-	group.POST("/disable", c.Disable)
-	group.POST("/state", c.State)
-	group.POST("/delete", c.Delete)
-	group.POST("/recovery", c.Recovery)
-	group.POST("/physicalDeletion", c.PhysicalDeletion)
 	group.POST("/query", c.Query)
 	group.POST("/selectNodeAllPublic", c.SelectNodeAllPublic)
 	group.POST("/existName", c.ExistName)
@@ -190,15 +182,6 @@ func (c *ModuleController) SelectNodeAllPublic(ctx *gin.Context) {
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
 	ctx.JSON(200, c.sv.SelectNodeAllPublic(ctx, ct))
-}
-
-func (c *ModuleController) SelectPublic(ctx *gin.Context) {
-	var ct modBasicModule.QueryPublicCt
-	if !routerPg.BindJson(ctx, &ct) {
-		return
-	}
-	ct.State = enumStatePg.ENABLE.IndexPg()
-	ctx.JSON(200, c.sv.SelectPublic(ctx, ct))
 }
 
 // ExistName 查重

@@ -4,6 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainTc/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/modTcTenant"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsPg/domainPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
@@ -195,7 +197,7 @@ func (c *TenantController) SelectNodePublic(ctx *gin.Context) {
 //	@param ctx
 func (c *TenantController) SelectNodeAllPublic(ctx *gin.Context) {
 	ct := modTcTenant.QueryCt{State: enumStatePg.ENABLE.IndexPg()}
-	ctx.JSON(200, c.sv.SelectNodeAllPublic(ctx, ct))
+	ctx.JSON(200, c.sv.SelectNodeAllPublic(ctx, ct, domainPg.Option{TypeDomain: typeDomainPg.Manage}))
 }
 
 // SelectPublic 选择公开

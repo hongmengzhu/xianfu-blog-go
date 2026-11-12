@@ -33,9 +33,9 @@ func (c *BasicModuleController) RegisterRoutes(e *gin.Engine) {
 	group.POST("/recovery", c.Recovery)
 	group.POST("/physicalDeletion", c.PhysicalDeletion)
 	group.POST("/query", c.Query)
+	group.POST("/queryAll", c.QueryAll)
 	group.POST("/selectNodeAll", c.SelectNodeAll)
 	group.POST("/selectNodeAllPublic", c.SelectNodeAllPublic)
-	group.POST("/selectPublic", c.SelectPublic)
 	group.POST("/existName", c.ExistName)
 	group.POST("/existCode", c.ExistCode)
 }
@@ -139,13 +139,13 @@ func (c *BasicModuleController) SelectNodeAllPublic(ctx *gin.Context) {
 	ctx.JSON(200, c.sv.SelectNodeAllPublic(ctx, ct))
 }
 
-func (c *BasicModuleController) SelectPublic(ctx *gin.Context) {
+func (c *BasicModuleController) QueryAll(ctx *gin.Context) {
 	var ct modBasicModule.QueryPublicCt
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
 	ct.State = enumStatePg.ENABLE.IndexPg()
-	ctx.JSON(200, c.sv.SelectPublic(ctx, ct))
+	ctx.JSON(200, c.sv.QueryAll(ctx, ct))
 }
 
 func (c *BasicModuleController) ExistName(ctx *gin.Context) {

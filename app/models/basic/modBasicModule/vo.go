@@ -19,4 +19,5 @@ type Vo struct {
 	Ano         string              `json:"ano" label:"操作员" `
 	ParentNo    string              `json:"parentNo" label:"上级" `
 	ParentName  string              `json:"parentNane" label:"上级" `
+	Vhost       string              `json:"vhost" label:"虚拟域名" `
 }

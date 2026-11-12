@@ -4,6 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/modTcTenant"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/automatedPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsPg/domainPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
@@ -490,12 +492,15 @@ func (c *TcTenantService) SelectNodeTenantPublic(ctx *gin.Context, ct modTcTenan
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *TcTenantService) SelectNodeAllPublic(ctx *gin.Context, ct modTcTenant.QueryCt) (rt rg.Rs[[]model.BaseNode]) {
+func (c *TcTenantService) SelectNodeAllPublic(ctx *gin.Context, ct modTcTenant.QueryCt, dp domainPg.Option) (rt rg.Rs[[]model.BaseNode]) {
 	var query entityTc.TcTenantEntity
 	copier.Copy(&query, &ct)
 	//
 	holder := holderPg.GetContextAccount(ctx)
 	query.No = holder.GetTenantNo()
+	if typeDomainPg.System.IsEqual(dp.TypeDomain.Code()) {
+		query.No = ""
+	}
 	//
 	slice := make([]model.BaseNode, 0)
 	rt.Data = slice

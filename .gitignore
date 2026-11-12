@@ -22,6 +22,7 @@
 .qoder
 .gocache*
 .tmp-build
+.tmp_*
 data/logs/
 data/attachment/
 data/data/attachment/

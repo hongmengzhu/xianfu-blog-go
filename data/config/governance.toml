@@ -1,7 +1,17 @@
-
-[spring.governance]
-enabled = false
-driver = "default"
-
+# go-spring 治理文档（FileSource 用 fsnotify 监听本文件，保存即热加载，无需重启服务）
+#
+# 重要：旧版的 spring.governance.enabled / driver 开关已被 go-spring 移除，
+# 这两个键现在不绑定任何东西 —— 写 enabled = false 并不会关闭治理，
+# 文档里的策略照旧生效。关闭入站限流的唯一方式是 rate-limit = 0（0 表示不限流）。
+#
+# 之前这里是 rate-limit = 5：整个 gin:9981 实例的所有路由共享 5 req/s（burst 默认取 5），
+# 前端一屏的并发请求就会撞上 429，日志表现为
+# tag=_app_resilience、"server call failed"、error="admission: rate limited"。
 [spring.governance.server.default]
-rate-limit = 5
+rate-limit = 0
+
+# 需要真正限流时改成（示例，按实例吞吐量评估）：
+#   [spring.governance.server.default]
+#   rate-limit = 200
+#   burst = 200
+#   max-concurrent = 100
