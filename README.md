@@ -141,60 +141,50 @@ go mod tidy
 .
 ├── app
 │   └── event                                   事件监听
-│   └── manage                                  后台管理
+│   └── domain                                  域，业务逻辑
 │       ├── domainApi                           api接口权限控制
 │       ├── domainBasic                         基础信息，地区，附件，国家，标签等等
 │       ├── domainBlog                          博客文章，分类
-│       │   ├── controller                          控制器
-│       │   ├── model                               模型实体
-│       │   │   └── modUser                         用户模型实体
 │       │   └── service                             服务
 │       ├── domainRam                           后台账号，权限相关
 │       └── domainTc                            租户相关
-│   └── system                                  系统管理
-│       ├── basic                               基础信息，地区，附件，国家，标签等等
-│       ├── ram                                 后台账号，权限相关
-│       └── tc                                  租户相关
-│   └── web                                     前台用户访问和对外api
-│       ├── api                                对外api
-│       ├── blog                               博客首页
-│       │   ├── controller                          控制器
-│       │   ├── model                               模型实体
-│       │   │   └── modUser                         用户模型实体
-│       │   └── service                             服务
-│       └── utils                               模块工具类
-├── assets                                      web 静态资源
-│   └── img                                     图片
-│   └── static                                  博客静态文件相关
-├── cmd                                         命令文件目录，启动入口文件目录(多项目分别启动时使用)
+│   └── handler                                 控制器，入口
+│       ├── api                                 对外api
+│       ├── manage                              后台管理
+│       ├── system                              系统管理
+│       └── web                                 前台用户访问和对外api
+│   └── models                                  模型实体
+│       ├── api                                 api 模型实体
+│       └── blog                                博客  模型实体
+├── cmd                                         命令文件目录，启动入口文件目录(多项目分别启动时使用) 目前未用到
 │   ├── admin                                   admin项目
 │   ├── api                                     api项目
 │   └── moreServer                              多服务端口 启动
 ├── data                                        数据文件目录
+│   ├── assets                                      web 静态资源
+│   │   └── img                                     图片
+│   │   └── static                                  博客静态文件相关
 │   ├── attachment                              上传文件夹目录
 │   ├── config                                  配置文件目录
+│   ├── log                                     日志文件目录
 │   └── templates                               模版文件
-├── doc                                         文档说明
-├── infrastructure                              实体类，结构体，数据库表映射，资源映射
-│   ├── entityDemo                              数据库表映射
-│   └── repositoryDemo                          资源映射
-├── middleware                                  中间件
-│   ├── authPg                                    权限认证
-│   ├── cachePg                                   缓存
-│   ├── components                                其他组件相关
-│   ├── dbPg                                      数据库
-│   │   └── postgresqlPg
-│   ├── runnerPg                                  应用启动后立即执行的一次性任务（初始化等）
-│   ├── serverPg                                  服务端，多服务端
-│   │   ├── ginServer                           gin 服务端
-│   │   └── httpServer                          自定义 http 服务端
-│   └── validatorPg                               验证器
+├── docs                                         文档说明
 ├── pkg                                         可以被其他应用导入
 │   ├── configPg                                配置结构映射
+│   ├── core                                    核心功能
+│   ├── infrastructure                              实体类，结构体，数据库表映射，资源映射
+│   │   ├── entityDemo                              数据库表映射
+│   │   └── repositoryDemo                          资源映射
+│   ├── middleware                                  中间件
+│   │   ├── authPg                                    权限认证
+│   │   ├── cachePg                                   缓存加载
+│   │   ├── components                                其他组件相关
+│   │   ├── runnerPg                                  应用启动后立即执行的一次性任务（初始化等）
+│   │   ├── staterEchoV5                              echo服务端
+│   │   └── validatorPg                               验证器
 │   └── tools                                   工具类
 │       └── wrapperPg
 │           └── rg
-├── router                                      路由
 └── scripts                                     构建、安装、分析等不同功能的脚本文件
 └── test                                        测试目录
 
