@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/hongmengzhu/xianfu-blog-go/app/handlerVhost"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmark/modApiBmBookmark"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkCategory/modApiBmBookmarkCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/blog/bookmarkTypeOwnerPg"
@@ -58,6 +59,7 @@ func (c *BmBookmarkApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBmBookma
 		q.TenantNo = holder.GetTenantNo()
 		q.Ano = holder.GetAno()
 		q.TypeOwner = bookmarkTypeOwnerPg.MY.Code()
+		q.Module = handlerVhost.Host_bookmark
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, item := range infos {
@@ -74,6 +76,7 @@ func (c *BmBookmarkApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBmBookma
 		q.State = enumStatePg.ENABLE.Index()
 		q.TenantNo = holder.GetTenantNo()
 		q.TypeOwner = bookmarkTypeOwnerPg.TEAM.Code()
+		q.Module = handlerVhost.Host_bookmark
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, item := range infos {
@@ -90,6 +93,7 @@ func (c *BmBookmarkApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApiBmBookma
 		q.State = enumStatePg.ENABLE.Index()
 		q.TenantNo = holder.GetTenantNo()
 		q.TypeOwner = bookmarkTypeOwnerPg.ORG.Code()
+		q.Module = handlerVhost.Host_bookmark
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, item := range infos {
@@ -119,6 +123,7 @@ func (c *BmBookmarkApiService) GetMy(ctx *gin.Context, ct modApiBmBookmark.Query
 		q.TenantNo = holder.GetTenantNo()
 		q.Ano = holder.GetAno()
 		q.TypeOwner = bookmarkTypeOwnerPg.MY.Code()
+		q.Module = handlerVhost.Host_bookmark
 		infos := c.sv.FindAll(ctx, q, optionsPg.WithCondition(func(db *gorm.DB) *gorm.DB {
 			// 未读完
 			if ("un" + typeReadingPg.COMPLETED.Index()) == ct.TypeReading {
@@ -155,6 +160,7 @@ func (c *BmBookmarkApiService) GetOrg(ctx *gin.Context, ct modApiBmBookmark.Quer
 		q.TenantNo = holder.GetTenantNo()
 		q.Ano = holder.GetAno()
 		q.TypeOwner = bookmarkTypeOwnerPg.ORG.Code()
+		q.Module = handlerVhost.Host_bookmark
 		infos := c.sv.FindAll(ctx, q, optionsPg.WithCondition(func(db *gorm.DB) *gorm.DB {
 			// 未读完
 			if ("un" + typeReadingPg.COMPLETED.Index()) == ct.TypeReading {
@@ -203,6 +209,7 @@ func (c *BmBookmarkApiService) Create(ctx *gin.Context, ct modApiBmBookmark.Crea
 	info.Ano = holder.GetAno()
 	info.No = noPg.No()
 	info.Code = info.No
+	info.Module = handlerVhost.Host_bookmark
 	err, _ = c.sv.Create(ctx, &info)
 	if err != nil {
 		return rt.ErrorMessage("保存失败 " + err.Error())
@@ -224,6 +231,9 @@ func (c *BmBookmarkApiService) Update(ctx *gin.Context, ct modApiBmBookmark.Crea
 	}
 	if find.TenantNo != holder.GetTenantNo() {
 		return rt.ErrorMessage("无权限")
+	}
+	if handlerVhost.Host_bookmark != find.Module {
+		return rt.ErrorMessage("数据不存在")
 	}
 	var info entityBm.BmBookmarkEntity
 	err := copier.Copy(&info, &ct)
@@ -257,15 +267,23 @@ func (c *BmBookmarkApiService) LogicalDeletion(ctx *gin.Context, ids []string) (
 		return rt.ErrorMessage("id错误")
 	}
 	repository := c.sv
-	finds, b := repository.FindAllByIdStringIn(ctx, ids, optionsPg.WithCtx(ctx))
+	finds, b := repository.FindAllByIdStringIn(ctx, ids, optionsPg.WithCtx(ctx), optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
+		arg.Condition = func(db *gorm.DB) *gorm.DB {
+			return db.Where("module = ?", handlerVhost.Host_bookmark)
+		}
+	}))
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
 	if c.sv.Config().Data.Delete {
+		idsFind := make([]string, 0)
 		for _, info := range finds {
+			idsFind = append(idsFind, numberPg.Int64ToString(info.ID))
 			log.Info(ctx, log.TagAppDef, "LogicalDeletion", log.Any("id", info.ID), log.Any("TenantNo", info.TenantNo))
 		}
-		repository.DeleteByIdsString(ctx, ids)
+		if len(idsFind) > 0 {
+			repository.DeleteByIdsString(ctx, idsFind)
+		}
 	} else {
 		for _, info := range finds {
 			enum := enumStatePg.State(info.State)
@@ -285,7 +303,11 @@ func (c *BmBookmarkApiService) SetTypeReading(ctx *gin.Context, ct modApiBmBookm
 	if ct.ID.ToInt64() <= 0 {
 		return rt.ErrorMessage("ID不能为空")
 	}
-	find, b := c.sv.FindById(ctx, ct.ID.ToInt64(), optionsPg.WithCtx(ctx))
+	find, b := c.sv.FindById(ctx, ct.ID.ToInt64(), optionsPg.WithCtx(ctx), optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
+		arg.Condition = func(db *gorm.DB) *gorm.DB {
+			return db.Where("module = ?", handlerVhost.Host_bookmark)
+		}
+	}))
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}

@@ -21,7 +21,7 @@ func init() {
 // @Description:
 type ExplainController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
+	Sp *authPg.GroupSystemMiddlewareSp `autowire:"?"`
 	sv *service.BasicExplainService    `autowire:"?"`
 }
 
@@ -31,7 +31,7 @@ type ExplainController struct {
 //	@receiver c
 //	@param e
 func (c *ExplainController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/sys/basic/Explain", authPg.GroupManageMiddleware(c.Sp))
+	group := e.Group("/xianfu/sys/basic/explain", authPg.GroupSystemMiddleware(c.Sp))
 	group.POST("/createUpdate", c.CreateUpdate)
 	group.GET("/detail/:id", c.Detail)
 	group.POST("/enable", c.Enable)

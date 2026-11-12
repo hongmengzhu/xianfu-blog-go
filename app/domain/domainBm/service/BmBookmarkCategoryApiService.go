@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/hongmengzhu/xianfu-blog-go/app/handlerVhost"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/bm/modBmBookmarkCategory/modApiBmBookmarkCategory"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/automatedPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constNodePg"
@@ -20,6 +21,7 @@ import (
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
+	"gorm.io/gorm"
 )
 
 func init() {
@@ -46,6 +48,7 @@ func (c *BmBookmarkCategoryApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApi
 		q.TenantNo = holder.GetTenantNo()
 		q.Ano = holder.GetAno()
 		q.TypeOwner = bookmarkTypeOwnerPg.MY.Code()
+		q.Module = handlerVhost.Host_bookmark
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, info := range infos {
@@ -67,6 +70,7 @@ func (c *BmBookmarkCategoryApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApi
 		q.State = enumStatePg.ENABLE.Index()
 		q.TenantNo = holder.GetTenantNo()
 		q.TypeOwner = bookmarkTypeOwnerPg.TEAM.Code()
+		q.Module = handlerVhost.Host_bookmark
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, info := range infos {
@@ -88,6 +92,7 @@ func (c *BmBookmarkCategoryApiService) GetAll(ctx *gin.Context) (rt rg.Rs[modApi
 		q.State = enumStatePg.ENABLE.Index()
 		q.TenantNo = holder.GetTenantNo()
 		q.TypeOwner = bookmarkTypeOwnerPg.ORG.Code()
+		q.Module = handlerVhost.Host_bookmark
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, info := range infos {
@@ -121,6 +126,7 @@ func (c *BmBookmarkCategoryApiService) GetMy(ctx *gin.Context) (rt rg.Rs[[]modAp
 		q.TenantNo = holder.GetTenantNo()
 		q.Ano = holder.GetAno()
 		q.TypeOwner = bookmarkTypeOwnerPg.MY.Code()
+		q.Module = handlerVhost.Host_bookmark
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, info := range infos {
@@ -153,6 +159,7 @@ func (c *BmBookmarkCategoryApiService) GetOrg(ctx *gin.Context) (rt rg.Rs[[]modA
 		q.TenantNo = holder.GetTenantNo()
 		q.Ano = holder.GetAno()
 		q.TypeOwner = bookmarkTypeOwnerPg.ORG.Code()
+		q.Module = handlerVhost.Host_bookmark
 		infos := c.sv.FindAll(ctx, q)
 		if nil != infos {
 			for _, info := range infos {
@@ -196,12 +203,20 @@ func (c *BmBookmarkCategoryApiService) CreateUpdate(ctx *gin.Context, ct modApiB
 		if strPg.IsBlank(info.Code) {
 			info.Code = ""
 		} else {
-			_, result := r.FindByCodeAndIdNot(ctx, info.Code, ct.ID.ToString(), optionsPg.WithCtx(ctx))
+			_, result := r.FindByCodeAndIdNot(ctx, info.Code, ct.ID.ToString(), optionsPg.WithCtx(ctx), optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
+				arg.Condition = func(db *gorm.DB) *gorm.DB {
+					return db.Where("module = ?", handlerVhost.Host_bookmark)
+				}
+			}))
 			if result {
 				return rt.ErrorMessage("码值已存在")
 			}
 		}
-		find, b := r.FindById(ctx, ct.ID.ToInt64())
+		find, b := r.FindById(ctx, ct.ID.ToInt64(), optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
+			arg.Condition = func(db *gorm.DB) *gorm.DB {
+				return db.Where("module = ?", handlerVhost.Host_bookmark)
+			}
+		}))
 		if !b {
 			return rt.ErrorMessage("数据不存在")
 		}
@@ -312,6 +327,7 @@ func (c *BmBookmarkCategoryApiService) CreateUpdate(ctx *gin.Context, ct modApiB
 	holder := holderApiPg.GetContextAccount(ctx)
 	info.TenantNo = holder.GetTenantNo()
 	info.Ano = holder.GetAno()
+	info.Module = handlerVhost.Host_bookmark
 	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	err, _ = r.Create(ctx, &info)
 	if err != nil {
@@ -363,7 +379,11 @@ func (c *BmBookmarkCategoryApiService) LogicalDeletion(ctx *gin.Context, ids []s
 		return rt.ErrorMessage("id错误")
 	}
 	repository := c.sv
-	finds, b := repository.FindAllByIdStringIn(ctx, ids, optionsPg.WithCtx(ctx))
+	finds, b := repository.FindAllByIdStringIn(ctx, ids, optionsPg.WithCtx(ctx), optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
+		arg.Condition = func(db *gorm.DB) *gorm.DB {
+			return db.Where("module = ?", handlerVhost.Host_bookmark)
+		}
+	}))
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}

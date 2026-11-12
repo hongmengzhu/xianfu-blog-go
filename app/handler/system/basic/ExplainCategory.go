@@ -17,11 +17,11 @@ func init() {
 	gs.Provide(new(ExplainCategoryController)).Name("SystemExplainCategoryController").Export(gs.As[routerPg.RouteRegistrar]())
 }
 
-// ExplainCategoryController 工具分类
+// ExplainCategoryController 说明分类
 // @Description:
 type ExplainCategoryController struct {
 	routerPg.RouteRegistrar
-	Sp *authPg.GroupManageMiddlewareSp      `autowire:"?"`
+	Sp *authPg.GroupSystemMiddlewareSp      `autowire:"?"`
 	sv *service.BasicExplainCategoryService `autowire:"?"`
 }
 
@@ -31,7 +31,7 @@ type ExplainCategoryController struct {
 //	@receiver c
 //	@param e
 func (c *ExplainCategoryController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/sys/basic/explain-category", authPg.GroupManageMiddleware(c.Sp))
+	group := e.Group("/xianfu/sys/basic/explain-category", authPg.GroupSystemMiddleware(c.Sp))
 	group.POST("/create", c.Create)
 	group.POST("/update", c.Update)
 	group.GET("/detail/:id", c.Detail)
