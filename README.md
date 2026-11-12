@@ -1,10 +1,10 @@
 # GO语言博客
 ## 框架
-> 框架：gin,go-spring,
+> 框架：gin,go-spring,echo
 > 
-> golang 1.26
-> 数据库：postgreSql 18
-> redis: 7
+> golang 1.27
+> 数据库：postgreSql 18/mysql/sqlite
+> 缓存：bigcache
 
 
 管理后台的前端代码：[https://github.com/hongmengzhu/xianfu-blog-go-frontend](https://github.com/hongmengzhu/xianfu-blog-go-frontend "管理后台前端代码")
@@ -14,19 +14,21 @@
 - [x] 图片 上传
 - [x] markdown 编辑器
 - [x] 管理员 增删改查，密码修改
-- [ ] 每个租户独立域名
+- [x] 每个租户独立域名
+- [x] 菜单
+- [x] 缓存
+- [x] 标签
+- [x] 附件
+- [x] 角色和权限
+- [x] 省市区
+- [x] 博客前台显示
+- [x] 博客网摘
+- [x] 私有书签
+- [x] 组织书签
 - [ ] 未来功能
   - [ ] 站点属性配置
-  - [ ] 博客前台显示
   - [ ] 七牛云存储
-  - [ ] 博客网摘
-  - [ ] 省市区
-  - [ ] 省市区
-  - [ ] 角色和权限
-  - [ ] 菜单
-  - [ ] 缓存
-  - [ ] 标签
-  - [ ] 附件
+
 
 ## 编译
 ### GO环境变量
@@ -44,7 +46,7 @@ git clone https://github.com/hongmengzhu/xianfu-blog-go
 ```
 ### 进入目录
 ```go
-cd blog-go
+cd xianfu-blog-go
 ```
 ### 下载项目依赖
 整理依赖（下载缺失的依赖 + 删除未使用的依赖）
@@ -53,7 +55,7 @@ go mod tidy
 ```
 ### 不编译，直接运行
 ```bash
-go run main.go
+go run .
 ```
 ### 编译打包
 编译 可以在 linux 系统中运行的程序
