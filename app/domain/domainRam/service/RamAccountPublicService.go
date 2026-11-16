@@ -37,6 +37,19 @@ func NewRamAccountPublicService() *RamAccountPublicService {
 	return new(RamAccountPublicService)
 }
 
+func publicAccountRoles(account holderPg.AccountHolder) []string {
+	roles := make([]string, 0, len(account.Os.Roles)+1)
+	for _, role := range account.Os.Roles {
+		if strPg.IsNotBlank(role) {
+			roles = append(roles, role)
+		}
+	}
+	if len(roles) == 0 && account.Founder == 1 {
+		roles = append(roles, "administrator")
+	}
+	return roles
+}
+
 // Public 登陆用户信息
 func (c *RamAccountPublicService) Public(ctx *gin.Context, holder holderPg.HolderPg) (rt rg.Rs[modPublic.InfoPublicVo]) {
 	log.Info(ctx, log.TagAppDef, "holder", log.Any("holder", holder))
@@ -55,8 +68,7 @@ func (c *RamAccountPublicService) Public(ctx *gin.Context, holder holderPg.Holde
 	if len(account.Os.Departments) > 0 {
 		data.Info.Departments = account.Os.Departments
 	}
-	data.Info.Roles = make([]string, 0)
-	data.Info.Roles = append(data.Info.Roles, "administrator")
+	data.Info.Roles = publicAccountRoles(account)
 	rt.Data = data
 	return rt.Ok()
 }
@@ -76,8 +88,7 @@ func (c *RamAccountPublicService) InfoPublic(ctx *gin.Context, holder holderPg.H
 	data.Username = account.Account
 	data.UserId = numberPg.Int64ToString(account.ID)
 	data.Departments = make([]string, 0)
-	data.Roles = make([]string, 0)
-	data.Roles = append(data.Roles, "administrator")
+	data.Roles = publicAccountRoles(account)
 	if len(account.Os.Departments) > 0 {
 		data.Departments = account.Os.Departments
 	}

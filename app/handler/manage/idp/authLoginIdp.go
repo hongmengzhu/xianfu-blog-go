@@ -2,6 +2,7 @@ package idp
 
 import (
 	"fmt"
+	"html"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -40,6 +41,8 @@ type AuthLoginIdpController struct {
 func (c *AuthLoginIdpController) RegisterRoutes(e *gin.Engine) {
 	group := e.Group("/xianfu/auth/manage/idp")
 	group.POST("/login", c.Login)
+	// 服务端签发 state 与授权地址，state 只能一次性使用
+	group.POST("/authorize", c.Authorize)
 	group.POST("/refresh", c.RefreshToken)
 	group.POST("/mfa/verify", c.MfaVerify)
 	group.POST("/mfa/recover", c.MfaRecover)
@@ -54,6 +57,15 @@ func (c *AuthLoginIdpController) RegisterRoutes(e *gin.Engine) {
 
 	// CAS 登录端点
 	group.POST("/cas/login", c.CasLogin)
+}
+
+// Authorize 生成 OAuth state 与授权地址
+func (c *AuthLoginIdpController) Authorize(ctx *gin.Context) {
+	var ct modRamLogin.IdpLoginCt
+	if !routerPg.BindJson(ctx, &ct) {
+		return
+	}
+	ctx.JSON(200, c.sv.Authorize(ctx, ct))
 }
 
 // Login IDP OAuth 登陆
@@ -118,15 +130,15 @@ func (c *AuthLoginIdpController) SamlLogin(ctx *gin.Context) {
 	if vo.Method == "POST" && vo.PostBody != "" {
 		// POST 绑定：返回自动提交的 HTML 表单
 		ctx.Header("Content-Type", "text/html; charset=utf-8")
-		html := fmt.Sprintf(`<!DOCTYPE html>
+		page := fmt.Sprintf(`<!DOCTYPE html>
 <html><body>
 <form id="samlForm" method="POST" action="%s">
 %s
 <input type="hidden" name="RelayState" value="%s" />
 </form>
 <script>document.getElementById('samlForm').submit();</script>
-</body></html>`, vo.RedirectUrl, vo.PostBody, vo.RedirectUrl)
-		ctx.String(http.StatusOK, html)
+</body></html>`, html.EscapeString(vo.RedirectUrl), vo.PostBody, html.EscapeString(vo.RelayState))
+		ctx.String(http.StatusOK, page)
 	} else {
 		// GET 绑定：重定向
 		ctx.Redirect(http.StatusFound, vo.RedirectUrl)
@@ -139,11 +151,10 @@ func (c *AuthLoginIdpController) SamlCallback(ctx *gin.Context) {
 		SAMLResponse: ctx.PostForm("SAMLResponse"),
 		RelayState:   ctx.PostForm("RelayState"),
 	}
+	// 仅接受 POST 绑定，避免 SAMLResponse 进入 URL/代理日志与 Referer。
 	if ct.SAMLResponse == "" {
-		ct.SAMLResponse = ctx.Query("SAMLResponse")
-	}
-	if ct.RelayState == "" {
-		ct.RelayState = ctx.Query("RelayState")
+		ctx.JSON(200, rg.Error[string]("SAMLResponse 不能为空"))
+		return
 	}
 
 	result := c.samlService.HandleSamlCallback(ctx, ct)

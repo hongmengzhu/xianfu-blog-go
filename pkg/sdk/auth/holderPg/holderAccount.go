@@ -38,6 +38,7 @@ type AccountHolder struct {
 	GroupNo       string          `json:"groupNo" comment:"组id"`
 	DepartmentNo  string          `json:"departmentNo" comment:"主部门id"`
 	TypeDomain    string          `json:"typeDomain" comment:"域类型" `
+	Founder       int8            `json:"founder" comment:"创始人1是2否"`
 	Os            AccountHolderOs `json:"os" comment:"组织架构" `
 }
 

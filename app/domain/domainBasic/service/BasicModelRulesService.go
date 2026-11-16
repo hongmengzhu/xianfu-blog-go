@@ -36,9 +36,20 @@ func (c *BasicModelRulesService) CreateUpdate(ctx *gin.Context, ct modBasicModel
 }
 
 // Detail 详情
-//func (c *BasicModelRulesService) Detail(ctx *gin.Context, id string) (rt rg.Rs[modBasicModelRules.CreateUpdateCt]) {
-//	return configEvent.NewDetail(c.sp).Process(ctx, id)
-//}
+func (c *BasicModelRulesService) Detail(ctx *gin.Context, id int64) (rt rg.Rs[modBasicModelRules.CreateUpdateCt]) {
+	if id < 1 {
+		return rt.ErrorMessage("id错误")
+	}
+	find, b := c.sv.FindById(ctx, id)
+	if !b {
+		return rt.ErrorMessage("数据不存在")
+	}
+	var vo modBasicModelRules.CreateUpdateCt
+	if err := copier.Copy(&vo, &find); nil != err {
+		log.Info(ctx, log.TagAppDef, "copier.Copy error:", log.Any("err", err.Error()))
+	}
+	return rt.OkData(vo)
+}
 
 // Enable 启用
 //

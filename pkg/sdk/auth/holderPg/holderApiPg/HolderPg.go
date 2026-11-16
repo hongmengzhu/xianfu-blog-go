@@ -9,8 +9,11 @@ type HolderPg struct {
 	holderIfPg.StandardHolder
 }
 
-func (c *HolderPg) GetTenantNo() string {
-	return c.HolderData.(DiplHolder).TenantNo
+func (c HolderPg) GetTenantNo() string {
+	if holder, ok := c.HolderData.(DiplHolder); ok {
+		return holder.TenantNo
+	}
+	return ""
 }
 
 func (c *HolderPg) GetJwt() jwtHolder.JwtPg {
@@ -18,15 +21,24 @@ func (c *HolderPg) GetJwt() jwtHolder.JwtPg {
 }
 
 func (c HolderPg) GetDipl() DiplHolder {
-	return c.HolderData.(DiplHolder)
+	if holder, ok := c.HolderData.(DiplHolder); ok {
+		return holder
+	}
+	return DiplHolder{}
 }
 
 func (c HolderPg) GetDiplNo() string {
-	return c.HolderData.(DiplHolder).No
+	if holder, ok := c.HolderData.(DiplHolder); ok {
+		return holder.No
+	}
+	return ""
 }
 
 func (c HolderPg) GetAno() string {
-	return c.HolderData.(DiplHolder).Ano
+	if holder, ok := c.HolderData.(DiplHolder); ok {
+		return holder.Ano
+	}
+	return ""
 }
 
 // GetMerchantNo

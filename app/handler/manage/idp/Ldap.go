@@ -5,6 +5,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modIdpLdap"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"go-spring.org/spring/gs"
 )
 
@@ -15,16 +16,20 @@ func init() {
 // LdapController LDAP 管理
 type LdapController struct {
 	routerPg.RouteRegistrar
-	sv *service.LdapService `autowire:"?"`
+	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
+	sv *service.LdapService            `autowire:"?"`
 }
 
 // RegisterRoutes 注册路由
 func (c *LdapController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/manage/ram-idp/ldap")
-	group.POST("/test", c.TestConnection)
-	group.POST("/search", c.SearchUsers)
-	group.POST("/sync", c.SyncUsers)
-	group.POST("/login", c.Login)
+	// 管理操作（连接测试/搜索/同步）必须登录；登录端点保持公开，
+	// 但服务层会校验认证源协议、启用状态与 MFA。
+	adminGroup := e.Group("/xianfu/manage/ram-idp/ldap", authPg.GroupManageMiddleware(c.Sp))
+	adminGroup.POST("/test", c.TestConnection)
+	adminGroup.POST("/search", c.SearchUsers)
+	adminGroup.POST("/sync", c.SyncUsers)
+	loginGroup := e.Group("/xianfu/manage/ram-idp/ldap")
+	loginGroup.POST("/login", c.Login)
 }
 
 // TestConnection 测试 LDAP 连接

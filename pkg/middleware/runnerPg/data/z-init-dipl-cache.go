@@ -37,12 +37,15 @@ func (b *ZInitDiplCache) Run(ctx context.Context) error {
 			//加入缓存
 			sha := cacheDiplPg.HashSha(info.Key, info.Secret)
 			obj := cacheDiplPg.DiplCo{
-				HashSha:  sha,
-				No:       info.DiplNo,
-				TenantNo: info.TenantNo,
-				Key:      info.Key,
-				Secret:   info.Secret,
-				Ano:      info.Ano,
+				HashSha:       sha,
+				No:            info.DiplNo,
+				TenantNo:      info.TenantNo,
+				Key:           info.Key,
+				Secret:        info.Secret,
+				Ano:           info.Ano,
+				State:         info.State,
+				ExpiryDate:    info.ExpiryDate,
+				PrincipalType: info.PrincipalType,
 			}
 			cacheDiplPg.Set(info.Key, obj)
 		}

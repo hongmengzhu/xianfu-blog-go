@@ -17,6 +17,7 @@ import (
 	"github.com/jinzhu/copier"
 	"github.com/pangu-2/go-tools/tools/noPg"
 	"github.com/pangu-2/go-tools/tools/numberPg"
+	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
@@ -114,7 +115,9 @@ func (c *BmBookmarkApiService) GetMy(ctx *gin.Context, ct modApiBmBookmark.Query
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
 	//
 	holder := holderApiPg.GetContextAccount(ctx)
-	//
+	if strPg.IsBlank(holder.GetAno()) {
+		return rt.OkData(make([]modApiBmBookmark.Vo, 0))
+	}
 	data := make([]modApiBmBookmark.Vo, 0)
 	//
 	{
@@ -269,7 +272,8 @@ func (c *BmBookmarkApiService) LogicalDeletion(ctx *gin.Context, ids []string) (
 	repository := c.sv
 	finds, b := repository.FindAllByIdStringIn(ctx, ids, optionsPg.WithCtx(ctx), optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
 		arg.Condition = func(db *gorm.DB) *gorm.DB {
-			return db.Where("module = ?", handlerVhost.Host_bookmark)
+			return db.Where("module = ?", handlerVhost.Host_bookmark).
+				Where("tenant_no = ?", holderApiPg.GetContextAccount(ctx).GetTenantNo())
 		}
 	}))
 	if !b {

@@ -4,6 +4,8 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainIdp/service"
@@ -36,31 +38,41 @@ func (c *AuthWechatOaController) RegisterRoutes(e *gin.Engine) {
 	group.GET("/poll/:ticket", c.PollScanStatus)
 }
 
+func (c *AuthWechatOaController) verifyWebhook(ctx *gin.Context) bool {
+	sourceNo := strings.TrimSpace(ctx.Query("sourceNo"))
+	if sourceNo == "" {
+		return false
+	}
+	wechatToken := c.sv.GetWechatOaToken(ctx, sourceNo)
+	if strings.TrimSpace(wechatToken) == "" {
+		return false
+	}
+	signature := ctx.Query("signature")
+	timestamp := ctx.Query("timestamp")
+	nonce := ctx.Query("nonce")
+	if signature == "" || timestamp == "" || nonce == "" {
+		return false
+	}
+	ts, err := strconv.ParseInt(timestamp, 10, 64)
+	if nil != err || time.Now().Unix()-ts > 300 || ts-time.Now().Unix() > 300 {
+		return false
+	}
+	return c.sv.VerifySignature(wechatToken, nonce, timestamp, signature)
+}
+
 // WebhookVerify 微信服务器验证（GET /webhook）
 //
 //	@Description: 微信服务器发送 GET 请求验证 URL 有效性，需原样返回 echostr
 //	@receiver c
 //	@param ctx
 func (c *AuthWechatOaController) WebhookVerify(ctx *gin.Context) {
-	signature := ctx.Query("signature")
-	timestamp := ctx.Query("timestamp")
-	nonce := ctx.Query("nonce")
 	echostr := ctx.Query("echostr")
 
-	// 尝试从 sourceNo 参数获取 token
-	sourceNo := ctx.Query("sourceNo")
-	wechatToken := ""
-	if sourceNo != "" {
-		wechatToken = c.sv.GetWechatOaToken(ctx, sourceNo)
-	}
-
-	// 如果配置了 token 则验证签名
-	if wechatToken != "" {
-		if !c.sv.VerifySignature(wechatToken, nonce, timestamp, signature) {
-			log.Warn(ctx, log.TagAppDef, "微信 webhook 签名验证失败: sourceNo=%s", log.Any("sourceNo", sourceNo))
-			ctx.String(http.StatusOK, "invalid signature")
-			return
-		}
+	// 必须配置 token 且签名有效，未配置时不再放行。
+	if !c.verifyWebhook(ctx) {
+		log.Warn(ctx, log.TagAppDef, "微信 webhook 签名验证失败", log.Any("sourceNo", ctx.Query("sourceNo")))
+		ctx.String(http.StatusForbidden, "invalid signature")
+		return
 	}
 
 	// 原样返回 echostr（微信要求返回纯文本）
@@ -78,7 +90,12 @@ func (c *AuthWechatOaController) WebhookVerify(ctx *gin.Context) {
 //	@receiver c
 //	@param ctx
 func (c *AuthWechatOaController) WebhookEvent(ctx *gin.Context) {
-	bodyBytes, err := io.ReadAll(ctx.Request.Body)
+	if !c.verifyWebhook(ctx) {
+		log.Warn(ctx, log.TagAppDef, "微信事件签名验证失败", log.Any("sourceNo", ctx.Query("sourceNo")))
+		ctx.String(http.StatusForbidden, "")
+		return
+	}
+	bodyBytes, err := io.ReadAll(io.LimitReader(ctx.Request.Body, 1<<20))
 	if err != nil {
 		log.Error(ctx, log.TagAppDef, err, "读取微信 webhook body 失败")
 		ctx.String(http.StatusOK, "")

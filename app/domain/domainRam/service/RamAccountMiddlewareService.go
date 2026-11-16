@@ -65,13 +65,17 @@ func (c *RamAccountMiddlewareService) FindByLoginNoTenant(ctx *gin.Context, no, 
 	accountHolder2.Os.Departments = info.Os.Data().Departments
 	accountHolder2.Os.Roles = info.Os.Data().Roles
 	accountHolder2.Os.Orgs = info.Os.Data().Orgs
-	accountHolder2.Os.Tenants = info.Os.Data().Tenants
+	tenants := info.Os.Data().Tenants
+	if len(tenants) == 0 && strPg.IsNotBlank(info.TenantNo) {
+		tenants = []string{info.TenantNo}
+	}
+	accountHolder2.Os.Tenants = tenants
 	accountHolder2.Os.Teams = info.Os.Data().Teams
 	accountHolder2.Os.Shops = info.Os.Data().Shops
 	accountHolder2.Os.Stores = info.Os.Data().Stores
 	//
 	pg.MultiTenant = multiTenantPg.MultiTenantPg{
-		TenantNo: accountHolder2.Os.Tenants,
+		TenantNo: tenants,
 	}
 	pg.HolderData = accountHolder2
 	pg.TypeDomain = typeDomainPg.Manage.Code()

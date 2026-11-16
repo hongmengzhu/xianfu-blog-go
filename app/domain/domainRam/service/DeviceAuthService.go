@@ -157,10 +157,18 @@ func (c *DeviceAuthService) issueTokenForDevice(ctx *gin.Context, cache deviceau
 		return rt.ErrorMessage("账户已被禁用")
 	}
 
+	// 已签发过则返回同一份令牌，避免每次 poll 重复签发。
+	if cache.Status == deviceauth.StatusTokenIssued && strPg.IsNotBlank(cache.AccessToken) {
+		return rt.OkData(modRamDeviceAuth.DeviceStatusVo{
+			Status:       "approved",
+			AccessToken:  cache.AccessToken,
+			RefreshToken: cache.RefreshToken,
+		})
+	}
 	mult := multiTenantPg.MultiTenantPg{
 		TenantNo: []string{account.TenantNo},
 	}
-	tokenResult := c.loginSv.MakeToken(ctx, mult, account, typeDomainPg.System, clientPg.Browser, true)
+	tokenResult := c.loginSv.MakeToken(ctx, mult, account, typeDomainPg.Manage, clientPg.Browser, true)
 	if tokenResult.ErrorIs() {
 		return rt.ErrorMessage(tokenResult.Message)
 	}
@@ -168,6 +176,8 @@ func (c *DeviceAuthService) issueTokenForDevice(ctx *gin.Context, cache deviceau
 
 	// 更新状态为 token_issued
 	cache.Status = deviceauth.StatusTokenIssued
+	cache.AccessToken = data.Access
+	cache.RefreshToken = data.Refresh
 	c.store.Update(cache)
 
 	return rt.OkData(modRamDeviceAuth.DeviceStatusVo{

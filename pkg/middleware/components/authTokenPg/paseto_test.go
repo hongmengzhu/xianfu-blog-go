@@ -48,9 +48,9 @@ func TestToken(t *testing.T) {
 		parser.AddRule(paseto.ValidAt(time.Now()))
 		token, err := parser.ParseV4Public(publicKey, signed, nil)
 		if nil != err {
-			log.Error(context.Background(), log.TagAppDef, err, "验证失败= %+v", err)
+			log.Error(context.Background(), log.TagAppDef, err, "验证失败", log.Any("err", err))
 		} else {
-			log.Info(context.Background(), log.TagAppDef, "验证成功= %+v", token)
+			log.Info(context.Background(), log.TagAppDef, "验证成功", log.Any("token", token))
 		}
 	} else {
 		t.Error(rt.Message)
@@ -91,8 +91,8 @@ func TestTokenVerify(t *testing.T) {
 	//parser.AddRule(paseto.ValidAt(time.Now()))
 	token, err := parser.ParseV4Public(publicKey, signed, nil)
 	if nil != err {
-		log.Error(context.Background(), log.TagAppDef, err, "验证失败= %+v", err)
+		log.Error(context.Background(), log.TagAppDef, err, "验证失败", log.Any("err", err))
 	} else {
-		log.Info(context.Background(), log.TagAppDef, "验证成功= %+v", token)
+		log.Info(context.Background(), log.TagAppDef, "验证成功", log.Any("token", token))
 	}
 }

@@ -167,6 +167,9 @@ func ParseUnverified(token string) ([]byte, bool) {
 	if !b {
 		return nil, false
 	}
+	if len(bytes) <= 64 {
+		return nil, false
+	}
 	signatureOffset := len(bytes) - 64
 	message := make([]byte, len(bytes)-64)
 	copy(message, bytes[:signatureOffset])

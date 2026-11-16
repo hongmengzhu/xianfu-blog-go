@@ -2,7 +2,9 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -19,12 +21,14 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/idpPg/idp"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/pangu-2/go-tools/tools/noPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
 	"golang.org/x/oauth2"
+	"gorm.io/gorm"
 )
 
 func init() {
@@ -34,17 +38,52 @@ func init() {
 // AccountLoginIdpService IDP OAuth 登录
 // @Description:
 type AccountLoginIdpService struct {
-	daoAccount    *repositoryRam.RamAccountRepository           `autowire:"?"`
-	daoSource     *repositoryIdp.IdpIdentitySourceRepository    `autowire:"?"`
-	daoProvider   *repositoryIdp.IdpIdentityProviderRepository  `autowire:"?"`
-	daoBinding    *repositoryIdp.IdpIdpBindingRepository        `autowire:"?"`
-	daoSessionLog *repositoryRam.RamAccountSessionLogRepository `autowire:"?"`
-	loginService  *service2.AccountLoginService                 `autowire:"?"`
-	mfaService    *service2.AccountMfaService                   `autowire:"?"`
+	daoAccount    *repositoryRam.RamAccountRepository                `autowire:"?"`
+	daoSource     *repositoryIdp.IdpIdentitySourceRepository         `autowire:"?"`
+	daoProvider   *repositoryIdp.IdpIdentityProviderRepository       `autowire:"?"`
+	daoBinding    *repositoryIdp.IdpIdpBindingRepository             `autowire:"?"`
+	daoCallback   *repositoryIdp.IdpIdentitySourceCallbackRepository `autowire:"?"`
+	daoSessionLog *repositoryRam.RamAccountSessionLogRepository      `autowire:"?"`
+	loginService  *service2.AccountLoginService                      `autowire:"?"`
+	mfaService    *service2.AccountMfaService                        `autowire:"?"`
 }
 
 func NewAccountLoginIdpService() *AccountLoginIdpService {
 	return new(AccountLoginIdpService)
+}
+
+func (c *AccountLoginIdpService) resolveRedirectUri(ctx *gin.Context, source *entityIdp.IdpIdentitySourceEntity, configured, requested string) (string, error) {
+	requested = strings.TrimSpace(requested)
+	configured = strings.TrimSpace(configured)
+	if requested == "" {
+		if configured == "" {
+			return "", fmt.Errorf("回调地址未配置")
+		}
+		return configured, nil
+	}
+	if requested == configured {
+		return requested, nil
+	}
+	if nil == c.daoCallback {
+		return "", fmt.Errorf("回调白名单不可用")
+	}
+	query := entityIdp.IdpIdentitySourceCallbackEntity{
+		Idp:      source.Idp,
+		Protocol: source.Protocol,
+		State:    enumStatePg.ENABLE.IndexInt8(),
+	}
+	callbacks := c.daoCallback.FindAll(ctx, query, optionsPg.WithCondition(func(db *gorm.DB) *gorm.DB {
+		if strPg.IsNotBlank(source.TenantNo) {
+			return db.Where("tenant_no = ? OR tenant_no = ''", source.TenantNo)
+		}
+		return db
+	}))
+	for _, cb := range callbacks {
+		if cb.Callback == requested {
+			return requested, nil
+		}
+	}
+	return "", fmt.Errorf("回调地址不在白名单")
 }
 
 // Login IDP OAuth 登录
@@ -86,10 +125,14 @@ func (c *AccountLoginIdpService) Login(ctx *gin.Context, ct modRamLogin.IdpLogin
 		}
 	}
 
-	// 5. 构造 idp.ProviderInfo
-	redirectUrl := ct.RedirectUri
-	if strPg.IsBlank(redirectUrl) {
-		redirectUrl = baseCfg.RedirectUrl
+	// 5. OAuth 回调地址必须命中认证源配置或回调白名单，禁止请求任意指定。
+	redirectUrl, errRedirect := c.resolveRedirectUri(ctx, source, baseCfg.RedirectUrl, ct.RedirectUri)
+	if nil != errRedirect {
+		return rt.ErrorMessage("回调地址不在白名单")
+	}
+	if err := c.consumeState(ct.State, ct.SourceNo, redirectUrl); nil != err {
+		log.Warn(ctx, log.TagAppDef, "OAuth state 校验失败", log.Any("err", err.Error()))
+		return rt.ErrorMessage("state 校验失败")
 	}
 	idpInfo := &idp.ProviderInfo{
 		Type:            providerEntity.Code,
@@ -124,7 +167,7 @@ func (c *AccountLoginIdpService) Login(ctx *gin.Context, ct modRamLogin.IdpLogin
 	oauthToken, err := idProvider.GetToken(ct.Code)
 	if err != nil {
 		log.Error(ctx, log.TagAppDef, err, "获取 Token 失败")
-		return rt.ErrorMessage("获取 Token 失败: " + err.Error())
+		return rt.ErrorMessage("获取 Token 失败")
 	}
 	if oauthToken == nil || !oauthToken.Valid() {
 		return rt.ErrorMessage("获取的 Token 无效")
@@ -134,7 +177,7 @@ func (c *AccountLoginIdpService) Login(ctx *gin.Context, ct modRamLogin.IdpLogin
 	userInfo, err := idProvider.GetUserInfo(oauthToken)
 	if err != nil {
 		log.Error(ctx, log.TagAppDef, err, "获取用户信息失败")
-		return rt.ErrorMessage("获取用户信息失败: " + err.Error())
+		return rt.ErrorMessage("获取用户信息失败")
 	}
 	if userInfo == nil {
 		return rt.ErrorMessage("获取的用户信息为空")
@@ -376,10 +419,7 @@ func (c *AccountLoginIdpService) checkMfaOrLoginSuccess(
 	oauthToken *oauth2.Token,
 	isSignup bool,
 ) (rt rg.Rs[modRamLogin.IdpLoginSuccess]) {
-	// 新注册用户跳过 MFA
-	if isSignup {
-		return c.loginSuccess(ctx, account, source, userInfo, oauthToken, isSignup)
-	}
+	// MFA 对所有账号（含自动建号）生效，不再按 isSignup 跳过。
 
 	// 检查是否需要 MFA
 	mfaRequired, mfaToken, mfaType := c.mfaService.CheckMfaRequired(ctx, account.No)

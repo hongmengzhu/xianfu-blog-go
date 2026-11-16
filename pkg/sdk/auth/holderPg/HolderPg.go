@@ -2,7 +2,6 @@ package holderPg
 
 import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg/holderIfPg"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg/jwtHolder"
 	"github.com/pangu-2/go-tools/tools/strPg"
 )
 
@@ -37,16 +36,33 @@ func (c *HolderPg) GetOrgNo() string {
 //	@receiver c
 //	@return bool
 func (c *HolderPg) IsFounder() bool {
-	jwt := c.Jwt.(jwtHolder.JwtPg)
-	return jwt.Founder == "1"
+	if nil == c.HolderData {
+		return false
+	}
+	if holder, ok := c.HolderData.(AccountHolder); ok {
+		return holder.Founder == 1
+	}
+	return false
 }
 
 func (c HolderPg) GetAccount() AccountHolder {
-	return c.HolderData.(AccountHolder)
+	if nil == c.HolderData {
+		return AccountHolder{}
+	}
+	if holder, ok := c.HolderData.(AccountHolder); ok {
+		return holder
+	}
+	return AccountHolder{}
 }
 
 func (c HolderPg) GetAccountNo() string {
-	return c.HolderData.(AccountHolder).No
+	if nil == c.HolderData {
+		return ""
+	}
+	if holder, ok := c.HolderData.(AccountHolder); ok {
+		return holder.No
+	}
+	return ""
 }
 
 // GetMerchantNo

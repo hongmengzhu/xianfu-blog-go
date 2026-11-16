@@ -118,6 +118,10 @@ func (c *BlogArticleWebService) DetailByContext(ctx context.Context, tenantNo st
 	if strPg.IsNotBlank(no) && find.TenantNo != no {
 		return rt.ErrorMessage("数据不存在")
 	}
+	if !enumStatePg.ENABLE.IsExistInt8(find.State) ||
+		find.PlatformApproved != enumApprovedPg.ApprovedStateApproved.Index() {
+		return rt.ErrorMessage("数据不存在")
+	}
 	var stat modBlogArticleWeb.StatisticsVo
 	//统计
 	if strPg.IsNotBlank(find.No) {

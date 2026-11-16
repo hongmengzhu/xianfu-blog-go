@@ -1,6 +1,7 @@
 package drive
 
 import (
+	"bufio"
 	"context"
 	"errors"
 	"fmt"
@@ -50,6 +51,10 @@ func (s *Local) PutObject(r io.Reader, put modAttachment.PutFileDto, ext modAtta
 	if strings.Contains(fileSuffix, "awebp") {
 		fileSuffix = strPg.Replace(fileSuffix, "awebp", "webp")
 	}
+	fileSuffix = strings.ToLower(fileSuffix)
+	if err := validateUploadSuffix(fileSuffix); nil != err {
+		return modAttachment.Attachment{}, err
+	}
 	//获取文件名
 	filenameOnly := strings.TrimSuffix(filenameWithSuffix, fileSuffix)
 	//md5
@@ -82,6 +87,24 @@ func (s *Local) PutObject(r io.Reader, put modAttachment.PutFileDto, ext modAtta
 			return attachment, errors.New("文件上传失败，创建目录错误")
 		}
 	}
+	// 读取文件头做真实类型校验，防止改扩展名上传 HTML/SVG 等可执行内容。
+	br := bufio.NewReader(r)
+	head, _ := br.Peek(1024)
+	kind, _ := filetype.Match(head)
+	if isImageSuffix(fileSuffix) {
+		if kind == filetype.Unknown || !filetype.IsImage(head) {
+			return attachment, errors.New("文件内容与图片扩展名不匹配")
+		}
+		normalized := kind.Extension
+		if fileSuffix == ".jpeg" {
+			normalized = "jpeg"
+		}
+		if normalized != strings.TrimPrefix(fileSuffix, ".") {
+			return attachment, errors.New("文件内容与扩展名不匹配")
+		}
+	}
+	r = br
+
 	dst, err := os.OpenFile(out_root, os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		return attachment, errors.New("文件保存失败，请稍后重试")
@@ -106,7 +129,7 @@ func (s *Local) PutObject(r io.Reader, put modAttachment.PutFileDto, ext modAtta
 	} else {
 		fmt.Println("Not an image")
 	}
-	kind, _ := filetype.Match(buf)
+	kind, _ = filetype.Match(buf)
 	if kind == filetype.Unknown {
 		fmt.Println("Unknown file type")
 	} else {
@@ -150,4 +173,33 @@ func (s *Local) ExistsObject(name string) bool {
 	}
 
 	return true
+}
+
+var blockedUploadSuffix = map[string]bool{
+	".html": true, ".htm": true, ".xhtml": true, ".shtml": true,
+	".svg": true, ".svgz": true,
+	".js": true, ".mjs": true, ".jsx": true, ".ts": true, ".tsx": true,
+	".css": true, ".xml": true, ".xsl": true,
+	".php": true, ".phtml": true, ".asp": true, ".aspx": true, ".jsp": true,
+	".exe": true, ".dll": true, ".so": true, ".sh": true, ".bat": true,
+	".cmd": true, ".ps1": true, ".jar": true, ".war": true, ".apk": true,
+	".vbs": true, ".scr": true, ".msi": true,
+}
+
+func validateUploadSuffix(suffix string) error {
+	if strPg.IsBlank(suffix) || suffix == "." {
+		return errors.New("文件必须包含扩展名")
+	}
+	if blockedUploadSuffix[suffix] {
+		return errors.New("出于安全考虑，不允许上传该类型文件")
+	}
+	return nil
+}
+
+func isImageSuffix(suffix string) bool {
+	switch suffix {
+	case ".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp":
+		return true
+	}
+	return false
 }

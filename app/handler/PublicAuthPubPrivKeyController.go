@@ -9,6 +9,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/clientPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryTc"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
 )
@@ -19,7 +20,8 @@ func init() {
 
 // PublicAuthPubPrivKeyController 公用 配置
 type PublicAuthPubPrivKeyController struct {
-	sv *cacheRam.CacheSessionPubPrive `autowire:"?"`
+	sv     *cacheRam.CacheSessionPubPrive   `autowire:"?"`
+	tenant *repositoryTc.TcTenantRepository `autowire:"?"`
 }
 
 func (c *PublicAuthPubPrivKeyController) RegisterRoutes(e *gin.Engine) {
@@ -38,6 +40,12 @@ func (c *PublicAuthPubPrivKeyController) config(ctx *gin.Context) {
 		key = c.sv.SystemLoginKeyByBrowser(ctx)
 	case typeDomainPg.Manage:
 		tenantNo := ctx.DefaultQuery("tenantNo", constsPg.ACCOUNT_MANAGE_No)
+		if nil != c.tenant {
+			if _, found := c.tenant.FindByNo(ctx, tenantNo); !found {
+				ctx.JSON(200, rg.ErrorMessageData[modSysPub.AuthConfigVo]("租户不存在"))
+				return
+			}
+		}
 		key = c.sv.ManageLoginKey(ctx, clientPg.Browser, tenantNo)
 	default:
 		ctx.JSON(200, rg.ErrorMessageData[modSysPub.AuthConfigVo]("不支持的域类型:"+typeDomain.Code()))

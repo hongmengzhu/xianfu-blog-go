@@ -434,12 +434,11 @@ func (idp *GothIdProvider) GetToken(code string) (*oauth2.Token, error) {
 		value = url.Values{}
 		value.Add("code", code)
 		if idp.Provider.Name() == "twitterv2" || idp.Provider.Name() == "fitbit" {
-			// Use dynamic code verifier if provided, otherwise fall back to static one
+			// RFC 7636 PKCE 必须使用客户端本次生成的 verifier，禁止回退到固定值。
 			verifier := idp.CodeVerifier
 			if verifier == "" {
-				verifier = "casdoor-verifier"
+				return nil, fmt.Errorf("PKCE 提供商 %s 缺少 code_verifier", idp.Provider.Name())
 			}
-			// RFC 7636 PKCE uses 'code_verifier' parameter
 			value.Add("code_verifier", verifier)
 		}
 	}

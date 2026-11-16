@@ -1,6 +1,10 @@
 package cacheDiplPg
 
-import "github.com/pangu-2/go-tools/tools/cryptPg"
+import (
+	"crypto/subtle"
+
+	"github.com/pangu-2/go-tools/tools/cryptPg"
+)
 
 // HashSha
 //
@@ -19,5 +23,5 @@ func HashSha(st1, st2 string) string {
 //	@param st2
 //	@return string
 func HashShaVerify(st1, st2 string, verify string) bool {
-	return HashSha(st1, st2) == verify
+	return subtle.ConstantTimeCompare([]byte(HashSha(st1, st2)), []byte(verify)) == 1
 }

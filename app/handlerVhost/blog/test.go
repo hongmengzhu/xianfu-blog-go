@@ -31,7 +31,6 @@ func (c *TestController) Host() string {
 //	@receiver c
 //	@param g
 func (c *TestController) RegisterRoutes(g *echo.Echo) {
-	g.GET("/test/cache", c.Cache)
 }
 
 func (c *TestController) Cache(ctx *echo.Context) error {

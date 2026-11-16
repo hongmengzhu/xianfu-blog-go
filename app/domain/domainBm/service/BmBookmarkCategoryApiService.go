@@ -381,17 +381,20 @@ func (c *BmBookmarkCategoryApiService) LogicalDeletion(ctx *gin.Context, ids []s
 	repository := c.sv
 	finds, b := repository.FindAllByIdStringIn(ctx, ids, optionsPg.WithCtx(ctx), optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
 		arg.Condition = func(db *gorm.DB) *gorm.DB {
-			return db.Where("module = ?", handlerVhost.Host_bookmark)
+			return db.Where("module = ?", handlerVhost.Host_bookmark).
+				Where("tenant_no = ?", holderApiPg.GetContextAccount(ctx).GetTenantNo())
 		}
 	}))
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
 	if c.sv.Config().Data.Delete {
+		idsFind := make([]string, 0)
 		for _, info := range finds {
+			idsFind = append(idsFind, numberPg.Int64ToString(info.ID))
 			log.Info(ctx, log.TagAppDef, "LogicalDeletion", log.Any("id", info.ID), log.Any("TenantNo", info.TenantNo))
 		}
-		repository.DeleteByIdsString(ctx, ids)
+		repository.DeleteByIdsString(ctx, idsFind)
 	} else {
 		for _, info := range finds {
 			enum := enumStatePg.State(info.State)

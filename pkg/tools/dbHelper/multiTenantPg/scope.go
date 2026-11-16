@@ -43,27 +43,25 @@ func ScopeRulePgWhere(ctx *gin.Context, tableName string) func(db *gorm.DB) *gor
 		//fmt.Printf("typeDomain.multiRule.Tenant=%+\nv", multiRule.Tenant)
 		//系统
 		if typeDomainPg.System.IsEqual(holder.GetTypeDomain()) {
-			//租户
-			if verifyMultiByTable(&multiTableSys, tableName) && multiRule.Tenant {
-				ruleTenant(db, tenant, multiRule)
-			}
+			// 系统域是平台超管，按设计需要跨租户管理数据，不做租户过滤。
+			return db
 		} else if typeDomainPg.Manage.IsEqual(holder.GetTypeDomain()) {
 			// 管理后台
 			//租户
 			if verifyMultiByTable(&multiTableManage, tableName) && multiRule.Tenant {
-				ruleTenant(db, tenant, multiRule)
+				db = ruleTenant(db, tenant, multiRule)
 			}
 		} else if typeDomainPg.Customer.IsEqual(holder.GetTypeDomain()) {
 			// 客户
 			//租户
 			if verifyMultiByTable(&multiTableCustomer, tableName) && multiRule.Tenant {
-				ruleTenant(db, tenant, multiRule)
+				db = ruleTenant(db, tenant, multiRule)
 			}
 		} else {
 			// 客户
 			//租户
 			if verifyMultiByTable(&multiTableCustomer, tableName) && multiRule.Tenant {
-				ruleTenant(db, tenant, multiRule)
+				db = ruleTenant(db, tenant, multiRule)
 			}
 		}
 
@@ -86,18 +84,16 @@ func verifyMultiByTable(multi *pg.MultiItem, tableName string) bool {
 }
 
 func ruleTenant(db *gorm.DB, holder MultiTenantPg, rule *MultiRule) *gorm.DB {
-	if rule.Tenant {
-		//大于 2个时候
-		if nil != holder.TenantNo && len(holder.TenantNo) >= 1 {
-			//允许多个 租户列表
-			if rule.MultipleTenant && len(holder.TenantNo) > 1 {
-				db.Where("tenant_no IN  ? ", holder.TenantNo)
-			} else {
-				db.Where("tenant_no = ?", holder.TenantNo[0])
-			}
-		} else {
-			db.Where("tenant_no = ?", "000")
-		}
+	if !rule.Tenant {
+		return db
 	}
-	return db
+	// 大于 1 个时候允许租户列表
+	if len(holder.TenantNo) >= 1 {
+		if rule.MultipleTenant && len(holder.TenantNo) > 1 {
+			return db.Where("tenant_no IN ?", holder.TenantNo)
+		}
+		return db.Where("tenant_no = ?", holder.TenantNo[0])
+	}
+	// 没有租户上下文时 fail-closed，避免退化为全表查询
+	return db.Where("tenant_no = ?", "000")
 }

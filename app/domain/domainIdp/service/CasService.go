@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"net/url"
+	"regexp"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -91,12 +92,11 @@ func (s *IdpCasService) Validate(ctx *gin.Context, ct modIdpCas.CasValidateCt) (
 		})
 	}
 
-	// 验证 service 是否匹配
-	if !strings.HasPrefix(ct.Service, issuedService) {
-		// 放回票据（因为 service 不匹配，不应消费）
+	// 验证 service 必须精确匹配
+	if !sameCasService(ct.Service, issuedService) {
 		return rt.OkData(modIdpCas.CasValidateVo{
 			Valid:   false,
-			Message: fmt.Sprintf("service %s 与签发时 %s 不匹配", ct.Service, issuedService),
+			Message: "service 与签发时不匹配",
 		})
 	}
 
@@ -112,18 +112,18 @@ func (s *IdpCasService) ServiceValidate(ctx *gin.Context, ct modIdpCas.CasValida
 		return s.buildXmlError(pkgcas.InvalidRequest, "service 和 ticket 参数不能为空")
 	}
 
-	if !strings.HasPrefix(ct.Ticket, "ST") {
-		return s.buildXmlError(pkgcas.InvalidTicketSpec, fmt.Sprintf("Ticket %s not recognized", ct.Ticket))
+	if !validCasTicket(ct.Ticket) {
+		return s.buildXmlError(pkgcas.InvalidTicketSpec, "INVALID_TICKET_SPEC")
 	}
 
 	ok, authSuccess, issuedService, _ := pkgcas.ValidateServiceTicket(ct.Ticket)
 	if !ok {
-		return s.buildXmlError(pkgcas.InvalidTicket, fmt.Sprintf("Ticket %s not recognized", ct.Ticket))
+		return s.buildXmlError(pkgcas.InvalidTicket, "INVALID_TICKET")
 	}
 
-	// 验证 service 是否匹配
-	if !strings.HasPrefix(ct.Service, issuedService) && !strings.HasPrefix(queryUnescape(ct.Service), issuedService) {
-		return s.buildXmlError(pkgcas.InvalidService, fmt.Sprintf("service %s and %s does not match", ct.Service, issuedService))
+	// 验证 service 必须精确匹配，避免相似域名/前缀绕过
+	if !sameCasService(ct.Service, issuedService) {
+		return s.buildXmlError(pkgcas.InvalidService, "INVALID_SERVICE")
 	}
 
 	// 构建成功响应
@@ -156,4 +156,29 @@ func (s *IdpCasService) findSourceByProtocol(ctx *gin.Context, protocol string) 
 	// 实际可能需要更复杂的查找逻辑
 	_ = protocol
 	return nil, false
+}
+
+var casTicketPattern = regexp.MustCompile(`^ST-[A-Za-z0-9]{8,64}$`)
+
+func validCasTicket(ticket string) bool {
+	return casTicketPattern.MatchString(strings.TrimSpace(ticket))
+}
+
+// sameCasService 对 service URL 做规范化后精确比较。
+func sameCasService(a, b string) bool {
+	na := normalizeCasService(a)
+	nb := normalizeCasService(b)
+	return na != "" && na == nb
+}
+
+func normalizeCasService(raw string) string {
+	raw = queryUnescape(strings.TrimSpace(raw))
+	u, err := url.Parse(raw)
+	if err != nil || u.Scheme == "" || u.Host == "" {
+		return ""
+	}
+	u.Fragment = ""
+	u.Scheme = strings.ToLower(u.Scheme)
+	u.Host = strings.ToLower(u.Host)
+	return strings.TrimSuffix(u.String(), "/")
 }

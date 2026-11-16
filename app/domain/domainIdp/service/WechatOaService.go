@@ -2,6 +2,7 @@ package service
 
 import (
 	"crypto/sha1"
+	"crypto/subtle"
 	"encoding/hex"
 	"encoding/json"
 	"encoding/xml"
@@ -141,7 +142,7 @@ func (s *WechatOaService) VerifySignature(token, nonce, timestamp, signature str
 	tmpStr := strings.Join(tmpArr, "")
 	b := sha1.Sum([]byte(tmpStr))
 	res := hex.EncodeToString(b[:])
-	return res == signature
+	return subtle.ConstantTimeCompare([]byte(res), []byte(signature)) == 1
 }
 
 // HandleEvent 处理微信 webhook 事件（SCAN / SUBSCRIBE）

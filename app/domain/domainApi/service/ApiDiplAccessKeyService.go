@@ -17,7 +17,6 @@ import (
 	"github.com/jinzhu/copier"
 	"github.com/pangu-2/go-tools/tools/dbPg/pagePg"
 	"github.com/pangu-2/go-tools/tools/noPg"
-	"github.com/pangu-2/go-tools/tools/numberPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/userPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
@@ -55,6 +54,10 @@ func (c *ApiDiplAccessKeyService) MakeNewRecord(ctx *gin.Context, ct model.BaseI
 	//当前时间增加 5年
 	add := time.Now().AddDate(10, 0, 0)
 	holder := holderPg.GetContextAccount(ctx)
+	save.TenantNo = holder.GetTenantNo()
+	if strPg.IsBlank(save.TenantNo) {
+		return rt.ErrorMessage("租户编号不能为空")
+	}
 	save.State = enumStatePg.ENABLE.IndexInt8()
 	save.Name = noPg.No()
 	save.TenantNo = holder.GetTenantNo()
@@ -70,15 +73,18 @@ func (c *ApiDiplAccessKeyService) MakeNewRecord(ctx *gin.Context, ct model.BaseI
 	//加入缓存
 	sha := cacheDiplPg.HashSha(save.Key, save.Secret)
 	obj := cacheDiplPg.DiplCo{
-		HashSha:  sha,
-		No:       save.DiplNo,
-		TenantNo: save.TenantNo,
-		Key:      save.Key,
-		Secret:   save.Secret,
-		Ano:      save.Ano,
+		HashSha:    sha,
+		No:         save.DiplNo,
+		TenantNo:   save.TenantNo,
+		Key:        save.Key,
+		Secret:     save.Secret,
+		Ano:        save.Ano,
+		State:      save.State,
+		ExpiryDate: save.ExpiryDate,
 	}
 	cacheDiplPg.Set(save.Key, obj)
-	return rt.Ok()
+	// 密钥只在创建时返回一次，查询接口不再回显 secret/hash
+	return rt.OkData(save.Key + ":" + sha)
 }
 
 // MakeNewRecordByPrincipalType
@@ -117,6 +123,10 @@ func (c *ApiDiplAccessKeyService) MakeNewRecordByPrincipalType(ctx *gin.Context,
 	//当前时间增加 5年
 	add := time.Now().AddDate(10, 0, 0)
 	holder := holderPg.GetContextAccount(ctx)
+	save.TenantNo = holder.GetTenantNo()
+	if strPg.IsBlank(save.TenantNo) {
+		return rt.ErrorMessage("租户编号不能为空")
+	}
 	save.State = enumStatePg.ENABLE.IndexInt8()
 	save.Name = noPg.No()
 	save.TenantNo = holder.GetTenantNo()
@@ -139,9 +149,12 @@ func (c *ApiDiplAccessKeyService) MakeNewRecordByPrincipalType(ctx *gin.Context,
 		Secret:        save.Secret,
 		Ano:           save.Ano,
 		PrincipalType: save.PrincipalType,
+		State:         save.State,
+		ExpiryDate:    save.ExpiryDate,
 	}
 	cacheDiplPg.Set(save.Key, obj)
-	return rt.Ok()
+	// 密钥只在创建时返回一次，查询接口不再回显 secret/hash
+	return rt.OkData(save.Key + ":" + sha)
 }
 
 // Enable 启用
@@ -179,41 +192,41 @@ func (c *ApiDiplAccessKeyService) Disable(ctx *gin.Context, ct model.BaseIdsCt[s
 //	@param ct
 func (c *ApiDiplAccessKeyService) State(ctx *gin.Context, ct model.BaseStateIdsCt[string]) (rt rg.Rs[string]) {
 	log.Info(ctx, log.TagAppDef, "ct", log.Any("ct", ct))
-	ids := ct.Ids
-	if len(ids) < 1 {
+	if len(ct.Ids) < 1 {
 		return rt.ErrorMessage("id错误")
 	}
 	state, ok := enumStatePg.IsExistInt64(ct.State)
-	if !ok {
-		return rt.ErrorMessage("类型不正确")
-	}
-	if !state.IsEnableDisable() {
+	if !ok || !state.IsEnableDisable() {
 		return rt.ErrorMessage("状态错误")
 	}
 	r := c.sv
-	finds, b := r.FindAllByIdStringIn(ctx, ids, optionsPg.WithCtx(ctx))
+	finds, b := r.FindAllByIdStringIn(ctx, ct.Ids, optionsPg.WithCtx(ctx))
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
-	if nil == ct.Extend {
-		return rt.ErrorMessage("扩展参数错误")
-	}
-	no := ""
-	{
-		if obj, ok := ct.Extend["no"]; ok {
-			no = obj.(string)
-		} else {
-			return rt.ErrorMessage("扩展参数错误")
-		}
-	}
-	no = strings.TrimSpace(no)
-	if strPg.IsBlank(no) {
-		return rt.ErrorMessage("扩展参数错误")
-	}
 	for _, info := range finds {
 		if info.State != state.IndexInt8() {
-			r.UpdateAllByDiplNoAndNoSetState(ctx, no, numberPg.Int64ToString(info.ID), state.IndexInt8())
+			if err := r.Update(ctx, entityApi.ApiDiplAccessKeyEntity{State: state.IndexInt8()}, info.ID); nil != err {
+				log.Error(ctx, log.TagAppDef, err, "更新密钥状态失败")
+				continue
+			}
 		}
+		info.State = state.IndexInt8()
+		if enumStatePg.ENABLE.IndexInt8() != info.State {
+			cacheDiplPg.Remove(info.Key)
+			continue
+		}
+		cacheDiplPg.Set(info.Key, cacheDiplPg.DiplCo{
+			HashSha:       cacheDiplPg.HashSha(info.Key, info.Secret),
+			No:            info.DiplNo,
+			TenantNo:      info.TenantNo,
+			Key:           info.Key,
+			Secret:        info.Secret,
+			Ano:           info.Ano,
+			PrincipalType: info.PrincipalType,
+			State:         info.State,
+			ExpiryDate:    info.ExpiryDate,
+		})
 	}
 	return rt.Ok()
 }
@@ -244,6 +257,7 @@ func (c *ApiDiplAccessKeyService) LogicalDeletion(ctx *gin.Context, ids []string
 	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
+			cacheDiplPg.Remove(info.Key)
 			log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
 		repository.DeleteByIdsString(ctx, ids)
@@ -279,6 +293,20 @@ func (c *ApiDiplAccessKeyService) LogicalRecovery(ctx *gin.Context, ids []string
 		//  取消 弃置 批量删除，反转 为对应的 有效 停用 停用
 		if ok, reverse := enum.ReverseCancelLayAside(); ok {
 			repository.Update(ctx, entityApi.ApiDiplAccessKeyEntity{State: reverse.IndexInt8()}, info.ID)
+			info.State = reverse.IndexInt8()
+			if enumStatePg.ENABLE.IndexInt8() == info.State {
+				cacheDiplPg.Set(info.Key, cacheDiplPg.DiplCo{
+					HashSha:       cacheDiplPg.HashSha(info.Key, info.Secret),
+					No:            info.DiplNo,
+					TenantNo:      info.TenantNo,
+					Key:           info.Key,
+					Secret:        info.Secret,
+					Ano:           info.Ano,
+					PrincipalType: info.PrincipalType,
+					State:         info.State,
+					ExpiryDate:    info.ExpiryDate,
+				})
+			}
 		}
 	}
 	return rt.Ok()
@@ -346,9 +374,6 @@ func (c *ApiDiplAccessKeyService) Query(ctx *gin.Context, ct modApiDiplAccessKey
 		for _, item := range page.Data {
 			var vo modApiDiplAccessKey.Vo
 			copier.Copy(&vo, &item)
-			//
-			vo.Hash = item.Key + ":" + cacheDiplPg.HashSha(item.Key, item.Secret)
-			//
 			slice = append(slice, vo)
 		}
 		pg.Data = slice
@@ -388,10 +413,6 @@ func (c *ApiDiplAccessKeyService) SelectPublic(ctx *gin.Context, ct modApiDiplAc
 		for _, item := range infos {
 			var vo modApiDiplAccessKey.Vo
 			copier.Copy(&vo, &item)
-			//
-			vo.Hash = item.Key + ":" + cacheDiplPg.HashSha(item.Key, item.Secret)
-			//log.Debug(ctx, log.TagAppDef, "vo.Hash=%+v", vo.Hash)
-			//
 			slice = append(slice, vo)
 		}
 		rt.Data = slice

@@ -98,6 +98,10 @@ func (c *BmBookmarkWebService) DetailByContext(ctx context.Context, tenantNo str
 	if strPg.IsNotBlank(tenantNo) && find.TenantNo != tenantNo {
 		return rt.ErrorMessage("数据不存在")
 	}
+	if !enumStatePg.ENABLE.IsExistInt8(find.State) ||
+		find.PlatformApproved != enumApprovedPg.ApprovedStateApproved.Index() {
+		return rt.ErrorMessage("数据不存在")
+	}
 	log.Info(ctx, log.TagAppDef, "find=%+v", log.Any("find", find))
 	var info modBmBookmarkWeb.DetailVo
 	copier.Copy(&info, find)
@@ -532,7 +536,9 @@ func (c *BmBookmarkWebService) QueryListBYCategory(ctx context.Context, tenantNo
 	sub := c.sv.Db().WithContext(ctx).
 		Model(&entityBm.BmBookmarkEntity{}).
 		Select("*, ROW_NUMBER() OVER (PARTITION BY category_no ORDER BY create_at DESC) AS rn").
-		Where("category_no IN ?", ids).Where("tenant_no = ?", tenantNo)
+		Where("category_no IN ?", ids).Where("tenant_no = ?", tenantNo).
+		Where("state = ?", enumStatePg.ENABLE.Index()).
+		Where("platform_approved = ?", enumApprovedPg.ApprovedStateApproved.Index())
 	list := make([]*entityBm.BmBookmarkEntity, 0)
 	tx := c.sv.Db().WithContext(ctx).
 		Table("(?) AS t", sub).

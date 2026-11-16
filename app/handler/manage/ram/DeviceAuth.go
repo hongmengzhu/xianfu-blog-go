@@ -5,6 +5,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamDeviceAuth"
 	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"go-spring.org/spring/gs"
 )
 
@@ -16,7 +17,8 @@ func init() {
 // @Description:
 type DeviceAuthController struct {
 	routerPg.RouteRegistrar
-	sv *service.DeviceAuthService `autowire:"?"`
+	Sp *authPg.GroupManageMiddlewareSp `autowire:"?"`
+	sv *service.DeviceAuthService      `autowire:"?"`
 }
 
 // RegisterRoutes 注册路由
@@ -24,9 +26,10 @@ func (c *DeviceAuthController) RegisterRoutes(e *gin.Engine) {
 	group := e.Group("/xianfu/auth/manage/device")
 	group.POST("/start", c.Start)
 	group.POST("/poll", c.Poll)
-	group.POST("/approve", c.Approve)
 	group.POST("/cancel", c.Cancel)
 	group.POST("/complete", c.Complete)
+	// 用户确认必须已登录，避免匿名确认后签发令牌
+	group.POST("/approve", authPg.GroupManageMiddleware(c.Sp), c.Approve)
 }
 
 // Start 发起设备授权

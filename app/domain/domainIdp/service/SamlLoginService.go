@@ -9,6 +9,7 @@ import (
 	service2 "github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modIdpSaml"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modRamLogin"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constHeaderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/clientPg"
@@ -49,6 +50,7 @@ type SamlLoginService struct {
 	daoSessionLog *repositoryRam.RamAccountSessionLogRepository `autowire:"?"`
 	loginService  *service2.AccountLoginService                 `autowire:"?"`
 	mfaService    *service2.AccountMfaService                   `autowire:"?"`
+	pg            configPg.Pg                                   `value:"${pg}"`
 }
 
 func NewSamlLoginService() *SamlLoginService {
@@ -81,16 +83,14 @@ func (c *SamlLoginService) GetSamlLoginUrl(ctx *gin.Context, sourceNo string) (r
 	}
 	_ = cfg
 
-	// 3. 生成 RelayState（JSON 编码 sourceNo）
-	relayState, err := json.Marshal(map[string]string{
-		"sourceNo": sourceNo,
-	})
+	// 3. 生成服务端签名的 RelayState（含一次性 nonce，防篡改/重放）
+	relayState, err := c.makeRelayState(sourceNo)
 	if err != nil {
 		return rt.ErrorMessage("生成 RelayState 失败")
 	}
 
 	// 4. 生成 SAML Request
-	authURL, method, err := samlPkg.GenerateSamlRequest(sp, string(relayState))
+	authURL, method, err := samlPkg.GenerateSamlRequest(sp, relayState)
 	if err != nil {
 		log.Error(ctx, log.TagAppDef, err, "生成 SAML Request 失败")
 		return rt.ErrorMessage("生成 SAML 请求失败: " + err.Error())
@@ -99,6 +99,7 @@ func (c *SamlLoginService) GetSamlLoginUrl(ctx *gin.Context, sourceNo string) (r
 	vo := modIdpSaml.SamlRedirectVo{
 		RedirectUrl: authURL,
 		Method:      method,
+		RelayState:  relayState,
 	}
 	if method == "POST" {
 		vo.PostBody = authURL
@@ -114,15 +115,11 @@ func (c *SamlLoginService) HandleSamlCallback(ctx *gin.Context, ct modIdpSaml.Sa
 		return rt.ErrorMessage("SAML Response 不能为空")
 	}
 
-	// 1. 解析 RelayState 获取 sourceNo
-	var relayData map[string]string
-	if err := json.Unmarshal([]byte(ct.RelayState), &relayData); err != nil {
-		log.Error(ctx, log.TagAppDef, err, "解析 RelayState 失败")
-		return rt.ErrorMessage("RelayState 解析失败")
-	}
-	sourceNo := relayData["sourceNo"]
-	if strPg.IsBlank(sourceNo) {
-		return rt.ErrorMessage("RelayState 中缺少 sourceNo")
+	// 1. 校验服务端签名的 RelayState 并获取 sourceNo（一次性）
+	sourceNo, errRelay := c.verifyRelayState(ct.RelayState)
+	if nil != errRelay {
+		log.Error(ctx, log.TagAppDef, errRelay, "校验 RelayState 失败")
+		return rt.ErrorMessage("RelayState 校验失败")
 	}
 
 	// 2. 查询认证源
@@ -410,10 +407,7 @@ func (c *SamlLoginService) checkMfaOrLoginSuccess(
 	userInfo *idp.UserInfo,
 	isSignup bool,
 ) (rt rg.Rs[modRamLogin.IdpLoginSuccess]) {
-	// 新注册用户跳过 MFA
-	if isSignup {
-		return c.loginSuccess(ctx, account, source, userInfo, isSignup)
-	}
+	// MFA 对所有账号（含自动建号）生效，不再按 isSignup 跳过。
 
 	// 检查是否需要 MFA
 	mfaRequired, mfaToken, mfaType := c.mfaService.CheckMfaRequired(ctx, account.No)

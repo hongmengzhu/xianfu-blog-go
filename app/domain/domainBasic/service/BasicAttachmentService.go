@@ -16,6 +16,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
+	attachmentPg "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/attachmentPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/attachmentPg/modAttachment"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/attachmentPg/types"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
@@ -28,6 +29,11 @@ import (
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
 	"gorm.io/gorm"
+)
+
+const (
+	maxAttachmentSize  = int64(20 << 20)
+	maxAttachmentCount = 20
 )
 
 func init() {
@@ -45,9 +51,13 @@ type BasicAttachmentService struct {
 
 // Upload 上传
 func (c *BasicAttachmentService) Upload(ctx *gin.Context) (rt rg.Rs[modBasicAttachment.OkVo]) {
+	ctx.Request.Body = http.MaxBytesReader(ctx.Writer, ctx.Request.Body, maxAttachmentSize)
 	file, err := ctx.FormFile("file")
 	if err != nil {
 		return rt.ErrorMessage("上传文件不能为空")
+	}
+	if file.Size > maxAttachmentSize {
+		return rt.ErrorMessage("文件大小超过限制")
 	}
 
 	f, err := file.Open()
@@ -66,7 +76,7 @@ func (c *BasicAttachmentService) Upload(ctx *gin.Context) (rt rg.Rs[modBasicAtta
 		var vo modBasicAttachment.OkVo
 		copier.Copy(&vo, &atta)
 		vo.Domain = c.server.Domain
-		if strings.Index(vo.Url, "ttp:") == 0 && strings.Index(vo.Url, "ttps:") == 0 {
+		if !strings.HasPrefix(vo.Url, "http://") && !strings.HasPrefix(vo.Url, "https://") {
 			vo.Url = vo.Domain + vo.Url
 		}
 		return rg.OkData(vo)
@@ -76,6 +86,7 @@ func (c *BasicAttachmentService) Upload(ctx *gin.Context) (rt rg.Rs[modBasicAtta
 
 // UploadMore 多文件上传
 func (c *BasicAttachmentService) UploadMore(ctx *gin.Context) (rt rg.Rs[map[int]modBasicAttachment.OkVo]) {
+	ctx.Request.Body = http.MaxBytesReader(ctx.Writer, ctx.Request.Body, maxAttachmentSize)
 	form, err := ctx.MultipartForm()
 	if err != nil {
 		return rt.ErrorMessage("上传文件不能为空")
@@ -84,24 +95,29 @@ func (c *BasicAttachmentService) UploadMore(ctx *gin.Context) (rt rg.Rs[map[int]
 	if nil == headers || len(headers) <= 0 {
 		return rt.ErrorMessage("上传文件不能为空")
 	}
+	if len(headers) > maxAttachmentCount {
+		return rt.ErrorMessage("单次上传文件数量超过限制")
+	}
 	data := make(map[int]modBasicAttachment.OkVo, 0)
 	for i, file := range headers {
 		f, err := file.Open()
-		defer func() {
-			// 打开的资源。一定要记住主动关闭
-			_ = f.Close()
-		}()
 		if err != nil {
 			data[i+1] = modBasicAttachment.OkVo{Error: file.Filename + " 上传文件错误:" + err.Error()}
 			continue
 		}
+		if file.Size > maxAttachmentSize {
+			_ = f.Close()
+			data[i+1] = modBasicAttachment.OkVo{Error: file.Filename + " 文件大小超过限制"}
+			continue
+		}
 		log.Info(ctx, log.TagAppDef, "file.Filename ", log.Any("fileName", file.Filename), log.Any("fileSize", file.Size))
 		atta, err := c.FileService.PutObject(f, modAttachment.PutFile(file.Filename, file.Size), nil)
+		_ = f.Close()
 		if err == nil {
 			var vo modBasicAttachment.OkVo
 			copier.Copy(&vo, &atta)
 			vo.Domain = c.server.Domain
-			if strings.Index(vo.Url, "ttp:") == 0 && strings.Index(vo.Url, "ttps:") == 0 {
+			if !strings.HasPrefix(vo.Url, "http://") && !strings.HasPrefix(vo.Url, "https://") {
 				vo.Url = vo.Domain + vo.Url
 			}
 			data[i+1] = vo
@@ -118,23 +134,42 @@ func (c *BasicAttachmentService) UploadLink(ctx *gin.Context, ct modBasicAttachm
 	if nil == ct.Url || len(ct.Url) == 0 {
 		return rt.ErrorMessage("上传文件不能为空")
 	}
+	if len(ct.Url) > maxAttachmentCount {
+		return rt.ErrorMessage("单次 URL 数量超过限制")
+	}
 	data := make(map[int]modBasicAttachment.OkVo, 0)
 	for i, url := range ct.Url {
 		if "" == url {
-			data[i+1] = modBasicAttachment.OkVo{Error: "地址错误：" + url}
+			data[i+1] = modBasicAttachment.OkVo{Error: "地址错误"}
 			continue
 		}
-		res, err := http.Get(url)
-		if err != nil {
-			data[i+1] = modBasicAttachment.OkVo{Error: "远程下载错误：" + err.Error()}
+		if err := attachmentPg.ValidateFetchURL(ctx.Request.Context(), url); nil != err {
+			data[i+1] = modBasicAttachment.OkVo{Error: "远程地址不允许"}
 			continue
 		}
-		// defer后的为延时操作，通常用来释放相关变量
-		defer res.Body.Close()
-
-		content, err := io.ReadAll(res.Body)
+		req, err := http.NewRequestWithContext(ctx.Request.Context(), http.MethodGet, url, nil)
 		if err != nil {
-			data[i+1] = modBasicAttachment.OkVo{Error: "远程下载错误：" + err.Error()}
+			data[i+1] = modBasicAttachment.OkVo{Error: "远程下载错误"}
+			continue
+		}
+		res, err := attachmentPg.SafeFetchClient.Do(req)
+		if err != nil {
+			data[i+1] = modBasicAttachment.OkVo{Error: "远程下载错误"}
+			continue
+		}
+		if res.StatusCode < 200 || res.StatusCode >= 300 {
+			_ = res.Body.Close()
+			data[i+1] = modBasicAttachment.OkVo{Error: "远程下载失败"}
+			continue
+		}
+		content, err := io.ReadAll(io.LimitReader(res.Body, maxAttachmentSize+1))
+		_ = res.Body.Close()
+		if err != nil {
+			data[i+1] = modBasicAttachment.OkVo{Error: "远程下载错误"}
+			continue
+		}
+		if int64(len(content)) > maxAttachmentSize {
+			data[i+1] = modBasicAttachment.OkVo{Error: "远程文件超过大小限制"}
 			continue
 		}
 		reader := bytes.NewReader(content)
@@ -146,7 +181,9 @@ func (c *BasicAttachmentService) UploadLink(ctx *gin.Context, ct modBasicAttachm
 			var vo modBasicAttachment.OkVo
 			copier.Copy(&vo, &atta)
 			vo.Domain = c.server.Domain
-			vo.Url = vo.Domain + vo.Url
+			if !strings.HasPrefix(vo.Url, "http://") && !strings.HasPrefix(vo.Url, "https://") {
+				vo.Url = vo.Domain + vo.Url
+			}
 			data[i+1] = vo
 		} else {
 			data[i+1] = modBasicAttachment.OkVo{Error: filename + " 上传文件错误: " + err.Error()}

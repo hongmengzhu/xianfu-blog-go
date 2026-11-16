@@ -20,11 +20,13 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	repositoryRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	authTokenPg "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/authTokenPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/cachePg/cacheAuthPubPrivPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/event"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/ram/model/modRamAccount"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
 	"github.com/jinzhu/copier"
+	"github.com/pangu-2/go-tools/tools/convPg"
 	"github.com/pangu-2/go-tools/tools/cryptPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/userPg"
@@ -51,6 +53,38 @@ type AccountLoginService struct {
 
 func NewAccountLoginService() *AccountLoginService {
 	return new(AccountLoginService)
+}
+
+// accountRoles 返回账号真实角色；仅创始人作为引导管理员保留 administrator。
+func accountRoles(info *entityRam.RamAccountEntity) []string {
+	roles := make([]string, 0)
+	if nil != info {
+		for _, role := range info.Os.Data().Roles {
+			if strPg.IsNotBlank(role) {
+				roles = append(roles, role)
+			}
+		}
+		if len(roles) == 0 && info.Founder == 1 {
+			roles = append(roles, "administrator")
+		}
+	}
+	return roles
+}
+
+func hasAdministrator(roles []string) bool {
+	for _, role := range roles {
+		if role == "administrator" {
+			return true
+		}
+	}
+	return false
+}
+
+func accountAuthCodes(roles []string) []string {
+	if hasAdministrator(roles) {
+		return []string{"AC_100100", "AC_100110", "AC_100120", "AC_100010"}
+	}
+	return make([]string, 0)
 }
 
 // Login
@@ -130,13 +164,13 @@ func (c *AccountLoginService) Login(ctx *gin.Context, ct modRamLogin.LoginManage
 		Account: info.Account,
 		Name:    info.Name,
 	}
-	successInfo.Roles = make([]string, 0)
-	successInfo.Roles = append(successInfo.Roles, "administrator")
+	roles := accountRoles(info)
+	successInfo.Roles = roles
 	success := modRamLogin.LoginSuccess{
 		Info:         successInfo,
 		AccessToken:  dataToken.Access,
 		RefreshToken: dataToken.Refresh,
-		AuthCode:     []string{"AC_100100", "AC_100110", "AC_100120", "AC_100010"}}
+		AuthCode:     accountAuthCodes(roles)}
 	rt.Data = success
 	return rt.Ok()
 }
@@ -226,11 +260,13 @@ func (c *AccountLoginService) LoginBySystem(ctx *gin.Context, ct modRamLogin.Log
 		Account: info.Account,
 		Name:    info.Name,
 	}
+	roles := accountRoles(info)
+	successInfo.Roles = roles
 	success := modRamLogin.LoginSuccess{
 		Info:         successInfo,
 		AccessToken:  dataToken.Access,
 		RefreshToken: dataToken.Refresh,
-		AuthCode:     []string{"AC_100100", "AC_100110", "AC_100120", "AC_100010"}}
+		AuthCode:     accountAuthCodes(roles)}
 	rt.Data = success
 	return rt.Ok()
 }
@@ -240,7 +276,7 @@ func (c *AccountLoginService) loginLogSave(ctx *gin.Context, account *entityRam.
 	var tmp entityRam.RamAccountEntity
 	copier.Copy(&tmp, account)
 	tmp.LoginTime = &now
-	tmp.TenantNo = typeDomainPg.System.Code()
+	tmp.TenantNo = account.TenantNo
 	obj := modRamAccount.LoginLogDto{
 		Account:     tmp,
 		Ano:         tmp.No,
@@ -336,78 +372,83 @@ func (c *AccountLoginService) Logout(holder holderPg.HolderPg) (rt rg.Rs[string]
 //	@Description:  刷新
 //	@receiver c
 func (c *AccountLoginService) RefreshToken(ctx *gin.Context, ct modRamLogin.TokenRefreshCt, tp typeDomainPg.TypeDomain, client clientPg.Client) (rt rg.Rs[modPublic.LoginToken]) {
-	token := ctx.GetHeader("Authorization")
-	if strPg.IsNotBlank(token) {
-		tokenRefresh := ctx.GetHeader("Authorization-Refresh")
-		token = strings.Replace(token, authTokenPg.AuthScheme+" ", "", -1)
-		if strPg.IsNotBlank(token) {
-			var accessPayload map[string]interface{}
-			var refreshPayload map[string]interface{}
-			{
-				unverified, b := authTokenPg.ParseUnverified(token)
-				if b {
-					// 解析为map便于查看
-					if err := json.Unmarshal(unverified, &accessPayload); err != nil {
-						return rt.ErrorMessage("解析载荷JSON失败")
-					}
-				}
-			}
-			{
-				if strPg.IsNotBlank(tokenRefresh) {
-					unverified2, b := authTokenPg.ParseUnverified(tokenRefresh)
-					if b {
-						// 解析为map便于查看
-						if err := json.Unmarshal(unverified2, &refreshPayload); err != nil {
-							return rt.ErrorMessage("解析载荷JSON失败")
-						}
-					}
-				}
-			}
-			tenantNoAcc := ""
-			tenantNoRef := ""
-			loginNoAcc := ""
-			loginNoRef := ""
-			{
-				if get, ok := accessPayload[authTokenPg.TenantNo]; ok {
-					tenantNoAcc = get.(string)
-				}
-				if get, ok := accessPayload[authTokenPg.Subject]; ok {
-					loginNoAcc = get.(string)
-				}
-			}
-			{
-				if get, ok := refreshPayload[authTokenPg.TenantNo]; ok {
-					tenantNoRef = get.(string)
-				}
-				if get, ok := refreshPayload[authTokenPg.Subject]; ok {
-					loginNoRef = get.(string)
-				}
-			}
-			if strPg.IsNotBlank(loginNoAcc) && strPg.IsNotBlank(loginNoRef) &&
-				strPg.IsNotBlank(tenantNoAcc) && strPg.IsNotBlank(tenantNoRef) &&
-				loginNoAcc == loginNoRef && tenantNoAcc == tenantNoRef {
-				info, result := c.dao.FindByNo(ctx, loginNoAcc)
-				if result {
-					//租户默认
-					mult := multiTenantPg.MultiTenantPg{
-						TenantNo: make([]string, 0),
-					}
-					mult.TenantNo = append(mult.TenantNo, info.TenantNo)
-					//生成 token
-					tokenRet := c.MakeToken(ctx, mult, info, tp, client, true)
-					if tokenRet.ErrorIs() {
-						return rt.ErrorMessage(tokenRet.Message)
-					}
-					dataToken := tokenRet.Data
-					ret := modPublic.LoginToken{
-						AccessToken:  dataToken.Access,
-						RefreshToken: dataToken.Refresh,
-					}
-					return rt.OkData(ret)
-				}
-			}
-		}
+	accessToken := strings.TrimSpace(strings.Replace(ctx.GetHeader("Authorization"), authTokenPg.AuthScheme+" ", "", 1))
+	refreshToken := strings.TrimSpace(strings.Replace(ctx.GetHeader("Authorization-Refresh"), authTokenPg.AuthScheme+" ", "", 1))
+	if strPg.IsBlank(accessToken) || strPg.IsBlank(refreshToken) {
+		return rt.ErrorMessage("刷新token失败")
 	}
 
-	return rt.ErrorMessage("刷新token失败")
+	// 仅用未验签载荷中的 tno 选择对应租户公钥；随后必须完成签名验证。
+	accessPayload, ok := authTokenPg.ParseUnverified(accessToken)
+	if !ok {
+		return rt.ErrorMessage("刷新token失败")
+	}
+	refreshPayload, ok := authTokenPg.ParseUnverified(refreshToken)
+	if !ok {
+		return rt.ErrorMessage("刷新token失败")
+	}
+	var accessClaim, refreshClaim map[string]interface{}
+	if json.Unmarshal(accessPayload, &accessClaim) != nil || json.Unmarshal(refreshPayload, &refreshClaim) != nil {
+		return rt.ErrorMessage("刷新token失败")
+	}
+	tenantNoAcc := convPg.ObjToStr(accessClaim[authTokenPg.TenantNo])
+	tenantNoRef := convPg.ObjToStr(refreshClaim[authTokenPg.TenantNo])
+	if strPg.IsBlank(tenantNoAcc) || tenantNoAcc != tenantNoRef {
+		return rt.ErrorMessage("刷新token失败")
+	}
+
+	accessKey, found := cacheAuthPubPrivPg.Get(cacheAuthPubPrivPg.AccessTokenKey(tenantNoAcc, tp, client))
+	if !found || strPg.IsBlank(accessKey.Public) {
+		return rt.ErrorMessage("刷新token失败")
+	}
+	accessVerified, vr := authTokenPg.VerifyByPublicKey(accessKey.Public, accessToken)
+	if vr.ErrorIs() || nil == accessVerified {
+		return rt.ErrorMessage("刷新token失败")
+	}
+	refreshKey, found := cacheAuthPubPrivPg.Get(cacheAuthPubPrivPg.RefreshTokenKey(tenantNoAcc, tp, client))
+	if !found || strPg.IsBlank(refreshKey.Public) {
+		return rt.ErrorMessage("刷新token失败")
+	}
+	refreshVerified, vr2 := authTokenPg.VerifyByPublicKey(refreshKey.Public, refreshToken)
+	if vr2.ErrorIs() || nil == refreshVerified {
+		return rt.ErrorMessage("刷新token失败")
+	}
+
+	loginNoAcc, err := accessVerified.GetSubject()
+	if nil != err || strPg.IsBlank(loginNoAcc) {
+		return rt.ErrorMessage("刷新token失败")
+	}
+	loginNoRef, err := refreshVerified.GetSubject()
+	if nil != err || loginNoRef != loginNoAcc {
+		return rt.ErrorMessage("刷新token失败")
+	}
+	tnoAcc, err := accessVerified.GetString(authTokenPg.TenantNo)
+	if nil != err || tnoAcc != tenantNoAcc {
+		return rt.ErrorMessage("刷新token失败")
+	}
+	tnoRef, err := refreshVerified.GetString(authTokenPg.TenantNo)
+	if nil != err || tnoRef != tnoAcc {
+		return rt.ErrorMessage("刷新token失败")
+	}
+	typAcc, _ := accessVerified.GetString(authTokenPg.Type)
+	typRef, _ := refreshVerified.GetString(authTokenPg.Type)
+	if typAcc != tp.Code() || typRef != tp.Code() {
+		return rt.ErrorMessage("刷新token失败")
+	}
+
+	info, result := c.dao.FindByNo(ctx, loginNoAcc)
+	if !result || info == nil ||
+		info.TenantNo != tnoAcc || info.TypeDomain != tp.Code() ||
+		!enumStatePg.ENABLE.IsExistInt8(info.State) {
+		return rt.ErrorMessage("刷新token失败")
+	}
+	mult := multiTenantPg.MultiTenantPg{TenantNo: []string{info.TenantNo}}
+	tokenRet := c.MakeToken(ctx, mult, info, tp, client, true)
+	if tokenRet.ErrorIs() {
+		return rt.ErrorMessage(tokenRet.Message)
+	}
+	return rt.OkData(modPublic.LoginToken{
+		AccessToken:  tokenRet.Data.Access,
+		RefreshToken: tokenRet.Data.Refresh,
+	})
 }

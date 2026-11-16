@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"html/template"
 	"os"
 	"runtime"
 
@@ -14,7 +13,6 @@ import (
 	_ "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbManagerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
-	"github.com/pangu-2/go-tools/tools/datetimePg"
 	"github.com/pangu-2/go-tools/tools/ioPg"
 	"go-spring.org/spring/gs"
 	StarterGin "go-spring.org/starter-gin"
@@ -81,15 +79,21 @@ func main() {
 //	@return *gin.Engine
 func NewGinEngine(registrars []routerPg.RouteRegistrar) StarterGin.RouterRegister {
 	return func(e *gin.Engine) {
+		// 基础安全响应头（上传/静态文件与业务响应统一生效）
+		e.Use(func(c *gin.Context) {
+			c.Header("X-Content-Type-Options", "nosniff")
+			c.Header("X-Frame-Options", "DENY")
+			c.Header("Referrer-Policy", "no-referrer")
+			c.Next()
+		})
 		// 静态文件目录
 		e.Static("/assets", "./data/assets")
 		e.Static("/attachment", "./data/attachment")
 
-		// 模板函数，需在设置渲染器之前设置
-		funcMap := template.FuncMap{
-			"unescaped":  templatePg.Unescaped,
-			"dateformat": datetimePg.Format,
-		}
+		// 模板函数，需在设置渲染器之前设置。
+		// 与 echo 侧共用 DefaultFuncMap，避免 gin 渲染的页面因缺少
+		// hasPrefix/hasSuffix/trimPrefix 等函数导致整站模板解析失败。
+		funcMap := templatePg.DefaultFuncMap()
 		e.SetFuncMap(funcMap)
 
 		// 渲染器：按模板文件 mtime/size 变化热加载，

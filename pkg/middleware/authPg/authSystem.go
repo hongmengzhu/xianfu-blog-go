@@ -83,6 +83,16 @@ func GroupSystemMiddleware(m *GroupSystemMiddlewareSp) gin.HandlerFunc {
 			})
 			//
 			var data = rt.Data
+			// 系统域同样要求创始人/administrator 角色；/sys/public 为自助接口例外。
+			path := c.Request.URL.Path
+			if strings.HasPrefix(path, "/xianfu/sys/") &&
+				!strings.HasPrefix(path, "/xianfu/sys/public/") &&
+				!isAccountAdministrator(data) {
+				log.Warn(context.Background(), log.TagAppDef, "拒绝非管理员访问", log.String("path", path))
+				c.JSON(200, rg.Error[string]("无管理权限"))
+				c.Abort()
+				return
+			}
 			//如果配置了systemUrlPaths，则必须携带ownerCode
 			if len(systemUrlPaths) > 0 && data.GetOwnerNo() == "" {
 				path := c.Request.URL.Path

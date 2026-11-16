@@ -12,6 +12,7 @@ import (
 	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/validatorPg"
+	"github.com/pangu-2/go-tools/tools/strPg"
 	"github.com/pangu-2/go-tools/tools/wrapperPg/rg"
 	"go-spring.org/spring/gs"
 )
@@ -137,13 +138,11 @@ func (c *ModelRulesController) PhysicalDeletion(ctx *gin.Context) {
 //	@param ctx
 func (c *ModelRulesController) Detail(ctx *gin.Context) {
 	param := ctx.Param("id")
-
-	fmt.Println(param)
 	if "" == param {
 		ctx.JSON(200, rg.Error[string]("id不能为空"))
 		return
 	}
-	//ctx.JSON(200, c.sv.Detail(ctx, strPg.ToInt64(param)))
+	ctx.JSON(200, c.sv.Detail(ctx, strPg.ToInt64(param)))
 }
 
 // Enable 启用

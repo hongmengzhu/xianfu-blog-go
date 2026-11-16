@@ -38,6 +38,7 @@ type LdapService struct {
 	daoBinding    *repositoryIdp.IdpIdpBindingRepository        `autowire:"?"`
 	daoSessionLog *repositoryRam.RamAccountSessionLogRepository `autowire:"?"`
 	loginService  *service2.AccountLoginService                 `autowire:"?"`
+	mfaService    *service2.AccountMfaService                   `autowire:"?"`
 }
 
 // buildLdapConfig 从认证源配置构建 LDAP 连接配置
@@ -202,12 +203,18 @@ func (s *LdapService) SyncUsers(ctx *gin.Context, ct modIdpLdap.LdapSyncCt) (rt 
 
 // Login LDAP 登录认证
 func (s *LdapService) Login(ctx *gin.Context, ct modIdpLdap.LdapLoginCt) (rt rg.Rs[modRamLogin.IdpLoginSuccess]) {
+	if strPg.IsBlank(ct.SourceNo) {
+		return rt.ErrorMessage("认证源编号不能为空")
+	}
 	source, found := s.daoSource.FindByNo(ctx, ct.SourceNo)
 	if !found {
 		return rt.ErrorMessage("认证源不存在")
 	}
 	if !enumStatePg.ENABLE.IsExistInt8(source.State) {
 		return rt.ErrorMessage("认证源已禁用")
+	}
+	if source.Protocol != "ldap" && source.Protocol != "ldaps" {
+		return rt.ErrorMessage("认证源协议不是 LDAP")
 	}
 
 	cfg, err := s.buildLdapConfig(source)
@@ -343,6 +350,21 @@ func (s *LdapService) createAccountFromLdap(
 }
 
 // loginSuccess LDAP 登录成功
+func accountRolesForLdap(account *entityRam.RamAccountEntity) []string {
+	roles := make([]string, 0)
+	if nil != account {
+		for _, role := range account.Os.Data().Roles {
+			if strPg.IsNotBlank(role) {
+				roles = append(roles, role)
+			}
+		}
+		if len(roles) == 0 && account.Founder == 1 {
+			roles = append(roles, "administrator")
+		}
+	}
+	return roles
+}
+
 func (s *LdapService) loginSuccess(
 	ctx *gin.Context,
 	account *entityRam.RamAccountEntity,
@@ -350,6 +372,25 @@ func (s *LdapService) loginSuccess(
 	ldapUser *ldap.LdapUser,
 	isSignup bool,
 ) (rt rg.Rs[modRamLogin.IdpLoginSuccess]) {
+	// MFA 对所有 LDAP 登录（含自动建号）生效，不再按 isSignup 跳过。
+	mfaRequired, mfaToken, mfaType := false, "", ""
+	if nil != s.mfaService {
+		mfaRequired, mfaToken, mfaType = s.mfaService.CheckMfaRequired(ctx, account.No)
+	}
+	if mfaRequired {
+		return rt.OkData(modRamLogin.IdpLoginSuccess{
+			MfaRequired: true,
+			MfaToken:    mfaToken,
+			MfaType:     mfaType,
+			Info: modRamLogin.LoginSuccessInfo{
+				Account: account.Account,
+				Name:    account.Name,
+				Avatar:  account.Avatar,
+			},
+			IsSignup: isSignup,
+		})
+	}
+
 	mult := multiTenantPg.MultiTenantPg{
 		TenantNo: []string{account.TenantNo},
 	}
@@ -395,7 +436,7 @@ func (s *LdapService) loginSuccess(
 			Account: account.Account,
 			Name:    account.Name,
 			Avatar:  account.Avatar,
-			Roles:   []string{},
+			Roles:   accountRolesForLdap(account),
 		},
 		IsSignup: isSignup,
 	}

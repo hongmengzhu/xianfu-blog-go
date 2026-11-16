@@ -15,17 +15,19 @@ const (
 
 // DeviceAuthCache 设备授权缓存条目
 type DeviceAuthCache struct {
-	DeviceCode  string    // 设备码
-	UserCode    string    // 用户码
-	ClientId    string    // 客户端 ID
-	UserName    string    // 授权用户账号（审批后填充）
-	UserNo      string    // 授权用户 No（审批后填充）
-	TenantNo    string    // 租户编号
-	Scope       string    // 请求范围
-	RequestAt   time.Time // 请求时间
-	Status      string    // 状态：pending / approved / denied / token_issued
-	CancelToken string    // 取消令牌
-	ExpiresIn   int       // 过期时间（秒）
+	DeviceCode   string    // 设备码
+	UserCode     string    // 用户码
+	ClientId     string    // 客户端 ID
+	UserName     string    // 授权用户账号（审批后填充）
+	UserNo       string    // 授权用户 No（审批后填充）
+	TenantNo     string    // 租户编号
+	Scope        string    // 请求范围
+	RequestAt    time.Time // 请求时间
+	Status       string    // 状态：pending / approved / denied / token_issued
+	CancelToken  string    // 取消令牌
+	ExpiresIn    int       // 过期时间（秒）
+	AccessToken  string    // 已签发的访问令牌
+	RefreshToken string    // 已签发的刷新令牌
 }
 
 // IsExpired 判断是否已过期

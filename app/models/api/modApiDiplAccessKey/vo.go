@@ -16,8 +16,6 @@ type Vo struct {
 	UpdateAt    *time.Time          `json:"updateAt" label:"更新时间" `    // 更新时间
 	Type        string              `json:"type" label:"类型" validate:"required,min=1,max=255"`
 	Key         string              `json:"key" label:"键" `
-	Secret      string              `json:"secret" label:"密钥" `
 	ExpiryDate  *time.Time          `json:"expiryDate" label:"有效期" `
 	DiplNo      string              `json:"diplNo" label:"接口编号" `
-	Hash        string              `json:"hash" label:"hash" `
 }

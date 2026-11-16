@@ -23,7 +23,6 @@ type TestController struct {
 //	@receiver c
 //	@param e
 func (c *TestController) RegisterRoutes(e *gin.Engine) {
-	e.GET("/test/cache", c.Cache)
 }
 
 func (c *TestController) Cache(ctx *gin.Context) {

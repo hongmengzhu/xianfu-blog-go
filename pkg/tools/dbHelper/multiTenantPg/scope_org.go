@@ -39,25 +39,21 @@ func ScopeRulePgWhereOrg(ctx *gin.Context, tableName string) func(db *gorm.DB) *
 		//fmt.Printf("typeDomain.tableName=%+v\n", tableName)
 		//fmt.Printf("typeDomain.multiRule.Tenant=%+\nv", multiRule.Tenant)
 		if verifyMultiByTable(&multiTableOrg, tableName) && multiRule.Tenant {
-			ruleOrg(db, filters, multiRule)
+			db = ruleOrg(db, filters, multiRule)
 		}
 		return db
 	}
 }
 
 func ruleOrg(db *gorm.DB, holder MultiTenantPg, rule *MultiRule) *gorm.DB {
-	if rule.Org {
-		//大于 2个时候
-		if nil != holder.OrgNo && len(holder.OrgNo) >= 1 {
-			//允许多个 租户列表
-			if rule.MultipleOrg && len(holder.OrgNo) > 1 {
-				db.Where("org_no IN  ? ", holder.OrgNo)
-			} else {
-				db.Where("org_no = ?", holder.OrgNo[0])
-			}
-		} else {
-			db.Where("org_no = ?", "000")
-		}
+	if !rule.Org {
+		return db
 	}
-	return db
+	if len(holder.OrgNo) >= 1 {
+		if rule.MultipleOrg && len(holder.OrgNo) > 1 {
+			return db.Where("org_no IN ?", holder.OrgNo)
+		}
+		return db.Where("org_no = ?", holder.OrgNo[0])
+	}
+	return db.Where("org_no = ?", "000")
 }

@@ -64,7 +64,7 @@ func NewServer(regs []RouteRegistrar, cfg Config) (*Server, error) {
 	vhosts := make(map[string]*echo.Echo, len(byHost))
 	for _, host := range names {
 		vh := echo.New()
-		vh.Use(middleware.Recover(), middleware.RequestID())
+		vh.Use(middleware.Recover(), middleware.RequestID(), securityHeaders())
 		// 错误处理器：保留 echo 默认响应，同时把原始错误写进日志
 		vh.HTTPErrorHandler = newHTTPErrorHandler()
 		// 模板渲染器，命名规则与 gin LoadHTMLGlob 保持一致
@@ -85,7 +85,7 @@ func NewServer(regs []RouteRegistrar, cfg Config) (*Server, error) {
 	// matches no subdomain, so the fallback routes go on the returned engine:
 	// a bare http://127.0.0.1:2016/ then lists the subdomains to try.
 	handler := echo.NewVirtualHostHandler(vhosts)
-	handler.Use(middleware.Recover(), middleware.RequestID())
+	handler.Use(middleware.Recover(), middleware.RequestID(), securityHeaders())
 	handler.HTTPErrorHandler = newHTTPErrorHandler()
 	handler.GET("/", func(c *echo.Context) error {
 		return c.JSON(http.StatusOK, map[string]any{
@@ -111,6 +111,18 @@ func NewServer(regs []RouteRegistrar, cfg Config) (*Server, error) {
 			IdleTimeout:       cfg.IdleTimeout,
 		},
 	}, nil
+}
+
+func securityHeaders() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c *echo.Context) error {
+			h := c.Response().Header()
+			h.Set("X-Content-Type-Options", "nosniff")
+			h.Set("X-Frame-Options", "DENY")
+			h.Set("Referrer-Policy", "no-referrer")
+			return next(c)
+		}
+	}
 }
 
 // Addr reports the configured listen address (for example ":2016").

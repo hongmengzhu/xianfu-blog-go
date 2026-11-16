@@ -1,10 +1,10 @@
 package cas
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/xml"
 	"fmt"
-	"math"
-	"math/rand"
 	"sync"
 	"time"
 )
@@ -30,7 +30,7 @@ type CasServiceResponse struct {
 type CasAuthenticationFailure struct {
 	XMLName xml.Name `xml:"cas:authenticationFailure"`
 	Code    string   `xml:"code,attr"`
-	Message string   `xml:",innerxml"`
+	Message string   `xml:",chardata"`
 }
 
 // CasAuthenticationSuccess CAS 认证成功
@@ -87,7 +87,11 @@ func GenerateServiceTicket(userId string, service string, user *CasUserInfo) (st
 		},
 	}
 
-	st := fmt.Sprintf("ST-%d", rand.Int63n(math.MaxInt64))
+	buf := make([]byte, 32)
+	if _, err := rand.Read(buf); err != nil {
+		return "", fmt.Errorf("生成票据失败")
+	}
+	st := "ST-" + hex.EncodeToString(buf)
 	stToTicket.Store(st, &CasTicketWrapper{
 		AuthenticationSuccess: authSuccess,
 		Service:               service,
@@ -103,6 +107,10 @@ func GenerateServiceTicket(userId string, service string, user *CasUserInfo) (st
 func ValidateServiceTicket(ticket string) (bool, *CasAuthenticationSuccess, string, string) {
 	if wrapper, ok := stToTicket.LoadAndDelete(ticket); ok {
 		tw := wrapper.(*CasTicketWrapper)
+		// 票据有效期 2 分钟，避免长期驻留与重放
+		if time.Since(tw.CreatedAt) > 2*time.Minute {
+			return false, nil, "", ""
+		}
 		return true, tw.AuthenticationSuccess, tw.Service, tw.UserId
 	}
 	return false, nil, "", ""

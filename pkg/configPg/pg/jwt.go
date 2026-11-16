@@ -4,8 +4,8 @@ package pg
 type JwtConfig struct {
 	//
 	Secret string `json:"secret" value:"${secret:=ssa1ssssaaa234324324394dsfdfs}"`
-	// 过期时间，单位 分钟,1440:1天, 991440
-	Expire int `json:"expire" value:"${expire:=991440}"`
+	// 过期时间，单位 分钟，默认 720（12 小时）；1440:1天
+	Expire int `json:"expire" value:"${expire:=720}"`
 	// cookie 是否启用
 	CookieOn bool `json:"cookieOn" value:"${cookieOn:=false}"`
 	//

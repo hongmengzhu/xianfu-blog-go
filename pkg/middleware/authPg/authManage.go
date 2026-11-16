@@ -12,6 +12,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constHeaderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/authTokenPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/cachePg/cacheAuthPubPrivPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/multiTenantPg"
 	"github.com/pangu-2/go-tools/tools/convPg"
 	"github.com/pangu-2/go-tools/tools/strPg"
@@ -19,6 +20,21 @@ import (
 	"go-spring.org/log"
 	"go-spring.org/spring/gs"
 )
+
+// isAccountAdministrator 判断账号是否具备管理端写权限：
+// 创始人（引导管理员）或显式拥有 administrator 角色。
+func isAccountAdministrator(data holderPg.HolderPg) bool {
+	account := data.GetAccount()
+	if account.Founder == 1 {
+		return true
+	}
+	for _, role := range account.Os.Roles {
+		if role == "administrator" {
+			return true
+		}
+	}
+	return false
+}
 
 // 验证 ownerCode 必填
 var managerUrlPaths = make([]string, 0)
@@ -114,6 +130,16 @@ func GroupManageMiddleware(m *GroupManageMiddlewareSp) gin.HandlerFunc {
 			})
 			//
 			var data = rt.Data
+			// 资源级鉴权：manage 除 public 自助接口外，均要求创始人/administrator 角色。
+			path := c.Request.URL.Path
+			if strings.HasPrefix(path, "/xianfu/manage/") &&
+				!strings.HasPrefix(path, "/xianfu/manage/public/") &&
+				!isAccountAdministrator(data) {
+				log.Warn(context.Background(), log.TagAppDef, "拒绝非管理员访问", log.String("path", path))
+				c.JSON(200, rg.Error[string]("无管理权限"))
+				c.Abort()
+				return
+			}
 			//如果配置了managerUrlPaths，则必须携带ownerCode
 			if len(managerUrlPaths) > 0 && data.GetOwnerNo() == "" {
 				path := c.Request.URL.Path

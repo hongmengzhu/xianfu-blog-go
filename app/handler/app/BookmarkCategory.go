@@ -30,8 +30,8 @@ func (c *BookmarkCategoryAppController) RegisterRoutes(e *gin.Engine) {
 	group.POST("/getAll", c.GetAll)
 	group.POST("/createUpdate", c.CreateUpdate)
 	group.POST("/delete", c.Delete)
-	group.POST("/getMy	", c.GetMy)
-	group.POST("/getOrg	", c.GetOrg)
+	group.POST("/getMy", c.GetMy)
+	group.POST("/getOrg", c.GetOrg)
 }
 
 // GetAll 获取所有
