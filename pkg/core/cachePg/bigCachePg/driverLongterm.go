@@ -76,7 +76,7 @@ func (LongTermBigCacheDriver) CreateClient(ctx context.Context, name string,
 		return nil, errutil.Explain(err, "bigcache: create instance %q", name)
 	}
 
-	cache, err := StarterBigCache.NewCache(client, name)
+	cache, err := StarterBigCache.NewCache(client, name, nil)
 	if err != nil {
 		_ = client.Close()
 		return nil, err
