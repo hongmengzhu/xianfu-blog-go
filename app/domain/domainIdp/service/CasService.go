@@ -57,7 +57,7 @@ func (s *IdpCasService) Login(ctx *gin.Context, ct modIdpCas.CasLoginCt) (rt rg.
 	// 生成 ST
 	st, err := pkgcas.GenerateServiceTicket(account.Account, ct.Service, userInfo)
 	if err != nil {
-		return rt.ErrorMessage("生成票据失败: " + err.Error())
+		return rt.ErrorMessage("生成票据失败")
 	}
 
 	// 构建重定向 URL
@@ -129,7 +129,7 @@ func (s *IdpCasService) ServiceValidate(ctx *gin.Context, ct modIdpCas.CasValida
 	// 构建成功响应
 	xmlBytes, err := pkgcas.BuildSuccessResponse(authSuccess)
 	if err != nil {
-		return s.buildXmlError(pkgcas.InternalError, err.Error())
+		return s.buildXmlError(pkgcas.InternalError, "internal error")
 	}
 
 	return string(xmlBytes)

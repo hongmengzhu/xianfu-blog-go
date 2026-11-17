@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/urlGuardPg"
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/idp/modIdpFace"
@@ -83,6 +84,11 @@ func (s *FaceIdService) Verify(ctx *gin.Context, ct modIdpFace.FaceIdVerifyCt) (
 		}
 	}
 
+	// 出站地址校验，防止认证源配置指向内网（SSRF）
+	if err := urlGuardPg.ValidateFetchURL(ctx.Request.Context(), baseCfg.HostUrl); nil != err {
+		return rt.ErrorMessage("人脸认证服务地址不合法")
+	}
+
 	// 创建 Face ID 提供商
 	provider := faceid.GetFaceIdProvider(providerEntity.Code, baseCfg.ClientId, baseCfg.ClientSecret, baseCfg.HostUrl)
 
@@ -90,7 +96,7 @@ func (s *FaceIdService) Verify(ctx *gin.Context, ct modIdpFace.FaceIdVerifyCt) (
 	matched, err := provider.Check(ct.ImageA, ct.ImageB)
 	if err != nil {
 		log.Error(ctx, log.TagAppDef, err, "Face ID 验证失败")
-		return rt.ErrorMessage("人脸对比失败: " + err.Error())
+		return rt.ErrorMessage("人脸对比失败")
 	}
 
 	if !matched {

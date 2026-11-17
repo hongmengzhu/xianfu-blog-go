@@ -2,7 +2,6 @@ package blog
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBlog/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/utils/webPg"
@@ -49,7 +48,7 @@ func (c *IndexController) RegisterRoutes(g *echo.Echo) {
 func (c *IndexController) Index(ctx *echo.Context) error {
 	var ct modBlogArticleWeb.QueryCt
 	if err := ctx.Bind(&ct); nil != err {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return echo.NewHTTPError(400, "请求参数错误")
 	}
 	//
 	tenantNo := webPg.GetTenantNoEcho(ctx)

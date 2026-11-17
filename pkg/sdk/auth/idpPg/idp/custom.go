@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/go-viper/mapstructure/v2"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/urlGuardPg"
 	"golang.org/x/oauth2"
 )
 
@@ -146,6 +147,10 @@ func (idp *CustomIdProvider) GetUserInfo(token *oauth2.Token) (*UserInfo, error)
 			return nil, fmt.Errorf("UserInfoURL is empty and %v", err)
 		}
 		return userInfoFromIdTokenClaims(claims)
+	}
+
+	if err := urlGuardPg.ValidateFetchURL(context.Background(), idp.UserInfoURL); nil != err {
+		return nil, fmt.Errorf("UserInfoURL 不合法: %w", err)
 	}
 
 	accessToken := token.AccessToken

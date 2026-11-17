@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"regexp"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/modTcTenantDomain"
@@ -32,9 +34,39 @@ func init() {
 // TcTenantDomainService 租户
 // @Description:
 type TcTenantDomainService struct {
-	sv  *repositoryTc.TcTenantDomainRepository `autowire:"?"`
-	acc *repositoryRam.RamAccountRepository    `autowire:"?"`
-	ten *repositoryTc.TcTenantRepository       `autowire:"?"`
+	sv      *repositoryTc.TcTenantDomainRepository `autowire:"?"`
+	acc     *repositoryRam.RamAccountRepository    `autowire:"?"`
+	ten     *repositoryTc.TcTenantRepository       `autowire:"?"`
+	caCache *TcTenantDomainCacheService            `autowire:"?"`
+}
+
+// domainCodeRegexp 域名标识（即 Host）允许的字符：小写字母、数字、点、连字符、下划线
+var domainCodeRegexp = regexp.MustCompile(`^[a-z0-9][a-z0-9._-]*$`)
+
+// normalizeDomainCode 规范化域名标识并校验格式。
+//
+//	@Description: 域名 code 会被当作完整 Host 存入缓存，因此必须支持点号并做规范化
+//	@param code
+//	@return string 规范化后的 code
+//	@return bool 是否合法
+func normalizeDomainCode(code string) (string, bool) {
+	code = strings.ToLower(strings.TrimSpace(code))
+	code = strings.Trim(code, ".")
+	if code == "" || len(code) > 80 {
+		return "", false
+	}
+	if !domainCodeRegexp.MatchString(code) {
+		return "", false
+	}
+	return code, true
+}
+
+// reloadCache 域名增删改后刷新域名缓存，避免"重启前不生效/删除后仍可解析"
+func (c *TcTenantDomainService) reloadCache(ctx context.Context) {
+	if nil == c.caCache {
+		return
+	}
+	c.caCache.Reload(ctx)
 }
 
 // Create 新增
@@ -65,16 +97,15 @@ func (c *TcTenantDomainService) Create(ctx *gin.Context, ct modTcTenantDomain.Cr
 		return rt.ErrorMessage("租户 不存在")
 	}
 	r := c.sv
-	//判断是否是自动,不是自动
+	// 域名 code 即 Host：允许字母/数字/点/连字符，且必须全局唯一（跨租户）
 	if !automatedPg.IsCreateCode(ct.Code) {
-		//判断格式是否满足要求
-		if !automatedPg.FormatVerify(ct.Code) {
-			return rt.ErrorMessage("编号格式不能为空")
+		code, valid := normalizeDomainCode(ct.Code)
+		if !valid {
+			return rt.ErrorMessage("域名格式不正确")
 		}
-		//不是自动
-		_, result := r.FindByNo(ctx, ct.Code)
-		if result {
-			return rt.ErrorMessage("编号已存在")
+		info.Code = code
+		if exist, found := r.FindByCodeGlobal(ctx, code); found && nil != exist {
+			return rt.ErrorMessage("域名已存在")
 		}
 	}
 	info.ID = strPg.GenerateNumberId18()
@@ -89,11 +120,12 @@ func (c *TcTenantDomainService) Create(ctx *gin.Context, ct modTcTenantDomain.Cr
 	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	err, _ := r.Create(ctx, &info)
 	if err != nil {
-		return rt.ErrorMessage("保存失败 " + err.Error())
+		return rt.ErrorMessage("保存失败 ")
 	}
 	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	// 设置默认
 	c.setDefaulted(ctx, ten.No, info.ID)
+	c.reloadCache(ctx)
 	return rt.OkData(numberPg.Int64ToString(info.ID))
 }
 
@@ -127,12 +159,14 @@ func (c *TcTenantDomainService) Update(ctx *gin.Context, ct modTcTenantDomain.Cr
 		return rt.ErrorMessage("租户 不存在")
 	}
 	r := c.sv
-	{
-		_, result := r.FindByCodeAndIdNot(ctx, ct.Code, ct.ID.ToString(), optionsPg.WithCtx(ctx))
-		if result {
-			return rt.ErrorMessage("编号已存在")
-		}
+	code, valid := normalizeDomainCode(ct.Code)
+	if !valid {
+		return rt.ErrorMessage("域名格式不正确")
 	}
+	if exist, found := r.FindByCodeGlobal(ctx, code); found && nil != exist && exist.ID != ct.ID.ToInt64() {
+		return rt.ErrorMessage("域名已存在")
+	}
+	info.Code = code
 	_, b := r.FindById(ctx, ct.ID.ToInt64())
 	if !b {
 		return rt.ErrorMessage("数据不存在")
@@ -144,10 +178,11 @@ func (c *TcTenantDomainService) Update(ctx *gin.Context, ct modTcTenantDomain.Cr
 	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	err := r.Update(ctx, info, info.ID)
 	if err != nil {
-		return rt.ErrorMessage("更新失败:" + err.Error())
+		return rt.ErrorMessage("更新失败")
 	}
 	// 设置默认
 	c.setDefaulted(ctx, ten.No, info.ID)
+	c.reloadCache(ctx)
 	return rt.Ok()
 }
 
@@ -174,32 +209,40 @@ func (c *TcTenantDomainService) UpdateByTenant(ctx *gin.Context, ct modTcTenantD
 		return rt.ErrorMessage("编号/标记不能为空")
 	}
 	//
-	ten, result := c.ten.FindByNo(ctx, holder.GetTenantNo())
+	_, result := c.ten.FindByNo(ctx, holder.GetTenantNo())
 	if !result {
 		return rt.ErrorMessage("租户 不存在")
 	}
 	r := c.sv
-	{
-		_, result := r.FindByCodeAndIdNot(ctx, ct.Code, ct.ID.ToString(), optionsPg.WithCtx(ctx))
-		if result {
-			return rt.ErrorMessage("编号已存在")
-		}
+	code, valid := normalizeDomainCode(ct.Code)
+	if !valid {
+		return rt.ErrorMessage("域名格式不正确")
 	}
-	_, b := r.FindById(ctx, ct.ID.ToInt64())
-	if !b {
+	if exist, found := r.FindByCodeGlobal(ctx, code); found && nil != exist && exist.ID != ct.ID.ToInt64() {
+		return rt.ErrorMessage("域名已存在")
+	}
+	find, b := r.FindById(ctx, ct.ID.ToInt64())
+	if !b || nil == find {
 		return rt.ErrorMessage("数据不存在")
 	}
+	// 只能修改自己租户的域名，禁止通过 id 夺走其它租户的绑定
+	if find.TenantNo != holder.GetTenantNo() {
+		return rt.ErrorMessage("数据不存在")
+	}
+	info.Code = code
 
 	//编号，不参与更新
 	info.No = ""
-	info.TenantNo = ten.No
+	info.TenantNo = find.TenantNo
 	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	err := r.Update(ctx, info, info.ID)
 	if err != nil {
-		return rt.ErrorMessage("更新失败:" + err.Error())
+		log.Error(ctx, log.TagAppDef, err, "更新域名失败", log.Any("id", info.ID))
+		return rt.ErrorMessage("更新失败")
 	}
 	// 设置默认
-	c.setDefaulted(ctx, ten.No, info.ID)
+	c.setDefaulted(ctx, find.TenantNo, info.ID)
+	c.reloadCache(ctx)
 	return rt.Ok()
 }
 
@@ -212,25 +255,16 @@ func (c *TcTenantDomainService) UpdateByTenant(ctx *gin.Context, ct modTcTenantD
 //	@param newId
 //	@return rt
 func (c *TcTenantDomainService) setDefaulted(ctx context.Context, tenantNo string, newId int64) (rt rg.Rs[string]) {
-	infos, query := c.sv.FindAllByTenantNo(ctx, tenantNo)
-	if query {
-		defaultCount := 0
-		for _, item := range infos {
-			if yesNoIntPg.Yes.IsExistInt8(item.Defaulted) {
-				defaultCount++
-			}
-		}
-		// 默认值只能有一个
-		if defaultCount > 1 {
-			//设置所有默认值为否
-			c.sv.SetDefaultedByTenantNo(ctx, yesNoIntPg.No.IndexInt8(), tenantNo)
-			//设置当前默认值是是
-			if newId > 0 {
-				c.sv.Update(ctx, entityTc.TcTenantDomainEntity{Defaulted: yesNoIntPg.Yes.IndexInt8()}, newId)
-			}
-		} else if defaultCount == 0 && newId > 0 {
-			//如果没有默认值，则设置当前默认值是是
-			c.sv.Update(ctx, entityTc.TcTenantDomainEntity{Defaulted: yesNoIntPg.Yes.IndexInt8()}, newId)
+	if strPg.IsBlank(tenantNo) {
+		return rt.Ok()
+	}
+	// 不变量：同一租户最多一个默认域名。
+	// 原实现只在 defaultCount>1 或 ==0 时才动手，defaultCount==1 且要切换默认时会把两个都留在"是"。
+	// 这里统一先清零再置位，保证任何调用顺序都收敛到唯一默认。
+	c.sv.SetDefaultedByTenantNo(ctx, yesNoIntPg.No.IndexInt8(), tenantNo)
+	if newId > 0 {
+		if err := c.sv.Update(ctx, entityTc.TcTenantDomainEntity{Defaulted: yesNoIntPg.Yes.IndexInt8()}, newId); err != nil {
+			log.Error(ctx, log.TagAppDef, err, "设置默认域名失败", log.Any("id", newId))
 		}
 	}
 	return rt.Ok()
@@ -313,13 +347,20 @@ func (c *TcTenantDomainService) State(ctx *gin.Context, ct model.BaseStateIdsCt[
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
+	changed := false
 	for _, info := range finds {
 		if info.State != state.IndexInt8() {
 			err := r.Update(ctx, entityTc.TcTenantDomainEntity{State: state.IndexInt8()}, info.ID)
 			if err != nil {
 				log.Error(ctx, log.TagAppDef, err, "更新失败", log.Any("id", info.ID))
+				continue
 			}
+			changed = true
 		}
+	}
+	if changed {
+		// 启停会影响 Host 能否解析，必须刷新缓存
+		c.reloadCache(ctx)
 	}
 	return rt.Ok()
 }
@@ -347,20 +388,28 @@ func (c *TcTenantDomainService) LogicalDeletion(ctx *gin.Context, ids []string) 
 	if !b {
 		return rt.ErrorMessage("数据不存在")
 	}
+	// 只使用通过租户校验的行，禁止用原始 ids 越权删除
+	idsFind := make([]string, 0)
+	for _, info := range finds {
+		idsFind = append(idsFind, numberPg.Int64ToString(info.ID))
+	}
 	if c.sv.Config().Data.Delete {
 		for _, info := range finds {
 			log.Info(ctx, log.TagAppDef, "LogicalDeletion", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 		}
-		repository.DeleteByIdsString(ctx, ids)
+		repository.DeleteByIdsString(ctx, idsFind)
 	} else {
 		for _, info := range finds {
 			enum := enumStatePg.State(info.State)
 			// 有效 停用，反转 为对应的 取消 弃置
 			if ok, reverse := enum.ReverseEnableDisable(); ok {
-				repository.Update(ctx, entityTc.TcTenantDomainEntity{State: reverse.IndexInt8()}, info.ID)
+				if err := repository.Update(ctx, entityTc.TcTenantDomainEntity{State: reverse.IndexInt8()}, info.ID); nil != err {
+					log.Error(ctx, log.TagAppDef, err, "删除域名失败", log.Any("id", info.ID))
+				}
 			}
 		}
 	}
+	c.reloadCache(ctx)
 
 	return rt.Ok()
 }
@@ -383,9 +432,12 @@ func (c *TcTenantDomainService) LogicalRecovery(ctx *gin.Context, ids []string) 
 		enum := enumStatePg.State(info.State)
 		//  取消 弃置 批量删除，反转 为对应的 有效 停用 停用
 		if ok, reverse := enum.ReverseCancelLayAside(); ok {
-			repository.Update(ctx, entityTc.TcTenantDomainEntity{State: reverse.IndexInt8()}, info.ID)
+			if err := repository.Update(ctx, entityTc.TcTenantDomainEntity{State: reverse.IndexInt8()}, info.ID); nil != err {
+				log.Error(ctx, log.TagAppDef, err, "恢复域名失败", log.Any("id", info.ID))
+			}
 		}
 	}
+	c.reloadCache(ctx)
 	return rt.Ok()
 }
 
@@ -411,6 +463,7 @@ func (c *TcTenantDomainService) PhysicalDeletion(ctx *gin.Context, ids []string)
 	if len(idsNew) > 0 {
 		cn.DeleteByIds(ctx, idsNew)
 	}
+	c.reloadCache(ctx)
 	return rt.Ok()
 }
 
@@ -426,9 +479,7 @@ func (c *TcTenantDomainService) Query(ctx *gin.Context, ct modTcTenantDomain.Que
 	rt.Data.Data = slice
 	r := c.sv
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
-		if ct.PageSize < 1 {
-			ct.PageSize = 20
-		}
+		ct.PageNum, ct.PageSize = optionsPg.ClampPage(ct.PageNum, ct.PageSize)
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		//自定义查询
 		arg.Db = arg.Db.Order("create_at desc")
@@ -624,20 +675,24 @@ func (c *TcTenantDomainService) SetDefaulted(ctx *gin.Context, ct model.BaseStat
 	if !state.IsEnableDisable() {
 		return rt.ErrorMessage("状态错误")
 	}
+	// 默认标记是"唯一"的：批量设置会产生多个默认域名，因此只允许一次一个
+	if len(ids) != 1 {
+		return rt.ErrorMessage("只能设置一个默认域名")
+	}
 	r := c.sv
 	finds, b := r.FindAllByIdStringIn(ctx, ids, optionsPg.WithCtx(ctx))
-	if !b {
+	if !b || len(finds) != 1 {
 		return rt.ErrorMessage("数据不存在")
 	}
-	//如果是 默认启用，那么要把 当前租户下的所有都设置为 否
+	info := finds[0]
 	if state.IsEqual(yesNoIntPg.Yes.IndexInt8()) {
-		c.setDefaulted(ctx, finds[0].TenantNo, 0)
-	}
-	for _, info := range finds {
-		err := r.Update(ctx, entityTc.TcTenantDomainEntity{Defaulted: state.IndexInt8()}, info.ID)
-		if err != nil {
-			log.Error(ctx, log.TagAppDef, err, "更新失败", log.Any("id", info.ID))
+		// 设为默认：清掉该租户其它默认，再把当前置为默认
+		c.setDefaulted(ctx, info.TenantNo, info.ID)
+	} else {
+		if err := r.Update(ctx, entityTc.TcTenantDomainEntity{Defaulted: yesNoIntPg.No.IndexInt8()}, info.ID); err != nil {
+			log.Error(ctx, log.TagAppDef, err, "取消默认域名失败", log.Any("id", info.ID))
 		}
 	}
+	c.reloadCache(ctx)
 	return rt.Ok()
 }

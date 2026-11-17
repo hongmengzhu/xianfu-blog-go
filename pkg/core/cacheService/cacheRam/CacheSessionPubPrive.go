@@ -127,7 +127,8 @@ func (c *CacheSessionPubPrive) DecodeByLogin(ctx context.Context, pwd string, ty
 	client clientPg.Client,
 	tenantNo string,
 	keyType sessionKeyTypePg.SessionKeyType) (rt rg.Rs[string]) {
-	log.Info(ctx, log.TagBizDef, "ct", log.Any("len", len(pwd)), log.Any("pwd", pwd))
+	// 只记录密文长度，禁止落库明文/完整密文
+	log.Info(ctx, log.TagBizDef, "decode login pwd", log.Any("len", len(pwd)))
 	if len(pwd) < 194 {
 		return rt.ErrorMessage("密文过短，可能已损坏，实际长度：" + strconv.Itoa(len(pwd)))
 	}

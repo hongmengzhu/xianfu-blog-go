@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainRam/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/ram/modPublic"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
 	routerPg "github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/authPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
@@ -49,5 +50,5 @@ func (c *PublicController) UpdatePassword(ctx *gin.Context) {
 	if !routerPg.BindJson(ctx, &ct) {
 		return
 	}
-	ctx.JSON(200, c.sv.UpdatePassword(ctx, ct))
+	ctx.JSON(200, c.sv.UpdatePassword(ctx, ct, typeDomainPg.Manage))
 }

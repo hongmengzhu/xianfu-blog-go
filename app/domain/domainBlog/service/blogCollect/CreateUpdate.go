@@ -245,7 +245,7 @@ func (c CreateUpdate) save(ctx *gin.Context) (rt rg.Rs[string]) {
 			log.Debug(ctx, log.TagAppDef, "save err", func() []log.Field {
 				return []log.Field{log.Any("error", err.Error())}
 			})
-			return rt.ErrorMessage("保存失败：" + err.Error())
+			return rt.ErrorMessage("保存失败")
 		}
 		//
 	} else {
@@ -260,7 +260,7 @@ func (c CreateUpdate) save(ctx *gin.Context) (rt rg.Rs[string]) {
 			log.Debug(ctx, log.TagAppDef, "save err=%+v", func() []log.Field {
 				return []log.Field{log.Any("error", err)}
 			})
-			return rt.ErrorMessage("保存失败：" + err.Error())
+			return rt.ErrorMessage("保存失败")
 		}
 		log.Info(ctx, log.TagAppDef, "save", log.Any("info", c.entitySave))
 		c.record = c.entitySave

@@ -97,14 +97,14 @@ func (s *LdapService) TestConnection(ctx *gin.Context, ct modIdpLdap.LdapTestCt)
 
 	cfg, err := s.buildLdapConfig(source)
 	if err != nil {
-		return rt.ErrorMessage("配置解析失败: " + err.Error())
+		return rt.ErrorMessage("配置解析失败")
 	}
 
 	conn, err := ldap.GetLdapConn(cfg)
 	if err != nil {
 		return rt.OkData(modIdpLdap.LdapTestVo{
 			Connected: false,
-			Message:   "连接失败: " + err.Error(),
+			Message:   "连接失败，请检查认证源配置",
 		})
 	}
 	defer conn.Close()
@@ -115,7 +115,7 @@ func (s *LdapService) TestConnection(ctx *gin.Context, ct modIdpLdap.LdapTestCt)
 		return rt.OkData(modIdpLdap.LdapTestVo{
 			Connected: true,
 			IsAD:      conn.IsAD,
-			Message:   "连接成功，但搜索用户失败: " + err.Error(),
+			Message:   "连接成功，但搜索用户失败",
 		})
 	}
 
@@ -136,7 +136,7 @@ func (s *LdapService) SearchUsers(ctx *gin.Context, ct modIdpLdap.LdapSearchCt) 
 
 	cfg, err := s.buildLdapConfig(source)
 	if err != nil {
-		return rt.ErrorMessage("配置解析失败: " + err.Error())
+		return rt.ErrorMessage("配置解析失败")
 	}
 
 	if strPg.IsNotBlank(ct.Filter) {
@@ -145,13 +145,13 @@ func (s *LdapService) SearchUsers(ctx *gin.Context, ct modIdpLdap.LdapSearchCt) 
 
 	conn, err := ldap.GetLdapConn(cfg)
 	if err != nil {
-		return rt.ErrorMessage("LDAP 连接失败: " + err.Error())
+		return rt.ErrorMessage("LDAP 连接失败，请检查认证源配置")
 	}
 	defer conn.Close()
 
 	users, err := conn.SearchUsers(cfg)
 	if err != nil {
-		return rt.ErrorMessage("搜索用户失败: " + err.Error())
+		return rt.ErrorMessage("搜索用户失败")
 	}
 
 	var result []modIdpLdap.LdapUserVo
@@ -179,18 +179,18 @@ func (s *LdapService) SyncUsers(ctx *gin.Context, ct modIdpLdap.LdapSyncCt) (rt 
 
 	cfg, err := s.buildLdapConfig(source)
 	if err != nil {
-		return rt.ErrorMessage("配置解析失败: " + err.Error())
+		return rt.ErrorMessage("配置解析失败")
 	}
 
 	conn, err := ldap.GetLdapConn(cfg)
 	if err != nil {
-		return rt.ErrorMessage("LDAP 连接失败: " + err.Error())
+		return rt.ErrorMessage("LDAP 连接失败，请检查认证源配置")
 	}
 	defer conn.Close()
 
 	syncResult, err := ldap.SyncUsers(conn, cfg)
 	if err != nil {
-		return rt.ErrorMessage("同步失败: " + err.Error())
+		return rt.ErrorMessage("同步失败")
 	}
 
 	return rt.OkData(modIdpLdap.LdapSyncVo{
@@ -219,12 +219,12 @@ func (s *LdapService) Login(ctx *gin.Context, ct modIdpLdap.LdapLoginCt) (rt rg.
 
 	cfg, err := s.buildLdapConfig(source)
 	if err != nil {
-		return rt.ErrorMessage("配置解析失败: " + err.Error())
+		return rt.ErrorMessage("配置解析失败")
 	}
 
 	conn, err := ldap.GetLdapConn(cfg)
 	if err != nil {
-		return rt.ErrorMessage("LDAP 连接失败: " + err.Error())
+		return rt.ErrorMessage("LDAP 连接失败，请检查认证源配置")
 	}
 	defer conn.Close()
 
@@ -232,7 +232,7 @@ func (s *LdapService) Login(ctx *gin.Context, ct modIdpLdap.LdapLoginCt) (rt rg.
 	ldapUser, err := conn.CheckUserPassword(cfg, ct.Username, ct.Password)
 	if err != nil {
 		log.Error(ctx, log.TagAppDef, err, "LDAP 用户 认证失败", log.Any("username", ct.Username))
-		return rt.ErrorMessage("LDAP 认证失败: " + err.Error())
+		return rt.ErrorMessage("LDAP 认证失败")
 	}
 
 	log.Info(ctx, log.TagAppDef, "LDAP 用户认证成功:", log.Any("uid", ldapUser.Uid), log.Any("cn", ldapUser.Cn))

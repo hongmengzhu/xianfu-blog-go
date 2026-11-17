@@ -68,7 +68,7 @@ func (c *BmToolService) Create(ctx *gin.Context, ct modBmTool.CreateUpdateCt) (r
 	}
 	err, _ = c.sv.Create(ctx, &info)
 	if err != nil {
-		return rt.ErrorMessage("保存失败 " + err.Error())
+		return rt.ErrorMessage("保存失败 ")
 	}
 	return rg.OkData(numberPg.Int64ToString(info.ID))
 }
@@ -111,7 +111,7 @@ func (c *BmToolService) Update(ctx *gin.Context, ct modBmTool.CreateUpdateCt) (r
 	}
 	err = c.sv.Update(ctx, info, find.ID)
 	if err != nil {
-		return rt.ErrorMessage(err.Error())
+		return rt.ErrorMessage("操作失败")
 	}
 	return rt.Ok()
 }
@@ -322,9 +322,7 @@ func (c *BmToolService) Query(ctx *gin.Context, ct modBmTool.QueryCt) (rt rg.Rs[
 	rt.Data.Data = slice
 	r := c.sv
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
-		if ct.PageSize < 1 {
-			ct.PageSize = 20
-		}
+		ct.PageNum, ct.PageSize = optionsPg.ClampPage(ct.PageNum, ct.PageSize)
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		arg.Db = arg.Db.Order("create_at desc")
 		if strPg.IsNotBlank(ct.Wd) {

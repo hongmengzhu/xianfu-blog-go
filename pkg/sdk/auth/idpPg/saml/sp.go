@@ -18,11 +18,11 @@ type SAMLServiceProvider = saml2.SAMLServiceProvider
 // SpConfig SAML Service Provider 配置
 type SpConfig struct {
 	// SP 信息
-	Issuer      string // SP EntityID / Issuer
-	AcsURL      string // Assertion Consumer Service URL
-	IdpSsoURL   string // IdP SSO 登录地址
-	IdpIssuer   string // IdP EntityID / Issuer
-	EnableSign  bool   // 是否签名 AuthnRequest
+	Issuer     string // SP EntityID / Issuer
+	AcsURL     string // Assertion Consumer Service URL
+	IdpSsoURL  string // IdP SSO 登录地址
+	IdpIssuer  string // IdP EntityID / Issuer
+	EnableSign bool   // 是否签名 AuthnRequest
 
 	// IdP 证书（PEM 或 Base64 编码的 DER）
 	IdpCert string
@@ -34,8 +34,8 @@ type SpConfig struct {
 
 // SpUserInfo SAML Response 解析后的用户信息
 type SpUserInfo struct {
-	NameID      string            // SAML NameID
-	Attributes  map[string]string // SAML 属性映射
+	NameID     string            // SAML NameID
+	Attributes map[string]string // SAML 属性映射
 }
 
 // BuildServiceProvider 构建 SAML Service Provider

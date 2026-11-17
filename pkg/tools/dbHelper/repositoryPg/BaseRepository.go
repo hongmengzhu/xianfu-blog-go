@@ -82,9 +82,6 @@ func (b *BaseRepository[T, ID]) DbModel() *gorm.DB {
 }
 
 func (b *BaseRepository[T, ID]) SetOptionScopes(db *gorm.DB, opts ...optionsPg.Option) *gorm.DB {
-	if nil == opts || len(opts) == 0 {
-		return db
-	}
 	arg := optionsPg.OptionParams{
 		Db: db,
 	}
@@ -120,9 +117,6 @@ func (b *BaseRepository[T, ID]) SetOptionScopes(db *gorm.DB, opts ...optionsPg.O
 func (b *BaseRepository[T, ID]) SetOptionPgScopes(db *gorm.DB, opts ...optionsPg.Option) (*gorm.DB, optionsPg.OptionParams) {
 	arg := optionsPg.OptionParams{
 		Db: db,
-	}
-	if nil == opts || len(opts) == 0 {
-		return db, arg
 	}
 	for _, opt := range opts {
 		opt(&arg)

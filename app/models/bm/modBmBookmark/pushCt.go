@@ -4,11 +4,11 @@ package modBmBookmark
 // @Description:
 type PushCt struct {
 	// 要推送的书签 id
-	IDs []string `json:"ids" label:"书签id" validate:"required,min=1"`
+	IDs []string `json:"ids" label:"书签id" binding:"required,min=1" validate:"required,min=1"`
 	// 目的模块编号，未传时取分类所属模块
 	Module string `json:"module" label:"模块"`
 	// 目的分类（工具分类编号）
-	CategoryNo string `json:"categoryNo" label:"目的分类" validate:"required,min=1,max=80"`
+	CategoryNo string `json:"categoryNo" label:"目的分类" binding:"required,min=1,max=80" validate:"required,min=1,max=80"`
 	// 目的标签（标签编码），为空时继承书签原标签
 	Tags []string `json:"tags" label:"目的标签"`
 }

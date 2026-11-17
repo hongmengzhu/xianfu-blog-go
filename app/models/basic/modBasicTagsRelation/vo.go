@@ -18,9 +18,9 @@ type Vo struct {
 	CreateBy     string                 `json:"createBy" label:"创建人" `     // 创建人
 	UpdateBy     string                 `json:"updateBy" label:"更新人" `     // 更新人
 	OrgId        string                 `json:"orgId" label:"组织id" `       // 组织id
-	Url          string                 `json:"url" label:"建议url" validate:"required,min=1,max=255"`
+	Url          string                 `json:"url" label:"建议url" binding:"required,min=1,max=255" validate:"required,min=1,max=255"`
 	CategoryNo   string                 `json:"categoryNo" label:"分类" `
-	TypeSys      string                 `json:"typeSys" label:"类型" validate:"required,min=1,max=255"`
+	TypeSys      string                 `json:"typeSys" label:"类型" binding:"required,min=1,max=255" validate:"required,min=1,max=255"`
 	NameShort    string                 `json:"nameShort" label:"名称简称" `
 	Module       string                 `json:"module" label:"模块" `
 	TagNo        string                 `json:"tagNo" label:"标签" `

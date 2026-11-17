@@ -169,7 +169,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		c.event.KindUnique = cryptPg.Md5(c.event.Field)
 		err, _ := c.Sp.repEvent.Create(ctx, c.event)
 		if err != nil {
-			return rt.ErrorMessage("保存失败 " + err.Error())
+			return rt.ErrorMessage("保存失败 ")
 		}
 		//
 		if len(c.fields) > 0 {
@@ -191,7 +191,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 				tx := c.Sp.repEventField.DbModel().CreateInBatches(c.fields, 1000000)
 				if tx.Error != nil {
 					log.Error(ctx, log.TagAppDef, err, "save err")
-					return rt.ErrorMessage("保存失败：")
+					return rt.ErrorMessage("保存失败")
 				}
 				//if 0 == tx.RowsAffected {
 				//	return rt.ErrorMessage("保存失败，没有更新任何数据")
@@ -280,7 +280,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 				tx := c.Sp.repEventField.DbModel().CreateInBatches(dataInsert, 1000000)
 				if tx.Error != nil {
 					log.Error(ctx, log.TagAppDef, tx.Error, "save err")
-					return rt.ErrorMessage("保存失败：")
+					return rt.ErrorMessage("保存失败")
 				}
 				//if 0 == tx.RowsAffected {
 				//	return rt.ErrorMessage("保存失败，没有更新任何数据")

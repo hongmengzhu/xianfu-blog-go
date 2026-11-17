@@ -94,7 +94,7 @@ func (c *BasicModuleService) Create(ctx *gin.Context, ct modBasicModule.CreateUp
 	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	err, _ = r.Create(ctx, &info)
 	if err != nil {
-		return rt.ErrorMessage("保存失败 " + err.Error())
+		return rt.ErrorMessage("保存失败 ")
 	}
 	//设置上级 link
 	if strPg.IsNotBlank(ct.ParentNo) {
@@ -110,7 +110,7 @@ func (c *BasicModuleService) Create(ctx *gin.Context, ct modBasicModule.CreateUp
 	}
 	err = r.Update(ctx, info, info.ID)
 	if err != nil {
-		return rt.ErrorMessage(err.Error())
+		return rt.ErrorMessage("操作失败")
 	}
 	//vhost=yes 时，同步到域名模块表
 	if yesNoString.Yes.IsEqual(info.Vhost) {
@@ -210,7 +210,7 @@ func (c *BasicModuleService) Update(ctx *gin.Context, ct modBasicModule.CreateUp
 	}))
 	if err != nil {
 		log.Error(ctx, log.TagAppDef, err, "update error")
-		return rt.ErrorMessage(err.Error())
+		return rt.ErrorMessage("操作失败")
 	}
 	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	//更改上级后，相关子集修改
@@ -486,9 +486,7 @@ func (c *BasicModuleService) Query(ctx *gin.Context, ct modBasicModule.QueryCt) 
 	rt.Data.Data = slice
 	r := c.sv
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
-		if ct.PageSize < 1 {
-			ct.PageSize = 20
-		}
+		ct.PageNum, ct.PageSize = optionsPg.ClampPage(ct.PageNum, ct.PageSize)
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		//自定义查询
 		arg.Db = arg.Db.Order("create_at desc")
@@ -531,9 +529,7 @@ func (c *BasicModuleService) QueryPublic(ctx *gin.Context, ct modBasicModule.Que
 	rt.Data.Data = slice
 	r := c.sv
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
-		if ct.PageSize < 1 {
-			ct.PageSize = 20
-		}
+		ct.PageNum, ct.PageSize = optionsPg.ClampPage(ct.PageNum, ct.PageSize)
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		//自定义查询
 		arg.Db = arg.Db.Order("create_at desc")

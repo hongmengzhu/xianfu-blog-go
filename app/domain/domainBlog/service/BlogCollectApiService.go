@@ -126,7 +126,7 @@ func (c *BlogCollectApiService) Push(ctx *gin.Context, ct modApiBlogCollect.Push
 		log.Debug(ctx, log.TagAppDef, "save err=%+v", func() []log.Field {
 			return []log.Field{log.Any("error", err)}
 		})
-		return rt.ErrorMessage("保存失败：" + err.Error())
+		return rt.ErrorMessage("保存失败")
 	}
 	return rt.Ok()
 }
@@ -281,7 +281,7 @@ func (c *BlogCollectApiService) PushAll(ctx *gin.Context, ct modApiBlogCollect.P
 			tx := c.sv.DbModel().CreateInBatches(save, 1000000)
 			if tx.Error != nil {
 				log.Error(ctx, log.TagAppDef, tx.Error, "save err")
-				return rt.ErrorMessage("保存失败：")
+				return rt.ErrorMessage("保存失败")
 			}
 			if 0 == tx.RowsAffected {
 				return rt.ErrorMessage("保存失败，没有更新任何数据")

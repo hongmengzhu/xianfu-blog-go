@@ -135,7 +135,7 @@ func (c *BasicConfigEventFieldsService) CreateUpdate(ctx *gin.Context, ct modBas
 		tx := c.sv.DbModel().CreateInBatches(dataAdd, 1000000)
 		if tx.Error != nil {
 			log.Error(ctx, log.TagAppDef, tx.Error, "save err")
-			return rt.ErrorMessage("保存失败：")
+			return rt.ErrorMessage("保存失败")
 		}
 	}
 	if len(dataUpdate) > 0 {
@@ -313,9 +313,7 @@ func (c *BasicConfigEventFieldsService) Query(ctx *gin.Context, ct modBasicConfi
 	rt.Data.Data = slice
 	r := c.sv
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
-		if ct.PageSize < 1 {
-			ct.PageSize = 20
-		}
+		ct.PageNum, ct.PageSize = optionsPg.ClampPage(ct.PageNum, ct.PageSize)
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		//排序
 		arg.Db = arg.Db.Order("create_at asc")

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"strconv"
 	"strings"
 	"time"
 
@@ -21,6 +22,7 @@ import (
 	repositoryRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	authTokenPg "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/authTokenPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/cachePg/cacheAuthPubPrivPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/loginLimitPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/event"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/ram/model/modRamAccount"
@@ -107,6 +109,11 @@ func (c *AccountLoginService) Login(ctx *gin.Context, ct modRamLogin.LoginManage
 	if strPg.IsBlank(ct.OrgCode) {
 		return rt.ErrorMessage("租户编号不能为空")
 	}
+	// 登录失败限流：按 域+账号+IP+租户 计数，超限短期锁定
+	limitKey := loginLimitPg.Key("manage", tp.Code(), strings.ToLower(ct.Account), ctx.ClientIP(), ct.OrgCode)
+	if allowed, wait := loginLimitPg.Allowed(limitKey); !allowed {
+		return rt.ErrorMessage("登录尝试过于频繁，请 " + strconv.Itoa(wait) + " 秒后重试")
+	}
 	pwd := ct.Password
 	log.Info(context.Background(), log.TagAppDef, "authLogin", log.Any("authLogin", c.authLogin))
 	//解密密码
@@ -117,34 +124,31 @@ func (c *AccountLoginService) Login(ctx *gin.Context, ct modRamLogin.LoginManage
 		}
 		pwd = login.Data
 	}
-	log.Info(context.Background(), log.TagAppDef, "pwd", log.String("pwd", pwd))
 
 	md5 := cryptPg.Md5(ct.Account)
 	info, b, err := c.dao.FindByTenantNoAccountMd5AndTypeDomain(ctx, ct.OrgCode, md5, tp.Code())
-	if nil != err {
-		return rt.ErrorMessage("账号不存在.")
-	}
-	if !b {
-		return rt.ErrorMessage("账号不存在")
+	if nil != err || !b {
+		// 账号不存在与密码错误返回一致文案，避免账号枚举；同样计入限流
+		loginLimitPg.Failure(limitKey)
+		return rt.ErrorMessage("账号或密码错误")
 	}
 	if !enumStatePg.ENABLE.IsExistInt8(info.State) {
 		return rt.ErrorMessage("账户已被禁用，不能登陆")
 	}
 	pwdInfo, result := c.daoAuth.FindByTypePasswordANo(ctx, info.No)
 	if !result {
-		return rt.ErrorMessage("用户密码未设置")
+		loginLimitPg.Failure(limitKey)
+		return rt.ErrorMessage("账号或密码错误")
 	}
 	if !userPg.PasswordVerify(pwdInfo.Value, pwd, pwdInfo.ExtraData) {
-		log.Debug(ctx, log.TagAppDef, "userPg.PasswordVerify", func() []log.Field {
-			return []log.Field{
-				log.String("pwd", pwd),
-				log.String("salt", userPg.PasswordSalt(pwd, pwdInfo.ExtraData)),
-				log.String("value", pwdInfo.Value),
-				log.String("extra", pwdInfo.ExtraData),
-			}
+		// 只记录失败事实与账号，禁止输出明文口令/盐/哈希
+		log.Debug(ctx, log.TagAppDef, "password verify failed", func() []log.Field {
+			return []log.Field{log.Any("accountNo", info.No)}
 		})
-		return rt.ErrorMessage("账号密码错误")
+		loginLimitPg.Failure(limitKey)
+		return rt.ErrorMessage("账号或密码错误")
 	}
+	loginLimitPg.Reset(limitKey)
 	//
 	//租户默认
 	mult := multiTenantPg.MultiTenantPg{
@@ -195,6 +199,11 @@ func (c *AccountLoginService) LoginBySystem(ctx *gin.Context, ct modRamLogin.Log
 	if strPg.IsBlank(ct.Password) {
 		return rt.ErrorMessage("密码不能为空")
 	}
+	// 登录失败限流：按 域+账号+IP+租户 计数，超限短期锁定
+	limitKey := loginLimitPg.Key("system", tp.Code(), strings.ToLower(ct.Account), ctx.ClientIP(), tenantNo)
+	if allowed, wait := loginLimitPg.Allowed(limitKey); !allowed {
+		return rt.ErrorMessage("登录尝试过于频繁，请 " + strconv.Itoa(wait) + " 秒后重试")
+	}
 	pwd := ct.Password
 	log.Info(context.Background(), log.TagAppDef, "authLogin", log.Any("authLogin", c.authLogin))
 	//解密密码
@@ -212,35 +221,31 @@ func (c *AccountLoginService) LoginBySystem(ctx *gin.Context, ct modRamLogin.Log
 			pwd = login.Data
 		}
 	}
-	log.Info(context.Background(), log.TagAppDef, "pwd", log.Any("pwd", pwd))
 
 	md5 := cryptPg.Md5(ct.Account)
 	info, b, err := c.dao.FindByAccountMd5AndTypeDomainAndTenantNo(ctx, md5, tp.Code(), tenantNo)
-	if nil != err {
-		return rt.ErrorMessage("账号不存在.")
-	}
-	if !b {
-		return rt.ErrorMessage("账号不存在")
+	if nil != err || !b {
+		// 账号不存在与密码错误返回一致文案，避免账号枚举；同样计入限流
+		loginLimitPg.Failure(limitKey)
+		return rt.ErrorMessage("账号或密码错误")
 	}
 	if !enumStatePg.ENABLE.IsExistInt8(info.State) {
 		return rt.ErrorMessage("账户已被禁用，不能登陆")
 	}
 	pwdInfo, result := c.daoAuth.FindByTypePasswordANo(ctx, info.No)
 	if !result {
-		return rt.ErrorMessage("用户密码未设置")
+		loginLimitPg.Failure(limitKey)
+		return rt.ErrorMessage("账号或密码错误")
 	}
 	if !userPg.PasswordVerify(pwdInfo.Value, pwd, pwdInfo.ExtraData) {
-		log.Debug(ctx, log.TagAppDef, "userPg.PasswordVerify",
-			func() []log.Field {
-				return []log.Field{
-					log.String("pwd", pwd),
-					log.String("salt", userPg.PasswordSalt(pwd, pwdInfo.ExtraData)),
-					log.String("value", pwdInfo.Value),
-					log.String("extra", pwdInfo.ExtraData),
-				}
-			})
-		return rt.ErrorMessage("账号密码错误")
+		// 只记录失败事实与账号，禁止输出明文口令/盐/哈希
+		log.Debug(ctx, log.TagAppDef, "password verify failed", func() []log.Field {
+			return []log.Field{log.Any("accountNo", info.No)}
+		})
+		loginLimitPg.Failure(limitKey)
+		return rt.ErrorMessage("账号或密码错误")
 	}
+	loginLimitPg.Reset(limitKey)
 	//
 	//租户默认
 	mult := multiTenantPg.MultiTenantPg{
@@ -448,7 +453,9 @@ func (c *AccountLoginService) RefreshToken(ctx *gin.Context, ct modRamLogin.Toke
 		return rt.ErrorMessage(tokenRet.Message)
 	}
 	return rt.OkData(modPublic.LoginToken{
-		AccessToken:  tokenRet.Data.Access,
-		RefreshToken: tokenRet.Data.Refresh,
+		AccessToken:      tokenRet.Data.Access,
+		AccessTokenCamel: tokenRet.Data.Access,
+		RefreshToken:     tokenRet.Data.Refresh,
+		ExpiresIn:        int64(c.pg.Jwt.System.Expire),
 	})
 }

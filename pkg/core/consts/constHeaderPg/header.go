@@ -19,6 +19,9 @@ const (
 	HeaderUserAgent            = "User-Agent"
 	CookieName                 = "token"
 	HeaderAuthorization_system = "authorization-sys"
+	// 系统域刷新令牌头（与 authorization-sys 对称）
+	HeaderAuthorizationRefresh        = "Authorization-Refresh"
+	HeaderAuthorizationRefresh_system = "authorization-refresh-sys"
 	//
 	WebTenantNo = "web-tenant-no"
 	// web 模板 Pg 存储

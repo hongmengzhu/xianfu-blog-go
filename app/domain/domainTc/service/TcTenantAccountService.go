@@ -203,14 +203,21 @@ func (c *TcTenantAccountService) PhysicalDeletion(ctx *gin.Context, ids []string
 	}
 	idsNow := make([]int64, 0)
 	for _, info := range finds {
-		//  founder 不可禁用
+		//  founder 不可删除
 		if yesNoIntPg.Yes.IsEqual(info.Founder) {
+			log.Info(ctx, log.TagAppDef, "skip founder account", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
 			continue
 		}
 		log.Info(ctx, log.TagAppDef, "id=%v,TenantId=%v", log.Any("id", info.ID), log.Any("TenantId", info.TenantNo))
+		idsNow = append(idsNow, info.ID)
 	}
-	if len(idsNow) > 0 {
-		r.DeleteByIds(ctx, idsNow)
+	if len(idsNow) == 0 {
+		// 只有创始人或无可删除记录时不静默成功
+		return rt.ErrorMessage("创始人账号不可删除")
+	}
+	if err := r.DeleteByIds(ctx, idsNow); nil != err {
+		log.Error(ctx, log.TagAppDef, err, "删除租户账号失败")
+		return rt.ErrorMessage("删除失败")
 	}
 	return rt.Ok()
 }
@@ -235,9 +242,7 @@ func (c *TcTenantAccountService) Query(ctx *gin.Context, ct modTcAccount.QueryCt
 	levelDb := c.levelDb
 	teamDb := c.team
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
-		if ct.PageSize < 1 {
-			ct.PageSize = 20
-		}
+		ct.PageNum, ct.PageSize = optionsPg.ClampPage(ct.PageNum, ct.PageSize)
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		arg.Db = arg.Db.Order("create_at desc")
 		arg.Db = arg.Db.Where("type_domain= ?", option.TypeDomain.String())
@@ -580,12 +585,12 @@ func (c *TcTenantAccountService) Query(ctx *gin.Context, ct modTcAccount.QueryCt
 				vo.Os.NoName.Groups = make([]string, 0)
 				for _, obj := range item.Os.Data().Groups {
 					if get, ok := mapGroup[obj]; ok {
-						vo.Os.NoName.Groups = append(vo.Os.NoName.Levels, get.Name)
+						vo.Os.NoName.Groups = append(vo.Os.NoName.Groups, get.Name)
 					}
 				}
 			}
 			if strPg.IsNotBlank(item.GroupNo) {
-				if obj, ok := mapLevel[item.GroupNo]; ok {
+				if obj, ok := mapGroup[item.GroupNo]; ok {
 					vo.GroupNoName = obj.Name
 				}
 			}

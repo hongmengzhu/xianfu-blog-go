@@ -67,7 +67,7 @@ func (c *BasicExplainService) Create(ctx *gin.Context, ct modBasicExplain.Create
 	}
 	err, _ = c.sv.Create(ctx, &info)
 	if err != nil {
-		return rt.ErrorMessage("保存失败 " + err.Error())
+		return rt.ErrorMessage("保存失败 ")
 	}
 	return rg.OkData(numberPg.Int64ToString(info.ID))
 }
@@ -110,7 +110,7 @@ func (c *BasicExplainService) Update(ctx *gin.Context, ct modBasicExplain.Create
 	}
 	err = c.sv.Update(ctx, info, find.ID)
 	if err != nil {
-		return rt.ErrorMessage(err.Error())
+		return rt.ErrorMessage("操作失败")
 	}
 	return rt.Ok()
 }
@@ -321,9 +321,7 @@ func (c *BasicExplainService) Query(ctx *gin.Context, ct modBasicExplain.QueryCt
 	rt.Data.Data = slice
 	r := c.sv
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
-		if ct.PageSize < 1 {
-			ct.PageSize = 20
-		}
+		ct.PageNum, ct.PageSize = optionsPg.ClampPage(ct.PageNum, ct.PageSize)
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		arg.Db = arg.Db.Order("create_at desc")
 		if strPg.IsNotBlank(ct.Wd) {

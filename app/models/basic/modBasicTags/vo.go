@@ -19,7 +19,7 @@ type Vo struct {
 	CreateBy     string                 `json:"createBy" label:"创建人" `     // 创建人
 	UpdateBy     string                 `json:"updateBy" label:"更新人" `     // 更新人
 	OrgId        string                 `json:"orgId" label:"组织id" `       // 组织id
-	Type         string                 `json:"type" label:"类型" validate:"required,min=1,max=255"`
+	Type         string                 `json:"type" label:"类型" binding:"required,min=1,max=255" validate:"required,min=1,max=255"`
 	CategoryNo   string                 `json:"categoryNo" label:"分类" `
 	Module       string                 `json:"module" label:"模块" `
 	AttributeMap map[string]interface{} `json:"attributeMap" label:"属性" `

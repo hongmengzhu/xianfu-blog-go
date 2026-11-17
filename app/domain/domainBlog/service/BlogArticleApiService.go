@@ -60,7 +60,7 @@ func (c *BlogArticleApiService) Push(ctx *gin.Context, ct modApiBlogArticle.Push
 		log.Debug(ctx, log.TagAppDef, "save err=%+v", func() []log.Field {
 			return []log.Field{log.Any("error", err)}
 		})
-		return rt.ErrorMessage("保存失败：" + err.Error())
+		return rt.ErrorMessage("保存失败")
 	}
 	err, _ = c.sata.Create(ctx, &entityBlog.BlogArticleStatisticsEntity{ID: save.ID, ArticleNo: save.No})
 	if err != nil {

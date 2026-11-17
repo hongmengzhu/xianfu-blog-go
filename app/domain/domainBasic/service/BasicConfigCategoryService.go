@@ -85,7 +85,7 @@ func (c *BasicConfigCategoryService) Create(ctx *gin.Context, ct modBasicConfigC
 	info.TypeSys = typeSysPg.General.String()
 	info.Ano = holder.GetAccount().Account
 	if err, _ := r.Create(ctx, &info); err != nil {
-		return rt.ErrorMessage("保存失败 " + err.Error())
+		return rt.ErrorMessage("保存失败 ")
 	}
 	if strPg.IsNotBlank(info.ParentNo) {
 		info.IdLink = constNodePg.NoLinkAssemble(parent.IdLink, numberPg.Int64ToString(info.ID))
@@ -99,7 +99,7 @@ func (c *BasicConfigCategoryService) Create(ctx *gin.Context, ct modBasicConfigC
 		info.ParentId = ""
 	}
 	if err := r.Update(ctx, info, info.ID); err != nil {
-		return rt.ErrorMessage(err.Error())
+		return rt.ErrorMessage("操作失败")
 	}
 	return rg.OkData(numberPg.Int64ToString(info.ID))
 }
@@ -193,7 +193,7 @@ func (c *BasicConfigCategoryService) Update(ctx *gin.Context, ct modBasicConfigC
 		"type_sys":    info.TypeSys,
 	}
 	if err := c.sv.UpdateMap(ctx, updates, find.ID); err != nil {
-		return rt.ErrorMessage(err.Error())
+		return rt.ErrorMessage("操作失败")
 	}
 	if parentMoved {
 		for _, child := range descendants {
@@ -207,7 +207,7 @@ func (c *BasicConfigCategoryService) Update(ctx *gin.Context, ct modBasicConfigC
 				child.IdLink = strings.Replace(child.IdLink, find.IdLink, info.IdLink, 1)
 			}
 			if err := c.sv.Update(ctx, entityB72.B72ConfigCategoryEntity{IdLink: child.IdLink, NoLink: child.NoLink}, child.ID); err != nil {
-				return rt.ErrorMessage(err.Error())
+				return rt.ErrorMessage("操作失败")
 			}
 		}
 	}
@@ -236,9 +236,7 @@ func (c *BasicConfigCategoryService) Query(ctx *gin.Context, ct modBasicConfigCa
 	slice := make([]modBasicConfigCategory.Vo, 0)
 	rt.Data.Data = slice
 	page, err := c.sv.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
-		if ct.PageSize < 1 {
-			ct.PageSize = 20
-		}
+		ct.PageNum, ct.PageSize = optionsPg.ClampPage(ct.PageNum, ct.PageSize)
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		arg.Db = arg.Db.Where("tenant_no=?", holder.GetTenantNo()).Order("sort asc, create_at")
 		if strPg.IsNotBlank(ct.Wd) {
@@ -309,7 +307,7 @@ func (c *BasicConfigCategoryService) LogicalDeletion(ctx *gin.Context, ids []str
 	}
 	if c.sv.Config().Data.Delete {
 		if err := c.sv.DeleteByIdsString(ctx, ids); err != nil {
-			return rt.ErrorMessage(err.Error())
+			return rt.ErrorMessage("操作失败")
 		}
 	} else {
 		for _, info := range finds {
@@ -344,7 +342,7 @@ func (c *BasicConfigCategoryService) PhysicalDeletion(ctx *gin.Context, ids []st
 		return rt.ErrorMessage("id错误")
 	}
 	if err := c.sv.DeleteByIdsString(ctx, ids); err != nil {
-		return rt.ErrorMessage(err.Error())
+		return rt.ErrorMessage("操作失败")
 	}
 	return rt.Ok()
 }

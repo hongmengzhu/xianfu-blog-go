@@ -2,11 +2,11 @@ package modRamMfa
 
 // MfaPropsVo MFA 属性视图
 type MfaPropsVo struct {
-	Enabled     bool     `json:"enabled"`
-	IsPreferred bool     `json:"isPreferred"`
-	MfaType     string   `json:"mfaType"`
-	Secret      string   `json:"secret,omitempty"`
-	URL         string   `json:"url,omitempty"`
+	Enabled       bool     `json:"enabled"`
+	IsPreferred   bool     `json:"isPreferred"`
+	MfaType       string   `json:"mfaType"`
+	Secret        string   `json:"secret,omitempty"`
+	URL           string   `json:"url,omitempty"`
 	RecoveryCodes []string `json:"recoveryCodes,omitempty"`
 }
 

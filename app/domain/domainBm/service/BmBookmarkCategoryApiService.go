@@ -263,7 +263,7 @@ func (c *BmBookmarkCategoryApiService) CreateUpdate(ctx *gin.Context, ct modApiB
 		}))
 		if err != nil {
 			log.Error(ctx, log.TagAppDef, err, "update error")
-			return rt.ErrorMessage(err.Error())
+			return rt.ErrorMessage("操作失败")
 		}
 		log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 		//更改上级后，相关子集修改
@@ -331,7 +331,7 @@ func (c *BmBookmarkCategoryApiService) CreateUpdate(ctx *gin.Context, ct modApiB
 	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	err, _ = r.Create(ctx, &info)
 	if err != nil {
-		return rt.ErrorMessage("保存失败 " + err.Error())
+		return rt.ErrorMessage("保存失败 ")
 	}
 	//设置上级 link
 	if strPg.IsNotBlank(ct.ParentNo) {
@@ -347,7 +347,7 @@ func (c *BmBookmarkCategoryApiService) CreateUpdate(ctx *gin.Context, ct modApiB
 	}
 	err = r.Update(ctx, info, info.ID)
 	if err != nil {
-		return rt.ErrorMessage(err.Error())
+		return rt.ErrorMessage("操作失败")
 	}
 	return rg.OkData(numberPg.Int64ToString(info.ID))
 }

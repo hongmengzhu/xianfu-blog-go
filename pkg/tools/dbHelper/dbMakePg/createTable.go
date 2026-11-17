@@ -43,7 +43,7 @@ func (c *CreateTable) DbOpen() (rt rg.Rs[string]) {
 	c.DB = db
 	if err != nil {
 		log.Error(context.Background(), log.TagAppDef, err, "open gorm postgresql", log.Any("url", c.Database.URL))
-		return rt.ErrorMessage(err.Error())
+		return rt.ErrorMessage("操作失败")
 	}
 	return rt.Ok()
 }

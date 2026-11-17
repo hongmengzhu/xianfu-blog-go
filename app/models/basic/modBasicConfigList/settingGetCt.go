@@ -1,5 +1,5 @@
 package modBasicConfigList
 
 type SettingGet struct {
-	EventNo string `json:"eventNo" validate:"required" label:"事件编号"`
+	EventNo string `json:"eventNo" binding:"required" validate:"required" label:"事件编号"`
 }

@@ -31,8 +31,10 @@ type GroupWebVhostMiddlewareSp struct {
 //	@return string 租户编号，未匹配到返回 -1
 func (m *GroupWebVhostMiddlewareSp) ResolveTenant(host string) string {
 	val := "-1"
+	// 统一规范化 Host（去端口/小写），再按已注册域名精确匹配
+	normalized := cacheDomainPg.NormalizeHost(host)
 	// 获取租户
-	load, b := m.Domain.Domain.Load(host)
+	load, b := m.Domain.Domain.Load(normalized)
 	//getMap, b2 := m.Domain.GetMap(host)
 	//log.Debug(context.Background(), log.TagAppDef, "ResolveTenant", func() []log.Field {
 	//	return []log.Field{

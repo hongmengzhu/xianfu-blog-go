@@ -46,7 +46,7 @@ func (c *TutorialController) RegisterRoutes(g *echo.Echo) {
 func (c *TutorialController) List(ctx *echo.Context) error {
 	var ct modBlogArticleWeb.QueryCt
 	if err := ctx.Bind(&ct); nil != err {
-		return echo.NewHTTPError(400, err.Error())
+		return echo.NewHTTPError(400, "请求参数错误")
 	}
 	// 只查教程模块
 	ct.Module = articleModulePg.TUTORIAL.String()

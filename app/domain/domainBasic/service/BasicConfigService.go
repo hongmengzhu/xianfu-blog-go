@@ -135,7 +135,7 @@ func (c *BasicConfigService) CreateUpdate(ctx *gin.Context, ct modBasicConfig.Cr
 		err, _ := c.sv.Create(ctx, &info)
 		if err != nil {
 			log.Error(ctx, log.TagAppDef, err, "create config error")
-			return rt.ErrorMessage("保存失败 " + err.Error())
+			return rt.ErrorMessage("保存失败 ")
 		}
 		c.refresh(ctx, tenantNo, modelInfo.Model)
 		return rg.OkData(numberPg.Int64ToString(info.ID))
@@ -173,7 +173,7 @@ func (c *BasicConfigService) CreateUpdate(ctx *gin.Context, ct modBasicConfig.Cr
 	}
 	if err := c.sv.UpdateMap(ctx, updates, find.ID); err != nil {
 		log.Error(ctx, log.TagAppDef, err, "update config error")
-		return rt.ErrorMessage("保存失败 " + err.Error())
+		return rt.ErrorMessage("保存失败 ")
 	}
 	// model 可能已变化，旧 model 缓存也要刷新
 	c.refresh(ctx, tenantNo, find.Model)
@@ -206,9 +206,7 @@ func (c *BasicConfigService) Query(ctx *gin.Context, ct modBasicConfig.QueryCt) 
 	rt.Data.Data = slice
 	holder := holderPg.GetContextAccount(ctx)
 	page, err := c.sv.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
-		if ct.PageSize < 1 {
-			ct.PageSize = 20
-		}
+		ct.PageNum, ct.PageSize = optionsPg.ClampPage(ct.PageNum, ct.PageSize)
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		arg.Db = arg.Db.Where("tenant_no=?", holder.GetTenantNo()).Order("model, sort asc, create_at")
 		if strPg.IsNotBlank(ct.Wd) {
@@ -373,7 +371,7 @@ func (c *BasicConfigService) UpdateValues(ctx *gin.Context, ct modBasicConfig.Up
 	for i := range updates {
 		if err := c.sv.UpdateMap(ctx, updateFields[i], updateIds[i]); err != nil {
 			log.Error(ctx, log.TagAppDef, err, "update config value error")
-			return rt.ErrorMessage("保存失败 " + err.Error())
+			return rt.ErrorMessage("保存失败 ")
 		}
 	}
 	c.refresh(ctx, tenantNo, modelInfo.Model)
@@ -434,7 +432,7 @@ func (c *BasicConfigService) LogicalDeletion(ctx *gin.Context, ids []string) (rt
 	}
 	if c.sv.Config().Data.Delete {
 		if err := c.sv.DeleteByIdsString(ctx, ids); err != nil {
-			return rt.ErrorMessage(err.Error())
+			return rt.ErrorMessage("操作失败")
 		}
 	} else {
 		for _, info := range finds {
@@ -481,7 +479,7 @@ func (c *BasicConfigService) PhysicalDeletion(ctx *gin.Context, ids []string) (r
 		idsInt = append(idsInt, info.ID)
 	}
 	if err := c.sv.DeleteByIds(ctx, idsInt); err != nil {
-		return rt.ErrorMessage(err.Error())
+		return rt.ErrorMessage("操作失败")
 	}
 	c.refreshByConfigs(ctx, finds)
 	return rt.Ok()

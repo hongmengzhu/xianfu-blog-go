@@ -2,7 +2,7 @@ package model
 
 // BaseIdCt 基础 详情
 type BaseIdsCt[ID any] struct {
-	Ids    []ID           `json:"ids" validate:"required"`
+	Ids    []ID           `json:"ids" binding:"required" validate:"required"`
 	Field  string         `json:"field,omitempty" label:"字段"`
 	Extend map[string]any `json:"extend"`
 }

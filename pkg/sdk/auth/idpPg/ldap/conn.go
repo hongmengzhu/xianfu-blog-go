@@ -16,18 +16,18 @@ type LdapConn struct {
 
 // LdapUser LDAP 用户信息
 type LdapUser struct {
-	UidNumber   string `json:"uidNumber"`
-	Uid         string `json:"uid"`
-	Cn          string `json:"cn"`
-	GidNumber   string `json:"gidNumber"`
-	Uuid        string `json:"uuid"`
-	DisplayName string `json:"displayName"`
-	Mail        string `json:"mail"`
-	Email       string `json:"email"`
-	Mobile      string `json:"mobile"`
-	Telephone   string `json:"telephoneNumber"`
-	Country     string `json:"country"`
-	Address     string `json:"address"`
+	UidNumber   string   `json:"uidNumber"`
+	Uid         string   `json:"uid"`
+	Cn          string   `json:"cn"`
+	GidNumber   string   `json:"gidNumber"`
+	Uuid        string   `json:"uuid"`
+	DisplayName string   `json:"displayName"`
+	Mail        string   `json:"mail"`
+	Email       string   `json:"email"`
+	Mobile      string   `json:"mobile"`
+	Telephone   string   `json:"telephoneNumber"`
+	Country     string   `json:"country"`
+	Address     string   `json:"address"`
 	MemberOf    []string `json:"memberOf"`
 }
 

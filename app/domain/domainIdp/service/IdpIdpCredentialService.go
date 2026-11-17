@@ -42,7 +42,7 @@ func (c *IdpIdpCredentialService) Create(ctx *gin.Context, ct modIdpIdpCredentia
 	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	err, _ := r.Create(ctx, &info)
 	if err != nil {
-		return rt.ErrorMessage("保存失败 " + err.Error())
+		return rt.ErrorMessage("保存失败 ")
 	}
 	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	return rg.OkData(numberPg.Int64ToString(info.ID))
@@ -67,7 +67,7 @@ func (c *IdpIdpCredentialService) Update(ctx *gin.Context, ct modIdpIdpCredentia
 	err := r.Update(ctx, info, find.ID)
 	if err != nil {
 		log.Error(ctx, log.TagAppDef, err, "update error")
-		return rt.ErrorMessage(err.Error())
+		return rt.ErrorMessage("操作失败")
 	}
 	return rt.Ok()
 }
@@ -116,12 +116,12 @@ func (c *IdpIdpCredentialService) CreateUpdate(ctx *gin.Context, ct modIdpIdpCre
 		err := r.Update(ctx, info, find.ID)
 		if err != nil {
 			log.Error(ctx, log.TagAppDef, err, "update error")
-			return rt.ErrorMessage(err.Error())
+			return rt.ErrorMessage("操作失败")
 		}
 	} else {
 		err, _ := r.Create(ctx, &info)
 		if err != nil {
-			return rt.ErrorMessage("保存失败 " + err.Error())
+			return rt.ErrorMessage("保存失败 ")
 		}
 		log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	}
@@ -293,9 +293,7 @@ func (c *IdpIdpCredentialService) Query(ctx *gin.Context, ct modIdpIdpCredential
 	rt.Data.Data = slice
 	r := c.sv
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
-		if ct.PageSize < 1 {
-			ct.PageSize = 20
-		}
+		ct.PageNum, ct.PageSize = optionsPg.ClampPage(ct.PageNum, ct.PageSize)
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		arg.Db = arg.Db.Order("create_at desc")
 		//自定义查询

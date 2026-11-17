@@ -95,7 +95,7 @@ func (c *BasicConfigListService) CreateUpdate(ctx *gin.Context, ct modBasicConfi
 		err, _ := r.Create(ctx, &info)
 		if err != nil {
 			log.Error(ctx, log.TagAppDef, err, "update error")
-			return rt.ErrorMessage(err.Error())
+			return rt.ErrorMessage("操作失败")
 		}
 	} else {
 		find, b := r.FindById(ctx, ct.ID.ToInt64())
@@ -108,7 +108,7 @@ func (c *BasicConfigListService) CreateUpdate(ctx *gin.Context, ct modBasicConfi
 		err := r.Update(ctx, info, find.ID)
 		if err != nil {
 			log.Error(ctx, log.TagAppDef, err, "update error")
-			return rt.ErrorMessage(err.Error())
+			return rt.ErrorMessage("操作失败")
 		}
 	}
 	return rt.Ok()
@@ -283,9 +283,7 @@ func (c *BasicConfigListService) Query(ctx *gin.Context, ct modBasicConfigList.Q
 	r := c.sv
 	holder := holderPg.GetContextAccount(ctx)
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
-		if ct.PageSize < 1 {
-			ct.PageSize = 20
-		}
+		ct.PageNum, ct.PageSize = optionsPg.ClampPage(ct.PageNum, ct.PageSize)
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		//排序
 		arg.Db = arg.Db.Order("create_at asc")
@@ -522,10 +520,10 @@ func (c *BasicConfigListService) ConfigUpdate(ctx *gin.Context, ct modBasicConfi
 	// 2. 校验通过后，把本次提交的结构体写入配置列表 content
 	body, err := json.Marshal(data)
 	if err != nil {
-		return rt.ErrorMessage("配置内容序列化失败：" + err.Error())
+		return rt.ErrorMessage("配置内容序列化失败")
 	}
 	if err := c.repConfigList.Update(ctx, entityB72.B72ConfigListEntity{Content: string(body)}, config.ID); err != nil {
-		return rt.ErrorMessage("保存配置内容失败：" + err.Error())
+		return rt.ErrorMessage("保存配置内容失败")
 	}
 	return rt.Ok()
 }

@@ -7,10 +7,10 @@ import (
 
 // SyncResult LDAP 用户同步结果
 type SyncResult struct {
-	NewUsers     int        `json:"newUsers"`
-	UpdatedUsers int        `json:"updatedUsers"`
-	FailedUsers  int        `json:"failedUsers"`
-	Errors       []string   `json:"errors,omitempty"`
+	NewUsers     int      `json:"newUsers"`
+	UpdatedUsers int      `json:"updatedUsers"`
+	FailedUsers  int      `json:"failedUsers"`
+	Errors       []string `json:"errors,omitempty"`
 }
 
 // SyncUsers 从 LDAP 同步用户到本地（简化版）

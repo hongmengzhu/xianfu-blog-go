@@ -23,7 +23,7 @@ type Vo struct {
 	ParentId               string              `json:"parentId" label:"上级" `
 	ParentNo               string              `json:"parentNo" label:"上级" `
 	TypeSys                string              `json:"typeSys" comment:"类型;普通;系统;api" `
-	TypeAttr               string              `json:"typeAttr" validate:"required" label:"属性" `
+	TypeAttr               string              `json:"typeAttr" binding:"required" validate:"required" label:"属性" `
 	Path                   string              `json:"path" comment:"路由路径" `
 	Method                 string              `json:"method" comment:"方法" `
 	Show                   typePg.Int8         `json:"show" comment:"列表显示" `

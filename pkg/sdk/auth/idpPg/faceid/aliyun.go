@@ -1,9 +1,12 @@
 package faceid
 
 import (
+	"context"
+
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/urlGuardPg"
 	"io"
 	"net/http"
 	"strings"
@@ -75,6 +78,9 @@ func (p *AliyunFaceIdProvider) Check(base64ImageA string, base64ImageB string) (
 		return false, fmt.Errorf("序列化请求失败: %w", err)
 	}
 
+	if err := urlGuardPg.ValidateFetchURL(context.Background(), p.Endpoint); nil != err {
+		return false, fmt.Errorf("阿里云人脸对比 endpoint 不合法: %w", err)
+	}
 	req, err := http.NewRequest(http.MethodPost, p.Endpoint, bytes.NewReader(bodyBytes))
 	if err != nil {
 		return false, fmt.Errorf("创建请求失败: %w", err)
@@ -83,7 +89,7 @@ func (p *AliyunFaceIdProvider) Check(base64ImageA string, base64ImageB string) (
 
 	client := p.Client
 	if client == nil {
-		client = http.DefaultClient
+		client = urlGuardPg.NewSafeClient(0, 3)
 	}
 
 	resp, err := client.Do(req)
@@ -98,7 +104,7 @@ func (p *AliyunFaceIdProvider) Check(base64ImageA string, base64ImageB string) (
 	}
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return false, fmt.Errorf("阿里云人脸对比 HTTP %d: %s", resp.StatusCode, string(respBody))
+		return false, fmt.Errorf("阿里云人脸对比 HTTP %d", resp.StatusCode)
 	}
 
 	var compareResp aliyunCompareResponse

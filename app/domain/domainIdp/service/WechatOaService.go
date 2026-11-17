@@ -98,7 +98,7 @@ func (s *WechatOaService) GetQRCode(ctx *gin.Context, sourceNo string) (rt rg.Rs
 	qrResult, err := ldap.WechatOaCreateQRCode(cfg.ClientId2, cfg.ClientSecret2, sceneStr)
 	if err != nil {
 		log.Error(ctx, log.TagAppDef, err, "创建公众号二维码失败")
-		return rt.ErrorMessage("创建二维码失败: " + err.Error())
+		return rt.ErrorMessage("创建二维码失败")
 	}
 
 	vo := modIdpWechat.QRCodeVo{

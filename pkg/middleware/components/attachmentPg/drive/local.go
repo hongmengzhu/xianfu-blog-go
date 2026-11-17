@@ -136,8 +136,19 @@ func (s *Local) PutObject(r io.Reader, put modAttachment.PutFileDto, ext modAtta
 		fmt.Printf("File type matched: %s\n", kind.Extension)
 	}
 
+	//归属信息：上传人/租户，用于后续归属校验
+	owner, hasOwner := modAttachment.OwnerFromExt(ext)
+	createBy, tenantNo, ownerNo := "", "", ""
+	if hasOwner {
+		createBy = owner.CreateBy
+		tenantNo = owner.TenantNo
+		ownerNo = owner.OwnerNo
+	}
 	//保存到数据库
 	err = s.Bus.Publish(context.Background(), entityBasic.BasicAttachmentEntity{
+		CreateBy:     createBy,
+		TenantNo:     tenantNo,
+		OwnerNo:      ownerNo,
 		Name:         attachment.Name,
 		OriginalName: attachment.OriginalName,
 		Description:  attachment.Description,

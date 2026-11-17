@@ -7,6 +7,9 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg/pg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/cacheService/cacheRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/passwordTypePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/sessionKeyTypePg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constsRam/typeDomainPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/clientPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	repositoryRam "github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
@@ -101,22 +104,45 @@ func (c *RamAccountPublicService) InfoPublic(ctx *gin.Context, holder holderPg.H
 //	@Description:
 //	@receiver c
 //	@param ct
-func (c *RamAccountPublicService) UpdatePassword(ctx *gin.Context, ct modPublic.PasswordCt) (rt rg.Rs[string]) {
+func (c *RamAccountPublicService) UpdatePassword(ctx *gin.Context, ct modPublic.PasswordCt, tp typeDomainPg.TypeDomain) (rt rg.Rs[string]) {
 	if "" == ct.PasswordNew {
 		return rt.ErrorMessage("密码不能为空")
 	}
+	if "" == ct.PasswordOld {
+		return rt.ErrorMessage("原密码不能为空")
+	}
+	if len(ct.PasswordNew) < 8 {
+		return rt.ErrorMessage("新密码长度不能少于 8 位")
+	}
+	holder := holderPg.GetContextAccount(ctx)
+	account := holder.GetAccount()
+	// 密钥对按 域 + 租户 + 客户端 缓存：manage 域用账号租户，system 域用 system 编码
+	tenantNo := tp.Code()
+	if typeDomainPg.Manage.IsEqual(string(tp)) {
+		tenantNo = holder.GetTenantNo()
+		if "" == tenantNo || "-1" == tenantNo {
+			tenantNo = account.TenantNo
+		}
+	}
 	pwd := ct.PasswordNew
-	//解密密码
+	pwdOld := ct.PasswordOld
+	//解密密码：按当前路由域对应的密钥对解密，禁止跨域使用密钥
 	if logingEn, ok := c.authLogin.LoginEncrypt["default"]; ok && logingEn {
-		login := c.cacheSessionPubPrive.DecodeByLoginSystem(ctx, pwd)
+		login := c.cacheSessionPubPrive.DecodeByLogin(ctx, pwd, tp, clientPg.Browser, tenantNo, sessionKeyTypePg.Login)
 		if login.ErrorIs() {
 			return rt.ErrorMessage(login.Message)
 		}
 		pwd = login.Data
+		old := c.cacheSessionPubPrive.DecodeByLogin(ctx, pwdOld, tp, clientPg.Browser, tenantNo, sessionKeyTypePg.Login)
+		if old.ErrorIs() {
+			return rt.ErrorMessage("原密码校验失败")
+		}
+		pwdOld = old.Data
+	}
+	if pwd == pwdOld {
+		return rt.ErrorMessage("新密码不能与原密码相同")
 	}
 
-	holder := holderPg.GetContextAccount(ctx)
-	account := holder.GetAccount()
 	r := c.sv
 	info, b := r.FindById(ctx, account.ID)
 	if !b {
@@ -126,6 +152,10 @@ func (c *RamAccountPublicService) UpdatePassword(ctx *gin.Context, ct modPublic.
 	passwd, result := r2.FindByTypePasswordANo(ctx, info.No)
 	if !result {
 		return rt.ErrorMessage("数据不存在")
+	}
+	// 二次确认：原密码必须与库中存储的哈希匹配，防止仅凭 access token 永久改密
+	if nil != passwd && !userPg.PasswordVerify(passwd.Value, pwdOld, passwd.ExtraData) {
+		return rt.ErrorMessage("原密码错误")
 	}
 	entity := entityRam.RamAccountAuthorizationEntity{}
 	entity.ExtraData = strPg.GetNanoid(8)

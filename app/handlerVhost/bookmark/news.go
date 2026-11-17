@@ -45,7 +45,7 @@ func (c *NewsController) RegisterRoutes(g *echo.Echo) {
 func (c *NewsController) List(ctx *echo.Context) error {
 	var ct modBlogArticleWeb.QueryCt
 	if err := ctx.Bind(&ct); nil != err {
-		return echo.NewHTTPError(400, err.Error())
+		return echo.NewHTTPError(400, "请求参数错误")
 	}
 	// 只查新闻模块
 	ct.Module = articleModulePg.NEW.String()

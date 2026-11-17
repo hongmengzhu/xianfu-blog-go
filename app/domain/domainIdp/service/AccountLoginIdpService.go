@@ -3,7 +3,7 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/urlGuardPg"
 	"strings"
 	"time"
 
@@ -160,8 +160,18 @@ func (c *AccountLoginIdpService) Login(ctx *gin.Context, ct modRamLogin.IdpLogin
 		return rt.ErrorMessage("不支持的认证提供商类型: " + providerEntity.Code)
 	}
 
-	// 7. 注入 HTTP 客户端
-	idProvider.SetHttpClient(&http.Client{})
+	// 7. 出站地址校验（Token/UserInfo 均来自认证源配置），并注入带跳转校验的 HTTP 客户端
+	if strPg.IsNotBlank(baseCfg.TokenURL) {
+		if err := urlGuardPg.ValidateFetchURL(ctx.Request.Context(), baseCfg.TokenURL); nil != err {
+			return rt.ErrorMessage("认证源地址不合法")
+		}
+	}
+	if strPg.IsNotBlank(baseCfg.UserInfoURL) {
+		if err := urlGuardPg.ValidateFetchURL(ctx.Request.Context(), baseCfg.UserInfoURL); nil != err {
+			return rt.ErrorMessage("认证源地址不合法")
+		}
+	}
+	idProvider.SetHttpClient(urlGuardPg.NewSafeClient(0, 3))
 
 	// 8. 用授权码换 Token
 	oauthToken, err := idProvider.GetToken(ct.Code)

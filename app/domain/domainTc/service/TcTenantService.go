@@ -92,7 +92,7 @@ func (c *TcTenantService) Create(ctx *gin.Context, ct modTcTenant.CreateUpdateCt
 	log.Info(ctx, log.TagAppDef, "info", log.Any("info", info))
 	err, _ := r.Create(ctx, &info)
 	if err != nil {
-		return rt.ErrorMessage("保存失败 " + err.Error())
+		return rt.ErrorMessage("保存失败 ")
 	}
 	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	return rt.OkData(numberPg.Int64ToString(info.ID))
@@ -147,7 +147,7 @@ func (c *TcTenantService) Update(ctx *gin.Context, ct modTcTenant.CreateUpdateCt
 	log.Info(ctx, log.TagAppDef, "save", log.Any("info", info))
 	err := r.Update(ctx, info, info.ID)
 	if err != nil {
-		return rt.ErrorMessage("更新失败:" + err.Error())
+		return rt.ErrorMessage("更新失败")
 	}
 	return rt.Ok()
 }
@@ -315,9 +315,7 @@ func (c *TcTenantService) Query(ctx *gin.Context, ct modTcTenant.QueryCt) (rt rg
 	rt.Data.Data = slice
 	r := c.sv
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
-		if ct.PageSize < 1 {
-			ct.PageSize = 20
-		}
+		ct.PageNum, ct.PageSize = optionsPg.ClampPage(ct.PageNum, ct.PageSize)
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		arg.Db = arg.Db.Order("create_at desc")
 		//自定义查询
@@ -386,9 +384,7 @@ func (c *TcTenantService) QueryByTenant(ctx *gin.Context, ct modTcTenant.QueryCt
 	rt.Data.Data = slice
 	r := c.sv
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
-		if ct.PageSize < 1 {
-			ct.PageSize = 20
-		}
+		ct.PageNum, ct.PageSize = optionsPg.ClampPage(ct.PageNum, ct.PageSize)
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		//自定义查询
 		arg.Db = arg.Db.Order("create_at desc")

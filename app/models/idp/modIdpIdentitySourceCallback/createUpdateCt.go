@@ -6,8 +6,8 @@ import (
 
 type CreateUpdateCt struct {
 	ID          typePg.Uint64String `json:"id" form:"id" label:"id" `
-	Name        string              `json:"name" form:"name" validate:"required,min=1,max=255" label:"名称" ` // 名称
-	Callback    string              `json:"callback" form:"callback" validate:"required,min=1,max=255" label:"回调地址" `
+	Name        string              `json:"name" form:"name" binding:"required,min=1,max=255" validate:"required,min=1,max=255" label:"名称" ` // 名称
+	Callback    string              `json:"callback" form:"callback" binding:"required,min=1,max=255" validate:"required,min=1,max=255" label:"回调地址" `
 	Description string              `json:"description" label:"描述" ` // 描述
 	State       typePg.Int8         `json:"state" label:"状态" `
 	Platform    string              `json:"platform" label:"平台" `

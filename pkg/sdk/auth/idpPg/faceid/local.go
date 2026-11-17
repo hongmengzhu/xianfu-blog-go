@@ -1,9 +1,12 @@
 package faceid
 
 import (
+	"context"
+
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/urlGuardPg"
 	"io"
 	"net/http"
 	"strings"
@@ -54,6 +57,9 @@ func (p *LocalUniFaceProvider) Check(base64ImageA string, base64ImageB string) (
 		return false, err
 	}
 
+	if err := urlGuardPg.ValidateFetchURL(context.Background(), p.Endpoint); nil != err {
+		return false, fmt.Errorf("Local UniFace endpoint 不合法: %w", err)
+	}
 	request, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/v1/compare", p.Endpoint), bytes.NewReader(body))
 	if err != nil {
 		return false, err
@@ -65,7 +71,7 @@ func (p *LocalUniFaceProvider) Check(base64ImageA string, base64ImageB string) (
 
 	client := p.Client
 	if client == nil {
-		client = http.DefaultClient
+		client = urlGuardPg.NewSafeClient(0, 3)
 	}
 
 	response, err := client.Do(request)
@@ -80,7 +86,7 @@ func (p *LocalUniFaceProvider) Check(base64ImageA string, base64ImageB string) (
 	}
 
 	if response.StatusCode < http.StatusOK || response.StatusCode >= http.StatusMultipleChoices {
-		return false, fmt.Errorf("Local UniFace compare failed with status %d: %s", response.StatusCode, string(responseBody))
+		return false, fmt.Errorf("Local UniFace compare failed with status %d", response.StatusCode)
 	}
 
 	var compareResponse localUniFaceCompareResponse

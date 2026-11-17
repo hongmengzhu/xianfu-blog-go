@@ -19,6 +19,7 @@ import (
 	attachmentPg "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/attachmentPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/attachmentPg/modAttachment"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/attachmentPg/types"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
 	"github.com/pangu-2/go-tools/tools/dbPg/pagePg"
@@ -49,6 +50,41 @@ type BasicAttachmentService struct {
 	server configPg.Server `value:"${server}"`
 }
 
+// ownerExt 当前请求者的附件归属信息（未登录时为空，附件作为公开资源）
+func (c *BasicAttachmentService) ownerExt(ctx *gin.Context) modAttachment.OwnerExt {
+	holder := holderPg.GetContextAccount(ctx)
+	account := holder.GetAccount()
+	tenantNo := holder.GetTenantNo()
+	if "-1" == tenantNo {
+		tenantNo = ""
+	}
+	return modAttachment.OwnerExt{
+		TenantNo: tenantNo,
+		CreateBy: account.No,
+		OwnerNo:  account.OwnerNo,
+	}
+}
+
+// ownerCondition 追加归属过滤：只允许操作本账号上传（或历史无主）的附件
+func (c *BasicAttachmentService) ownerCondition(ctx *gin.Context, db *gorm.DB) *gorm.DB {
+	holder := c.ownerExt(ctx)
+	if strPg.IsNotBlank(holder.CreateBy) {
+		db = db.Where("create_by = ? OR create_by = ''", holder.CreateBy)
+	}
+	if strPg.IsNotBlank(holder.TenantNo) && holder.TenantNo != "-1" {
+		db = db.Where("tenant_no = '' OR tenant_no = ?", holder.TenantNo)
+	}
+	return db
+}
+
+// OwnedEntities 按主键 no 查询当前请求者可见的附件
+func (c *BasicAttachmentService) OwnedEntities(ctx *gin.Context, nos []string) []*entityBasic.BasicAttachmentEntity {
+	return c.sv.FindAllOption(ctx, optionsPg.WithOption(func(db *optionsPg.OptionParams) {
+		db.Db = db.Db.Where("no in ?", nos)
+		db.Db = c.ownerCondition(ctx, db.Db)
+	}))
+}
+
 // Upload 上传
 func (c *BasicAttachmentService) Upload(ctx *gin.Context) (rt rg.Rs[modBasicAttachment.OkVo]) {
 	ctx.Request.Body = http.MaxBytesReader(ctx.Writer, ctx.Request.Body, maxAttachmentSize)
@@ -70,7 +106,7 @@ func (c *BasicAttachmentService) Upload(ctx *gin.Context) (rt rg.Rs[modBasicAtta
 	}()
 
 	log.Info(ctx, log.TagAppDef, "file.Filename ", log.Any("fileName", file.Filename), log.Any("fileSize", file.Size))
-	atta, err := c.FileService.PutObject(f, modAttachment.PutFile(file.Filename, file.Size), nil)
+	atta, err := c.FileService.PutObject(f, modAttachment.PutFile(file.Filename, file.Size), c.ownerExt(ctx))
 	log.Info(ctx, log.TagAppDef, "atta", log.Any("atta", atta))
 	if err == nil {
 		var vo modBasicAttachment.OkVo
@@ -81,7 +117,7 @@ func (c *BasicAttachmentService) Upload(ctx *gin.Context) (rt rg.Rs[modBasicAtta
 		}
 		return rg.OkData(vo)
 	}
-	return rt.ErrorMessage(err.Error())
+	return rt.ErrorMessage("操作失败")
 }
 
 // UploadMore 多文件上传
@@ -111,7 +147,7 @@ func (c *BasicAttachmentService) UploadMore(ctx *gin.Context) (rt rg.Rs[map[int]
 			continue
 		}
 		log.Info(ctx, log.TagAppDef, "file.Filename ", log.Any("fileName", file.Filename), log.Any("fileSize", file.Size))
-		atta, err := c.FileService.PutObject(f, modAttachment.PutFile(file.Filename, file.Size), nil)
+		atta, err := c.FileService.PutObject(f, modAttachment.PutFile(file.Filename, file.Size), c.ownerExt(ctx))
 		_ = f.Close()
 		if err == nil {
 			var vo modBasicAttachment.OkVo
@@ -176,7 +212,7 @@ func (c *BasicAttachmentService) UploadLink(ctx *gin.Context, ct modBasicAttachm
 		filename := path.Base(url)
 		size := int64(len(content))
 		log.Info(ctx, log.TagAppDef, "file.Filename ", log.Any("fileName", filename), log.Any("fileSize", size))
-		atta, err := c.FileService.PutObject(reader, modAttachment.PutFile(filename, size), nil)
+		atta, err := c.FileService.PutObject(reader, modAttachment.PutFile(filename, size), c.ownerExt(ctx))
 		if err == nil {
 			var vo modBasicAttachment.OkVo
 			copier.Copy(&vo, &atta)
@@ -230,6 +266,7 @@ func (c *BasicAttachmentService) ListByOwner(ctx *gin.Context, ct modBasicAttach
 		infos := r.FindAll(ctx, query, optionsPg.WithCondition(func(db *gorm.DB) *gorm.DB {
 			db = db.Order("create_at desc")
 			db = db.Where("file_owner in ?", fileOwner)
+			db = c.ownerCondition(ctx, db)
 			return db
 		}))
 		if nil != infos {
@@ -328,10 +365,20 @@ func (c *BasicAttachmentService) DelByOwner(ctx *gin.Context, ct modBasicAttachm
 	if len(nos) < 1 {
 		return rt.ErrorMessage("请选择要删除的文件")
 	}
+	owned := c.OwnedEntities(ctx, nos)
+	ownedNos := make([]string, 0)
+	for _, item := range owned {
+		if nil != item && strings.TrimSpace(item.FileOwner) == strings.TrimSpace(ct.FileOwner) {
+			ownedNos = append(ownedNos, item.No)
+		}
+	}
+	if len(ownedNos) < 1 {
+		return rt.ErrorMessage("文件不存在")
+	}
 	if c.sv.Config().Data.Delete {
-		c.sv.DeleteByIdAndFileOwner(ctx, nos, strings.TrimSpace(ct.FileOwner))
+		c.sv.DeleteByIdAndFileOwner(ctx, ownedNos, strings.TrimSpace(ct.FileOwner))
 	} else {
-		c.sv.UpdateByIdAndFileOwnerSetState13(ctx, nos, strings.TrimSpace(ct.FileOwner))
+		c.sv.UpdateByIdAndFileOwnerSetState13(ctx, ownedNos, strings.TrimSpace(ct.FileOwner))
 	}
 	rt.Data = "删除成功"
 	return rt.Ok()
@@ -349,9 +396,7 @@ func (c *BasicAttachmentService) Query(ctx *gin.Context, ct modBasicAttachment.Q
 	slice := make([]modBasicAttachment.Vo, 0)
 	rt.Data.Data = slice
 	page, err := r.FindAllPage(ctx, query, optionsPg.WithOption(func(arg *optionsPg.OptionParams) {
-		if ct.PageSize < 1 {
-			ct.PageSize = 20
-		}
+		ct.PageNum, ct.PageSize = optionsPg.ClampPage(ct.PageNum, ct.PageSize)
 		arg.Pageable = new(pagePg.PageablePageSize(0, ct.PageNum, ct.PageSize))
 		//排序
 		arg.Db = arg.Db.Order("create_at DESC")
@@ -486,6 +531,7 @@ func (c *BasicAttachmentService) UpdateByFileOwner(ctx *gin.Context, ct modBasic
 			infos := c.sv.FindAll(ctx, query, optionsPg.WithCondition(func(db *gorm.DB) *gorm.DB {
 				db = db.Order("create_at desc")
 				db = db.Where("id in ?", ids)
+				db = c.ownerCondition(ctx, db)
 				return db
 			}))
 			if infos != nil && len(infos) > 0 {
@@ -542,9 +588,10 @@ func (c *BasicAttachmentService) UpdateDetail(ctx *gin.Context, ct modBasicAttac
 		return rt.ErrorMessage("所有者key不能为空")
 	}
 	list := make([]modBasicAttachment.Vo, 0)
-	entity := entityBasic.BasicAttachmentEntity{}
-	entity.FileOwner = ct.FileOwner
-	infos := c.sv.FindAll(ctx, entity)
+	infos := c.sv.FindAllOption(ctx, optionsPg.WithOption(func(db *optionsPg.OptionParams) {
+		db.Db = db.Db.Where("file_owner = ?", ct.FileOwner)
+		db.Db = c.ownerCondition(ctx, db.Db)
+	}))
 	if infos != nil && len(infos) > 0 {
 		for _, item := range infos {
 			var vo modBasicAttachment.Vo
@@ -576,7 +623,8 @@ func (c *BasicAttachmentService) UpdateAddByFileOwner(ctx *gin.Context, ct modBa
 	}
 	list := make([]entityBasic.BasicAttachmentEntity, 0)
 	infos := c.sv.FindAllOption(ctx, optionsPg.WithOption(func(db *optionsPg.OptionParams) {
-		db.Db.Where("file_owner in ?", ids)
+		db.Db = db.Db.Where("file_owner in ?", ids)
+		db.Db = c.ownerCondition(ctx, db.Db)
 	}))
 	if infos != nil && len(infos) > 0 {
 		now := time.Now()
@@ -629,6 +677,7 @@ func (c *BasicAttachmentService) AddByFileOwner(ctx *gin.Context, ct modBasicAtt
 	infos := c.sv.FindAll(ctx, query, optionsPg.WithCondition(func(db *gorm.DB) *gorm.DB {
 		db = db.Order("create_at desc")
 		db = db.Where("id in ?", ids)
+		db = c.ownerCondition(ctx, db)
 		return db
 	}))
 	if nil != infos && len(infos) > 0 {

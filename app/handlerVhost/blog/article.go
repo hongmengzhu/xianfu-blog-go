@@ -86,7 +86,7 @@ func (c *ArticleController) Detail(ctx *echo.Context) error {
 func (c *ArticleController) List(ctx *echo.Context) error {
 	var ct modBlogArticleWeb.QueryCt
 	if err := ctx.Bind(&ct); nil != err {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return echo.NewHTTPError(400, "请求参数错误")
 	}
 	//
 	tenantNo := webPg.GetTenantNoEcho(ctx)

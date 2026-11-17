@@ -194,7 +194,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		err, _ := c.Sp.repModel.Create(ctx, c.model)
 		if err != nil {
 			log.Error(ctx, log.TagAppDef, err, "save err", log.Any("model", c.model))
-			return rt.ErrorMessage("保存失败 " + err.Error())
+			return rt.ErrorMessage("保存失败 ")
 		}
 		//
 		if len(c.fields) > 0 {
@@ -213,7 +213,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 				tx := c.Sp.repField.DbModel().CreateInBatches(c.fields, 1000000)
 				if tx.Error != nil {
 					log.Error(ctx, log.TagAppDef, tx.Error, "save err")
-					return rt.ErrorMessage("保存失败：")
+					return rt.ErrorMessage("保存失败")
 				}
 				//if 0 == tx.RowsAffected {
 				//	return rt.ErrorMessage("保存失败，没有更新任何数据")
@@ -222,13 +222,13 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		}
 		if err := c.saveRules(ctx, tenantNo); err != nil {
 			rt.Extend["errors"] = err
-			return rt.ErrorMessage("规则保存失败：" + err.Error())
+			return rt.ErrorMessage("规则保存失败")
 		}
 		if err := c.syncConfig(ctx, tenantNo); err != nil {
-			return rt.ErrorMessage("配置保存失败：" + err.Error())
+			return rt.ErrorMessage("配置保存失败")
 		}
 		if err := c.syncConfigList(ctx, tenantNo); err != nil {
-			return rt.ErrorMessage("配置列表保存失败：" + err.Error())
+			return rt.ErrorMessage("配置列表保存失败")
 		}
 	} else {
 		//
@@ -322,7 +322,7 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 				tx := c.Sp.repField.DbModel().CreateInBatches(dataInsert, 1000000)
 				if tx.Error != nil {
 					log.Error(ctx, log.TagAppDef, tx.Error, "save err")
-					return rt.ErrorMessage("保存失败：")
+					return rt.ErrorMessage("保存失败")
 				}
 				//if 0 == tx.RowsAffected {
 				//	return rt.ErrorMessage("保存失败，没有更新任何数据")
@@ -349,13 +349,13 @@ func (c *CreateUpdate) verify(ctx *gin.Context) (rt rg.Rs[string]) {
 		c.model.TypeSys = save.TypeSys
 		if err := c.saveRules(ctx, tenantNo); err != nil {
 			rt.Extend["errors"] = err
-			return rt.ErrorMessage("规则保存失败：" + err.Error())
+			return rt.ErrorMessage("规则保存失败")
 		}
 		if err := c.syncConfig(ctx, tenantNo); err != nil {
-			return rt.ErrorMessage("配置保存失败：" + err.Error())
+			return rt.ErrorMessage("配置保存失败")
 		}
 		if err := c.syncConfigList(ctx, tenantNo); err != nil {
-			return rt.ErrorMessage("配置列表保存失败：" + err.Error())
+			return rt.ErrorMessage("配置列表保存失败")
 		}
 		// 模型标识变更时，旧 tenant_no + model 缓存也要失效
 		if strPg.IsNotBlank(info.Model) && info.Model != c.model.Model && c.Sp.cache != nil {

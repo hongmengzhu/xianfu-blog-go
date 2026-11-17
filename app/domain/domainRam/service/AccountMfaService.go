@@ -49,7 +49,7 @@ func (c *AccountMfaService) Setup(ctx *gin.Context, ct modRamMfa.SetupCt) (rt rg
 	props, err := mfaUtil.Initiate(ano, "XianfuBlog")
 	if err != nil {
 		log.Error(ctx, log.TagAppDef, err, "MFA Initiate 失败")
-		return rt.ErrorMessage("初始化 MFA 失败: " + err.Error())
+		return rt.ErrorMessage("初始化 MFA 失败: ")
 	}
 
 	// 生成恢复码
@@ -77,7 +77,7 @@ func (c *AccountMfaService) SetupVerify(ctx *gin.Context, ct modRamMfa.SetupVeri
 
 	err := mfaUtil.SetupVerify(ct.Passcode)
 	if err != nil {
-		return rt.ErrorMessage("验证失败: " + err.Error())
+		return rt.ErrorMessage("验证失败")
 	}
 	return rt.OkMessage("验证成功")
 }
@@ -157,7 +157,7 @@ func (c *AccountMfaService) Disable(ctx *gin.Context, ct modRamMfa.DisableCt) (r
 	err := c.daoMfa.DeleteByAno(ctx, ano)
 	if err != nil {
 		log.Error(ctx, log.TagAppDef, err, "删除 MFA 记录失败")
-		return rt.ErrorMessage("禁用 MFA 失败: " + err.Error())
+		return rt.ErrorMessage("禁用 MFA 失败: ")
 	}
 
 	return rt.OkMessage("MFA 已禁用")
@@ -293,7 +293,7 @@ func (c *AccountMfaService) Recover(ctx *gin.Context, ct modRamMfa.RecoverCt) (r
 	// 验证恢复码
 	remaining, err := mfa.VerifyRecoveryCode(recoveryCodes, ct.RecoveryCode)
 	if err != nil {
-		return rt.ErrorMessage("恢复码验证失败: " + err.Error())
+		return rt.ErrorMessage("恢复码验证失败")
 	}
 
 	// 更新剩余恢复码

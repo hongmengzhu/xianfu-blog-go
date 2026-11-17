@@ -29,9 +29,9 @@ type MfaInterface interface {
 
 // MFA 类型常量
 const (
-	SmsType  = "sms"
+	SmsType   = "sms"
 	EmailType = "email"
-	TotpType = "app"
+	TotpType  = "app"
 )
 
 // GetMfaUtil 根据 MFA 类型获取对应的工具实例

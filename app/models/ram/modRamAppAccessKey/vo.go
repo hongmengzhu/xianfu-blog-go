@@ -14,7 +14,7 @@ type Vo struct {
 	Description string              `json:"description" label:"描述" `   // 描述
 	CreateAt    *time.Time          `json:"createAt" label:"创建时间" `    // 创建时间
 	UpdateAt    *time.Time          `json:"updateAt" label:"更新时间" `    // 更新时间
-	Type        string              `json:"type" label:"类型" validate:"required,min=1,max=255"`
+	Type        string              `json:"type" label:"类型" binding:"required,min=1,max=255" validate:"required,min=1,max=255"`
 	Key         string              `json:"key" label:"键" `
 	Secret      string              `json:"secret" label:"密钥" `
 	ExpiryDate  *time.Time          `json:"expiryDate" label:"有效期" `

@@ -79,7 +79,7 @@ func (c *SamlLoginService) GetSamlLoginUrl(ctx *gin.Context, sourceNo string) (r
 	sp, cfg, err := c.buildSpFromSource(ctx, source)
 	if err != nil {
 		log.Error(ctx, log.TagAppDef, err, "构建 SAML SP 失败")
-		return rt.ErrorMessage("构建 SAML SP 失败: " + err.Error())
+		return rt.ErrorMessage("构建 SAML SP 失败: ")
 	}
 	_ = cfg
 
@@ -93,7 +93,7 @@ func (c *SamlLoginService) GetSamlLoginUrl(ctx *gin.Context, sourceNo string) (r
 	authURL, method, err := samlPkg.GenerateSamlRequest(sp, relayState)
 	if err != nil {
 		log.Error(ctx, log.TagAppDef, err, "生成 SAML Request 失败")
-		return rt.ErrorMessage("生成 SAML 请求失败: " + err.Error())
+		return rt.ErrorMessage("生成 SAML 请求失败: ")
 	}
 
 	vo := modIdpSaml.SamlRedirectVo{
@@ -135,14 +135,14 @@ func (c *SamlLoginService) HandleSamlCallback(ctx *gin.Context, ct modIdpSaml.Sa
 	sp, _, err := c.buildSpFromSource(ctx, source)
 	if err != nil {
 		log.Error(ctx, log.TagAppDef, err, "构建 SAML SP 失败")
-		return rt.ErrorMessage("构建 SAML SP 失败: " + err.Error())
+		return rt.ErrorMessage("构建 SAML SP 失败: ")
 	}
 
 	// 4. 解析 SAML Response
 	samlUserInfo, err := samlPkg.ParseSamlResponse(ct.SAMLResponse, sp)
 	if err != nil {
 		log.Error(ctx, log.TagAppDef, err, "解析 SAML Response 失败")
-		return rt.ErrorMessage("解析 SAML 响应失败: " + err.Error())
+		return rt.ErrorMessage("解析 SAML 响应失败: ")
 	}
 	log.Info(ctx, log.TagAppDef, "SAML userInfo", log.Any("NameID", samlUserInfo.NameID), log.Any("Attributes", samlUserInfo.Attributes))
 
@@ -319,7 +319,7 @@ func (c *SamlLoginService) parseAndBindUser(
 	isSignup = true
 	account, err := c.createAccountAndBinding(ctx, source, userInfo, nameID)
 	if err != nil {
-		return rt.ErrorMessage("自动创建账号失败: " + err.Error())
+		return rt.ErrorMessage("自动创建账号失败")
 	}
 
 	return c.checkMfaOrLoginSuccess(ctx, account, source, userInfo, isSignup)

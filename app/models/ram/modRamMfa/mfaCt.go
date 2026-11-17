@@ -25,9 +25,9 @@ type EnableCt struct {
 
 // VerifyCt MFA 验证请求（登录时）
 type VerifyCt struct {
-	MfaType    string `json:"mfaType" form:"mfaType" label:"MFA类型" binding:"required"`
-	Passcode   string `json:"passcode" form:"passcode" label:"验证码"`
-	MfaToken   string `json:"mfaToken" form:"mfaToken" label:"MFA临时令牌"`
+	MfaType  string `json:"mfaType" form:"mfaType" label:"MFA类型" binding:"required"`
+	Passcode string `json:"passcode" form:"passcode" label:"验证码"`
+	MfaToken string `json:"mfaToken" form:"mfaToken" label:"MFA临时令牌"`
 }
 
 // RecoverCt MFA 恢复请求

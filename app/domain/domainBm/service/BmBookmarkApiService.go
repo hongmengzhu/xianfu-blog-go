@@ -215,7 +215,7 @@ func (c *BmBookmarkApiService) Create(ctx *gin.Context, ct modApiBmBookmark.Crea
 	info.Module = handlerVhost.Host_bookmark
 	err, _ = c.sv.Create(ctx, &info)
 	if err != nil {
-		return rt.ErrorMessage("保存失败 " + err.Error())
+		return rt.ErrorMessage("保存失败 ")
 	}
 	return rg.OkData(numberPg.Int64ToString(info.ID))
 }
@@ -255,7 +255,7 @@ func (c *BmBookmarkApiService) Update(ctx *gin.Context, ct modApiBmBookmark.Crea
 	}
 	err = c.sv.Update(ctx, info, find.ID)
 	if err != nil {
-		return rt.ErrorMessage("保存失败 " + err.Error())
+		return rt.ErrorMessage("保存失败 ")
 	}
 	return rg.OkData(numberPg.Int64ToString(info.ID))
 }
@@ -333,7 +333,7 @@ func (c *BmBookmarkApiService) SetTypeReading(ctx *gin.Context, ct modApiBmBookm
 	info.FinishReading = &now
 	err = c.sv.Update(ctx, info, find.ID)
 	if err != nil {
-		return rt.ErrorMessage("保存失败 " + err.Error())
+		return rt.ErrorMessage("保存失败 ")
 	}
 	return rg.OkData(numberPg.Int64ToString(info.ID))
 }

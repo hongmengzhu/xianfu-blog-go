@@ -3,6 +3,7 @@ package repositoryPg
 import (
 	"context"
 	"errors"
+	"github.com/gin-gonic/gin"
 
 	"github.com/duke-git/lancet/v2/convertor"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
@@ -37,14 +38,17 @@ func (b *BaseOrgRepository[T, ID]) DbModel() *gorm.DB {
 	return b.DbScopes().Model(b.Entity)
 }
 func (b *BaseOrgRepository[T, ID]) SetOptionScopes(db *gorm.DB, opts ...optionsPg.Option) *gorm.DB {
-	if nil == opts || len(opts) == 0 {
-		return db
-	}
 	arg := optionsPg.OptionParams{
 		Db: db,
 	}
 	for _, opt := range opts {
 		opt(&arg)
+	}
+	// 从 GORM Statement 自动回取 gin.Context，保证不传 WithCtx 也能启用多租户 scope
+	if nil == arg.Ctx && nil != arg.Db && nil != arg.Db.Statement {
+		if gc, ok := arg.Db.Statement.Context.(*gin.Context); ok {
+			arg.Ctx = gc
+		}
 	}
 	if nil != arg.Ctx {
 		_, exists := arg.Ctx.Get(constContextPg.CTX_MULITI_TENANT)

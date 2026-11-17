@@ -16,9 +16,9 @@ type AllVo struct {
 	Description  string                 `json:"description" label:"描述" `   // 描述
 	CreateAt     *time.Time             `json:"createAt" label:"创建时间" `    // 创建时间
 	UpdateAt     *time.Time             `json:"updateAt" label:"更新时间" `    // 更新时间
-	Type         string                 `json:"type" label:"类型" validate:"required,min=1,max=255"`
-	TypeSys      string                 `json:"typeSys" label:"类型" validate:"required,min=1,max=255"`
-	Url          string                 `json:"url" label:"建议url" validate:"required,min=1,max=255"`
+	Type         string                 `json:"type" label:"类型" binding:"required,min=1,max=255" validate:"required,min=1,max=255"`
+	TypeSys      string                 `json:"typeSys" label:"类型" binding:"required,min=1,max=255" validate:"required,min=1,max=255"`
+	Url          string                 `json:"url" label:"建议url" binding:"required,min=1,max=255" validate:"required,min=1,max=255"`
 	CategoryNo   string                 `json:"categoryNo" label:"分类" `
 	Show         bool                   `json:"show" label:"显示" `
 	NameShort    string                 `json:"nameShort" label:"名称简称" `
