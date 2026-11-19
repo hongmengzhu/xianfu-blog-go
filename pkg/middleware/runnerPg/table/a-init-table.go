@@ -58,6 +58,7 @@ func (b *AInitTable) Run(ctx context.Context) error {
 		entityData = append(entityData, &entityBasic.BasicExplainCategoryEntity{})
 		entityData = append(entityData, &entityBasic.BasicModelRulesEntity{})
 		entityData = append(entityData, &entityBasic.BasicModuleEntity{})
+		entityData = append(entityData, &entityBasic.BasicOperationLogEntity{})
 		entityData = append(entityData, &entityBasic.BasicTagsEntity{})
 		entityData = append(entityData, &entityBasic.BasicTagsCategoryEntity{})
 		entityData = append(entityData, &entityBasic.BasicTagsRelationEntity{})
