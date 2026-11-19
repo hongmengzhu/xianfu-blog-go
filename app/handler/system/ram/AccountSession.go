@@ -22,7 +22,7 @@ type AccountSessionController struct {
 }
 
 func (c *AccountSessionController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/sys/ram/account-session", authPg.GroupSystemMiddleware(c.Sp))
+	group := e.Group("/xianfu/sys/ram/accountSession", authPg.GroupSystemMiddleware(c.Sp))
 	group.POST("/physicalDeletion", c.PhysicalDeletion)
 	group.POST("/query", c.Query)
 }

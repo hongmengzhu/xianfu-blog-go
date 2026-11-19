@@ -22,7 +22,7 @@ type AccountLoginLogController struct {
 }
 
 func (c *AccountLoginLogController) RegisterRoutes(e *gin.Engine) {
-	group := e.Group("/xianfu/sys/ram/account-login-log", authPg.GroupSystemMiddleware(c.Sp))
+	group := e.Group("/xianfu/sys/ram/accountLoginLog", authPg.GroupSystemMiddleware(c.Sp))
 	group.POST("/physicalDeletion", c.PhysicalDeletion)
 	group.POST("/query", c.Query)
 }
