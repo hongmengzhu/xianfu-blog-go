@@ -27,6 +27,7 @@ var ModuleMap = map[string]Item{
 	"basic/attachmentRelated":    Item{Module: "basic.attachmentRelated", Name: "附件关联", ModuleRoot: "basic.attachmentRelated", TargetType: "basic_attachment_related"},
 	"basic/country":              Item{Module: "basic.country", Name: "国家", ModuleRoot: "basic.country", TargetType: "basic_country"},
 	"basic/dataDictionary":       Item{Module: "basic.dataDictionary", Name: "数据字典", ModuleRoot: "basic.dataDictionary", TargetType: "basic_data_dictionary"},
+	"basic/dataDictionarySub":    Item{Module: "basic.dictionary.sub", Name: "数据字典子项", ModuleRoot: "basic.dataDictionary", TargetType: "basic_data_dictionary"},
 	"basic/dataSnapshot":         Item{Module: "basic.dataSnapshot", Name: "数据快照", ModuleRoot: "basic.dataSnapshot", TargetType: "basic_data_snapshot"},
 	"basic/explain":              Item{Module: "basic.explain", Name: "说明", ModuleRoot: "basic.explain", TargetType: "basic_explain"},
 	"basic/explainCategory":      Item{Module: "basic.explainCategory", Name: "说明分类", ModuleRoot: "basic.explainCategory", TargetType: "basic_explain_category"},
@@ -56,16 +57,16 @@ var ModuleMap = map[string]Item{
 	"bm/toolCategory":     Item{Module: "bm.toolCategory", Name: "工具分类", ModuleRoot: "bm.toolCategory", TargetType: "bm_tool_category"},
 
 	// idp 身份提供商（表名沿用 ram_ 前缀）
-	"idp/identityProvider":       Item{Module: "idp.identityProvider", Name: "身份提供商", ModuleRoot: "idp.identityProvider", TargetType: "ram_identity_provider"},
-	"idp/identitySource":         Item{Module: "idp.identitySource", Name: "身份认证源", ModuleRoot: "idp.identitySource", TargetType: "ram_identity_source"},
-	"idp/identitySourceCallback": Item{Module: "idp.identitySourceCallback", Name: "认证源回调白名单", ModuleRoot: "idp.identitySourceCallback", TargetType: "ram_identity_source_callback"},
-	"idp/idpBinding":             Item{Module: "idp.idpBinding", Name: "身份绑定", ModuleRoot: "idp.idpBinding", TargetType: "ram_idp_binding"},
-	"idp/idpCredential":          Item{Module: "idp.idpCredential", Name: "身份凭证", ModuleRoot: "idp.idpCredential", TargetType: "ram_idp_credential"},
-	"idp/metadataCache":          Item{Module: "idp.metadataCache", Name: "身份元数据缓存", ModuleRoot: "idp.metadataCache", TargetType: "ram_idp_metadata_cache"},
+	"idp/identityProvider":       Item{Module: "idp.identityProvider", Name: "身份提供商", ModuleRoot: "idp.identityProvider", TargetType: "ram_identity_provider", PathMark: []string{"ram-idp/identity-provider"}},
+	"idp/identitySource":         Item{Module: "idp.identitySource", Name: "身份认证源", ModuleRoot: "idp.identitySource", TargetType: "ram_identity_source", PathMark: []string{"ram-idp/identity-source"}},
+	"idp/identitySourceCallback": Item{Module: "idp.identitySourceCallback", Name: "认证源回调白名单", ModuleRoot: "idp.identitySourceCallback", TargetType: "ram_identity_source_callback", PathMark: []string{"ram-idp/identity-source-callback"}},
+	"idp/idpBinding":             Item{Module: "idp.idpBinding", Name: "身份绑定", ModuleRoot: "idp.idpBinding", TargetType: "ram_idp_binding", PathMark: []string{"ram-idp/idp-binding"}},
+	"idp/idpCredential":          Item{Module: "idp.idpCredential", Name: "身份凭证", ModuleRoot: "idp.idpCredential", TargetType: "ram_idp_credential", PathMark: []string{"ram-idp/idp-credential"}},
+	"idp/metadataCache":          Item{Module: "idp.metadataCache", Name: "身份元数据缓存", ModuleRoot: "idp.metadataCache", TargetType: "ram_idp_metadata_cache", PathMark: []string{"ram-idp/idp-metadata-cache"}},
 
 	// ram 权限管理
 	"ram/account":                 Item{Module: "ram.account", Name: "账号", ModuleRoot: "ram.account", TargetType: "ram_account"},
-	"ram/accountAuthMfa":          Item{Module: "ram.accountAuthMfa", Name: "账号多因素认证", ModuleRoot: "ram.accountAuthMfa", TargetType: "ram_account_auth_mfa"},
+	"ram/accountAuthMfa":          Item{Module: "ram.accountAuthMfa", Name: "账号多因素认证", ModuleRoot: "ram.accountAuthMfa", TargetType: "ram_account_auth_mfa", PathMark: []string{"ram/account-mfa"}},
 	"ram/accountAuthWebauthn":     Item{Module: "ram.accountAuthWebauthn", Name: "账号通行密钥", ModuleRoot: "ram.accountAuthWebauthn", TargetType: "ram_account_auth_webauthn"},
 	"ram/accountAuthorization":    Item{Module: "ram.accountAuthorization", Name: "账号授权", ModuleRoot: "ram.accountAuthorization", TargetType: "ram_account_authorization"},
 	"ram/accountDenyList":         Item{Module: "ram.accountDenyList", Name: "账号拒绝名单", ModuleRoot: "ram.accountDenyList", TargetType: "ram_account_deny_list"},

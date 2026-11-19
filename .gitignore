@@ -23,6 +23,7 @@
 .gocache*
 .tmp-build
 .tmp_*
+.tmp-*
 data/logs/
 data/attachment/
 data/data/attachment/
