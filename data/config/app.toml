@@ -77,6 +77,11 @@ cookieOn = true
 [pg.data]
 #点击删除时是否直接删除
 delete = true
+
+[pg.oplog]
+#操作日志保留天数，超过保留期的日志由后台任务按批清理
+retention-days = 180
+
 #注册参数
 # 身份编号，例如身份证号
 [pg.register.identityCode]

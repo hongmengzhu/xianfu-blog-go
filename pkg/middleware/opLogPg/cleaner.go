@@ -1,4 +1,4 @@
-package auditPg
+package opLogPg
 
 import (
 	"context"
@@ -15,19 +15,19 @@ const (
 )
 
 func init() {
-	gs.Provide(new(AuditCleaner)).Export(gs.As[gs.Server]())
+	gs.Provide(new(OpLogCleaner)).Export(gs.As[gs.Server]())
 }
 
-// AuditCleaner 按保留期清理过期审计日志。
-// 保留期可通过 pg.audit.retention-days 配置，默认 180 天。
-type AuditCleaner struct {
+// OpLogCleaner 按保留期清理过期操作日志。
+// 保留期可通过 pg.oplog.retention-days 配置，默认 180 天。
+type OpLogCleaner struct {
 	repo *repositoryBasic.BasicOperationLogRepository `autowire:"?"`
 
-	RetentionDays int `value:"${pg.audit.retention-days:=180}"`
+	RetentionDays int `value:"${pg.oplog.retention-days:=180}"`
 }
 
 // Run 实现 gs.Server。
-func (c *AuditCleaner) Run(ctx context.Context, sig gs.ReadySignal) error {
+func (c *OpLogCleaner) Run(ctx context.Context, sig gs.ReadySignal) error {
 	<-sig.TriggerAndWait()
 	// 启动后延迟 10 分钟执行首次清理，避开启动高峰。
 	timer := time.NewTimer(10 * time.Minute)
@@ -51,9 +51,9 @@ func (c *AuditCleaner) Run(ctx context.Context, sig gs.ReadySignal) error {
 }
 
 // Stop 实现 gs.Server；清理任务无需额外收尾。
-func (c *AuditCleaner) Stop(ctx context.Context) error { return nil }
+func (c *OpLogCleaner) Stop(ctx context.Context) error { return nil }
 
-func (c *AuditCleaner) clean(ctx context.Context) {
+func (c *OpLogCleaner) clean(ctx context.Context) {
 	if c.repo == nil {
 		return
 	}
@@ -64,10 +64,10 @@ func (c *AuditCleaner) clean(ctx context.Context) {
 	cutoff := time.Now().AddDate(0, 0, -days)
 	total, err := c.repo.DeleteBefore(ctx, cutoff, cleanBatch)
 	if err != nil {
-		log.Error(ctx, log.TagAppDef, err, "审计日志清理失败")
+		log.Error(ctx, log.TagAppDef, err, "操作日志清理失败")
 		return
 	}
 	if total > 0 {
-		log.Info(ctx, log.TagAppDef, "审计日志清理完成", log.Any("deleted", total), log.Any("cutoff", cutoff))
+		log.Info(ctx, log.TagAppDef, "操作日志清理完成", log.Any("deleted", total), log.Any("cutoff", cutoff))
 	}
 }

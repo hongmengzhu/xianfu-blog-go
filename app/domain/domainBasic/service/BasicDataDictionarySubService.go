@@ -2,7 +2,6 @@ package service
 
 import (
 	"slices"
-	"strconv"
 	"strings"
 
 	"github.com/duke-git/lancet/v2/slice"
@@ -13,7 +12,6 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/model"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/repositoryBasic"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/auditPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg/optionsPg"
 	"github.com/jinzhu/copier"
 	"github.com/pangu-2/go-tools/tools/dbPg/pagePg"
@@ -71,12 +69,6 @@ func (c *BasicDataDictionarySubService) CreateUpdate(ctx *gin.Context, ct modBas
 		info.Range = slice.Join(ct.Range, ",")
 	}
 	info.OwnerNo = parent.OwnerNo
-	// 审计：更新场景记录变更前快照，供 auditPg 自动 diff。
-	if ct.ID > 0 {
-		if old, ok := r.FindByIdString(ctx, ct.ID.ToString()); ok {
-			auditPg.SetBefore(ctx, old)
-		}
-	}
 	if ct.ID < 1 {
 		{
 			_, result := c.sv.FindByCodeAndTypeCodeAndIdNotAndOwnerNo(ctx, info.Code, info.TypeCode, "0", info.OwnerNo)
@@ -105,8 +97,6 @@ func (c *BasicDataDictionarySubService) CreateUpdate(ctx *gin.Context, ct modBas
 		}
 	}
 
-	auditPg.SetAfter(ctx, info)
-	auditPg.SetTarget(ctx, auditPg.Target{Type: "data_dictionary_sub", ID: strconv.FormatInt(info.ID, 10), Name: info.Name, TenantNo: info.TenantNo})
 	return rg.OkData(numberPg.Int64ToString(info.ID))
 }
 

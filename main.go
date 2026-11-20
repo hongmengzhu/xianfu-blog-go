@@ -11,7 +11,7 @@ import (
 	_ "github.com/hongmengzhu/xianfu-blog-go/pkg/core/cachePg/bigCachePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/routerPg"
 	_ "github.com/hongmengzhu/xianfu-blog-go/pkg/middleware"
-	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/auditPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/opLogPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/dbManagerPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/templatePg"
 	"github.com/pangu-2/go-tools/tools/ioPg"
@@ -87,9 +87,9 @@ func NewGinEngine(registrars []routerPg.RouteRegistrar) StarterGin.RouterRegiste
 			c.Header("Referrer-Policy", "no-referrer")
 			c.Next()
 		})
-		// 审计日志：按约定自动匹配（路由 -> constModulePg.ModuleMap -> MatchActionMap），
-		// handler 只注册业务路由，无需再写 *Audit.go。必须在注册路由前 Use。
-		e.Use(auditPg.Global())
+		// 操作日志：记录每个请求的 traceID、状态码、方法与路径、操作员、IP、参数和请求体。
+		// 必须在注册路由前 Use。
+		e.Use(opLogPg.Global())
 
 		// 静态文件目录
 		e.Static("/assets", "./data/assets")
@@ -112,7 +112,5 @@ func NewGinEngine(registrars []routerPg.RouteRegistrar) StarterGin.RouterRegiste
 		for _, r := range registrars {
 			r.RegisterRoutes(e)
 		}
-		// 校验审计声明与真实路由表一致（路径写错时打错误日志，不阻断启动）。
-		auditPg.VerifyRegistered(e.Routes())
 	}
 }

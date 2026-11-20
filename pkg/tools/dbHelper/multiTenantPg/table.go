@@ -78,7 +78,6 @@ var multiTableManage = pg.MultiItem{
 		"basic_model_rules",
 		"basic_model_rules_template",
 		"basic_module",
-		"basic_operation_log",
 		"basic_tags",
 		"basic_tags_category",
 		"basic_tags_relation",
