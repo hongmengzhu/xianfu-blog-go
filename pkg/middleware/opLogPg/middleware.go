@@ -291,8 +291,11 @@ func headerJSON(h http.Header) string {
 	m := make(map[string]string, len(h))
 	for k, vs := range h {
 		v := strings.Join(vs, ",")
-		if isSensitiveHeader(k) {
-			v = "***"
+		// if isSensitiveHeader(k) {
+		// 	v = "***"
+		// }
+		if !isSensitiveHeaderUserAgent(k) {
+			continue
 		}
 		m[k] = truncate(v, 512)
 	}
@@ -304,6 +307,14 @@ func headerJSON(h http.Header) string {
 }
 
 func isSensitiveHeader(k string) bool {
+	switch strings.ToLower(k) {
+	case "authorization", "authorization-sys", "authorization-refresh", "authorization-refresh-sys",
+		"proxy-authorization", "cookie", "set-cookie", "token", "x-token", "auth", "x-api-key", "api-key":
+		return true
+	}
+	return false
+}
+func isSensitiveHeaderUserAgent(k string) bool {
 	switch strings.ToLower(k) {
 	case "user-agent":
 		return true
