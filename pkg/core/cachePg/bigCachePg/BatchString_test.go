@@ -26,7 +26,8 @@ func newTestBatchString(t *testing.T) *BatchString {
 	if err != nil {
 		t.Fatalf("bigcache.New: %v", err)
 	}
-	cache, err := StarterBigCache.NewCache(client, "rdsPg-test")
+	// nil Observer 关闭指标采集，测试只验证 BatchString 的语义。
+	cache, err := StarterBigCache.NewCache(client, "rdsPg-test", nil)
 	if err != nil {
 		_ = client.Close()
 		t.Fatalf("NewCache: %v", err)

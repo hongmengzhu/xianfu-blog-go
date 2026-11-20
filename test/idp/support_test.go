@@ -53,7 +53,9 @@ import (
 
 const (
 	testTenantNo = "1000"
-	baseURL      = "/xianfu/manage/ram"
+	// 管理端 IdP 路由在 e3b7195a 起统一挪到 ram-idp 前缀，
+	// 与 /xianfu/manage/ram 下的 RAM 其它接口区分开。
+	baseURL      = "/xianfu/manage/ram-idp"
 	authIdpURL   = "/xianfu/auth/manage/idp"
 	manageCasURL = "/xianfu/auth/manage/cas"
 )

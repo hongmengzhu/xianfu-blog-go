@@ -1,7 +1,6 @@
 package cryptoPg
 
 import (
-	"context"
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/hex"
@@ -10,14 +9,13 @@ import (
 
 	"github.com/tjfoc/gmsm/sm2"
 	"github.com/tjfoc/gmsm/x509"
-	"go-spring.org/log"
 )
 
 func Test_SM2Util_001(t *testing.T) {
 	// 1. 生成密钥对
 	privateKey, err := sm2.GenerateKey(rand.Reader)
 	if err != nil {
-		log.Fatal(context.Background(), log.TagBizDef, "%+v", err)
+		t.Fatalf("sm2.GenerateKey: %v", err)
 	}
 	publicKey := &privateKey.PublicKey
 

@@ -1,10 +1,12 @@
 package test
 
 import (
+	"context"
 	"testing"
+
+	"go-spring.org/log"
 )
 
 func TestLog(t *testing.T) {
-	logger := log2.NewDefault(log2.LevelDebug)
-	logger.Infof("hello %s", "world")
+	log.Info(context.Background(), log.TagAppDef, "hello world")
 }

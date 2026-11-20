@@ -21,8 +21,11 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBm/service"
+	// 仅导入以触发 domainBm/service 包 init 中的 Bean 注册
+	// （BmBookmarkApiService 等由该包自行 gs.Provide，测试不要重复注册）。
+	_ "github.com/hongmengzhu/xianfu-blog-go/app/domain/domainBm/service"
 	"github.com/hongmengzhu/xianfu-blog-go/app/models/tc/dtoTenantDomain"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/enum/state/enumStatePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBm"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/cachePg/cacheDiplPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/middleware/components/cachePg/cacheDomainPg"
@@ -110,9 +113,8 @@ type categoryVoAll struct {
 
 func init() {
 	// main.go 中手工 Provide 的 Bean，测试入口需自行注册；
-	// BookmarkService 全项目仅靠 autowire 注入，没有 init 注册。
+	// BmBookmarkApiService 已在 domainBm/service 包的 init 中注册，这里不能重复。
 	gs.Provide(new(dbManagerPg.Manager))
-	gs.Provide(new(service.BmBookmarkApiService))
 }
 
 // runAPIStack 启动独立的测试应用：临时 sqlite 库 + 真实路由 + 鉴权中间件。
@@ -147,6 +149,8 @@ func runAPIStack(t *testing.T, fn func(t *testing.T, ts *apiTestStack, engine *g
 		cacheDiplPg.Set(testDiplKey, cacheDiplPg.DiplCo{
 			Key: testDiplKey, Secret: testDiplSecret,
 			TenantNo: testTenantNo, Ano: testAno, Name: "测试应用", No: "test-dipl",
+			// 中间件要求密钥状态为启用，不设置会按零值判为"已禁用"。
+			State: enumStatePg.ENABLE.IndexInt8(),
 		})
 
 		gin.SetMode(gin.TestMode)
