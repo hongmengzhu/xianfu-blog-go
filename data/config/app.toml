@@ -184,6 +184,9 @@ theme = "bookmark"
 [pg.auth.loginEncrypt]
 # 默认加密
 default = true
+# 操作日志配置
+[pg.operationLog]
+exclude = ["/xianfu/pub/*","/xianfu/auth/**"]
 
 # ================== 日志配置 ==================
 # go-spring 只读取 logging.* 前缀下的配置（前缀在加载时会被剥离），

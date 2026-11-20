@@ -78,7 +78,7 @@ func main() {
 //	@Description: 创建 gin 引擎
 //	@param registrars
 //	@return *gin.Engine
-func NewGinEngine(registrars []routerPg.RouteRegistrar) StarterGin.RouterRegister {
+func NewGinEngine(registrars []routerPg.RouteRegistrar, opLog *opLogPg.Middleware) StarterGin.RouterRegister {
 	return func(e *gin.Engine) {
 		// 基础安全响应头（上传/静态文件与业务响应统一生效）
 		e.Use(func(c *gin.Context) {
@@ -89,7 +89,11 @@ func NewGinEngine(registrars []routerPg.RouteRegistrar) StarterGin.RouterRegiste
 		})
 		// 操作日志：记录每个请求的 traceID、状态码、方法与路径、操作员、IP、参数和请求体。
 		// 必须在注册路由前 Use。
-		e.Use(opLogPg.Global())
+		if opLog != nil {
+			e.Use(opLog.Global())
+		} else {
+			e.Use(opLogPg.Global())
+		}
 
 		// 静态文件目录
 		e.Static("/assets", "./data/assets")

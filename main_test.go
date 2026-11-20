@@ -15,7 +15,7 @@ import (
 func TestGinEngineTemplateFuncs(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	e := gin.New()
-	NewGinEngine(nil)(e)
+	NewGinEngine(nil, nil)(e)
 	if nil == e.HTMLRender {
 		t.Fatal("gin HTMLRender 未初始化，data/templates 目录可能不存在")
 	}

@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
 )
 
 func init() {
@@ -141,21 +142,18 @@ func TestDeriveRoute(t *testing.T) {
 	}
 }
 
-func TestHeaderJSONMasksSensitive(t *testing.T) {
+func TestHeaderJSONOnlyUserAgent(t *testing.T) {
 	h := http.Header{}
 	h.Set("Authorization", "Bearer secret")
 	h.Set("Cookie", "token=abc")
 	h.Set("X-Request-Id", "rid-1")
 	h.Set("User-Agent", "curl/8")
 	got := headerJSON(h)
-	if !strings.Contains(got, `"Authorization":"***"`) {
-		t.Fatalf("Authorization 未脱敏: %s", got)
+	if !strings.Contains(got, `"User-Agent":"curl/8"`) {
+		t.Fatalf("User-Agent 未记录: %s", got)
 	}
-	if !strings.Contains(got, `"Cookie":"***"`) {
-		t.Fatalf("Cookie 未脱敏: %s", got)
-	}
-	if !strings.Contains(got, `"X-Request-Id":"rid-1"`) || !strings.Contains(got, `"User-Agent":"curl/8"`) {
-		t.Fatalf("普通请求头不应被改动: %s", got)
+	if strings.Contains(got, "Authorization") || strings.Contains(got, "Cookie") || strings.Contains(got, "X-Request-Id") {
+		t.Fatalf("当前只记录 User-Agent，其它请求头不应入库: %s", got)
 	}
 }
 
@@ -165,5 +163,98 @@ func TestNormalizeCode(t *testing.T) {
 		if got := normalizeCode(in); got != want {
 			t.Fatalf("normalizeCode(%q) = %q，期望 %q", in, got, want)
 		}
+	}
+}
+
+func TestDeriveModuleActionFromConst(t *testing.T) {
+	cases := []struct {
+		path                                         string
+		root, module, moduleName, action, actionName string
+	}{
+		{"/xianfu/manage/basic/operation-log/query", "basic.operationLog", "basic.operationLog", "操作日志", "query", "查询"},
+		{"/xianfu/manage/basic/data-dictionary-sub/query", "basic.dataDictionary", "basic.dictionary.sub", "数据字典子项", "query", "查询"},
+		{"/xianfu/sys/ram-idp/idpBinding/query", "idp.idpBinding", "idp.idpBinding", "身份绑定", "query", "查询"},
+		{"/xianfu/sys/ram/account-mfa/query", "ram.accountAuthMfa", "ram.accountAuthMfa", "账号多因素认证", "query", "查询"},
+		{"/xianfu/manage/basic/filePub/upload", "basic", "filePub", "filePub", "upload", "upload"},
+	}
+	for _, tc := range cases {
+		root, module, moduleName, action, actionName := deriveModuleAction(tc.path)
+		if root != tc.root || module != tc.module || moduleName != tc.moduleName || action != tc.action || actionName != tc.actionName {
+			t.Fatalf("deriveModuleAction(%q) = (%q,%q,%q,%q,%q)，期望 (%q,%q,%q,%q,%q)",
+				tc.path, root, module, moduleName, action, actionName,
+				tc.root, tc.module, tc.moduleName, tc.action, tc.actionName)
+		}
+	}
+}
+
+func TestDeriveModuleActionUsesMatchMap(t *testing.T) {
+	cases := []struct {
+		path                                   string
+		root, module, moduleName, action, name string
+	}{
+		{"/xianfu/manage/basic/attachment/create", "basic.attachment", "basic.attachment", "附件", "create", "创建"},
+		{"/xianfu/manage/basic/attachment/createUpdateSimple", "basic.attachment", "basic.attachment", "附件", "createUpdate", "创建更新"},
+		{"/xianfu/manage/basic/operation-log/exportExcel", "basic.operationLog", "basic.operationLog", "操作日志", "export", "导出"},
+		{"/xianfu/manage/basic/attachment/physicalDelete", "basic.attachment", "basic.attachment", "附件", "physicalDeletion", "删除"},
+		{"/xianfu/manage/basic/attachment/upload", "basic.attachment", "basic.attachment", "附件", "upload", "upload"},
+		{"/xianfu/manage/basic/filePub/create", "basic", "filePub", "filePub", "create", "创建"},
+	}
+	for _, tc := range cases {
+		root, module, moduleName, action, name := deriveModuleAction(tc.path)
+		if root != tc.root || module != tc.module || moduleName != tc.moduleName || action != tc.action || name != tc.name {
+			t.Fatalf("deriveModuleAction(%q) = (%q,%q,%q,%q,%q)，期望 (%q,%q,%q,%q,%q)",
+				tc.path, root, module, moduleName, action, name,
+				tc.root, tc.module, tc.moduleName, tc.action, tc.name)
+		}
+	}
+}
+
+func TestPathMatcherExclude(t *testing.T) {
+	m := newPathMatcher([]string{"/xianfu/pub/*", "/xianfu/auth/**", "/xianfu/*/health"})
+	cases := []struct {
+		path string
+		want bool
+	}{
+		{"/xianfu/pub/login", true},
+		{"/xianfu/pub/login/x", true},
+		{"/xianfu/pub", false},
+		{"/xianfu/public", false},
+		{"/xianfu/auth", true},
+		{"/xianfu/auth/login", true},
+		{"/xianfu/auth/login/x", true},
+		{"/xianfu/authx", false},
+		{"/xianfu/manage/health", true},
+		{"/xianfu/manage/health/x", true},
+		{"/xianfu/manage/foo/health", false},
+		{"/xianfu/other", false},
+	}
+	for _, tc := range cases {
+		if got := m.Match(tc.path); got != tc.want {
+			t.Fatalf("Match(%q) = %v，期望 %v", tc.path, got, tc.want)
+		}
+	}
+	if got := newPathMatcher(nil).Match("/xianfu/pub/login"); got {
+		t.Fatalf("空规则不应命中")
+	}
+}
+
+func TestGlobalSkipsExcludedPath(t *testing.T) {
+	w := &Writer{ch: make(chan *entityBasic.BasicOperationLogEntity, 8)}
+	defaultWriter.Store(w)
+	t.Cleanup(func() { defaultWriter.Store(nil) })
+
+	r := gin.New()
+	mw := &Middleware{Config: Config{Exclude: []string{"/xianfu/pub/*", "/xianfu/auth/**"}}}
+	r.Use(mw.Global())
+	for _, path := range []string{"/xianfu/pub/login", "/xianfu/auth/login", "/xianfu/manage/account/query"} {
+		r.GET(path, func(c *gin.Context) { c.Status(http.StatusOK) })
+	}
+	for _, path := range []string{"/xianfu/pub/login", "/xianfu/auth/login", "/xianfu/manage/account/query"} {
+		req := httptest.NewRequest(http.MethodGet, path, nil)
+		rec := httptest.NewRecorder()
+		r.ServeHTTP(rec, req)
+	}
+	if got := len(w.ch); got != 1 {
+		t.Fatalf("排除路径不应记录日志，未排除路径应记录 1 条，实际 %d 条", got)
 	}
 }

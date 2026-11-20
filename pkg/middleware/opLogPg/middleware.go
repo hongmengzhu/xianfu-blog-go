@@ -6,11 +6,13 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 	"unicode/utf8"
 
 	"github.com/gin-gonic/gin"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constContextPg"
+	"github.com/hongmengzhu/xianfu-blog-go/pkg/core/consts/constModulePg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityBasic"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/sdk/auth/holderPg/holderApiPg"
@@ -39,7 +41,18 @@ func TraceID(ctx *gin.Context) string {
 // Global 全局操作日志中间件：每个请求记录一条操作日志。
 // 必须在注册路由前 Use。
 func Global() gin.HandlerFunc {
+	return (&Middleware{}).Global()
+}
+
+// Global 返回使用当前配置的全局操作日志中间件。
+// 配置中的 exclude 命中路径时直接放行，不记录日志。
+func (m *Middleware) Global() gin.HandlerFunc {
+	matcher := newPathMatcher(m.Config.Exclude)
 	return func(c *gin.Context) {
+		if matcher.Match(c.Request.URL.Path) {
+			c.Next()
+			return
+		}
 		traceID := sanitizeTraceID(c.GetHeader("x-request-id"))
 		if traceID == "" {
 			traceID = trace.GenerateTraceID()
@@ -74,7 +87,7 @@ func record(c *gin.Context, traceID, body string, statusCode int) {
 	}
 	id := resolveIdentity(c)
 	path := c.Request.URL.Path
-	moduleRoot, module, action := deriveRoute(path)
+	moduleRoot, module, moduleName, action, actionName := deriveModuleAction(path)
 	if id.typeDomain == "" {
 		id.typeDomain = deriveTypeDomain(path)
 	}
@@ -90,10 +103,10 @@ func record(c *gin.Context, traceID, body string, statusCode int) {
 		Client:          truncate(id.Client, 80),
 		DeviceNo:        truncate(id.DeviceNo, 80),
 		Module:          truncate(module, 80),
-		ModuleName:      truncate(module, 120),
+		ModuleName:      truncate(moduleName, 120),
 		ModuleRoot:      truncate(moduleRoot, 80),
 		Action:          truncate(action, 80),
-		ActionName:      truncate(action, 80),
+		ActionName:      truncate(actionName, 80),
 		OperatorNo:      truncate(id.operatorNo, 80),
 		OperatorAccount: truncate(id.operatorAccount, 120),
 		OperatorName:    truncate(id.operatorName, 120),
@@ -420,4 +433,93 @@ func truncate(s string, n int) string {
 		s = s[:len(s)-1]
 	}
 	return s
+}
+
+// moduleIndexOnce 模块索引只构建一次，避免每次请求遍历 ModuleMap。
+var (
+	moduleIndexOnce sync.Once
+	moduleIndex     map[string]constModulePg.Item
+)
+
+// deriveModuleAction 优先按 constModulePg 解析模块，动作按 MatchActionMap 推导；
+// 模块未登记时退回路径推导，动作仍按 MatchActionMap 匹配。
+func deriveModuleAction(path string) (root, module, moduleName, action, actionName string) {
+	if item, act, ok := resolveModule(path); ok {
+		action, actionName = matchAction(act)
+		return item.ModuleRoot, item.Module, item.Name, action, actionName
+	}
+	root, module, rawAction := deriveRoute(path)
+	action, actionName = matchAction(rawAction)
+	return root, module, module, action, actionName
+}
+
+// resolveModule 按路由中的 <domain>/<resource> 查 constModulePg.ModuleMap，动作取路由最后一段。
+func resolveModule(path string) (constModulePg.Item, string, bool) {
+	segs := splitPath(path)
+	if len(segs) < 3 {
+		return constModulePg.Item{}, "", false
+	}
+	var key, action string
+	switch {
+	case segs[0] == "xianfu" && len(segs) >= 5:
+		key, action = segs[2]+"/"+segs[3], segs[len(segs)-1]
+	case strings.HasPrefix(segs[0], "api-") && len(segs) >= 3:
+		key, action = "api/"+segs[1], segs[len(segs)-1]
+	default:
+		key, action = segs[len(segs)-3]+"/"+segs[len(segs)-2], segs[len(segs)-1]
+	}
+	item, ok := lookupModule(key)
+	return item, action, ok
+}
+
+// lookupModule 忽略大小写、- 和 _ 查模块；PathMark 用于路由与模块编码不一致的场景。
+func lookupModule(key string) (constModulePg.Item, bool) {
+	moduleIndexOnce.Do(func() {
+		moduleIndex = make(map[string]constModulePg.Item, len(constModulePg.ModuleMap)*2)
+		for path, item := range constModulePg.ModuleMap {
+			moduleIndex[normalizeModuleKey(path)] = item
+			for _, mark := range item.PathMark {
+				moduleIndex[normalizeModuleKey(mark)] = item
+			}
+		}
+	})
+	item, ok := moduleIndex[normalizeModuleKey(key)]
+	return item, ok
+}
+
+func normalizeModuleKey(key string) string {
+	key = strings.ToLower(strings.TrimSpace(key))
+	key = strings.ReplaceAll(key, "-", "")
+	key = strings.ReplaceAll(key, "_", "")
+	return strings.Trim(key, "/")
+}
+
+// matchAction 解析动作名：先精确匹配 MatchActionMap，再按 Prefix 取最长前缀，
+// 未登记的动作保留原始动作名。
+func matchAction(action string) (string, string) {
+	action = strings.TrimSpace(action)
+	if action == "" {
+		return "", ""
+	}
+	if m, ok := MatchActionMap[action]; ok {
+		return m.Action, m.ActionName
+	}
+	bestLen := 0
+	var best Match
+	found := false
+	for _, m := range MatchActionMap {
+		for _, prefix := range m.Prefix {
+			prefix = strings.TrimSpace(prefix)
+			if prefix == "" || len(prefix) <= bestLen {
+				continue
+			}
+			if action == prefix || strings.HasPrefix(action, prefix) {
+				best, bestLen, found = m, len(prefix), true
+			}
+		}
+	}
+	if found {
+		return best.Action, best.ActionName
+	}
+	return action, action
 }
