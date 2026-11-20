@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -74,12 +75,7 @@ func accountRoles(info *entityRam.RamAccountEntity) []string {
 }
 
 func hasAdministrator(roles []string) bool {
-	for _, role := range roles {
-		if role == "administrator" {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(roles, "administrator")
 }
 
 func accountAuthCodes(roles []string) []string {
@@ -116,7 +112,7 @@ func (c *AccountLoginService) Login(ctx *gin.Context, ct modRamLogin.LoginManage
 	}
 	pwd := ct.Password
 	log.Info(context.Background(), log.TagAppDef, "authLogin", log.Any("authLogin", c.authLogin))
-	//解密密码
+	// 解密密码
 	if logingEn, ok := c.authLogin.LoginEncrypt["default"]; ok && logingEn {
 		login := c.cacheSessionPubPrive.DecodeByLoginManage(ctx, pwd, clientPg.Browser, ct.OrgCode)
 		if login.ErrorIs() {
@@ -150,18 +146,18 @@ func (c *AccountLoginService) Login(ctx *gin.Context, ct modRamLogin.LoginManage
 	}
 	loginLimitPg.Reset(limitKey)
 	//
-	//租户默认
+	// 租户默认
 	mult := multiTenantPg.MultiTenantPg{
 		TenantNo: make([]string, 0),
 	}
 	mult.TenantNo = append(mult.TenantNo, info.TenantNo)
-	//生成 token
+	// 生成 token
 	token := c.MakeToken(ctx, mult, info, tp, client, true)
 	if token.ErrorIs() {
 		return rt.ErrorMessage(token.Message)
 	}
 	dataToken := token.Data
-	//记录登录日志
+	// 记录登录日志
 	c.loginLogSave(ctx, info)
 	//
 	successInfo := modRamLogin.LoginSuccessInfo{
@@ -206,11 +202,11 @@ func (c *AccountLoginService) LoginBySystem(ctx *gin.Context, ct modRamLogin.Log
 	}
 	pwd := ct.Password
 	log.Info(context.Background(), log.TagAppDef, "authLogin", log.Any("authLogin", c.authLogin))
-	//解密密码
+	// 解密密码
 	if logingEn, ok := c.authLogin.LoginEncrypt["default"]; ok && logingEn {
 		login := c.cacheSessionPubPrive.DecodeByLoginSystem(ctx, pwd)
 		if login.ErrorIs() {
-			//兼容历史前端：旧版 /xianfu/pub/config 默认返回管理域公钥，客户端仍用它加密
+			// 兼容历史前端：旧版 /xianfu/pub/config 默认返回管理域公钥，客户端仍用它加密
 			legacy := c.cacheSessionPubPrive.DecodeByLoginManage(ctx, pwd, clientPg.Browser, constsPg.ACCOUNT_MANAGE_No)
 			if legacy.ErrorIs() {
 				return rt.ErrorMessage(login.Message)
@@ -247,18 +243,18 @@ func (c *AccountLoginService) LoginBySystem(ctx *gin.Context, ct modRamLogin.Log
 	}
 	loginLimitPg.Reset(limitKey)
 	//
-	//租户默认
+	// 租户默认
 	mult := multiTenantPg.MultiTenantPg{
 		TenantNo: make([]string, 0),
 	}
 	mult.TenantNo = append(mult.TenantNo, tp.Code())
-	//生成 token
+	// 生成 token
 	token := c.MakeToken(ctx, mult, info, tp, client, true)
 	if token.ErrorIs() {
 		return rt.ErrorMessage(token.Message)
 	}
 	dataToken := token.Data
-	//记录登录日志
+	// 记录登录日志
 	c.loginLogSave(ctx, info)
 	//
 	successInfo := modRamLogin.LoginSuccessInfo{
@@ -293,7 +289,7 @@ func (c *AccountLoginService) loginLogSave(ctx *gin.Context, account *entityRam.
 	}
 	ua := ctx.GetHeader(constHeaderPg.HeaderUserAgent)
 	obj.ExtraData[constHeaderPg.HeaderUserAgent] = ua
-	//保存到数据库
+	// 保存到数据库
 	err := c.Bus.Publish(context.Background(), obj)
 	if err != nil {
 		log.Error(ctx, log.TagAppDef, err, "Bus.Publish err")
@@ -317,7 +313,7 @@ func (c *AccountLoginService) MakeToken(ctx *gin.Context,
 		privatePubKey.PrivateKey = key.Private
 		privatePubKey.PublicKey = key.Public
 	}
-	//生成 令牌
+	// 生成 令牌
 	param := authTokenPg.Param{
 		UniqueId:    strPg.GenerateNumberId22(),
 		MultiTenant: mult,
@@ -334,7 +330,7 @@ func (c *AccountLoginService) MakeToken(ctx *gin.Context,
 	}
 	tokenResult := ret.Data
 	token.Access = tokenResult.Token
-	//刷新 token
+	// 刷新 token
 	if makeRefresh {
 		{
 			//
@@ -345,7 +341,7 @@ func (c *AccountLoginService) MakeToken(ctx *gin.Context,
 				privatePubKey2.PrivateKey = key2.Private
 				privatePubKey2.PublicKey = key2.Public
 			}
-			//生成 令牌
+			// 生成 令牌
 			param = authTokenPg.Param{
 				UniqueId:    strPg.GenerateNumberId22(),
 				MultiTenant: mult,

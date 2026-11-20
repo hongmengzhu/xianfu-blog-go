@@ -78,32 +78,17 @@ func record(c *gin.Context, traceID, body string, statusCode int) {
 	if id.typeDomain == "" {
 		id.typeDomain = deriveTypeDomain(path)
 	}
-	terminalCode := headerValue(c, "terminal-code", "x-terminal-code", "terminal")
-	if terminalCode == "" {
-		terminalCode = deriveTerminalCode(path)
-	}
-	appNo := headerValue(c, "app-no", "x-app-no")
-	deviceNo := headerValue(c, "device-no", "x-device-no", "deviceNo")
-	storeNo := headerValue(c, "store-no", "x-store-no")
-	if storeNo == "" {
-		storeNo = id.storeNo
-	}
-	client := headerValue(c, "client", "x-client")
-	if client == "" {
-		client = truncate(c.Request.UserAgent(), 80)
-	}
-
 	now := time.Now()
 	entity := &entityBasic.BasicOperationLogEntity{
 		No:              noPg.MakeNo("AL"),
 		TenantNo:        truncate(id.tenantNo, 80),
 		OrgNo:           truncate(id.orgNo, 80),
-		StoreNo:         truncate(storeNo, 80),
+		StoreNo:         truncate(id.storeNo, 80),
 		TypeDomain:      truncate(id.typeDomain, 40),
-		AppNo:           truncate(appNo, 80),
-		TerminalCode:    truncate(terminalCode, 80),
-		Client:          truncate(client, 80),
-		DeviceNo:        truncate(deviceNo, 80),
+		AppNo:           truncate(id.AppNo, 80),
+		TerminalCode:    truncate(id.TerminalCode, 80),
+		Client:          truncate(id.Client, 80),
+		DeviceNo:        truncate(id.DeviceNo, 80),
 		Module:          truncate(module, 80),
 		ModuleName:      truncate(module, 120),
 		ModuleRoot:      truncate(moduleRoot, 80),
@@ -136,6 +121,10 @@ type requestIdentity struct {
 	operatorAccount string
 	operatorName    string
 	roles           []string
+	TerminalCode    string
+	Client          string
+	AppNo           string
+	DeviceNo        string
 }
 
 // resolveIdentity 从 manage/system（AUTH_LOGIN）或开放 API（AUTH_LOGIN_API）上下文读取身份。
@@ -162,6 +151,20 @@ func resolveIdentity(c *gin.Context) requestIdentity {
 			if len(acc.Os.Roles) > 0 {
 				id.roles = append(id.roles, acc.Os.Roles...)
 			}
+			{
+				if v2, ok2 := c.Get(constContextPg.AUTH_TerminalCode); ok2 {
+					id.TerminalCode = v2.(string)
+				}
+				if v2, ok2 := c.Get(constContextPg.AUTH_Client); ok2 {
+					id.Client = v2.(string)
+				}
+				if v2, ok2 := c.Get(constContextPg.AUTH_AppNo); ok2 {
+					id.AppNo = v2.(string)
+				}
+				if v2, ok2 := c.Get(constContextPg.AUTH_DeviceNo); ok2 {
+					id.DeviceNo = v2.(string)
+				}
+			}
 			return id
 		}
 	}
@@ -180,6 +183,20 @@ func resolveIdentity(c *gin.Context) requestIdentity {
 			id.operatorNo = d.Ano
 			id.operatorAccount = d.Ano
 			id.operatorName = d.Name
+		}
+	}
+	{
+		if v2, ok2 := c.Get(constContextPg.AUTH_TerminalCode); ok2 {
+			id.TerminalCode = v2.(string)
+		}
+		if v2, ok2 := c.Get(constContextPg.AUTH_Client); ok2 {
+			id.Client = v2.(string)
+		}
+		if v2, ok2 := c.Get(constContextPg.AUTH_AppNo); ok2 {
+			id.AppNo = v2.(string)
+		}
+		if v2, ok2 := c.Get(constContextPg.AUTH_DeviceNo); ok2 {
+			id.DeviceNo = v2.(string)
 		}
 	}
 	return id
@@ -288,8 +305,7 @@ func headerJSON(h http.Header) string {
 
 func isSensitiveHeader(k string) bool {
 	switch strings.ToLower(k) {
-	case "authorization", "authorization-sys", "authorization-refresh", "authorization-refresh-sys",
-		"proxy-authorization", "cookie", "set-cookie", "token", "x-token", "auth", "x-api-key", "api-key":
+	case "user-agent":
 		return true
 	}
 	return false
