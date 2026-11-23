@@ -23,7 +23,8 @@ func (c *StartInit) Processor(ctx context.Context) error {
 	//保存到数据库
 	{
 		if c.Bus == nil {
-			log.Error(ctx, log.TagAppDef, nil, "c.Bus 不存在～～～～～～～～～～～～")
+			// Bus 未注入时直接跳过，避免后续对 nil 调用 Publish 触发 panic
+			return nil
 		}
 		err := c.Bus.Publish(context.Background(), modEventBasicEvent.EventDto{
 			IsAll: true,
