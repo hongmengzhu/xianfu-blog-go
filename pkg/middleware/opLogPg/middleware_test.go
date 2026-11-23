@@ -123,6 +123,27 @@ func TestShouldSkip(t *testing.T) {
 	}
 }
 
+func TestShouldRecordMethod(t *testing.T) {
+	cases := []struct {
+		method      string
+		includeRead bool
+		want        bool
+	}{
+		{http.MethodGet, false, false},
+		{http.MethodHead, false, false},
+		{http.MethodPost, false, true},
+		{http.MethodPut, false, true},
+		{http.MethodPatch, false, true},
+		{http.MethodDelete, false, true},
+		{http.MethodGet, true, true},
+	}
+	for _, tc := range cases {
+		if got := shouldRecordMethod(tc.method, tc.includeRead); got != tc.want {
+			t.Fatalf("shouldRecordMethod(%s, %v) = %v，期望 %v", tc.method, tc.includeRead, got, tc.want)
+		}
+	}
+}
+
 func TestDeriveRoute(t *testing.T) {
 	cases := []struct {
 		path                 string
@@ -244,7 +265,7 @@ func TestGlobalSkipsExcludedPath(t *testing.T) {
 	t.Cleanup(func() { defaultWriter.Store(nil) })
 
 	r := gin.New()
-	mw := &Middleware{Config: Config{Exclude: []string{"/xianfu/pub/*", "/xianfu/auth/**"}}}
+	mw := &Middleware{Config: Config{Exclude: []string{"/xianfu/pub/*", "/xianfu/auth/**"}, IncludeRead: true}}
 	r.Use(mw.Global())
 	for _, path := range []string{"/xianfu/pub/login", "/xianfu/auth/login", "/xianfu/manage/account/query"} {
 		r.GET(path, func(c *gin.Context) { c.Status(http.StatusOK) })
@@ -256,5 +277,27 @@ func TestGlobalSkipsExcludedPath(t *testing.T) {
 	}
 	if got := len(w.ch); got != 1 {
 		t.Fatalf("排除路径不应记录日志，未排除路径应记录 1 条，实际 %d 条", got)
+	}
+}
+
+func TestGlobalSkipsReadByDefault(t *testing.T) {
+	w := &Writer{ch: make(chan *entityBasic.BasicOperationLogEntity, 8)}
+	defaultWriter.Store(w)
+	t.Cleanup(func() { defaultWriter.Store(nil) })
+
+	r := gin.New()
+	r.Use((&Middleware{}).Global())
+	ok := func(c *gin.Context) { c.Status(http.StatusOK) }
+	r.GET("/xianfu/manage/account/query", ok)
+	r.POST("/xianfu/manage/account/query", ok)
+
+	r.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, "/xianfu/manage/account/query", nil))
+	if got := len(w.ch); got != 0 {
+		t.Fatalf("默认配置下读请求不应记入操作日志，实际 %d 条", got)
+	}
+
+	r.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest(http.MethodPost, "/xianfu/manage/account/query", nil))
+	if got := len(w.ch); got != 1 {
+		t.Fatalf("默认配置下写请求应记录 1 条，实际 %d 条", got)
 	}
 }

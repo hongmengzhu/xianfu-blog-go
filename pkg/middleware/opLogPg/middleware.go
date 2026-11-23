@@ -45,11 +45,17 @@ func Global() gin.HandlerFunc {
 }
 
 // Global 返回使用当前配置的全局操作日志中间件。
-// 配置中的 exclude 命中路径时直接放行，不记录日志。
+// 配置中的 exclude 命中路径时直接放行，不记录日志；
+// 默认不记录读请求（见 Config.IncludeRead），只有写操作才入库。
 func (m *Middleware) Global() gin.HandlerFunc {
 	matcher := newPathMatcher(m.Config.Exclude)
+	includeRead := m.Config.IncludeRead
 	return func(c *gin.Context) {
 		if matcher.Match(c.Request.URL.Path) {
+			c.Next()
+			return
+		}
+		if !shouldRecordMethod(c.Request.Method, includeRead) {
 			c.Next()
 			return
 		}
@@ -333,6 +339,21 @@ func isSensitiveHeaderUserAgent(k string) bool {
 		return true
 	}
 	return false
+}
+
+// shouldRecordMethod 判断当前请求是否需要记入操作日志。
+// 默认只记录有副作用的写操作；读请求（GET/HEAD）仅有在配置显式开启时才记录，
+// 避免列表/详情接口与页面浏览把操作日志表写满。
+func shouldRecordMethod(method string, includeRead bool) bool {
+	if includeRead {
+		return true
+	}
+	switch method {
+	case http.MethodGet, http.MethodHead:
+		return false
+	default:
+		return true
+	}
 }
 
 // shouldSkip 过滤静态资源与预检请求，避免操作日志被资源请求淹没。

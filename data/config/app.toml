@@ -186,7 +186,11 @@ theme = "bookmark"
 default = true
 # 操作日志配置
 [pg.operationLog]
+# 不记录日志的 URL 前缀（* 匹配单段，** 匹配任意段）。
 exclude = ["/xianfu/pub/*","/xianfu/auth/**"]
+# 默认只记录写操作（POST/PUT/PATCH/DELETE 等），读请求（GET/HEAD）不记录，
+# 避免列表/详情接口与页面浏览把操作日志表写满；需要审计读请求时改为 true。
+# includeRead = false
 
 # ================== 日志配置 ==================
 # go-spring 只读取 logging.* 前缀下的配置（前缀在加载时会被剥离），
