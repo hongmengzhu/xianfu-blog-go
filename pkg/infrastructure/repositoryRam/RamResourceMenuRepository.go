@@ -6,6 +6,7 @@ import (
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/infrastructure/entityRam"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/repositoryPg"
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/tools/dbHelper/support"
+	"go-spring.org/log"
 	"go-spring.org/spring/gs"
 )
 
@@ -20,6 +21,10 @@ type RamResourceMenuRepository struct {
 	//
 }
 
-func (c *RamResourceMenuRepository) DeleteByMenuId(ctx context.Context, code int64) {
-	c.DbModel().WithContext(ctx).Where("menu_id=?", code).Delete(&entityRam.RamResourceMenuEntity{})
+func (c *RamResourceMenuRepository) DeleteByMenuId(ctx context.Context, code int64) error {
+	tx := c.DbModel().WithContext(ctx).Where("menu_id=?", code).Delete(&entityRam.RamResourceMenuEntity{})
+	if tx.Error != nil {
+		log.Error(ctx, log.TagAppDef, tx.Error, "RamResourceMenu.DeleteByMenuId failed")
+	}
+	return tx.Error
 }

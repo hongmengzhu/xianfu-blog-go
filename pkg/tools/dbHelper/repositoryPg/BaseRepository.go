@@ -57,6 +57,8 @@ type IRepository[T any, ID genericPg.ID] interface {
 }
 
 type BaseRepository[T any, ID genericPg.ID] struct {
+	// Entity 已废弃：旧实现会对该字段做惰性写入，共享 Bean 并发复用时构成数据竞争；
+	// 现各方法改用局部 new(T) 建模，这里仅为兼容旧代码保留声明。
 	Entity *T
 	//从内部
 	DbManger *dbManagerPg.Manager `autowire:"?"`
@@ -75,10 +77,9 @@ func (b *BaseRepository[T, ID]) DbSource() *gorm.DB {
 	return b.DbManger.Db()
 }
 func (b *BaseRepository[T, ID]) DbModel() *gorm.DB {
-	if b.Entity == nil {
-		b.Entity = new(T)
-	}
-	return b.DbScopes().Model(b.Entity)
+	// 用局部零值实体建模，不再对共享单例的 Entity 字段做惰性写入：
+	// 同一个 repository Bean 被多个请求并发复用时，旧写法的首次赋值会构成数据竞争。
+	return b.DbScopes().Model(new(T))
 }
 
 func (b *BaseRepository[T, ID]) SetOptionScopes(db *gorm.DB, opts ...optionsPg.Option) *gorm.DB {
@@ -104,9 +105,12 @@ func (b *BaseRepository[T, ID]) SetOptionScopes(db *gorm.DB, opts ...optionsPg.O
 		//log.Error(ctx, log.TagAppDef,"exists=xxxxxxx=%+v", exists)
 		if exists {
 			//解析表名称
-			err := arg.Db.Statement.Parse(b.Entity)
-			if err != nil {
-				log.Error(arg.Ctx, log.TagAppDef, err, "failed to parse table namev")
+			if err := arg.Db.Statement.Parse(new(T)); err != nil {
+				log.Error(arg.Ctx, log.TagAppDef, err, "failed to parse table name")
+				// 解析失败时 Statement.Schema 为空，继续访问 Schema.Table 会触发空指针；
+				// 把错误挂到会话上，让后续查询显式失败，而不是崩溃或绕过租户过滤。
+				_ = arg.Db.AddError(err)
+				return arg.Db
 			}
 			return arg.Db.Scopes(multiTenantPg.ScopeRulePgWhere(arg.Ctx, arg.Db.Statement.Schema.Table))
 		}
@@ -131,9 +135,10 @@ func (b *BaseRepository[T, ID]) SetOptionPgScopes(db *gorm.DB, opts ...optionsPg
 		//log.Error(ctx, log.TagAppDef,"exists=xxxxxxx=%+v", exists)
 		if exists {
 			//解析表名称
-			err := arg.Db.Statement.Parse(b.Entity)
-			if err != nil {
+			if err := arg.Db.Statement.Parse(new(T)); err != nil {
 				log.Error(arg.Ctx, log.TagAppDef, err, "failed to parse table name")
+				_ = arg.Db.AddError(err)
+				return arg.Db, arg
 			}
 			return arg.Db.Scopes(multiTenantPg.ScopeRulePgWhere(arg.Ctx, arg.Db.Statement.Schema.Table)), arg
 		}
@@ -267,7 +272,7 @@ func (b *BaseRepository[T, ID]) UpdateAll(ctx context.Context, ts []*T, opts ...
 }
 
 func (b *BaseRepository[T, ID]) DeleteById(ctx context.Context, id ID, opts ...optionsPg.Option) error {
-	tx := b.SetOptionScopes(b.DbModel().WithContext(ctx), opts...).Delete(&b.Entity, id)
+	tx := b.SetOptionScopes(b.DbModel().WithContext(ctx), opts...).Delete(new(T), id)
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
@@ -279,7 +284,7 @@ func (b *BaseRepository[T, ID]) DeleteById(ctx context.Context, id ID, opts ...o
 }
 
 func (b *BaseRepository[T, ID]) DeleteByIds(ctx context.Context, id []ID, opts ...optionsPg.Option) error {
-	tx := b.SetOptionScopes(b.DbModel().WithContext(ctx), opts...).Delete(&b.Entity, id)
+	tx := b.SetOptionScopes(b.DbModel().WithContext(ctx), opts...).Delete(new(T), id)
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
@@ -291,7 +296,7 @@ func (b *BaseRepository[T, ID]) DeleteByIds(ctx context.Context, id []ID, opts .
 }
 
 func (b *BaseRepository[T, ID]) DeleteByIdsString(ctx context.Context, id []string, opts ...optionsPg.Option) error {
-	tx := b.SetOptionScopes(b.DbModel().WithContext(ctx), opts...).Delete(&b.Entity, id)
+	tx := b.SetOptionScopes(b.DbModel().WithContext(ctx), opts...).Delete(new(T), id)
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
@@ -303,7 +308,7 @@ func (b *BaseRepository[T, ID]) DeleteByIdsString(ctx context.Context, id []stri
 }
 
 func (b *BaseRepository[T, ID]) DeleteAllByTenantNoAndIdsString(ctx context.Context, tenantNo string, id []string, opts ...optionsPg.Option) error {
-	tx := b.SetOptionScopes(b.DbModel().WithContext(ctx), opts...).Where("tenant_no = ?", tenantNo).Delete(&b.Entity, id)
+	tx := b.SetOptionScopes(b.DbModel().WithContext(ctx), opts...).Where("tenant_no = ?", tenantNo).Delete(new(T), id)
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
@@ -315,7 +320,7 @@ func (b *BaseRepository[T, ID]) DeleteAllByTenantNoAndIdsString(ctx context.Cont
 }
 
 func (b *BaseRepository[T, ID]) DeleteByNo(ctx context.Context, no string, opts ...optionsPg.Option) error {
-	tx := b.SetOptionScopes(b.DbModel().WithContext(ctx), opts...).Where("no = ?", no).Delete(&b.Entity)
+	tx := b.SetOptionScopes(b.DbModel().WithContext(ctx), opts...).Where("no = ?", no).Delete(new(T))
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
@@ -335,7 +340,7 @@ func (b *BaseRepository[T, ID]) DeleteByCondition(ctx context.Context, t *T, opt
 			where = item(where)
 		}
 	}
-	tx := where.Delete(&b.Entity)
+	tx := where.Delete(new(T))
 	if tx.Error != nil {
 		// record not found 跳过日志
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
@@ -870,6 +875,9 @@ func (b *BaseRepository[T, ID]) Exist(ctx context.Context, t T, arg ...any) bool
 	}
 	tx := where.Count(&cnt)
 	if tx.Error != nil {
+		// 这里返回 false 表示"查不到"，但底层可能是连接/超时等故障，
+		// 至少要把错误记进日志，避免故障被当成"数据不存在"静默吞掉。
+		log.Error(ctx, log.TagAppDef, tx.Error, "Exist count failed")
 		return false
 	}
 	return cnt > 0

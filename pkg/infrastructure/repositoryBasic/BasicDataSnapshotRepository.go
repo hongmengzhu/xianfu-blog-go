@@ -44,7 +44,7 @@ func (c *BasicDataSnapshotRepository) SnapshotVersion(ctx context.Context, obj i
 		log.Error(ctx, log.TagAppDef, err, "snapshot version error:")
 	} else {
 		mark := value + "|" + value
-		c.Create(ctx, &entityBasic.BasicDataSnapshotEntity{
+		snapshot := &entityBasic.BasicDataSnapshotEntity{
 			Module:   module,
 			Data:     toJson,
 			Mark:     mark,
@@ -53,7 +53,10 @@ func (c *BasicDataSnapshotRepository) SnapshotVersion(ctx context.Context, obj i
 			Value:    value,
 			Version:  version,
 			Extend:   extend,
-		})
+		}
+		if e, _ := c.Create(ctx, snapshot); e != nil {
+			log.Error(ctx, log.TagAppDef, e, "snapshot version create error:")
+		}
 	}
 }
 
@@ -63,7 +66,7 @@ func (c *BasicDataSnapshotRepository) SnapshotVersionAll(ctx context.Context, ob
 		log.Error(ctx, log.TagAppDef, err, "snapshot version error:")
 	} else {
 		mark := value + "|" + value
-		c.Create(ctx, &entityBasic.BasicDataSnapshotEntity{
+		snapshot := &entityBasic.BasicDataSnapshotEntity{
 			Module:   module,
 			Data:     toJson,
 			Mark:     mark,
@@ -72,6 +75,9 @@ func (c *BasicDataSnapshotRepository) SnapshotVersionAll(ctx context.Context, ob
 			Value:    value,
 			Version:  version,
 			Extend:   extend,
-		})
+		}
+		if e, _ := c.Create(ctx, snapshot); e != nil {
+			log.Error(ctx, log.TagAppDef, e, "snapshot version create error:")
+		}
 	}
 }

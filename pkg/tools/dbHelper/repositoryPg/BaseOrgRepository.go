@@ -17,6 +17,8 @@ import (
 )
 
 type BaseOrgRepository[T any, ID genericPg.ID] struct {
+	// Entity 已废弃：旧实现会对该字段做惰性写入，共享 Bean 并发复用时构成数据竞争；
+	// 现各方法改用局部 new(T) 建模，这里仅为兼容旧代码保留声明。
 	Entity *T
 	//从内部
 	db *gorm.DB    `autowire:"?"`
@@ -35,7 +37,7 @@ func (b *BaseOrgRepository[T, ID]) DbSource() *gorm.DB {
 	return b.db
 }
 func (b *BaseOrgRepository[T, ID]) DbModel() *gorm.DB {
-	return b.DbScopes().Model(b.Entity)
+	return b.DbScopes().Model(new(T))
 }
 func (b *BaseOrgRepository[T, ID]) SetOptionScopes(db *gorm.DB, opts ...optionsPg.Option) *gorm.DB {
 	arg := optionsPg.OptionParams{
@@ -55,7 +57,12 @@ func (b *BaseOrgRepository[T, ID]) SetOptionScopes(db *gorm.DB, opts ...optionsP
 		//log.Error(ctx, log.TagAppDef,"exists=xxxxxxx=%+v", exists)
 		if exists {
 			//解析表名称
-			arg.Db.Statement.Parse(b.Entity)
+			if err := arg.Db.Statement.Parse(new(T)); err != nil {
+				log.Error(arg.Ctx, log.TagAppDef, err, "failed to parse table name")
+				// 解析失败时 Statement.Schema 为空，继续访问 Schema.Table 会触发空指针
+				_ = arg.Db.AddError(err)
+				return arg.Db
+			}
 			return arg.Db.Scopes(multiTenantPg.ScopeRulePgWhere(arg.Ctx, arg.Db.Statement.Schema.Table))
 		}
 	}
@@ -77,7 +84,11 @@ func (b *BaseOrgRepository[T, ID]) SetOptionPgScopes(db *gorm.DB, opts ...option
 		//log.Error(ctx, log.TagAppDef,"exists=xxxxxxx=%+v", exists)
 		if exists {
 			//解析表名称
-			arg.Db.Statement.Parse(b.Entity)
+			if err := arg.Db.Statement.Parse(new(T)); err != nil {
+				log.Error(arg.Ctx, log.TagAppDef, err, "failed to parse table name")
+				_ = arg.Db.AddError(err)
+				return arg.Db, arg
+			}
 			return arg.Db.Scopes(multiTenantPg.ScopeRulePgWhere(arg.Ctx, arg.Db.Statement.Schema.Table)), arg
 		}
 	}
@@ -124,7 +135,7 @@ func (b *BaseOrgRepository[T, ID]) Update(ctx context.Context, info T, id ID, op
 
 // Update 更新 更新属性，只会更新非零值的字段
 func (b *BaseOrgRepository[T, ID]) UpdatePointer(ctx context.Context, info T, id ID) error {
-	result := b.Db().WithContext(ctx).Model(b.Entity).Where("id=?", id).Updates(info)
+	result := b.Db().WithContext(ctx).Model(new(T)).Where("id=?", id).Updates(info)
 	if result.Error != nil {
 		//log.Fatal("failed to connect database")
 		return result.Error
@@ -134,7 +145,7 @@ func (b *BaseOrgRepository[T, ID]) UpdatePointer(ctx context.Context, info T, id
 
 // UpdatePointerObject 更新  更新属性，只会更新非零值的字段
 func (b *BaseOrgRepository[T, ID]) UpdatePointerObject(ctx context.Context, info any, id ID) error {
-	result := b.Db().WithContext(ctx).Model(b.Entity).Where("id=?", id).Updates(info)
+	result := b.Db().WithContext(ctx).Model(new(T)).Where("id=?", id).Updates(info)
 	if result.Error != nil {
 		//log.Fatal("failed to connect database")
 		return result.Error
@@ -179,7 +190,7 @@ func (b *BaseOrgRepository[T, ID]) UpdateAll(ctx context.Context, ts []*T, opts 
 }
 
 func (b *BaseOrgRepository[T, ID]) DeleteById(ctx context.Context, id ID, opts ...optionsPg.Option) error {
-	tx := b.SetOptionScopes(b.DbModel().WithContext(ctx), opts...).Delete(&b.Entity, id)
+	tx := b.SetOptionScopes(b.DbModel().WithContext(ctx), opts...).Delete(new(T), id)
 	if tx.Error != nil {
 		return tx.Error
 	}
@@ -187,22 +198,14 @@ func (b *BaseOrgRepository[T, ID]) DeleteById(ctx context.Context, id ID, opts .
 }
 
 func (b *BaseOrgRepository[T, ID]) DeleteByIds(ctx context.Context, id []ID, opts ...optionsPg.Option) error {
-	if nil != opts {
-		tx := b.DbModel().WithContext(ctx).Delete(&b.Entity, id)
-		if tx.Error != nil {
-			return tx.Error
-		}
-	} else {
-		tx := b.SetOptionScopes(b.DbModel().WithContext(ctx), opts...).Delete(&b.Entity, id)
-		if tx.Error != nil {
-			return tx.Error
-		}
-	}
-	return nil
+	// 旧实现把分支写反了：传了 opts 反而走不带 scopes 的分支，
+	// 导致多租户过滤被跳过；这里统一走 SetOptionScopes。
+	tx := b.SetOptionScopes(b.DbModel().WithContext(ctx), opts...).Delete(new(T), id)
+	return tx.Error
 }
 
 func (b *BaseOrgRepository[T, ID]) DeleteByIdsString(ctx context.Context, id []string, opts ...optionsPg.Option) error {
-	tx := b.SetOptionScopes(b.DbModel().WithContext(ctx), opts...).Delete(&b.Entity, id)
+	tx := b.SetOptionScopes(b.DbModel().WithContext(ctx), opts...).Delete(new(T), id)
 	if tx.Error != nil {
 		return tx.Error
 	}
@@ -210,7 +213,7 @@ func (b *BaseOrgRepository[T, ID]) DeleteByIdsString(ctx context.Context, id []s
 }
 
 func (b *BaseOrgRepository[T, ID]) DeleteAllByTenantNoAndIdsString(ctx context.Context, tenantNo string, id []string, opts ...optionsPg.Option) error {
-	tx := b.SetOptionScopes(b.DbModel().WithContext(ctx), opts...).Where("tenant_no = ?", tenantNo).Delete(&b.Entity, id)
+	tx := b.SetOptionScopes(b.DbModel().WithContext(ctx), opts...).Where("tenant_no = ?", tenantNo).Delete(new(T), id)
 	if tx.Error != nil {
 		return tx.Error
 	}
@@ -218,7 +221,7 @@ func (b *BaseOrgRepository[T, ID]) DeleteAllByTenantNoAndIdsString(ctx context.C
 }
 
 func (b *BaseOrgRepository[T, ID]) DeleteByNo(ctx context.Context, no string, opts ...optionsPg.Option) error {
-	tx := b.SetOptionScopes(b.DbModel().WithContext(ctx), opts...).Where("no = ?", no).Delete(&b.Entity)
+	tx := b.SetOptionScopes(b.DbModel().WithContext(ctx), opts...).Where("no = ?", no).Delete(new(T))
 	if tx.Error != nil {
 		return tx.Error
 	}

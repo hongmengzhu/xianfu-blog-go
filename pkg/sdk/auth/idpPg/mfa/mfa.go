@@ -3,6 +3,7 @@ package mfa
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"errors"
 	"fmt"
 )
 
@@ -26,6 +27,10 @@ type MfaInterface interface {
 	// Verify 验证 MFA 验证码
 	Verify(passcode string) error
 }
+
+// ErrChannelMfaUnavailable 表示短信/邮件验证码 MFA 还没有接入发送与校验通道。
+// 在拿到真实的短信网关/SMTP 发送能力之前，宁可明确拒绝，也不能把任意非空验证码当成通过。
+var ErrChannelMfaUnavailable = errors.New("短信/邮件验证码 MFA 尚未接入发送通道，暂不可用")
 
 // MFA 类型常量
 const (
