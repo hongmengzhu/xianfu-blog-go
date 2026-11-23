@@ -113,15 +113,16 @@ func (b *BaseCategoryRepository[T, ID]) Save(ctx context.Context, v *T, opts ...
 }
 
 // 保存
+// 批量写入：一条 INSERT ... ON CONFLICT DO UPDATE，避免逐条 Save。
 func (b *BaseCategoryRepository[T, ID]) SaveAll(ctx context.Context, ts []*T, opts ...optionsPg.Option) error {
-	if ts != nil && len(ts) > 0 {
-		for _, info := range ts {
-			if e := b.Save(ctx, info, opts...); e != nil {
-				return e
-			}
-		}
+	if len(ts) == 0 {
+		return nil
 	}
-	return nil
+	tx := b.SetOptionScopes(b.Db().WithContext(ctx), opts...).Save(&ts)
+	if tx.Error != nil {
+		log.Error(ctx, log.TagAppDef, tx.Error, "SaveAll failed")
+	}
+	return tx.Error
 }
 
 // Update 更新 更新属性，只会更新非零值的字段
@@ -170,11 +171,14 @@ func (b *BaseCategoryRepository[T, ID]) UpdateStructMap(ctx context.Context, inf
 
 // Update 更新
 func (b *BaseCategoryRepository[T, ID]) UpdateAll(ctx context.Context, ts []*T, opts ...optionsPg.Option) error {
-	if ts != nil && len(ts) > 0 {
-		for _, info := range ts {
-			if e := b.Save(ctx, info); e != nil {
-				return e
-			}
+	const batchSize = 100
+	for i := 0; i < len(ts); i += batchSize {
+		end := i + batchSize
+		if end > len(ts) {
+			end = len(ts)
+		}
+		if err := b.SaveAll(ctx, ts[i:end], opts...); err != nil {
+			return err
 		}
 	}
 	return nil

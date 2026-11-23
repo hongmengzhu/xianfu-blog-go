@@ -175,15 +175,17 @@ func (b *BaseRepository[T, ID]) Save(ctx context.Context, v *T, opts ...optionsP
 }
 
 // SaveAll 保存
+// 批量写入：PostgreSQL 下生成一条 INSERT ... ON CONFLICT (主键) DO UPDATE SET ...，
+// 由数据库一次性完成插入/更新，避免循环里逐条 Save。
 func (b *BaseRepository[T, ID]) SaveAll(ctx context.Context, ts []*T, opts ...optionsPg.Option) error {
-	if ts != nil && len(ts) > 0 {
-		for _, info := range ts {
-			if e := b.Save(ctx, info, opts...); e != nil {
-				return e
-			}
-		}
+	if len(ts) == 0 {
+		return nil
 	}
-	return nil
+	tx := b.SetOptionScopes(b.Db().WithContext(ctx), opts...).Save(&ts)
+	if tx.Error != nil {
+		log.Error(ctx, log.TagAppDef, tx.Error, "SaveAll failed")
+	}
+	return tx.Error
 }
 
 // Update 更新 更新属性，只会更新非零值的字段
@@ -242,6 +244,21 @@ func (b *BaseRepository[T, ID]) UpdateMap(ctx context.Context, info map[string]a
 	return nil
 }
 
+// UpdateByIdIn 按主键集合批量更新（一条 UPDATE ... WHERE id IN (...)，只更新非零值字段）
+func (b *BaseRepository[T, ID]) UpdateByIdIn(ctx context.Context, info T, ids []ID, opts ...optionsPg.Option) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	result := b.SetOptionScopes(b.DbModel().WithContext(ctx), opts...).Where("id IN ?", ids).Updates(&info)
+	if result.Error != nil {
+		if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			log.Error(ctx, log.TagAppDef, result.Error, "UpdateByIdIn failed")
+		}
+		return result.Error
+	}
+	return nil
+}
+
 // UpdateStructMap 更新, 结构体转换为map，map里所有属性都会更新
 func (b *BaseRepository[T, ID]) UpdateStructMap(ctx context.Context, info any, id ID, opts ...optionsPg.Option) error {
 	toMap, err := convertor.StructToMap(info)
@@ -260,12 +277,16 @@ func (b *BaseRepository[T, ID]) UpdateStructMap(ctx context.Context, info any, i
 }
 
 // UpdateAll 更新
+// 批量 upsert：按主键冲突一次性写回，分片控制单条 SQL 的参数个数。
 func (b *BaseRepository[T, ID]) UpdateAll(ctx context.Context, ts []*T, opts ...optionsPg.Option) error {
-	if ts != nil && len(ts) > 0 {
-		for _, info := range ts {
-			if e := b.Save(ctx, info); e != nil {
-				return e
-			}
+	const batchSize = 100
+	for i := 0; i < len(ts); i += batchSize {
+		end := i + batchSize
+		if end > len(ts) {
+			end = len(ts)
+		}
+		if err := b.SaveAll(ctx, ts[i:end], opts...); err != nil {
+			return err
 		}
 	}
 	return nil

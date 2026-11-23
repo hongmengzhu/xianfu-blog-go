@@ -3,6 +3,7 @@ package table
 import (
 	"context"
 	"fmt"
+	"slices"
 	"time"
 
 	"github.com/hongmengzhu/xianfu-blog-go/pkg/configPg"
@@ -246,34 +247,28 @@ func (b *AInitTable) sqlBasicDictionary() {
 		{ID: 36, No: "36", Name: "系统", Code: "system", State: 1, TypeUniqueMd5: "54b53072540eeeb8f8e9343e71f28176", Value: "system", TypeCode: "terminalCode"},
 		{ID: 37, No: "37", Name: "管理", Code: "manage", State: 1, TypeUniqueMd5: "70682896e24287b0476eff2a14c148f0", Value: "manage", TypeCode: "terminalCode"},
 	}
-	err := b.Db().Transaction(func(tx *gorm.DB) error {
-		for i := range data {
-			item := data[i]
-			// 判断该主键数据是否已存在，存在则跳过，继续下一条
-			var count int64
-			if err := tx.Model(&entityBasic.BasicDataDictionaryEntity{}).Where("id = ?", item.ID).Count(&count).Error; err != nil {
-				log.Error(context.Background(), log.TagAppDef, err, "查询数据字典主键异常", log.Any("id", item.ID))
-				return err
-			}
-			if count > 0 {
-				log.Debug(context.Background(), log.TagAppDef, "数据字典主键 %d 已存在,跳过插入", func() []log.Field {
-					return []log.Field{log.Int("id", item.ID)}
-				})
-				continue
-			}
-			rs := tx.Create(&item)
-			if rs.Error != nil {
-				log.Error(context.Background(), log.TagAppDef, rs.Error, "初始化数据字典", log.Any("id", item.ID))
-				return rs.Error
-			}
-			log.Debug(context.Background(), log.TagAppDef, "数据字典主键执行结果", func() []log.Field {
-				return []log.Field{log.Int("id", item.ID), log.Any("rows_affected", rs.RowsAffected)}
-			})
+	ids := make([]int64, 0, len(data))
+	for i := range data {
+		ids = append(ids, data[i].ID)
+	}
+	// 一次查询已存在的主键，避免逐条 Count（23 次查询 -> 1 次）
+	existing := make([]int64, 0, len(data))
+	if err := b.Db().Model(&entityBasic.BasicDataDictionaryEntity{}).Where("id IN ?", ids).Pluck("id", &existing).Error; err != nil {
+		log.Error(context.Background(), log.TagAppDef, err, "查询数据字典主键异常")
+		return
+	}
+	missing := make([]*entityBasic.BasicDataDictionaryEntity, 0, len(data))
+	for i := range data {
+		if !slices.Contains(existing, data[i].ID) {
+			missing = append(missing, &data[i])
 		}
-		return nil
-	})
-	if err != nil {
-		log.Error(context.Background(), log.TagAppDef, err, "创建数据字典数据异常")
+	}
+	if len(missing) == 0 {
+		return
+	}
+	// 一批插入缺失的数据字典项，避免逐条 Create
+	if err := b.Db().CreateInBatches(&missing, 50).Error; err != nil {
+		log.Error(context.Background(), log.TagAppDef, err, "初始化数据字典")
 	}
 }
 

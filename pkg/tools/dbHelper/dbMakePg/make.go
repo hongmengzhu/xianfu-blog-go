@@ -3,6 +3,7 @@ package dbMakePg
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/duke-git/lancet/v2/datetime"
@@ -131,16 +132,23 @@ func SyncSequences(db *gorm.DB) error {
 	if "postgres" != db.Dialector.Name() {
 		return nil
 	}
-	// 所有带 nextval 默认值的自增列
+	// 一次目录查询拿到所有自增列及其序列名、序列当前值
 	type seqColumn struct {
 		TableName  string `gorm:"column:table_name"`
 		ColumnName string `gorm:"column:column_name"`
+		SeqName    string `gorm:"column:seq_name"`
+		LastValue  int64  `gorm:"column:last_value"`
 	}
 	columns := make([]seqColumn, 0)
-	err := db.Raw(`SELECT c.relname AS table_name, a.attname AS column_name
+	err := db.Raw(`SELECT c.relname AS table_name, a.attname AS column_name,
+		  COALESCE(pg_get_serial_sequence(c.relname::text, a.attname::text), '') AS seq_name,
+		  COALESCE(ps.last_value, 0) AS last_value
 		FROM pg_class c
 		JOIN pg_attribute a ON a.attrelid = c.oid AND a.attnum > 0 AND NOT a.attisdropped
 		JOIN pg_attrdef d ON d.adrelid = c.oid AND d.adnum = a.attnum
+		LEFT JOIN pg_sequences ps
+		  ON ps.schemaname = 'public'
+		 AND (ps.schemaname || '.' || ps.sequencename) = pg_get_serial_sequence(c.relname::text, a.attname::text)
 		WHERE c.relkind = 'r'
 		  AND c.relnamespace = 'public'::regnamespace
 		  AND pg_get_expr(d.adbin, d.adrelid) LIKE 'nextval%'`).Scan(&columns).Error
@@ -148,43 +156,53 @@ func SyncSequences(db *gorm.DB) error {
 		log.Error(context.Background(), log.TagAppDef, err, "查询自增序列失败")
 		return err
 	}
+	// 一条 UNION ALL 查询拿到所有表的最大主键，避免每张表一条 SELECT MAX
+	selects := make([]string, 0, len(columns))
+	for _, column := range columns {
+		if strPg.IsBlank(column.SeqName) {
+			continue
+		}
+		selects = append(selects, fmt.Sprintf(`SELECT '%s' AS table_name, '%s' AS column_name, COALESCE(MAX("%s"), 0) AS max_id FROM "%s"`,
+			column.TableName, column.ColumnName, column.ColumnName, column.TableName))
+	}
+	type seqMax struct {
+		TableName  string `gorm:"column:table_name"`
+		ColumnName string `gorm:"column:column_name"`
+		MaxID      int64  `gorm:"column:max_id"`
+	}
+	maxRows := make([]seqMax, 0)
+	if len(selects) > 0 {
+		if err = db.Raw(strings.Join(selects, " UNION ALL ")).Scan(&maxRows).Error; nil != err {
+			log.Error(context.Background(), log.TagAppDef, err, "查询最大主键失败")
+			return err
+		}
+	}
+	maxByColumn := make(map[string]int64, len(maxRows))
+	for _, row := range maxRows {
+		maxByColumn[row.TableName+"."+row.ColumnName] = row.MaxID
+	}
 	fixed := make([]string, 0)
 	for _, column := range columns {
-		var seqName string
-		err = db.Raw(`SELECT pg_get_serial_sequence(?, ?)`, column.TableName, column.ColumnName).Scan(&seqName).Error
-		if nil != err || strPg.IsBlank(seqName) {
+		if strPg.IsBlank(column.SeqName) {
 			continue
 		}
-		var lastValue, maxId int64
-		var isCalled bool
-		row := db.Raw(`SELECT last_value, is_called FROM ?::regclass`, seqName).Row()
-		if nil == row {
-			continue
+		maxID := maxByColumn[column.TableName+"."+column.ColumnName]
+		next := column.LastValue
+		if next <= 0 {
+			next = 1
 		}
-		if err = row.Scan(&lastValue, &isCalled); nil != err {
-			continue
-		}
-		err = db.Raw(fmt.Sprintf(`SELECT COALESCE(MAX("%s"), 0) FROM "%s"`, column.ColumnName, column.TableName)).Scan(&maxId).Error
-		if nil != err {
-			continue
-		}
-		// 序列下一次将要分配的值
-		next := lastValue
-		if isCalled {
-			next = lastValue + 1
-		}
-		if maxId < next {
+		if maxID < next {
 			// 序列已领先最大主键，无需调整
 			continue
 		}
 		// is_called=false 表示 setval 之后 nextval 直接返回该值
-		err = db.Exec("SELECT setval(?::regclass, ?, false)", seqName, maxId+1).Error
+		err = db.Exec("SELECT setval(?::regclass, ?, false)", column.SeqName, maxID+1).Error
 		if nil != err {
 			log.Error(context.Background(), log.TagAppDef, err, "校正自增序列失败",
 				log.Any("table", column.TableName), log.Any("column", column.ColumnName))
 			continue
 		}
-		fixed = append(fixed, fmt.Sprintf("%s.%s: %d -> %d", column.TableName, column.ColumnName, next, maxId+1))
+		fixed = append(fixed, fmt.Sprintf("%s.%s: %d -> %d", column.TableName, column.ColumnName, column.LastValue, maxID+1))
 	}
 	if len(fixed) > 0 {
 		log.Info(context.Background(), log.TagAppDef, "[init].[自增序列修正]", log.Any("fixed", fixed))

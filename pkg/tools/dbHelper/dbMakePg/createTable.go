@@ -131,27 +131,27 @@ func (c *CreateTable) TableCreateAll(dst []interface{}) (rt rg.Rs[string]) {
 //	@return rt
 func (c *CreateTable) TableCreateAllByTransaction(dst []interface{}) (rt rg.Rs[string]) {
 	c.tableList = GetTablesByTime3Minute(c.Db())
-	log.Debug(context.Background(), log.TagAppDef, "已存在的表: %+v", func() []log.Field {
-		return []log.Field{log.Any("tableList", c.tableList)}
-	})
-	//
-	err := c.Db().Transaction(func(tx *gorm.DB) error {
-		i := 0
-		for _, item := range dst {
-			name := tablePg.GetTableName(item)
-			log.Debug(context.Background(), log.TagAppDef, "创建表: %s", func() []log.Field {
-				return []log.Field{log.Any("tableName", name)}
-			})
-			comment := tablePg.GetTableComment(item)
-			if strPg.IsNotBlank(name) {
-				c.dbRunByDb(tx, item, name, comment)
-			}
-			if i%3 == 0 {
-				time.Sleep(10000)
-			}
-			i++
+	// 先筛出缺失的表；全部存在时直接跳过事务，避免每次启动都开事务并逐表判断
+	missing := make([]interface{}, 0, len(dst))
+	for _, item := range dst {
+		name := tablePg.GetTableName(item)
+		if strPg.IsNotBlank(name) && !slice.Contain(c.tableList, name) {
+			missing = append(missing, item)
 		}
-
+	}
+	if len(missing) == 0 {
+		log.Debug(context.Background(), log.TagAppDef, "所有表已存在,跳过建表事务", func() []log.Field {
+			return []log.Field{log.Any("tableCount", len(dst))}
+		})
+		return rt.Ok()
+	}
+	log.Info(context.Background(), log.TagAppDef, "发现缺失表,开始建表", log.Any("missingCount", len(missing)))
+	err := c.Db().Transaction(func(tx *gorm.DB) error {
+		for _, item := range missing {
+			name := tablePg.GetTableName(item)
+			comment := tablePg.GetTableComment(item)
+			c.dbRunByDb(tx, item, name, comment)
+		}
 		return nil
 	})
 	if err != nil {

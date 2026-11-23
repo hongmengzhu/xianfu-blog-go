@@ -260,20 +260,33 @@ func (c *BlogArticleCategoryService) Update(ctx *gin.Context, ct modBlogArticleC
 		//子分类同步模块，保证分类树按模块过滤时不出现跨模块层级
 		children, childFound := r.FindAllByNoLink(ctx, find.No)
 		categoryNos := []string{find.No}
+		childIds := make([]int64, 0, len(children))
 		if childFound {
 			for _, item := range children {
 				if item.ID == find.ID {
 					continue
 				}
 				categoryNos = append(categoryNos, item.No)
-				r.Update(ctx, entityBlog.BlogArticleCategoryEntity{Module: info.Module}, item.ID)
+				childIds = append(childIds, item.ID)
 			}
 		}
-		//文章同步模块，避免文章仍挂在旧模块下
-		for _, categoryNo := range categoryNos {
-			articles := c.articleDb.FindAll(ctx, entityBlog.BlogArticleEntity{CategoryNo: categoryNo}, optionsPg.WithCtx(ctx))
-			for _, article := range articles {
-				c.articleDb.Update(ctx, entityBlog.BlogArticleEntity{Module: info.Module}, article.ID)
+		//批量更新子分类模块：一条 UPDATE ... WHERE id IN (...)，避免逐条 SQL
+		if len(childIds) > 0 {
+			if err = r.UpdateByIdIn(ctx, entityBlog.BlogArticleCategoryEntity{Module: info.Module}, childIds); err != nil {
+				log.Error(ctx, log.TagAppDef, err, "update children module error")
+				return rt.ErrorMessage("操作失败")
+			}
+		}
+		//文章同步模块，避免文章仍挂在旧模块下：一次查询 + 一条批量更新
+		articles := c.articleDb.FindByCategoryNoIn(ctx, categoryNos)
+		articleIds := make([]int64, 0, len(articles))
+		for _, article := range articles {
+			articleIds = append(articleIds, article.ID)
+		}
+		if len(articleIds) > 0 {
+			if err = c.articleDb.UpdateByIdIn(ctx, entityBlog.BlogArticleEntity{Module: info.Module}, articleIds); err != nil {
+				log.Error(ctx, log.TagAppDef, err, "update articles module error")
+				return rt.ErrorMessage("操作失败")
 			}
 		}
 	}
@@ -294,14 +307,20 @@ func (c *BlogArticleCategoryService) Update(ctx *gin.Context, ct modBlogArticleC
 			c.childParentIdLink(maps, item)
 		}
 		//
+		//批量写回子集的 IdLink/NoLink：整棵树一次 upsert，替代逐条 Update
+		updates := make([]*entityBlog.BlogArticleCategoryEntity, 0, len(childData))
 		for _, val := range maps {
 			for _, item := range val {
 				if item.ID == find.ID {
 					continue
 				}
-				r.Update(ctx, entityBlog.BlogArticleCategoryEntity{IdLink: item.IdLink,
-					NoLink: item.NoLink},
-					item.ID)
+				updates = append(updates, item)
+			}
+		}
+		if len(updates) > 0 {
+			if err = r.UpdateAll(ctx, updates); err != nil {
+				log.Error(ctx, log.TagAppDef, err, "update children idlink error")
+				return rt.ErrorMessage("操作失败")
 			}
 		}
 		maps = nil
