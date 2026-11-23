@@ -31,8 +31,8 @@ func (this AccessMethod) Index() string {
 }
 
 var MapAccessMethod = map[string]enumBasePg.EnumString{
-	CONSOLE.String(): enumBasePg.EnumString{CONSOLE.String(), CONSOLE.Name()},
-	API.String():     enumBasePg.EnumString{API.String(), API.Name()},
+	CONSOLE.String(): enumBasePg.EnumString{Id: CONSOLE.String(), Name: CONSOLE.Name()},
+	API.String():     enumBasePg.EnumString{Id: API.String(), Name: API.Name()},
 }
 
 func IsExistAccessMethod(id string) bool {

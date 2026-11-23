@@ -34,9 +34,9 @@ func (this TypeReading) Index() string {
 }
 
 var MapTypeReading = map[string]enumBasePg.EnumString{
-	UNREAD.String():    enumBasePg.EnumString{UNREAD.String(), UNREAD.Name()},
-	READING.String():   enumBasePg.EnumString{READING.String(), READING.Name()},
-	COMPLETED.String(): enumBasePg.EnumString{COMPLETED.String(), COMPLETED.Name()},
+	UNREAD.String():    enumBasePg.EnumString{Id: UNREAD.String(), Name: UNREAD.Name()},
+	READING.String():   enumBasePg.EnumString{Id: READING.String(), Name: READING.Name()},
+	COMPLETED.String(): enumBasePg.EnumString{Id: COMPLETED.String(), Name: COMPLETED.Name()},
 }
 
 func IsExistTypeReading(id string) bool {

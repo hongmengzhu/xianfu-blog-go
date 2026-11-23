@@ -35,8 +35,8 @@ func (this TypeAccessMethod) Index() string {
 }
 
 var TypeAccessMethodMap = map[string]enumBasePg.EnumString{
-	Console.String(): enumBasePg.EnumString{Console.String(), Console.Name()},
-	Api.String():     enumBasePg.EnumString{Api.String(), Api.Name()},
+	Console.String(): enumBasePg.EnumString{Id: Console.String(), Name: Console.Name()},
+	Api.String():     enumBasePg.EnumString{Id: Api.String(), Name: Api.Name()},
 }
 
 func IsExistTypeAccessMethod(id string) (TypeAccessMethod, bool) {

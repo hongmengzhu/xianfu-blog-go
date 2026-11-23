@@ -40,8 +40,8 @@ func (this Field) IsEqual(id string) bool {
 }
 
 var FieldMap = map[string]enumBasePg.EnumString{
-	Id.String(): enumBasePg.EnumString{Id.String(), Id.Name()},
-	No.String(): enumBasePg.EnumString{No.String(), No.Name()},
+	Id.String(): enumBasePg.EnumString{Id: Id.String(), Name: Id.Name()},
+	No.String(): enumBasePg.EnumString{Id: No.String(), Name: No.Name()},
 }
 
 func IsExistField(id string) (Field, bool) {

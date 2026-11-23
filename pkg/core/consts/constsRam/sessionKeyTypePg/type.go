@@ -49,11 +49,11 @@ func (this SessionKeyType) IsEqual(id string) bool {
 }
 
 var SessionKeyTypeMap = map[string]enumBasePg.EnumString{
-	General.String():            enumBasePg.EnumString{General.String(), General.Name()},
-	RefreshToken.String():       enumBasePg.EnumString{RefreshToken.String(), RefreshToken.Name()},
-	AccessToken.String():        enumBasePg.EnumString{AccessToken.String(), AccessToken.Name()},
-	PasswordEncryption.String(): enumBasePg.EnumString{PasswordEncryption.String(), PasswordEncryption.Name()},
-	Login.String():              enumBasePg.EnumString{Login.String(), Login.Name()},
+	General.String():            enumBasePg.EnumString{Id: General.String(), Name: General.Name()},
+	RefreshToken.String():       enumBasePg.EnumString{Id: RefreshToken.String(), Name: RefreshToken.Name()},
+	AccessToken.String():        enumBasePg.EnumString{Id: AccessToken.String(), Name: AccessToken.Name()},
+	PasswordEncryption.String(): enumBasePg.EnumString{Id: PasswordEncryption.String(), Name: PasswordEncryption.Name()},
+	Login.String():              enumBasePg.EnumString{Id: Login.String(), Name: Login.Name()},
 }
 
 func IsExistSessionKeyType(id string) (SessionKeyType, bool) {

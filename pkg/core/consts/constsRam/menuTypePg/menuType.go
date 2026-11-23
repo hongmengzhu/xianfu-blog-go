@@ -40,8 +40,8 @@ func (this MenuType) IsEqual(id string) bool {
 }
 
 var MenuTypeMap = map[string]enumBasePg.EnumString{
-	Resource.String(): enumBasePg.EnumString{Resource.String(), Resource.Name()},
-	Group.String():    enumBasePg.EnumString{Group.String(), Group.Name()},
+	Resource.String(): enumBasePg.EnumString{Id: Resource.String(), Name: Resource.Name()},
+	Group.String():    enumBasePg.EnumString{Id: Group.String(), Name: Group.Name()},
 }
 
 func IsExistMenuType(id string) (MenuType, bool) {

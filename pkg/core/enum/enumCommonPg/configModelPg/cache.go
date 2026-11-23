@@ -41,8 +41,8 @@ func (this Cache) IsEqual(id string) bool {
 }
 
 var CacheMap = map[string]enumBasePg.EnumString{
-	CacheMemory.String(): enumBasePg.EnumString{CacheMemory.String(), CacheMemory.Name()},
-	CacheRedis.String():  enumBasePg.EnumString{CacheRedis.String(), CacheRedis.Name()},
+	CacheMemory.String(): enumBasePg.EnumString{Id: CacheMemory.String(), Name: CacheMemory.Name()},
+	CacheRedis.String():  enumBasePg.EnumString{Id: CacheRedis.String(), Name: CacheRedis.Name()},
 }
 
 func IsExistCache(id string) (Cache, bool) {

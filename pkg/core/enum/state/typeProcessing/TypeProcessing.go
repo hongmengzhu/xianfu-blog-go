@@ -49,11 +49,11 @@ func (this TypeProcessing) IsEqual(id string) bool {
 }
 
 var TypeProcessingMap = map[string]enumBasePg.EnumString{
-	TypeProcessingUnProcessed.String():      enumBasePg.EnumString{TypeProcessingUnProcessed.String(), TypeProcessingUnProcessed.Name()},
-	TypeProcessingCompleted.String():        enumBasePg.EnumString{TypeProcessingCompleted.String(), TypeProcessingCompleted.Name()},
-	TypeProcessingProcessingFailed.String(): enumBasePg.EnumString{TypeProcessingProcessingFailed.String(), TypeProcessingProcessingFailed.Name()},
-	TypeProcessingProcessing.String():       enumBasePg.EnumString{TypeProcessingProcessing.String(), TypeProcessingProcessing.Name()},
-	TypeProcessingSubmit.String():           enumBasePg.EnumString{TypeProcessingSubmit.String(), TypeProcessingSubmit.Name()},
+	TypeProcessingUnProcessed.String():      enumBasePg.EnumString{Id: TypeProcessingUnProcessed.String(), Name: TypeProcessingUnProcessed.Name()},
+	TypeProcessingCompleted.String():        enumBasePg.EnumString{Id: TypeProcessingCompleted.String(), Name: TypeProcessingCompleted.Name()},
+	TypeProcessingProcessingFailed.String(): enumBasePg.EnumString{Id: TypeProcessingProcessingFailed.String(), Name: TypeProcessingProcessingFailed.Name()},
+	TypeProcessingProcessing.String():       enumBasePg.EnumString{Id: TypeProcessingProcessing.String(), Name: TypeProcessingProcessing.Name()},
+	TypeProcessingSubmit.String():           enumBasePg.EnumString{Id: TypeProcessingSubmit.String(), Name: TypeProcessingSubmit.Name()},
 }
 
 func IsExistTypeProcessing(id string) (TypeProcessing, bool) {

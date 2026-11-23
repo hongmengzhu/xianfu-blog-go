@@ -34,9 +34,9 @@ func (this IdentityType) Index() string {
 }
 
 var Map = map[string]enumBasePg.EnumString{
-	GENERAL.String():           enumBasePg.EnumString{GENERAL.String(), GENERAL.Name()},
-	MANAGER.String():           enumBasePg.EnumString{MANAGER.String(), MANAGER.Name()},
-	ASSISTANT_MANAGER.String(): enumBasePg.EnumString{ASSISTANT_MANAGER.String(), ASSISTANT_MANAGER.Name()},
+	GENERAL.String():           enumBasePg.EnumString{Id: GENERAL.String(), Name: GENERAL.Name()},
+	MANAGER.String():           enumBasePg.EnumString{Id: MANAGER.String(), Name: MANAGER.Name()},
+	ASSISTANT_MANAGER.String(): enumBasePg.EnumString{Id: ASSISTANT_MANAGER.String(), Name: ASSISTANT_MANAGER.Name()},
 }
 
 func IsExist(id string) bool {

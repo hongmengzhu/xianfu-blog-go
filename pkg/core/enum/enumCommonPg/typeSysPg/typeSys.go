@@ -38,9 +38,9 @@ func (this TypeSys) Index() string {
 }
 
 var TypeSysMap = map[string]enumBasePg.EnumString{
-	General.String(): enumBasePg.EnumString{General.String(), General.Name()},
-	System.String():  enumBasePg.EnumString{System.String(), System.Name()},
-	Api.String():     enumBasePg.EnumString{Api.String(), Api.Name()},
+	General.String(): enumBasePg.EnumString{Id: General.String(), Name: General.Name()},
+	System.String():  enumBasePg.EnumString{Id: System.String(), Name: System.Name()},
+	Api.String():     enumBasePg.EnumString{Id: Api.String(), Name: Api.Name()},
 }
 
 func IsExistTypeSys(id string) (TypeSys, bool) {

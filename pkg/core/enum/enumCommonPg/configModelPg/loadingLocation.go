@@ -46,10 +46,10 @@ func (this LoadingLocation) IsEqual(id string) bool {
 }
 
 var LoadingLocationMap = map[string]enumBasePg.EnumString{
-	LoadingStartLoading.String():            enumBasePg.EnumString{LoadingStartLoading.String(), LoadingStartLoading.Name()},
-	LoadingLoadAfterStartup.String():        enumBasePg.EnumString{LoadingLoadAfterStartup.String(), LoadingLoadAfterStartup.Name()},
-	LoadingLazyLoadingAfterStartup.String(): enumBasePg.EnumString{LoadingLazyLoadingAfterStartup.String(), LoadingLazyLoadingAfterStartup.Name()},
-	LoadingAppStartsLoading.String():        enumBasePg.EnumString{LoadingAppStartsLoading.String(), LoadingAppStartsLoading.Name()},
+	LoadingStartLoading.String():            enumBasePg.EnumString{Id: LoadingStartLoading.String(), Name: LoadingStartLoading.Name()},
+	LoadingLoadAfterStartup.String():        enumBasePg.EnumString{Id: LoadingLoadAfterStartup.String(), Name: LoadingLoadAfterStartup.Name()},
+	LoadingLazyLoadingAfterStartup.String(): enumBasePg.EnumString{Id: LoadingLazyLoadingAfterStartup.String(), Name: LoadingLazyLoadingAfterStartup.Name()},
+	LoadingAppStartsLoading.String():        enumBasePg.EnumString{Id: LoadingAppStartsLoading.String(), Name: LoadingAppStartsLoading.Name()},
 }
 
 func IsExistLoadingLocation(id string) (LoadingLocation, bool) {

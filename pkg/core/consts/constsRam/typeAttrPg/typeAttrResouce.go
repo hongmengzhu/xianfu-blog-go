@@ -43,9 +43,9 @@ func (this TypeAttr) IsEqual(id string) bool {
 }
 
 var TypeAttrMap = map[string]enumBasePg.EnumString{
-	Resource.String():     enumBasePg.EnumString{Resource.String(), Resource.Name()},
-	Category.String():     enumBasePg.EnumString{Category.String(), Category.Name()},
-	CategoryLast.String(): enumBasePg.EnumString{CategoryLast.String(), CategoryLast.Name()},
+	Resource.String():     enumBasePg.EnumString{Id: Resource.String(), Name: Resource.Name()},
+	Category.String():     enumBasePg.EnumString{Id: Category.String(), Name: Category.Name()},
+	CategoryLast.String(): enumBasePg.EnumString{Id: CategoryLast.String(), Name: CategoryLast.Name()},
 }
 
 func IsExistTypeAttr(id string) (TypeAttr, bool) {

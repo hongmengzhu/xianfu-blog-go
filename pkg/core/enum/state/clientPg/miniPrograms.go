@@ -47,11 +47,11 @@ func (this MiniProgram) IsEqual(id string) bool {
 }
 
 var MiniProgramMap = map[string]enumBasePg.EnumString{
-	MiniProgramWeChat.String(): enumBasePg.EnumString{MiniProgramWeChat.String(), MiniProgramWeChat.Name()},
-	MiniProgramWeCom.String():  enumBasePg.EnumString{MiniProgramWeCom.String(), MiniProgramWeCom.Name()},
-	MiniProgramAlipay.String(): enumBasePg.EnumString{MiniProgramAlipay.String(), MiniProgramAlipay.Name()},
-	MiniProgramHuawei.String(): enumBasePg.EnumString{MiniProgramHuawei.String(), MiniProgramHuawei.Name()},
-	MiniProgramDouyin.String(): enumBasePg.EnumString{MiniProgramDouyin.String(), MiniProgramDouyin.Name()},
+	MiniProgramWeChat.String(): enumBasePg.EnumString{Id: MiniProgramWeChat.String(), Name: MiniProgramWeChat.Name()},
+	MiniProgramWeCom.String():  enumBasePg.EnumString{Id: MiniProgramWeCom.String(), Name: MiniProgramWeCom.Name()},
+	MiniProgramAlipay.String(): enumBasePg.EnumString{Id: MiniProgramAlipay.String(), Name: MiniProgramAlipay.Name()},
+	MiniProgramHuawei.String(): enumBasePg.EnumString{Id: MiniProgramHuawei.String(), Name: MiniProgramHuawei.Name()},
+	MiniProgramDouyin.String(): enumBasePg.EnumString{Id: MiniProgramDouyin.String(), Name: MiniProgramDouyin.Name()},
 }
 
 func IsExistMiniProgram(id string) (MiniProgram, bool) {

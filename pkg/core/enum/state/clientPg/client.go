@@ -59,15 +59,15 @@ func (this Client) IsEqual(id string) bool {
 }
 
 var ClientMap = map[string]enumBasePg.EnumString{
-	Browser.String():               enumBasePg.EnumString{Browser.String(), Browser.Name()},
-	Desktop.String():               enumBasePg.EnumString{Desktop.String(), Desktop.Name()},
-	ClientDesktopApp.String():      enumBasePg.EnumString{ClientDesktopApp.String(), ClientDesktopApp.Name()},
-	ClientOfWeb.String():           enumBasePg.EnumString{ClientOfWeb.String(), ClientOfWeb.Name()},
-	ClientOfMobileApp.String():     enumBasePg.EnumString{ClientOfMobileApp.String(), ClientOfMobileApp.Name()},
-	ClientOfMobileWeb.String():     enumBasePg.EnumString{ClientOfMobileWeb.String(), ClientOfMobileWeb.Name()},
-	ClientOfMobileAppMini.String(): enumBasePg.EnumString{ClientOfMobileAppMini.String(), ClientOfMobileAppMini.Name()},
-	ClientDefault.String():         enumBasePg.EnumString{ClientDefault.String(), ClientDefault.Name()},
-	ClientAll.String():             enumBasePg.EnumString{ClientAll.String(), ClientAll.Name()},
+	Browser.String():               enumBasePg.EnumString{Id: Browser.String(), Name: Browser.Name()},
+	Desktop.String():               enumBasePg.EnumString{Id: Desktop.String(), Name: Desktop.Name()},
+	ClientDesktopApp.String():      enumBasePg.EnumString{Id: ClientDesktopApp.String(), Name: ClientDesktopApp.Name()},
+	ClientOfWeb.String():           enumBasePg.EnumString{Id: ClientOfWeb.String(), Name: ClientOfWeb.Name()},
+	ClientOfMobileApp.String():     enumBasePg.EnumString{Id: ClientOfMobileApp.String(), Name: ClientOfMobileApp.Name()},
+	ClientOfMobileWeb.String():     enumBasePg.EnumString{Id: ClientOfMobileWeb.String(), Name: ClientOfMobileWeb.Name()},
+	ClientOfMobileAppMini.String(): enumBasePg.EnumString{Id: ClientOfMobileAppMini.String(), Name: ClientOfMobileAppMini.Name()},
+	ClientDefault.String():         enumBasePg.EnumString{Id: ClientDefault.String(), Name: ClientDefault.Name()},
+	ClientAll.String():             enumBasePg.EnumString{Id: ClientAll.String(), Name: ClientAll.Name()},
 }
 
 func IsExistClient(id string) (Client, bool) {

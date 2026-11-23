@@ -37,7 +37,7 @@ func (this Type) IsEqual(id string) bool {
 }
 
 var TypeMap = map[string]enumBasePg.EnumString{
-	GENERAL.String(): enumBasePg.EnumString{GENERAL.String(), GENERAL.Name()},
+	GENERAL.String(): enumBasePg.EnumString{Id: GENERAL.String(), Name: GENERAL.Name()},
 }
 
 func IsExistType(id string) (Type, bool) {

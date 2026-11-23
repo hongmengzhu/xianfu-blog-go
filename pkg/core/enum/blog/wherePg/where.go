@@ -38,10 +38,10 @@ func (this Where) Index() string {
 }
 
 var MapWhere = map[string]enumBasePg.EnumString{
-	ALL.String():           enumBasePg.EnumString{ALL.String(), ALL.Name()},
-	ORG.String():           enumBasePg.EnumString{ORG.String(), ORG.Name()},
-	ORG_SPECIFIED.String(): enumBasePg.EnumString{ORG_SPECIFIED.String(), ORG_SPECIFIED.Name()},
-	FANS.String():          enumBasePg.EnumString{FANS.String(), FANS.Name()},
+	ALL.String():           enumBasePg.EnumString{Id: ALL.String(), Name: ALL.Name()},
+	ORG.String():           enumBasePg.EnumString{Id: ORG.String(), Name: ORG.Name()},
+	ORG_SPECIFIED.String(): enumBasePg.EnumString{Id: ORG_SPECIFIED.String(), Name: ORG_SPECIFIED.Name()},
+	FANS.String():          enumBasePg.EnumString{Id: FANS.String(), Name: FANS.Name()},
 }
 
 func IsExistWhere(id string) bool {

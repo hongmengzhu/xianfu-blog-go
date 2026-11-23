@@ -38,9 +38,9 @@ func (this Type) Index() string {
 }
 
 var TypeMap = map[string]enumBasePg.EnumString{
-	App.String():    enumBasePg.EnumString{App.String(), App.Name()},
-	Qrcode.String(): enumBasePg.EnumString{Qrcode.String(), Qrcode.Name()},
-	Sim.String():    enumBasePg.EnumString{Sim.String(), Sim.Name()},
+	App.String():    enumBasePg.EnumString{Id: App.String(), Name: App.Name()},
+	Qrcode.String(): enumBasePg.EnumString{Id: Qrcode.String(), Name: Qrcode.Name()},
+	Sim.String():    enumBasePg.EnumString{Id: Sim.String(), Name: Sim.Name()},
 }
 
 func IsExistType(id string) (Type, bool) {

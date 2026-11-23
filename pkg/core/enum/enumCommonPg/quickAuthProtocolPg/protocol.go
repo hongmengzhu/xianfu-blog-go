@@ -38,9 +38,9 @@ func (this Protocol) Index() string {
 }
 
 var ProtocolMap = map[string]enumBasePg.EnumString{
-	Oauth2.String(): enumBasePg.EnumString{Oauth2.String(), Oauth2.Name()},
-	Qrcode.String(): enumBasePg.EnumString{Qrcode.String(), Qrcode.Name()},
-	Sim.String():    enumBasePg.EnumString{Sim.String(), Sim.Name()},
+	Oauth2.String(): enumBasePg.EnumString{Id: Oauth2.String(), Name: Oauth2.Name()},
+	Qrcode.String(): enumBasePg.EnumString{Id: Qrcode.String(), Name: Qrcode.Name()},
+	Sim.String():    enumBasePg.EnumString{Id: Sim.String(), Name: Sim.Name()},
 }
 
 func IsExistProtocol(id string) (Protocol, bool) {

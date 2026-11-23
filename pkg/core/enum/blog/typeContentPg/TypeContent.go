@@ -34,9 +34,9 @@ func (this TypeContent) Index() string {
 }
 
 var MapTypeContent = map[string]enumBasePg.EnumString{
-	ORIGINAL.String():    enumBasePg.EnumString{ORIGINAL.String(), ORIGINAL.Name()},
-	TRANSLATION.String(): enumBasePg.EnumString{TRANSLATION.String(), TRANSLATION.Name()},
-	REPOST.String():      enumBasePg.EnumString{REPOST.String(), REPOST.Name()},
+	ORIGINAL.String():    enumBasePg.EnumString{Id: ORIGINAL.String(), Name: ORIGINAL.Name()},
+	TRANSLATION.String(): enumBasePg.EnumString{Id: TRANSLATION.String(), Name: TRANSLATION.Name()},
+	REPOST.String():      enumBasePg.EnumString{Id: REPOST.String(), Name: REPOST.Name()},
 }
 
 func IsExistTypeContent(id string) bool {

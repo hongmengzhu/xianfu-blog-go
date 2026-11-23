@@ -43,9 +43,9 @@ func (this Payment) IsEqual(id string) bool {
 }
 
 var PaymentMap = map[string]enumBasePg.EnumString{
-	PaymentUnpaid.String():   enumBasePg.EnumString{PaymentUnpaid.String(), PaymentUnpaid.Name()},
-	PaymentPaid.String():     enumBasePg.EnumString{PaymentPaid.String(), PaymentPaid.Name()},
-	PaymentPaidAuto.String(): enumBasePg.EnumString{PaymentPaidAuto.String(), PaymentPaidAuto.Name()},
+	PaymentUnpaid.String():   enumBasePg.EnumString{Id: PaymentUnpaid.String(), Name: PaymentUnpaid.Name()},
+	PaymentPaid.String():     enumBasePg.EnumString{Id: PaymentPaid.String(), Name: PaymentPaid.Name()},
+	PaymentPaidAuto.String(): enumBasePg.EnumString{Id: PaymentPaidAuto.String(), Name: PaymentPaidAuto.Name()},
 }
 
 func IsExistPayment(id string) (Payment, bool) {

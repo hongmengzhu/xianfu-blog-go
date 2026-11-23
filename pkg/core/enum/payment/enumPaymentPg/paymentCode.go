@@ -49,11 +49,11 @@ func (this PaymentCode) IsEqual(id string) bool {
 }
 
 var PaymentCodeMap = map[string]enumBasePg.EnumString{
-	PaymentCodeAlipay.String():   enumBasePg.EnumString{PaymentCodeAlipay.String(), PaymentCodeAlipay.Name()},
-	PaymentCodeWeChat.String():   enumBasePg.EnumString{PaymentCodeWeChat.String(), PaymentCodeWeChat.Name()},
-	PaymentCodeUnionPay.String(): enumBasePg.EnumString{PaymentCodeUnionPay.String(), PaymentCodeUnionPay.Name()},
-	PaymentCodePayPal.String():   enumBasePg.EnumString{PaymentCodePayPal.String(), PaymentCodePayPal.Name()},
-	PaymentCodeAllinPay.String(): enumBasePg.EnumString{PaymentCodeAllinPay.String(), PaymentCodeAllinPay.Name()},
+	PaymentCodeAlipay.String():   enumBasePg.EnumString{Id: PaymentCodeAlipay.String(), Name: PaymentCodeAlipay.Name()},
+	PaymentCodeWeChat.String():   enumBasePg.EnumString{Id: PaymentCodeWeChat.String(), Name: PaymentCodeWeChat.Name()},
+	PaymentCodeUnionPay.String(): enumBasePg.EnumString{Id: PaymentCodeUnionPay.String(), Name: PaymentCodeUnionPay.Name()},
+	PaymentCodePayPal.String():   enumBasePg.EnumString{Id: PaymentCodePayPal.String(), Name: PaymentCodePayPal.Name()},
+	PaymentCodeAllinPay.String(): enumBasePg.EnumString{Id: PaymentCodeAllinPay.String(), Name: PaymentCodeAllinPay.Name()},
 }
 
 func IsExistPaymentCodeMap(id string) (PaymentCode, bool) {

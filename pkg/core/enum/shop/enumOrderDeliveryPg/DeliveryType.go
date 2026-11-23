@@ -43,9 +43,9 @@ func (this DeliveryType) IsEqual(id string) bool {
 }
 
 var DeliveryTypeMap = map[string]enumBasePg.EnumString{
-	DeliveryTypeWaybillNumber.String():   enumBasePg.EnumString{DeliveryTypeWaybillNumber.String(), DeliveryTypeWaybillNumber.Name()},
-	DeliveryTypeBusinessSender.String():  enumBasePg.EnumString{DeliveryTypeBusinessSender.String(), DeliveryTypeBusinessSender.Name()},
-	DeliveryTypeWaybillPrinting.String(): enumBasePg.EnumString{DeliveryTypeWaybillPrinting.String(), DeliveryTypeWaybillPrinting.Name()},
+	DeliveryTypeWaybillNumber.String():   enumBasePg.EnumString{Id: DeliveryTypeWaybillNumber.String(), Name: DeliveryTypeWaybillNumber.Name()},
+	DeliveryTypeBusinessSender.String():  enumBasePg.EnumString{Id: DeliveryTypeBusinessSender.String(), Name: DeliveryTypeBusinessSender.Name()},
+	DeliveryTypeWaybillPrinting.String(): enumBasePg.EnumString{Id: DeliveryTypeWaybillPrinting.String(), Name: DeliveryTypeWaybillPrinting.Name()},
 }
 
 func IsExistDeliveryType(id string) (DeliveryType, bool) {

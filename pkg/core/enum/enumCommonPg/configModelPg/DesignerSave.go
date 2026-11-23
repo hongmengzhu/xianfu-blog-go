@@ -37,7 +37,7 @@ func (this DesignerSave) IsEqual(id string) bool {
 }
 
 var DesignerSaveMap = map[string]enumBasePg.EnumString{
-	DesignerSaveNoDeletion.String(): enumBasePg.EnumString{DesignerSaveNoDeletion.String(), DesignerSaveNoDeletion.Name()},
+	DesignerSaveNoDeletion.String(): enumBasePg.EnumString{Id: DesignerSaveNoDeletion.String(), Name: DesignerSaveNoDeletion.Name()},
 }
 
 func IsExistDesignerSave(id string) (DesignerSave, bool) {

@@ -55,13 +55,13 @@ func (this Type) IsEqual(id string) bool {
 }
 
 var TypeMap = map[string]enumBasePg.EnumString{
-	AttachmentGeneral.String():  enumBasePg.EnumString{AttachmentGeneral.String(), AttachmentGeneral.Name()},
-	AttachmentMain.String():     enumBasePg.EnumString{AttachmentMain.String(), AttachmentMain.Name()},
-	AttachmentFirst.String():    enumBasePg.EnumString{AttachmentFirst.String(), AttachmentFirst.Name()},
-	AttachmentCarousel.String(): enumBasePg.EnumString{AttachmentCarousel.String(), AttachmentCarousel.Name()},
-	AttachmentList.String():     enumBasePg.EnumString{AttachmentList.String(), AttachmentList.Name()},
-	AttachmentVideo.String():    enumBasePg.EnumString{AttachmentVideo.String(), AttachmentVideo.Name()},
-	AttachmentBanner.String():   enumBasePg.EnumString{AttachmentBanner.String(), AttachmentBanner.Name()},
+	AttachmentGeneral.String():  enumBasePg.EnumString{Id: AttachmentGeneral.String(), Name: AttachmentGeneral.Name()},
+	AttachmentMain.String():     enumBasePg.EnumString{Id: AttachmentMain.String(), Name: AttachmentMain.Name()},
+	AttachmentFirst.String():    enumBasePg.EnumString{Id: AttachmentFirst.String(), Name: AttachmentFirst.Name()},
+	AttachmentCarousel.String(): enumBasePg.EnumString{Id: AttachmentCarousel.String(), Name: AttachmentCarousel.Name()},
+	AttachmentList.String():     enumBasePg.EnumString{Id: AttachmentList.String(), Name: AttachmentList.Name()},
+	AttachmentVideo.String():    enumBasePg.EnumString{Id: AttachmentVideo.String(), Name: AttachmentVideo.Name()},
+	AttachmentBanner.String():   enumBasePg.EnumString{Id: AttachmentBanner.String(), Name: AttachmentBanner.Name()},
 }
 
 func IsExistType(id string) (Type, bool) {

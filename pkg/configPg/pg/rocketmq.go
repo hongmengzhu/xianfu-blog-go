@@ -3,7 +3,7 @@ package pg
 // 消息队列
 type Rocketmq struct {
 	NameServer  string   `json:"name-serverPg" value:"${rocketmq:=127.0.0.1:9876}"`
-	NameServers []string `json:"nameServers" value:"${rocketmq:=['127.0.0.1:9876']}`
+	NameServers []string `json:"nameServers" value:"${rocketmq:=['127.0.0.1:9876']}"`
 	//Producer    l.Producer `json:"producer"`
 }
 

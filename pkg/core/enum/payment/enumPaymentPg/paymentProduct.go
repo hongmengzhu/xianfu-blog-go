@@ -49,11 +49,11 @@ func (this PayProduct) IsEqual(id string) bool {
 }
 
 var PayProductMap = map[string]enumBasePg.EnumString{
-	PayProductAlipay.String():   enumBasePg.EnumString{PayProductAlipay.String(), PayProductAlipay.Name()},
-	PayProductWeChat.String():   enumBasePg.EnumString{PayProductWeChat.String(), PayProductWeChat.Name()},
-	PayProductAllinPay.String(): enumBasePg.EnumString{PayProductAllinPay.String(), PayProductAllinPay.Name()},
-	PayProductUnionPay.String(): enumBasePg.EnumString{PayProductUnionPay.String(), PayProductUnionPay.Name()},
-	PayProductPayPal.String():   enumBasePg.EnumString{PayProductPayPal.String(), PayProductPayPal.Name()},
+	PayProductAlipay.String():   enumBasePg.EnumString{Id: PayProductAlipay.String(), Name: PayProductAlipay.Name()},
+	PayProductWeChat.String():   enumBasePg.EnumString{Id: PayProductWeChat.String(), Name: PayProductWeChat.Name()},
+	PayProductAllinPay.String(): enumBasePg.EnumString{Id: PayProductAllinPay.String(), Name: PayProductAllinPay.Name()},
+	PayProductUnionPay.String(): enumBasePg.EnumString{Id: PayProductUnionPay.String(), Name: PayProductUnionPay.Name()},
+	PayProductPayPal.String():   enumBasePg.EnumString{Id: PayProductPayPal.String(), Name: PayProductPayPal.Name()},
 }
 
 func IsExistPayProductMap(id string) (PayProduct, bool) {

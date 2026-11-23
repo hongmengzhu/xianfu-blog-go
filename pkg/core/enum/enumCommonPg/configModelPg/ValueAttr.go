@@ -40,8 +40,8 @@ func (this ValueAttr) IsEqual(id string) bool {
 }
 
 var ValueAttrMap = map[string]enumBasePg.EnumString{
-	ValueAttrSingle.String(): enumBasePg.EnumString{ValueAttrSingle.String(), ValueAttrSingle.Name()},
-	ValueAttrObject.String(): enumBasePg.EnumString{ValueAttrObject.String(), ValueAttrObject.Name()},
+	ValueAttrSingle.String(): enumBasePg.EnumString{Id: ValueAttrSingle.String(), Name: ValueAttrSingle.Name()},
+	ValueAttrObject.String(): enumBasePg.EnumString{Id: ValueAttrObject.String(), Name: ValueAttrObject.Name()},
 }
 
 func IsExistValueAttr(id string) (ValueAttr, bool) {

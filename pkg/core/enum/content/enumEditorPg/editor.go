@@ -61,10 +61,10 @@ func (t Editor) Find(str string) bool {
 }
 
 var EditorMap = map[string]enumBasePg.EnumString{
-	Html.String():     enumBasePg.EnumString{Html.String(), Html.Name()},
-	Text.String():     enumBasePg.EnumString{Text.String(), Text.Name()},
-	RichText.String(): enumBasePg.EnumString{RichText.String(), RichText.Name()},
-	Markdown.String(): enumBasePg.EnumString{Markdown.String(), Markdown.Name()},
+	Html.String():     enumBasePg.EnumString{Id: Html.String(), Name: Html.Name()},
+	Text.String():     enumBasePg.EnumString{Id: Text.String(), Name: Text.Name()},
+	RichText.String(): enumBasePg.EnumString{Id: RichText.String(), Name: RichText.Name()},
+	Markdown.String(): enumBasePg.EnumString{Id: Markdown.String(), Name: Markdown.Name()},
 }
 
 func IsExistEditor(id string) bool {

@@ -31,8 +31,8 @@ func (this TypeSource) Index() string {
 }
 
 var MapTypeSource = map[string]enumBasePg.EnumString{
-	HANDWRITTEN.String(): enumBasePg.EnumString{HANDWRITTEN.String(), HANDWRITTEN.Name()},
-	COLLECTION.String():  enumBasePg.EnumString{COLLECTION.String(), COLLECTION.Name()},
+	HANDWRITTEN.String(): enumBasePg.EnumString{Id: HANDWRITTEN.String(), Name: HANDWRITTEN.Name()},
+	COLLECTION.String():  enumBasePg.EnumString{Id: COLLECTION.String(), Name: COLLECTION.Name()},
 }
 
 func IsExistTypeSource(id string) bool {

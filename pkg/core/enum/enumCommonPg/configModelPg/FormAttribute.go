@@ -51,11 +51,11 @@ func (this FormAttribute) IsEqual(id string) bool {
 }
 
 var FormAttributeMap = map[string]enumBasePg.EnumString{
-	FormAttributeAutocomplete.String(): enumBasePg.EnumString{FormAttributeAutocomplete.String(), FormAttributeAutocomplete.Name()},
-	FormAttributeDisabled.String():     enumBasePg.EnumString{FormAttributeDisabled.String(), FormAttributeDisabled.Name()},
-	FormAttributePlaceholder.String():  enumBasePg.EnumString{FormAttributePlaceholder.String(), FormAttributePlaceholder.Name()},
-	FormAttributeReadonly.String():     enumBasePg.EnumString{FormAttributeReadonly.String(), FormAttributeReadonly.Name()},
-	FormAttributeRequired.String():     enumBasePg.EnumString{FormAttributeRequired.String(), FormAttributeRequired.Name()},
+	FormAttributeAutocomplete.String(): enumBasePg.EnumString{Id: FormAttributeAutocomplete.String(), Name: FormAttributeAutocomplete.Name()},
+	FormAttributeDisabled.String():     enumBasePg.EnumString{Id: FormAttributeDisabled.String(), Name: FormAttributeDisabled.Name()},
+	FormAttributePlaceholder.String():  enumBasePg.EnumString{Id: FormAttributePlaceholder.String(), Name: FormAttributePlaceholder.Name()},
+	FormAttributeReadonly.String():     enumBasePg.EnumString{Id: FormAttributeReadonly.String(), Name: FormAttributeReadonly.Name()},
+	FormAttributeRequired.String():     enumBasePg.EnumString{Id: FormAttributeRequired.String(), Name: FormAttributeRequired.Name()},
 }
 
 func IsExistFormAttribute(id string) (FormAttribute, bool) {

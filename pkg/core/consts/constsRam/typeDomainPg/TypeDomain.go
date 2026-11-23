@@ -55,13 +55,13 @@ func (this TypeDomain) IsEqual(id string) bool {
 }
 
 var TypeDomainMap = map[string]enumBasePg.EnumString{
-	General.String():  enumBasePg.EnumString{General.String(), General.Name()},
-	System.String():   enumBasePg.EnumString{System.String(), System.Name()},
-	Merchant.String(): enumBasePg.EnumString{Merchant.String(), Merchant.Name()},
-	Tenant.String():   enumBasePg.EnumString{Tenant.String(), Merchant.Name()},
-	Shop.String():     enumBasePg.EnumString{Shop.String(), Shop.Name()},
-	Manage.String():   enumBasePg.EnumString{Manage.String(), Manage.Name()},
-	Customer.String(): enumBasePg.EnumString{Customer.String(), Customer.Name()},
+	General.String():  enumBasePg.EnumString{Id: General.String(), Name: General.Name()},
+	System.String():   enumBasePg.EnumString{Id: System.String(), Name: System.Name()},
+	Merchant.String(): enumBasePg.EnumString{Id: Merchant.String(), Name: Merchant.Name()},
+	Tenant.String():   enumBasePg.EnumString{Id: Tenant.String(), Name: Merchant.Name()},
+	Shop.String():     enumBasePg.EnumString{Id: Shop.String(), Name: Shop.Name()},
+	Manage.String():   enumBasePg.EnumString{Id: Manage.String(), Name: Manage.Name()},
+	Customer.String(): enumBasePg.EnumString{Id: Customer.String(), Name: Customer.Name()},
 }
 
 func IsExistTypeDomain(id string) (TypeDomain, bool) {

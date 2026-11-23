@@ -44,10 +44,10 @@ func (this NodeQueryBy) IsEqual(id string) bool {
 }
 
 var NodeQueryByMap = map[string]enumBasePg.EnumString{
-	NodeQueryByGeneral.String(): enumBasePg.EnumString{NodeQueryByGeneral.String(), NodeQueryByGeneral.Name()},
-	NodeQueryByCode.String():    enumBasePg.EnumString{NodeQueryByCode.String(), NodeQueryByCode.Name()},
-	NodeQueryByNo.String():      enumBasePg.EnumString{NodeQueryByNo.String(), NodeQueryByNo.Name()},
-	NodeQueryById.String():      enumBasePg.EnumString{NodeQueryById.String(), NodeQueryById.Name()},
+	NodeQueryByGeneral.String(): enumBasePg.EnumString{Id: NodeQueryByGeneral.String(), Name: NodeQueryByGeneral.Name()},
+	NodeQueryByCode.String():    enumBasePg.EnumString{Id: NodeQueryByCode.String(), Name: NodeQueryByCode.Name()},
+	NodeQueryByNo.String():      enumBasePg.EnumString{Id: NodeQueryByNo.String(), Name: NodeQueryByNo.Name()},
+	NodeQueryById.String():      enumBasePg.EnumString{Id: NodeQueryById.String(), Name: NodeQueryById.Name()},
 }
 
 func IsExistNodeQueryBy(id string) (NodeQueryBy, bool) {

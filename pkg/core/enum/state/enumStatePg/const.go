@@ -108,12 +108,12 @@ func (this State) ReverseCancelLayAside() (bool, State) {
 }
 
 var MapEnableDisable = map[int8]enumBasePg.EnumInt8{
-	ENABLE.Index():  enumBasePg.EnumInt8{ENABLE.Index(), ENABLE.String()},
-	DISABLE.Index(): enumBasePg.EnumInt8{ENABLE.Index(), ENABLE.String()},
+	ENABLE.Index():  enumBasePg.EnumInt8{Id: ENABLE.Index(), Name: ENABLE.String()},
+	DISABLE.Index(): enumBasePg.EnumInt8{Id: ENABLE.Index(), Name: ENABLE.String()},
 }
 var Map = map[int8]enumBasePg.EnumInt8{
-	ENABLE.Index():  enumBasePg.EnumInt8{ENABLE.Index(), ENABLE.String()},
-	DISABLE.Index(): enumBasePg.EnumInt8{ENABLE.Index(), ENABLE.String()},
+	ENABLE.Index():  enumBasePg.EnumInt8{Id: ENABLE.Index(), Name: ENABLE.String()},
+	DISABLE.Index(): enumBasePg.EnumInt8{Id: ENABLE.Index(), Name: ENABLE.String()},
 }
 
 func GetInt64(id int64) (enumBasePg.EnumInt8, bool) {

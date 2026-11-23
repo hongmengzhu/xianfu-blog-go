@@ -64,6 +64,7 @@ generate:
 		-output=$(OUTPUT_FILE) \
 		-concurrency=$(CONCURRENCY) \
 		-ignore='$(IGNORE_PATTERNS)'
+	@gofmt -w $(OUTPUT_FILE)
 
 # 直接运行（默认目标）
 run: generate

@@ -46,10 +46,10 @@ func (this ResourceTypeCategory) IsEqual(id string) bool {
 }
 
 var ResourceAuthorityTypeMap = map[string]enumBasePg.EnumString{
-	Menu.String():       enumBasePg.EnumString{Menu.String(), Menu.Name()},
-	Group.String():      enumBasePg.EnumString{Group.String(), Group.Name()},
-	Role.String():       enumBasePg.EnumString{Role.String(), Role.Name()},
-	Department.String(): enumBasePg.EnumString{Department.String(), Department.Name()},
+	Menu.String():       enumBasePg.EnumString{Id: Menu.String(), Name: Menu.Name()},
+	Group.String():      enumBasePg.EnumString{Id: Group.String(), Name: Group.Name()},
+	Role.String():       enumBasePg.EnumString{Id: Role.String(), Name: Role.Name()},
+	Department.String(): enumBasePg.EnumString{Id: Department.String(), Name: Department.Name()},
 }
 
 func IsExistResourceAuthorityType(id string) (ResourceTypeCategory, bool) {

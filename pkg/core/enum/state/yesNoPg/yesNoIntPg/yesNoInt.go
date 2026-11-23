@@ -65,8 +65,8 @@ func (this YesNoInt) IsEnableDisable() bool {
 }
 
 var MapYesNoInt = map[int8]enumBasePg.EnumInt8{
-	Yes.Index(): enumBasePg.EnumInt8{Yes.Index(), Yes.String()},
-	No.Index():  enumBasePg.EnumInt8{Yes.Index(), Yes.String()},
+	Yes.Index(): enumBasePg.EnumInt8{Id: Yes.Index(), Name: Yes.String()},
+	No.Index():  enumBasePg.EnumInt8{Id: Yes.Index(), Name: Yes.String()},
 }
 
 func GetYesNoInt(id int64) (enumBasePg.EnumInt8, bool) {

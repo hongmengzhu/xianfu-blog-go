@@ -56,13 +56,13 @@ func (this Module) IsEqual(id string) bool {
 }
 
 var ModuleMap = map[string]enumBasePg.EnumString{
-	ModuleArea.String():          enumBasePg.EnumString{ModuleArea.String(), ModuleArea.Name()},
-	ModuleAccount.String():       enumBasePg.EnumString{ModuleAccount.String(), ModuleAccount.Name()},
-	ModuleDepartment.String():    enumBasePg.EnumString{ModuleDepartment.String(), ModuleDepartment.Name()},
-	ModuleCarousel.String():      enumBasePg.EnumString{ModuleCarousel.String(), ModuleCarousel.Name()},
-	ModuleLevel.String():         enumBasePg.EnumString{ModuleLevel.String(), ModuleLevel.Name()},
-	ModuleGrout.String():         enumBasePg.EnumString{ModuleGrout.String(), ModuleGrout.Name()},
-	ModuleOperateCoupon.String(): enumBasePg.EnumString{ModuleOperateCoupon.String(), ModuleOperateCoupon.Name()},
+	ModuleArea.String():          enumBasePg.EnumString{Id: ModuleArea.String(), Name: ModuleArea.Name()},
+	ModuleAccount.String():       enumBasePg.EnumString{Id: ModuleAccount.String(), Name: ModuleAccount.Name()},
+	ModuleDepartment.String():    enumBasePg.EnumString{Id: ModuleDepartment.String(), Name: ModuleDepartment.Name()},
+	ModuleCarousel.String():      enumBasePg.EnumString{Id: ModuleCarousel.String(), Name: ModuleCarousel.Name()},
+	ModuleLevel.String():         enumBasePg.EnumString{Id: ModuleLevel.String(), Name: ModuleLevel.Name()},
+	ModuleGrout.String():         enumBasePg.EnumString{Id: ModuleGrout.String(), Name: ModuleGrout.Name()},
+	ModuleOperateCoupon.String(): enumBasePg.EnumString{Id: ModuleOperateCoupon.String(), Name: ModuleOperateCoupon.Name()},
 }
 
 func IsExistModule(id string) (Module, bool) {

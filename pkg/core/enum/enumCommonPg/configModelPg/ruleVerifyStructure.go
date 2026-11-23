@@ -40,8 +40,8 @@ func (this RuleVerifyStructure) IsEqual(id string) bool {
 }
 
 var RuleVerifyStructureMap = map[string]enumBasePg.EnumString{
-	RuleVerifyStructureFront.String():   enumBasePg.EnumString{RuleVerifyStructureFront.String(), RuleVerifyStructureFront.Name()},
-	RuleVerifyStructureBackend.String(): enumBasePg.EnumString{RuleVerifyStructureBackend.String(), RuleVerifyStructureBackend.Name()},
+	RuleVerifyStructureFront.String():   enumBasePg.EnumString{Id: RuleVerifyStructureFront.String(), Name: RuleVerifyStructureFront.Name()},
+	RuleVerifyStructureBackend.String(): enumBasePg.EnumString{Id: RuleVerifyStructureBackend.String(), Name: RuleVerifyStructureBackend.Name()},
 }
 
 func IsExistRuleVerifyStructure(id string) (RuleVerifyStructure, bool) {

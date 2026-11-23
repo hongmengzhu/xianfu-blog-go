@@ -8,18 +8,18 @@ import (
 	"github.com/nyaruka/phonenumbers"
 )
 
-// ParseInt converts a string to int. Panics on invalid input.
-func ParseInt(s string) int {
+// ParseInt converts a string to int. Invalid input returns an error instead of panicking.
+func ParseInt(s string) (int, error) {
 	if s == "" {
-		return 0
+		return 0, nil
 	}
 
 	i, err := strconv.Atoi(s)
 	if err != nil {
-		panic(err)
+		return 0, fmt.Errorf("ParseInt(%q): %w", s, err)
 	}
 
-	return i
+	return i, nil
 }
 
 // GetCountryCode returns the ISO country code for the given phone prefix and number.

@@ -46,10 +46,10 @@ func (this TypeIdentity) IsEqual(id string) bool {
 }
 
 var TypeIdentityMap = map[string]enumBasePg.EnumString{
-	General.String():   enumBasePg.EnumString{General.String(), General.Name()},
-	System.String():    enumBasePg.EnumString{System.String(), System.Name()},
-	Manager.String():   enumBasePg.EnumString{Manager.String(), Manager.Name()},
-	Assistant.String(): enumBasePg.EnumString{Assistant.String(), Manager.Name()},
+	General.String():   enumBasePg.EnumString{Id: General.String(), Name: General.Name()},
+	System.String():    enumBasePg.EnumString{Id: System.String(), Name: System.Name()},
+	Manager.String():   enumBasePg.EnumString{Id: Manager.String(), Name: Manager.Name()},
+	Assistant.String(): enumBasePg.EnumString{Id: Assistant.String(), Name: Manager.Name()},
 }
 
 func IsExistTypeIdentity(id string) (TypeIdentity, bool) {

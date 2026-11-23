@@ -46,9 +46,9 @@ func (this Lang) IsEqual(id string) bool {
 }
 
 var LangMap = map[string]enumBasePg.EnumString{
-	LangJS.String(): enumBasePg.EnumString{LangJS.String(), LangJS.Name()},
-	LangTs.String(): enumBasePg.EnumString{LangTs.String(), LangTs.Name()},
-	LangGo.String(): enumBasePg.EnumString{LangGo.String(), LangGo.Name()},
+	LangJS.String(): enumBasePg.EnumString{Id: LangJS.String(), Name: LangJS.Name()},
+	LangTs.String(): enumBasePg.EnumString{Id: LangTs.String(), Name: LangTs.Name()},
+	LangGo.String(): enumBasePg.EnumString{Id: LangGo.String(), Name: LangGo.Name()},
 }
 
 func IsExistLang(id string) (Lang, bool) {

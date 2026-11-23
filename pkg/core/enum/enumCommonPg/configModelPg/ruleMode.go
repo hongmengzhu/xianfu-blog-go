@@ -55,13 +55,13 @@ func (this RuleMode) IsEqual(id string) bool {
 }
 
 var RuleModeMap = map[string]enumBasePg.EnumString{
-	RuleModeRequired.String():     enumBasePg.EnumString{RuleModeRequired.String(), RuleModeRequired.Name()},
-	RuleModeLength.String():       enumBasePg.EnumString{RuleModeLength.String(), RuleModeLength.Name()},
-	RuleModePattern.String():      enumBasePg.EnumString{RuleModePattern.String(), RuleModePattern.Name()},
-	RuleModeGreaterThan0.String(): enumBasePg.EnumString{RuleModeGreaterThan0.String(), RuleModeGreaterThan0.Name()},
-	RuleModeVerifyFunc.String():   enumBasePg.EnumString{RuleModeVerifyFunc.String(), RuleModeVerifyFunc.Name()},
-	RuleModeCustom.String():       enumBasePg.EnumString{RuleModeCustom.String(), RuleModeCustom.Name()},
-	RuleModeCondition.String():    enumBasePg.EnumString{RuleModeCondition.String(), RuleModeCondition.Name()},
+	RuleModeRequired.String():     enumBasePg.EnumString{Id: RuleModeRequired.String(), Name: RuleModeRequired.Name()},
+	RuleModeLength.String():       enumBasePg.EnumString{Id: RuleModeLength.String(), Name: RuleModeLength.Name()},
+	RuleModePattern.String():      enumBasePg.EnumString{Id: RuleModePattern.String(), Name: RuleModePattern.Name()},
+	RuleModeGreaterThan0.String(): enumBasePg.EnumString{Id: RuleModeGreaterThan0.String(), Name: RuleModeGreaterThan0.Name()},
+	RuleModeVerifyFunc.String():   enumBasePg.EnumString{Id: RuleModeVerifyFunc.String(), Name: RuleModeVerifyFunc.Name()},
+	RuleModeCustom.String():       enumBasePg.EnumString{Id: RuleModeCustom.String(), Name: RuleModeCustom.Name()},
+	RuleModeCondition.String():    enumBasePg.EnumString{Id: RuleModeCondition.String(), Name: RuleModeCondition.Name()},
 }
 
 func IsExistRuleMode(id string) (RuleMode, bool) {

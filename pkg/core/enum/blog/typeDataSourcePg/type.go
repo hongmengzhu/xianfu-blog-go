@@ -31,8 +31,8 @@ func (this TypeDataSource) Index() string {
 }
 
 var MapTypeDataSource = map[string]enumBasePg.EnumString{
-	PLATFORM.String(): enumBasePg.EnumString{PLATFORM.String(), PLATFORM.Name()},
-	EXTERNAL.String(): enumBasePg.EnumString{EXTERNAL.String(), EXTERNAL.Name()},
+	PLATFORM.String(): enumBasePg.EnumString{Id: PLATFORM.String(), Name: PLATFORM.Name()},
+	EXTERNAL.String(): enumBasePg.EnumString{Id: EXTERNAL.String(), Name: EXTERNAL.Name()},
 }
 
 func IsExistTypeDataSource(id string) bool {

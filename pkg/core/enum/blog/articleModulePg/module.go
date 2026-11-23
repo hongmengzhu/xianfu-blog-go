@@ -34,9 +34,9 @@ func (this Module) Index() string {
 }
 
 var MapModule = map[string]enumBasePg.EnumString{
-	Article.String():  enumBasePg.EnumString{Article.String(), Article.Name()},
-	NEW.String():      enumBasePg.EnumString{NEW.String(), NEW.Name()},
-	TUTORIAL.String(): enumBasePg.EnumString{TUTORIAL.String(), TUTORIAL.Name()},
+	Article.String():  enumBasePg.EnumString{Id: Article.String(), Name: Article.Name()},
+	NEW.String():      enumBasePg.EnumString{Id: NEW.String(), Name: NEW.Name()},
+	TUTORIAL.String(): enumBasePg.EnumString{Id: TUTORIAL.String(), Name: TUTORIAL.Name()},
 }
 
 func IsExistModule(id string) bool {

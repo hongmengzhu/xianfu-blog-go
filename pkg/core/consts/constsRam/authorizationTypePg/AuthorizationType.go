@@ -37,10 +37,10 @@ func (this AuthorizationType) Index() string {
 }
 
 var Map = map[string]enumBasePg.EnumString{
-	PASSWORD.String(): enumBasePg.EnumString{PASSWORD.String(), PASSWORD.Name()},
-	PIN.String():      enumBasePg.EnumString{PIN.String(), PIN.Name()},
-	MFA2.String():     enumBasePg.EnumString{MFA2.String(), MFA2.Name()},
-	OPENID.String():   enumBasePg.EnumString{OPENID.String(), OPENID.Name()},
+	PASSWORD.String(): enumBasePg.EnumString{Id: PASSWORD.String(), Name: PASSWORD.Name()},
+	PIN.String():      enumBasePg.EnumString{Id: PIN.String(), Name: PIN.Name()},
+	MFA2.String():     enumBasePg.EnumString{Id: MFA2.String(), Name: MFA2.Name()},
+	OPENID.String():   enumBasePg.EnumString{Id: OPENID.String(), Name: OPENID.Name()},
 }
 
 func IsExist(id string) bool {

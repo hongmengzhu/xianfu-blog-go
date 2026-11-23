@@ -46,10 +46,10 @@ func (this ParameterSource) IsEqual(id string) bool {
 }
 
 var ParameterSourceMap = map[string]enumBasePg.EnumString{
-	ParameterSourceDataDictionary.String(): enumBasePg.EnumString{ParameterSourceDataDictionary.String(), ParameterSourceDataDictionary.Name()},
-	ParameterSourceCustom.String():         enumBasePg.EnumString{ParameterSourceCustom.String(), ParameterSourceCustom.Name()},
-	ParameterSourceUrl.String():            enumBasePg.EnumString{ParameterSourceUrl.String(), ParameterSourceUrl.Name()},
-	ParameterSourceCustomCreate.String():   enumBasePg.EnumString{ParameterSourceCustomCreate.String(), ParameterSourceCustomCreate.Name()},
+	ParameterSourceDataDictionary.String(): enumBasePg.EnumString{Id: ParameterSourceDataDictionary.String(), Name: ParameterSourceDataDictionary.Name()},
+	ParameterSourceCustom.String():         enumBasePg.EnumString{Id: ParameterSourceCustom.String(), Name: ParameterSourceCustom.Name()},
+	ParameterSourceUrl.String():            enumBasePg.EnumString{Id: ParameterSourceUrl.String(), Name: ParameterSourceUrl.Name()},
+	ParameterSourceCustomCreate.String():   enumBasePg.EnumString{Id: ParameterSourceCustomCreate.String(), Name: ParameterSourceCustomCreate.Name()},
 }
 
 func IsExistParameterSource(id string) (ParameterSource, bool) {

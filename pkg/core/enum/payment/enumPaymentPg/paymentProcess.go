@@ -47,11 +47,11 @@ func (this PaymentProcess) IsEqual(id string) bool {
 }
 
 var PaymentMap = map[string]enumBasePg.EnumString{
-	NotProcessed.String():            enumBasePg.EnumString{NotProcessed.String(), NotProcessed.Name()},
-	Complete.String():                enumBasePg.EnumString{Complete.String(), Complete.Name()},
-	ProcessingFailed.String():        enumBasePg.EnumString{ProcessingFailed.String(), ProcessingFailed.Name()},
-	Processing.String():              enumBasePg.EnumString{Processing.String(), Processing.Name()},
-	ProcessingFailedGateway.String(): enumBasePg.EnumString{ProcessingFailedGateway.String(), ProcessingFailedGateway.Name()},
+	NotProcessed.String():            enumBasePg.EnumString{Id: NotProcessed.String(), Name: NotProcessed.Name()},
+	Complete.String():                enumBasePg.EnumString{Id: Complete.String(), Name: Complete.Name()},
+	ProcessingFailed.String():        enumBasePg.EnumString{Id: ProcessingFailed.String(), Name: ProcessingFailed.Name()},
+	Processing.String():              enumBasePg.EnumString{Id: Processing.String(), Name: Processing.Name()},
+	ProcessingFailedGateway.String(): enumBasePg.EnumString{Id: ProcessingFailedGateway.String(), Name: ProcessingFailedGateway.Name()},
 }
 
 func IsExistPayment(id string) (PaymentProcess, bool) {

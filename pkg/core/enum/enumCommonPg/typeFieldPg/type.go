@@ -49,11 +49,11 @@ func (this TypeField) IsEqual(id string) bool {
 }
 
 var TypeFieldMap = map[string]enumBasePg.EnumString{
-	Username.String(): enumBasePg.EnumString{Username.String(), Username.Name()},
-	Phone.String():    enumBasePg.EnumString{Phone.String(), Phone.Name()},
-	Mail.String():     enumBasePg.EnumString{Mail.String(), Mail.Name()},
-	Password.String(): enumBasePg.EnumString{Password.String(), Password.Name()},
-	Name.String():     enumBasePg.EnumString{Name.String(), Name.Name()},
+	Username.String(): enumBasePg.EnumString{Id: Username.String(), Name: Username.Name()},
+	Phone.String():    enumBasePg.EnumString{Id: Phone.String(), Name: Phone.Name()},
+	Mail.String():     enumBasePg.EnumString{Id: Mail.String(), Name: Mail.Name()},
+	Password.String(): enumBasePg.EnumString{Id: Password.String(), Name: Password.Name()},
+	Name.String():     enumBasePg.EnumString{Id: Name.String(), Name: Name.Name()},
 }
 
 func IsExistTypeField(id string) (TypeField, bool) {

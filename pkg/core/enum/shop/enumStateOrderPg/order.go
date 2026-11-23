@@ -61,15 +61,15 @@ func (this StateOrder) IsEqual(id string) bool {
 }
 
 var StateOrderMap = map[string]enumBasePg.EnumString{
-	DELETE.String():          enumBasePg.EnumString{DELETE.String(), DELETE.Name()},
-	CREATE.String():          enumBasePg.EnumString{CREATE.String(), CREATE.Name()},
-	PendingApproval.String(): enumBasePg.EnumString{PendingApproval.String(), PendingApproval.Name()},
-	InProcess.String():       enumBasePg.EnumString{InProcess.String(), InProcess.Name()},
-	PendingDispatch.String(): enumBasePg.EnumString{PendingDispatch.String(), PendingDispatch.Name()},
-	Shipped.String():         enumBasePg.EnumString{Shipped.String(), Shipped.Name()},
-	Received.String():        enumBasePg.EnumString{Received.String(), Received.Name()},
-	Completed.String():       enumBasePg.EnumString{Completed.String(), Completed.Name()},
-	Cancel.String():          enumBasePg.EnumString{Cancel.String(), Cancel.Name()},
+	DELETE.String():          enumBasePg.EnumString{Id: DELETE.String(), Name: DELETE.Name()},
+	CREATE.String():          enumBasePg.EnumString{Id: CREATE.String(), Name: CREATE.Name()},
+	PendingApproval.String(): enumBasePg.EnumString{Id: PendingApproval.String(), Name: PendingApproval.Name()},
+	InProcess.String():       enumBasePg.EnumString{Id: InProcess.String(), Name: InProcess.Name()},
+	PendingDispatch.String(): enumBasePg.EnumString{Id: PendingDispatch.String(), Name: PendingDispatch.Name()},
+	Shipped.String():         enumBasePg.EnumString{Id: Shipped.String(), Name: Shipped.Name()},
+	Received.String():        enumBasePg.EnumString{Id: Received.String(), Name: Received.Name()},
+	Completed.String():       enumBasePg.EnumString{Id: Completed.String(), Name: Completed.Name()},
+	Cancel.String():          enumBasePg.EnumString{Id: Cancel.String(), Name: Cancel.Name()},
 }
 
 func IsExistStateOrder(id string) (StateOrder, bool) {
@@ -79,16 +79,16 @@ func IsExistStateOrder(id string) (StateOrder, bool) {
 
 // 可以发货的几种状态
 var deliveryStatusMap = map[string]enumBasePg.EnumString{
-	PendingApproval.String(): enumBasePg.EnumString{PendingApproval.String(), PendingApproval.Name()},
-	InProcess.String():       enumBasePg.EnumString{InProcess.String(), InProcess.Name()},
-	PendingDispatch.String(): enumBasePg.EnumString{PendingDispatch.String(), PendingDispatch.Name()},
+	PendingApproval.String(): enumBasePg.EnumString{Id: PendingApproval.String(), Name: PendingApproval.Name()},
+	InProcess.String():       enumBasePg.EnumString{Id: InProcess.String(), Name: InProcess.Name()},
+	PendingDispatch.String(): enumBasePg.EnumString{Id: PendingDispatch.String(), Name: PendingDispatch.Name()},
 }
 
 // 可以发起售后的几种状态
 var startAfterSalesStateMap = map[string]enumBasePg.EnumString{
-	PendingDispatch.String(): enumBasePg.EnumString{PendingDispatch.String(), PendingDispatch.Name()},
-	Shipped.String():         enumBasePg.EnumString{Shipped.String(), Shipped.Name()},
-	Received.String():        enumBasePg.EnumString{Received.String(), Received.Name()},
+	PendingDispatch.String(): enumBasePg.EnumString{Id: PendingDispatch.String(), Name: PendingDispatch.Name()},
+	Shipped.String():         enumBasePg.EnumString{Id: Shipped.String(), Name: Shipped.Name()},
+	Received.String():        enumBasePg.EnumString{Id: Received.String(), Name: Received.Name()},
 }
 
 // VerifyDeliveryStatus

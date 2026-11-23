@@ -78,7 +78,11 @@ func (idp *GoogleIdProvider) GetToken(code string) (*oauth2.Token, error) {
 		if err := json.Unmarshal([]byte(code), &googleIdToken); err != nil {
 			return nil, err
 		}
-		expiry := int64(ParseInt(googleIdToken.Exp))
+		exp, err := ParseInt(googleIdToken.Exp)
+		if err != nil {
+			return nil, fmt.Errorf("google id token exp 解析失败: %w", err)
+		}
+		expiry := int64(exp)
 		token := &oauth2.Token{
 			AccessToken: fmt.Sprintf("%v-%v", GoogleIdTokenKey, googleIdToken.Sub),
 			TokenType:   "Bearer",

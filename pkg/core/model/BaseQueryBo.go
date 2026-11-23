@@ -7,7 +7,7 @@ import (
 )
 
 type BaseQueryBo struct {
-	pageNum  int64                `json:"pageNum"`
+	PageNum  int64                `json:"pageNum"`
 	PageSize int64                `json:"pageSize"`
 	Holder   holderIfPg.IHolderPg `json:"holder"` // 会话信息
 }

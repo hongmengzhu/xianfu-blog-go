@@ -37,10 +37,10 @@ func (this TypeOwner) Code() string {
 }
 
 var MapTypeOwner = map[string]enumBasePg.EnumString{
-	GENERAL.String(): enumBasePg.EnumString{GENERAL.String(), GENERAL.Name()},
-	TEAM.String():    enumBasePg.EnumString{TEAM.String(), TEAM.Name()},
-	ORG.String():     enumBasePg.EnumString{ORG.String(), ORG.Name()},
-	MY.String():      enumBasePg.EnumString{MY.String(), MY.Name()},
+	GENERAL.String(): enumBasePg.EnumString{Id: GENERAL.String(), Name: GENERAL.Name()},
+	TEAM.String():    enumBasePg.EnumString{Id: TEAM.String(), Name: TEAM.Name()},
+	ORG.String():     enumBasePg.EnumString{Id: ORG.String(), Name: ORG.Name()},
+	MY.String():      enumBasePg.EnumString{Id: MY.String(), Name: MY.Name()},
 }
 
 func IsExistTypeOwner(id string) bool {

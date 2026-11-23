@@ -40,8 +40,8 @@ func (this RuleVerifyLocation) IsEqual(id string) bool {
 }
 
 var RuleVerifyLocationMap = map[string]enumBasePg.EnumString{
-	RuleVerifyLocationCreate.String(): enumBasePg.EnumString{RuleVerifyLocationCreate.String(), RuleVerifyLocationCreate.Name()},
-	RuleVerifyLocationUpdate.String(): enumBasePg.EnumString{RuleVerifyLocationUpdate.String(), RuleVerifyLocationUpdate.Name()},
+	RuleVerifyLocationCreate.String(): enumBasePg.EnumString{Id: RuleVerifyLocationCreate.String(), Name: RuleVerifyLocationCreate.Name()},
+	RuleVerifyLocationUpdate.String(): enumBasePg.EnumString{Id: RuleVerifyLocationUpdate.String(), Name: RuleVerifyLocationUpdate.Name()},
 }
 
 func IsExistRuleVerifyLocation(id string) (RuleVerifyLocation, bool) {

@@ -49,11 +49,11 @@ func (this ApprovedState) IsEqual(id string) bool {
 }
 
 var ApprovedStateMap = map[string]enumBasePg.EnumString{
-	ApprovedStateUnApproved.String():    enumBasePg.EnumString{ApprovedStateUnApproved.String(), ApprovedStateUnApproved.Name()},
-	ApprovedStateApproved.String():      enumBasePg.EnumString{ApprovedStateApproved.String(), ApprovedStateApproved.Name()},
-	ApprovedStateRejected.String():      enumBasePg.EnumString{ApprovedStateRejected.String(), ApprovedStateRejected.Name()},
-	ApprovedStateSubmit.String():        enumBasePg.EnumString{ApprovedStateSubmit.String(), ApprovedStateSubmit.Name()},
-	ApprovedStateUnderApproval.String(): enumBasePg.EnumString{ApprovedStateUnderApproval.String(), ApprovedStateUnderApproval.Name()},
+	ApprovedStateUnApproved.String():    enumBasePg.EnumString{Id: ApprovedStateUnApproved.String(), Name: ApprovedStateUnApproved.Name()},
+	ApprovedStateApproved.String():      enumBasePg.EnumString{Id: ApprovedStateApproved.String(), Name: ApprovedStateApproved.Name()},
+	ApprovedStateRejected.String():      enumBasePg.EnumString{Id: ApprovedStateRejected.String(), Name: ApprovedStateRejected.Name()},
+	ApprovedStateSubmit.String():        enumBasePg.EnumString{Id: ApprovedStateSubmit.String(), Name: ApprovedStateSubmit.Name()},
+	ApprovedStateUnderApproval.String(): enumBasePg.EnumString{Id: ApprovedStateUnderApproval.String(), Name: ApprovedStateUnderApproval.Name()},
 }
 
 func IsExistApprovedState(id string) (ApprovedState, bool) {

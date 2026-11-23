@@ -43,7 +43,7 @@ func (this PubPrive) IsEqual(id string) bool {
 }
 
 var PubPriveMap = map[string]enumBasePg.EnumString{
-	Login.String(): enumBasePg.EnumString{Login.String(), Login.Name()},
+	Login.String(): enumBasePg.EnumString{Id: Login.String(), Name: Login.Name()},
 }
 
 func IsExistPubPrive(id string) (PubPrive, bool) {

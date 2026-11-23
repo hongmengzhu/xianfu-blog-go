@@ -46,10 +46,10 @@ func (this DomainType) IsEqual(id string) bool {
 }
 
 var DomainTypeMap = map[string]enumBasePg.EnumString{
-	Org.String():          enumBasePg.EnumString{Org.String(), Org.Name()},
-	TenantModule.String(): enumBasePg.EnumString{TenantModule.String(), TenantModule.Name()},
-	Tenant.String():       enumBasePg.EnumString{Tenant.String(), Tenant.Name()},
-	Customer.String():     enumBasePg.EnumString{Customer.String(), Customer.Name()},
+	Org.String():          enumBasePg.EnumString{Id: Org.String(), Name: Org.Name()},
+	TenantModule.String(): enumBasePg.EnumString{Id: TenantModule.String(), Name: TenantModule.Name()},
+	Tenant.String():       enumBasePg.EnumString{Id: Tenant.String(), Name: Tenant.Name()},
+	Customer.String():     enumBasePg.EnumString{Id: Customer.String(), Name: Customer.Name()},
 }
 
 func IsExistDomainType(id string) (DomainType, bool) {

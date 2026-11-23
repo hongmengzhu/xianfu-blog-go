@@ -60,8 +60,8 @@ func (this VerifyEnum) IsEnableDisable() bool {
 }
 
 var Map = map[int8]enumBasePg.EnumInt8{
-	YES.Index(): enumBasePg.EnumInt8{YES.Index(), YES.String()},
-	NO.Index():  enumBasePg.EnumInt8{YES.Index(), YES.String()},
+	YES.Index(): enumBasePg.EnumInt8{Id: YES.Index(), Name: YES.String()},
+	NO.Index():  enumBasePg.EnumInt8{Id: YES.Index(), Name: YES.String()},
 }
 
 func GetInt64(id int64) (enumBasePg.EnumInt8, bool) {

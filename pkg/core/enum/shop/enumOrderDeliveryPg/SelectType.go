@@ -43,9 +43,9 @@ func (this SelectType) IsEqual(id string) bool {
 }
 
 var SelectTypeMap = map[string]enumBasePg.EnumString{
-	SelectTypeDispatch.String():   enumBasePg.EnumString{SelectTypeDispatch.String(), SelectTypeDispatch.Name()},
-	SelectTypeDeliver.String():    enumBasePg.EnumString{SelectTypeDeliver.String(), SelectTypeDeliver.Name()},
-	SelectTypeNotDeliver.String(): enumBasePg.EnumString{SelectTypeNotDeliver.String(), SelectTypeNotDeliver.Name()},
+	SelectTypeDispatch.String():   enumBasePg.EnumString{Id: SelectTypeDispatch.String(), Name: SelectTypeDispatch.Name()},
+	SelectTypeDeliver.String():    enumBasePg.EnumString{Id: SelectTypeDeliver.String(), Name: SelectTypeDeliver.Name()},
+	SelectTypeNotDeliver.String(): enumBasePg.EnumString{Id: SelectTypeNotDeliver.String(), Name: SelectTypeNotDeliver.Name()},
 }
 
 func IsExistSelectType(id string) (SelectType, bool) {

@@ -40,8 +40,8 @@ func (this DataSourceBy) IsEqual(id string) bool {
 }
 
 var DataSourceByMap = map[string]enumBasePg.EnumString{
-	DataSourceByGeneral.String(): enumBasePg.EnumString{DataSourceByGeneral.String(), DataSourceByGeneral.Name()},
-	DataSourceByCache.String():   enumBasePg.EnumString{DataSourceByCache.String(), DataSourceByCache.Name()},
+	DataSourceByGeneral.String(): enumBasePg.EnumString{Id: DataSourceByGeneral.String(), Name: DataSourceByGeneral.Name()},
+	DataSourceByCache.String():   enumBasePg.EnumString{Id: DataSourceByCache.String(), Name: DataSourceByCache.Name()},
 }
 
 func IsExistDataSourceBy(id string) (DataSourceBy, bool) {

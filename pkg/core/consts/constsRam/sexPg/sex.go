@@ -34,9 +34,9 @@ func (this Sex) Index() string {
 }
 
 var Map = map[string]enumBasePg.EnumString{
-	MALE.String():    enumBasePg.EnumString{MALE.String(), MALE.Name()},
-	FEMALE.String():  enumBasePg.EnumString{FEMALE.String(), FEMALE.Name()},
-	UNKNOWN.String(): enumBasePg.EnumString{UNKNOWN.String(), UNKNOWN.Name()},
+	MALE.String():    enumBasePg.EnumString{Id: MALE.String(), Name: MALE.Name()},
+	FEMALE.String():  enumBasePg.EnumString{Id: FEMALE.String(), Name: FEMALE.Name()},
+	UNKNOWN.String(): enumBasePg.EnumString{Id: UNKNOWN.String(), Name: UNKNOWN.Name()},
 }
 
 func IsExist(id string) bool {

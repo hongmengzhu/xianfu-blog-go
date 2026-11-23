@@ -40,8 +40,8 @@ func (this TypeExpr) IsEqual(id string) bool {
 }
 
 var TypeExprMap = map[string]enumBasePg.EnumString{
-	TypeExprGeneral.String(): enumBasePg.EnumString{TypeExprGeneral.String(), TypeExprGeneral.Name()},
-	TypeExprRegular.String(): enumBasePg.EnumString{TypeExprRegular.String(), TypeExprRegular.Name()},
+	TypeExprGeneral.String(): enumBasePg.EnumString{Id: TypeExprGeneral.String(), Name: TypeExprGeneral.Name()},
+	TypeExprRegular.String(): enumBasePg.EnumString{Id: TypeExprRegular.String(), Name: TypeExprRegular.Name()},
 }
 
 func IsExistTypeExpr(id string) (TypeExpr, bool) {

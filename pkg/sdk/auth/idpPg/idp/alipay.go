@@ -273,7 +273,8 @@ func rsaSignWithRSA256(signContent string, privateKey string) (string, error) {
 	privateKey = formatPrivateKey(privateKey)
 	block, _ := pem.Decode([]byte(privateKey))
 	if block == nil {
-		panic("fail to parse privateKey")
+		// 私钥格式非法属于配置/输入错误，返回 error 交由调用方处理，避免请求路径 panic
+		return "", fmt.Errorf("fail to parse privateKey: pem decode failed")
 	}
 
 	h := sha256.New()

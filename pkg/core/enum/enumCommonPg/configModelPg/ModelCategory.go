@@ -40,8 +40,8 @@ func (this ModelCategory) IsEqual(id string) bool {
 }
 
 var ModelCategoryMap = map[string]enumBasePg.EnumString{
-	ModelCategoryTable.String():  enumBasePg.EnumString{ModelCategoryTable.String(), ModelCategoryTable.Name()},
-	ModelCategoryConfig.String(): enumBasePg.EnumString{ModelCategoryConfig.String(), ModelCategoryConfig.Name()},
+	ModelCategoryTable.String():  enumBasePg.EnumString{Id: ModelCategoryTable.String(), Name: ModelCategoryTable.Name()},
+	ModelCategoryConfig.String(): enumBasePg.EnumString{Id: ModelCategoryConfig.String(), Name: ModelCategoryConfig.Name()},
 }
 
 func IsExistModelCategory(id string) (ModelCategory, bool) {

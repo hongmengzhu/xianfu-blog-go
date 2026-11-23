@@ -49,8 +49,8 @@ func (this String) IsEnableDisable() bool {
 }
 
 var StringMap = map[string]enumBasePg.EnumString{
-	Yes.Code(): enumBasePg.EnumString{Yes.Code(), Yes.String()},
-	No.Code():  enumBasePg.EnumString{Yes.Code(), Yes.String()},
+	Yes.Code(): enumBasePg.EnumString{Id: Yes.Code(), Name: Yes.String()},
+	No.Code():  enumBasePg.EnumString{Id: Yes.Code(), Name: Yes.String()},
 }
 
 func IsExistString(id string) (enumBasePg.EnumString, bool) {
